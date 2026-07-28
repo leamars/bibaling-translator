@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bibaling — Book Workshop</title>
+<style>
+  :root{
+    --ink:#0f0f12;
+    --muted:#6f7078;
+    --canvas:#f7f7f5;
+    --paper:#ffffff;
+    --line:#dddddf;
+    --line-strong:#c7c7cb;
+    --purple:#6f57e8;
+    --purple-soft:#f0edff;
+    --peach:#dca66e;
+    --peach-soft:#fff2e7;
+    --black:#09090b;
+    --shadow:0 18px 50px rgba(20,20,24,.08);
+  }
+
+  *{box-sizing:border-box}
+
+  html{scroll-behavior:smooth}
+
+  body{
+    margin:0;
+    background:var(--canvas);
+    color:var(--ink);
+    font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .shell{min-height:100vh;display:flex;flex-direction:column}
+
+  header{
+    position:sticky;
+    top:0;
+    z-index:10;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px max(28px, calc((100vw - 1280px)/2));
+    border-bottom:1px solid var(--line);
+    background:rgba(247,247,245,.94);
+    backdrop-filter:blur(18px);
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:19px;
+    font-weight:750;
+    letter-spacing:-.03em;
+  }
+
+  .brand::before{
+    content:"B";
+    width:26px;
+    height:26px;
+    border-radius:7px;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(145deg,#7c61ff,#5e40dd);
+    color:white;
+    font-size:14px;
+    font-weight:850;
+    box-shadow:0 6px 16px rgba(100,72,220,.22);
+  }
+
+  .progress{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:13px;
+    font-weight:650;
+    color:#36363a;
+  }
+
+  .bar{
+    width:138px;
+    height:7px;
+    border-radius:999px;
+    overflow:hidden;
+    background:#e5e5e7;
+  }
+
+  .bar > span{
+    display:block;
+    height:100%;
+    width:16.6%;
+    border-radius:999px;
+    background:linear-gradient(90deg,var(--purple),var(--peach));
+    transition:width .35s ease;
+  }
+
+  main{
+    width:min(1000px, calc(100% - 36px));
+    margin:0 auto;
+    padding:70px 0 170px;
+  }
+
+  .thread{
+    display:flex;
+    flex-direction:column;
+    gap:44px;
+  }
+
+  .turn{
+    display:none;
+    animation:rise .38s ease both;
+  }
+
+  .turn.visible{display:block}
+
+  @keyframes rise{
+    from{opacity:0;transform:translateY(12px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  .assistant{
+    display:grid;
+    grid-template-columns:38px 1fr;
+    gap:18px;
+    align-items:flex-start;
+  }
+
+  .avatar{
+    width:34px;
+    height:34px;
+    border-radius:9px;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(145deg,#7c61ff,#5e40dd);
+    color:white;
+    font-weight:850;
+    font-size:15px;
+    text-transform:uppercase;
+    box-shadow:0 8px 20px rgba(100,72,220,.18);
+  }
+
+  .copy{
+    max-width:780px;
+    font-size:36px;
+    line-height:1.08;
+    letter-spacing:-.045em;
+    font-weight:720;
+  }
+
+  .copy.small{
+    max-width:720px;
+    font-size:18px;
+    line-height:1.5;
+    letter-spacing:-.015em;
+    font-weight:450;
+    color:#303036;
+  }
+
+  .turn[data-step="1"] .copy{
+    max-width:820px;
+    font-size:clamp(42px,6vw,68px);
+    line-height:1.02;
+    letter-spacing:-.06em;
+  }
+
+  .turn[data-step="1"] .copy::after{
+    content:" Together.";
+    background:linear-gradient(90deg,#7065e8,#c9849d,#d9a45f);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .tool{
+    margin:24px 0 0 56px;
+    border:1px solid var(--line);
+    border-radius:22px;
+    background:var(--paper);
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+
+  .tool.compact{max-width:580px}
+
+  .tool-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    padding:17px 22px;
+    border-bottom:1px solid var(--line);
+    background:#fcfcfb;
+  }
+
+  .tool-body{padding:22px}
+
+  .eyebrow{
+    text-transform:uppercase;
+    font-size:11px;
+    line-height:1;
+    letter-spacing:.13em;
+    font-weight:800;
+    color:#777780;
+  }
+
+  .meta{
+    font-size:12px;
+    line-height:1.45;
+    color:var(--muted);
+  }
+
+  .grid3{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+  }
+
+  .upload{
+    display:flex;
+    flex-direction:column;
+    gap:11px;
+    min-height:190px;
+    padding:14px;
+    border:1px dashed #c8c8cd;
+    border-radius:16px;
+    background:#fbfbfa;
+    transition:.18s ease;
+  }
+
+  .upload:hover{
+    border-color:#9f94e8;
+    background:#faf9ff;
+  }
+
+  .upload label{
+    font-size:13px;
+    font-weight:750;
+  }
+
+  .upload input[type=file]{
+    width:100%;
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  .upload textarea{
+    flex:1;
+    min-height:84px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:11px;
+    resize:vertical;
+    background:white;
+    font:inherit;
+    font-size:13px;
+  }
+
+  .preview{
+    display:none;
+    width:100%;
+    aspect-ratio:4/3;
+    object-fit:cover;
+    border:1px solid var(--line);
+    border-radius:11px;
+  }
+
+  .upload-state{
+    min-height:26px;
+    display:flex;
+    align-items:center;
+    margin-top:auto;
+    color:var(--muted);
+    font-size:12px;
+  }
+
+  .upload-state.ready{
+    color:#5c47cf;
+    font-weight:750;
+  }
+
+  .confirm-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .confirm-row{
+    display:grid;
+    grid-template-columns:112px 1fr;
+    gap:16px;
+    align-items:stretch;
+    padding:13px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:white;
+  }
+
+  .confirm-row img{
+    width:112px;
+    height:112px;
+    object-fit:cover;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:#f1f1ef;
+  }
+
+  .confirm-content{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .confirm-content label{
+    color:#777780;
+    font-size:11px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+  }
+
+  .confirm-content textarea{
+    width:100%;
+    flex:1;
+    min-height:80px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:11px 12px;
+    resize:vertical;
+    font:inherit;
+    font-size:15px;
+    line-height:1.45;
+  }
+
+  .actions{
+    display:flex;
+    justify-content:flex-end;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:18px;
+  }
+
+  button{
+    border:1px solid var(--line-strong);
+    border-radius:999px;
+    background:white;
+    color:var(--ink);
+    padding:11px 18px;
+    font:inherit;
+    font-size:14px;
+    font-weight:720;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+
+  button:hover:not(:disabled){
+    transform:translateY(-1px);
+    box-shadow:0 7px 18px rgba(20,20,24,.08);
+  }
+
+  button.primary{
+    border-color:var(--black);
+    background:var(--black);
+    color:white;
+  }
+
+  button:disabled{
+    opacity:.38;
+    cursor:not-allowed;
+  }
+
+  .user-summary{
+    width:fit-content;
+    max-width:82%;
+    margin-left:auto;
+    padding:12px 16px;
+    border:1px solid #d8d3fa;
+    border-radius:18px 18px 4px 18px;
+    background:var(--purple-soft);
+    font-size:14px;
+    line-height:1.45;
+  }
+
+  .user-summary button{
+    border:0;
+    background:transparent;
+    box-shadow:none;
+    padding:0;
+    margin-left:9px;
+    color:#4d3abf;
+    font-size:12px;
+    text-decoration:underline;
+  }
+
+  .rank-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .rank-item{
+    cursor:grab;
+    user-select:none;
+  }
+
+  .rank-item:active{cursor:grabbing}
+  .rank-item.dragging{opacity:.4}
+  .rank-item.drag-over{
+    border-color:#8d7cf0;
+    background:var(--purple-soft);
+  }
+
+  .drag-handle{
+    color:#9a9aa2;
+    font-size:18px;
+    line-height:1;
+    letter-spacing:-2px;
+  }
+
+  .rank-item{
+    display:grid;
+    grid-template-columns:22px 34px 1fr;
+    gap:12px;
+    align-items:center;
+    padding:14px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:white;
+  }
+
+  .letter{
+    width:30px;
+    height:30px;
+    border-radius:9px;
+    display:grid;
+    place-items:center;
+    background:var(--purple-soft);
+    color:#513ec5;
+    font-weight:820;
+  }
+
+  .rank-controls{display:flex;gap:6px}
+
+  .rank-controls button{
+    padding:6px 9px;
+    border-radius:9px;
+  }
+
+  .choice-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+  }
+
+  .choice{
+    min-height:160px;
+    padding:18px;
+    text-align:left;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:white;
+  }
+
+  .choice.selected{
+    border-color:#8472ed;
+    background:var(--purple-soft);
+    box-shadow:0 0 0 2px rgba(111,87,232,.12);
+  }
+
+  .choice h3{
+    margin:0 0 9px;
+    font-size:20px;
+    line-height:1.15;
+    letter-spacing:-.03em;
+  }
+
+  .choice p{
+    margin:0;
+    color:#56565d;
+    font-size:13px;
+    line-height:1.5;
+    font-weight:450;
+  }
+
+  .direction{
+    margin-bottom:11px;
+    padding:17px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:white;
+    cursor:pointer;
+    transition:.16s ease;
+  }
+
+  .direction:hover{
+    border-color:#a89bed;
+    transform:translateY(-1px);
+  }
+
+  .direction.selected{
+    border-color:#8472ed;
+    background:var(--purple-soft);
+    box-shadow:0 0 0 2px rgba(111,87,232,.12);
+  }
+
+  .direction h3{
+    margin:0 0 8px;
+    font-size:19px;
+    letter-spacing:-.025em;
+  }
+
+  .refrain{
+    margin:9px 0;
+    font-size:25px;
+    line-height:1.2;
+    font-weight:720;
+    letter-spacing:-.035em;
+  }
+
+  .lock-row{
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+  }
+
+  .lock-row input{
+    width:100%;
+    padding:13px 14px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    font:inherit;
+    font-size:21px;
+    font-weight:650;
+    letter-spacing:-.025em;
+  }
+
+  .option-card,
+  .pattern-card{
+    margin-bottom:13px;
+    padding:18px;
+    border:1px solid var(--line);
+    border-radius:17px;
+    background:white;
+  }
+
+  .option-card{cursor:pointer}
+  .option-card textarea,
+  .option-card button{cursor:auto}
+
+  .option-card.selected{
+    border-color:#8472ed;
+    background:var(--purple-soft);
+    box-shadow:0 0 0 2px rgba(111,87,232,.12);
+  }
+
+  .strategy{
+    color:#777780;
+    font-size:10px;
+    font-weight:820;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+  }
+
+  .verse,
+  .pattern-card p{
+    margin:12px 0 14px;
+    white-space:pre-line;
+    font-size:21px;
+    line-height:1.5;
+    letter-spacing:-.02em;
+  }
+
+  .option-card textarea,
+  .pattern-card textarea{
+    display:none;
+    width:100%;
+    min-height:135px;
+    margin-top:12px;
+    padding:13px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    font:inherit;
+    font-size:19px;
+    line-height:1.48;
+  }
+
+  .pattern-card h3{
+    margin:0 0 8px;
+    color:#777780;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+  }
+
+  .inline-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:12px;
+  }
+
+  .thinking{
+    display:none;
+    margin-left:56px;
+    color:var(--muted);
+    font-size:14px;
+  }
+
+  .thinking.visible{display:block}
+
+  .dots::after{
+    content:"";
+    animation:dots 1.3s steps(4,end) infinite;
+  }
+
+  @keyframes dots{
+    0%{content:""}
+    25%{content:"."}
+    50%{content:".."}
+    75%,100%{content:"..."}
+  }
+
+  .freeform-note{
+    margin:0 0 0 56px;
+    padding:9px 0 9px 14px;
+    border-left:3px solid var(--purple);
+    color:var(--muted);
+    font-size:14px;
+  }
+
+  .next-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+
+  .next-action{
+    min-height:155px;
+    padding:20px;
+    text-align:left;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:white;
+  }
+
+  .next-action.primary-card{
+    border-color:#8b7aeb;
+    background:var(--purple-soft);
+  }
+
+  .next-action.selected{
+    border-color:#6f57e8;
+    background:var(--purple-soft);
+    box-shadow:0 0 0 2px rgba(111,87,232,.12);
+  }
+
+  .next-action h3{
+    margin:0 0 8px;
+    font-size:23px;
+    line-height:1.12;
+    letter-spacing:-.035em;
+  }
+
+  .next-action p{
+    margin:0;
+    color:#56565d;
+    font-size:13px;
+    line-height:1.5;
+    font-weight:450;
+  }
+
+  .draft-source{
+    margin-bottom:15px;
+    padding:10px 0 10px 14px;
+    border-left:3px solid var(--peach);
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.45;
+  }
+
+  .batch-count{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    color:#777780;
+    font-size:11px;
+    font-weight:820;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+  }
+
+  .rest-drop{
+    min-height:136px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:8px;
+    padding:22px;
+    border:1px dashed #bebec4;
+    border-radius:17px;
+    background:#fbfbfa;
+    text-align:center;
+    cursor:pointer;
+  }
+
+  .rest-drop:hover{
+    border-color:#9c8ee8;
+    background:#faf9ff;
+  }
+
+  .rest-drop input{display:none}
+
+  .rest-drop-title{
+    font-size:23px;
+    font-weight:720;
+    letter-spacing:-.035em;
+  }
+
+  .rest-upload-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:15px;
+  }
+
+  .rest-upload-row{
+    display:grid;
+    grid-template-columns:42px 76px 1fr auto;
+    gap:12px;
+    align-items:center;
+    padding:10px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:white;
+  }
+
+  .rest-number{
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    display:grid;
+    place-items:center;
+    background:var(--purple-soft);
+    color:#513ec5;
+    font-weight:820;
+  }
+
+  .rest-upload-row img{
+    width:76px;
+    height:60px;
+    object-fit:cover;
+    border:1px solid var(--line);
+    border-radius:9px;
+  }
+
+  .rest-file-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:13px;
+    font-weight:720;
+  }
+
+  .rest-order-buttons{display:flex;gap:5px}
+
+  .rest-order-buttons button{
+    padding:7px 10px;
+    border-radius:9px;
+  }
+
+  .workshop-source{
+    display:grid;
+    grid-template-columns:190px 1fr;
+    gap:18px;
+    align-items:start;
+    margin-bottom:17px;
+    padding:14px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:#fbfbfa;
+  }
+
+  .workshop-source img{
+    width:190px;
+    max-height:225px;
+    object-fit:contain;
+    border:1px solid var(--line);
+    border-radius:11px;
+    background:white;
+  }
+
+  .workshop-source p{
+    margin:9px 0 0;
+    white-space:pre-line;
+    font-size:18px;
+    line-height:1.5;
+    letter-spacing:-.015em;
+  }
+
+  .composer{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    z-index:12;
+    display:flex;
+    justify-content:center;
+    padding:16px;
+    border-top:1px solid var(--line);
+    background:rgba(247,247,245,.94);
+    backdrop-filter:blur(18px);
+  }
+
+  .composer-inner{
+    width:min(1000px,100%);
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:end;
+    gap:10px;
+    padding:8px 9px 8px 17px;
+    border:1px solid #cbcbcf;
+    border-radius:28px;
+    background:white;
+    box-shadow:0 10px 30px rgba(20,20,24,.07);
+  }
+
+  .composer-copy{min-width:0}
+
+  .composer-hint{
+    display:block;
+    margin-top:1px;
+    color:#8a8a91;
+    font-size:11px;
+    line-height:1.2;
+  }
+
+  .composer textarea{
+    flex:1;
+    min-height:26px;
+    max-height:110px;
+    padding:8px 0;
+    border:0;
+    outline:none;
+    resize:none;
+    background:transparent;
+    font:inherit;
+    font-size:15px;
+    line-height:1.4;
+  }
+
+  .composer-inner button{
+    flex:0 0 auto;
+    padding:10px 16px;
+  }
+
+  @media(max-width:760px){
+    header{padding:14px 16px}
+    .brand{font-size:18px}
+    .bar{width:80px}
+    main{
+      width:min(100% - 20px,1000px);
+      padding-top:44px;
+    }
+    .thread{gap:34px}
+    .copy{font-size:31px}
+    .turn[data-step="1"] .copy{font-size:42px}
+    .assistant{grid-template-columns:32px 1fr;gap:12px}
+    .avatar{width:30px;height:30px;border-radius:8px}
+    .tool{margin-left:0;border-radius:18px}
+    .tool-head,.tool-body{padding:16px}
+    .grid3,.choice-grid,.next-actions{grid-template-columns:1fr}
+    .confirm-row{grid-template-columns:74px 1fr;gap:11px}
+    .confirm-row img{width:74px;height:90px}
+    .freeform-note{margin-left:0}
+    .rest-upload-row{grid-template-columns:34px 58px 1fr}
+    .rest-upload-row img{width:58px;height:52px}
+    .rest-order-buttons{grid-column:3;justify-content:flex-end}
+    .workshop-source{grid-template-columns:1fr}
+    .workshop-source img{width:100%;max-height:280px}
+    .user-summary{max-width:94%}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+<header>
+  <div class="brand">bibaling</div>
+  <div class="progress">
+    <span id="progressText">Setup · 1 of 6</span>
+    <div class="bar"><span id="progressBar"></span></div>
+  </div>
+</header>
+
+<main>
+<div class="thread" id="thread">
+
+<section class="turn visible" data-step="1">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy">From English pages to a story your family will love.</div>
+  </div>
+  <div class="tool">
+    <div class="tool-head">
+      <span class="eyebrow">First, show me the book</span>
+      <span class="meta">Upload up to 3 spreads</span>
+    </div>
+    <div class="tool-body">
+      <p class="meta" style="margin:0 0 14px;font-size:14px">
+        I’ll read the English text from the photos and show it back to you for a quick check.
+      </p>
+      <div class="grid3">
+        <div class="upload">
+          <label>Spread 1</label>
+          <input type="file" accept="image/*" onchange="previewFile(this,'p1',0)"/>
+          <img id="p1" class="preview"/>
+          <div class="upload-state" id="u1">No image yet</div>
+        </div>
+        <div class="upload">
+          <label>Spread 2</label>
+          <input type="file" accept="image/*" onchange="previewFile(this,'p2',1)"/>
+          <img id="p2" class="preview"/>
+          <div class="upload-state" id="u2">No image yet</div>
+        </div>
+        <div class="upload">
+          <label>Spread 3</label>
+          <input type="file" accept="image/*" onchange="previewFile(this,'p3',2)"/>
+          <img id="p3" class="preview"/>
+          <div class="upload-state" id="u3">No image yet</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<div class="thinking" id="sourceThinking"><span class="dots">Reading the text and pictures</span></div>
+
+<section class="turn" id="textConfirmTurn">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy small">I pulled out the English text. Give it a quick check—especially names, rhymes, and unusual words.</div>
+  </div>
+  <div class="tool">
+    <div class="tool-head">
+      <span class="eyebrow">Confirm the source text</span>
+      <span class="meta">Edit anything I misread</span>
+    </div>
+    <div class="tool-body">
+      <div class="confirm-list" id="confirmList"></div>
+      <div class="actions">
+        <button onclick="backToUploads()">Change photos</button>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="turn" id="sourceSummary">
+  <div class="user-summary">I confirmed the text from 3 sample spreads.<button onclick="editStep(1)">Edit</button></div>
+</section>
+
+<section class="turn" data-step="2">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy small">This book’s warmth comes from repetition and playful mushroom language. When Slovenian can’t preserve everything equally, what should come first?</div>
+  </div>
+  <div class="tool">
+    <div class="tool-head">
+      <span class="eyebrow">Rank what matters</span>
+      <span class="meta">Most important at the top</span>
+    </div>
+    <div class="tool-body">
+      <div class="rank-list" id="rankList"></div>
+      
+    </div>
+  </div>
+</section>
+
+<section class="turn" id="rankSummary">
+  <div class="user-summary"><span id="rankSummaryText"></span><button onclick="editStep(2)">Edit</button></div>
+</section>
+
+<section class="turn" data-step="3">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy small">Got it. How much freedom should I take when the English doesn’t transfer cleanly?</div>
+  </div>
+  <div class="tool">
+    <div class="tool-head"><span class="eyebrow">Choose the adaptation style</span></div>
+    <div class="tool-body">
+      <div class="choice-grid">
+        <button class="choice" data-freedom="Stay close" onclick="selectFreedom(this)">
+          <h3>Stay close</h3>
+          <p>Preserve each page’s meaning and change only what is necessary.</p>
+        </button>
+        <button class="choice" data-freedom="Sound naturally Slovenian" onclick="selectFreedom(this)">
+          <h3>Sound naturally Slovenian</h3>
+          <p>Keep the story and pictures, but freely rewrite awkward lines and rhymes.</p>
+        </button>
+        <button class="choice" data-freedom="Reimagine playfully" onclick="selectFreedom(this)">
+          <h3>Reimagine playfully</h3>
+          <p>Keep the emotional arc, but create new Slovenian refrains and wordplay.</p>
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<section class="turn" id="freedomSummary">
+  <div class="user-summary"><span id="freedomSummaryText"></span><button onclick="editStep(3)">Edit</button></div>
+</section>
+
+<section class="turn" data-step="4">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy small">Here are three ways the whole book could sound. Choose one, combine them, or rewrite the refrain yourself.</div>
+  </div>
+  <div class="tool">
+    <div class="tool-head">
+      <span class="eyebrow">Refrain lab</span>
+      <span class="meta">Solve the book-level idea first</span>
+    </div>
+    <div class="tool-body">
+      <div class="direction" data-refrain="Kako zelo imam te rad!" onclick="selectDirection(this)">
+        <h3>Emotional refrain</h3>
+        <div class="refrain">Kako zelo imam te rad!</div>
+        <div class="meta">Keeps the declaration of love and gives each stanza a strong landing.</div>
+      </div>
+      <div class="direction" data-refrain="Ti si moja ljuba goba!" onclick="selectDirection(this)">
+        <h3>Mushroom refrain</h3>
+        <div class="refrain">Ti si moja ljuba goba!</div>
+        <div class="meta">Keeps the mushroom identity and creates a memorable Slovenian device.</div>
+      </div>
+      <div class="direction" data-refrain="Moja ljuba goba!" onclick="selectDirection(this)">
+        <h3>Short refrain</h3>
+        <div class="refrain">Moja ljuba goba!</div>
+        <div class="meta">A flexible affectionate button that doesn’t need to carry the rhyme.</div>
+      </div>
+      <div class="lock-row">
+        <label class="eyebrow" for="refrainInput">Your exact refrain</label>
+        <input id="refrainInput" placeholder="Choose or write a refrain..." />
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<section class="turn" id="refrainSummary">
+  <div class="user-summary">Locked refrain: <strong id="refrainSummaryText"></strong><button onclick="editStep(4)">Edit</button></div>
+</section>
+
+<div class="thinking" id="thinking"><span class="dots">Writing three possibilities</span></div>
+
+<section class="turn" data-step="5">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy small">Let’s test the voice on one spread before touching the rest of the book.</div>
+  </div>
+  <div class="tool">
+    <div class="tool-head">
+      <span class="eyebrow">Spread 1 workshop</span>
+      <span class="meta">Choose or edit</span>
+    </div>
+    <div class="tool-body" id="options"></div>
+  </div>
+</section>
+
+<section class="turn" id="optionSummary">
+  <div class="user-summary">I approved a voice for Spread 1.<button onclick="editStep(5)">Edit</button></div>
+</section>
+
+<section class="turn" id="patternPrompt">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy small">Nice. Let’s see whether this voice still works on two very different spreads—one magical, one comforting.</div>
+  </div>
+  <div class="tool compact">
+    <div class="tool-body">
+      <div class="actions" style="margin-top:0">
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="thinking" id="patternThinking"><span class="dots">Applying the voice to two more spreads</span></div>
+
+<section class="turn" data-step="6">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy small">Here are the next two spreads. Edit either one before deciding whether the voice is consistent.</div>
+  </div>
+  <div class="tool">
+    <div class="tool-head">
+      <span class="eyebrow">Pattern test</span>
+      <span class="meta">3 spreads total</span>
+    </div>
+    <div class="tool-body">
+      <div id="patternCards"></div>
+      <div class="actions">
+        <button onclick="editStep(4)">Rework the refrain</button>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="turn" id="finishTurn">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div>
+      <div class="copy">Lovely. We have a voice worth continuing—not just a pile of translated pages.</div>
+      <div class="copy small" style="margin-top:10px">Now upload the rest of the book once. I’ll read and order the pages, then we’ll work through them one spread at a time—with options at every step.</div>
+    </div>
+  </div>
+  <div class="tool">
+    <div class="tool-head">
+      <span class="eyebrow">Continue the book</span>
+      <span class="meta">The creative brief stays locked</span>
+    </div>
+    <div class="tool-body">
+      <div class="next-actions">
+        <button class="next-action primary-card" data-next-action="upload-rest" onclick="selectNextAction(this,\'upload-rest\')">
+          <h3>Upload the rest of the book</h3>
+          <p>Add all remaining page photos now. You’ll confirm the page order and extracted text before I write anything.</p>
+        </button>
+        <button class="next-action" data-next-action="review" onclick="selectNextAction(this,\'review\')">
+          <h3>Review the first 3 spreads</h3>
+          <p>Read the voice test together before continuing.</p>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="turn" id="restUploadTurn">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy small">Upload all the remaining spreads. I’ll keep the first three as the approved voice reference.</div>
+  </div>
+  <div class="tool">
+    <div class="tool-head">
+      <span class="eyebrow">Rest of the book</span>
+      <span class="meta">Select multiple images</span>
+    </div>
+    <div class="tool-body">
+      <label class="rest-drop">
+        <input id="restFileInput" type="file" accept="image/*" multiple onchange="loadRestFiles(this)"/>
+        <span class="rest-drop-title">Choose all remaining page photos</span>
+        <span class="meta">You can adjust the order before Bibaling reads them.</span>
+      </label>
+
+      <div id="restUploadList" class="rest-upload-list"></div>
+
+      <div class="actions">
+        <button onclick="backToVoiceLocked()">Back</button>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="thinking" id="restReadingThinking"><span class="dots">Reading the remaining pages and checking their order</span></div>
+
+<section class="turn" id="restConfirmTurn">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy small">I ordered the pages and pulled out the English text. Check the sequence and fix anything I misread.</div>
+  </div>
+  <div class="tool">
+    <div class="tool-head">
+      <span class="eyebrow">Confirm the remaining book</span>
+      <span class="meta" id="restConfirmCount">0 spreads</span>
+    </div>
+    <div class="tool-body">
+      <div class="draft-source">The first approved spread below will be numbered Spread 4. Use the arrows to correct the order before continuing.</div>
+      <div id="restConfirmList" class="confirm-list"></div>
+      <div class="actions">
+        <button onclick="backToRestUpload()">Change photos</button>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="thinking" id="restWritingThinking"><span class="dots">Writing three possibilities for the next spread</span></div>
+
+<section class="turn" id="restWorkshopTurn">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy small" id="restWorkshopMessage">Here are three options for Spread 4.</div>
+  </div>
+  <div class="tool">
+    <div class="tool-head">
+      <span class="eyebrow" id="restWorkshopTitle">Spread 4 workshop</span>
+      <span class="meta" id="restWorkshopProgress">1 of 1 remaining</span>
+    </div>
+    <div class="tool-body">
+      <div class="workshop-source">
+        <img id="restWorkshopImage" alt="Current spread"/>
+        <div>
+          <div class="eyebrow">English source</div>
+          <p id="restWorkshopSource"></p>
+          <div class="meta" style="margin-top:8px">Locked refrain: <strong id="restLockedRefrain"></strong></div>
+        </div>
+      </div>
+      <div id="restOptions"></div>
+    </div>
+  </div>
+</section>
+
+<section class="turn" id="restCompleteTurn">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div>
+      <div class="copy">The whole book now has an approved working draft.</div>
+      <div class="copy small" style="margin-top:10px">You can read it together, revisit any spread, or keep polishing through the conversation box.</div>
+    </div>
+  </div>
+  <div class="tool">
+    <div class="tool-body">
+      <div class="next-actions">
+        <button class="next-action primary-card" data-next-action="review-complete" onclick="selectNextAction(this,\'review-complete\')">
+          <h3>Review the complete draft</h3>
+          <p>See every approved spread together in book order.</p>
+        </button>
+        <button class="next-action" data-next-action="revisit" onclick="selectNextAction(this,\'revisit\')">
+          <h3>Revisit the remaining spreads</h3>
+          <p>Walk through the generated options again from Spread 4.</p>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="turn" id="fullReviewTurn">
+  <div class="assistant">
+    <div class="avatar">b</div>
+    <div class="copy small">Here’s the current book in one place. Each spread remains editable through the conversation.</div>
+  </div>
+  <div class="tool">
+    <div class="tool-head">
+      <span class="eyebrow">Current book draft</span>
+      <span class="meta" id="reviewCount">3 approved spreads</span>
+    </div>
+    <div class="tool-body">
+      <div id="fullReviewList"></div>
+      <div class="actions">
+        <button onclick="closeReview()">Back</button>
+        
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+</main>
+
+<div class="composer">
+  <div class="composer-inner">
+    <div class="composer-copy">
+      <textarea id="freeformInput" rows="1" placeholder="Add a note, correction, or request before continuing…"></textarea>
+      <span class="composer-hint" id="composerHint">Complete the step above to continue.</span>
+    </div>
+    <button id="continueBtn" class="primary" disabled onclick="handleContinue()">Continue</button>
+  </div>
+</div>
+</div>
+
+<script>
+const state = {
+  step:1,
+  uploads:[null,null,null],
+  sourceTexts:[
+    'You make me smile, I love your style.',
+    'You light up the night.',
+    'You shelter me from the storm.'
+  ],
+  ranking:[
+    {id:'A',label:'Rhyme and read-aloud rhythm'},
+    {id:'C',label:'Original meaning, jokes, and details'},
+    {id:'B',label:'Simple words for the child'}
+  ],
+  freedom:'',
+  refrain:'',
+  approvedText:'',
+  restUploads:[],
+  restSourceTexts:[],
+  restDraftIndex:0,
+  approvedDrafts:[],
+  selectedOptionIndex:null,
+  selectedRestOptionIndex:null,
+  selectedNextAction:null,
+  currentAction:'source-upload'
+};
+
+function setContinue(action,enabled=false,hint='Complete the step above to continue.'){
+  state.currentAction=action;
+  const button=document.getElementById('continueBtn');
+  const hintEl=document.getElementById('composerHint');
+  if(button) button.disabled=!enabled;
+  if(hintEl) hintEl.textContent=hint;
+}
+
+function enableContinue(enabled=true,hint='Ready to continue.'){
+  const button=document.getElementById('continueBtn');
+  const hintEl=document.getElementById('composerHint');
+  if(button) button.disabled=!enabled;
+  if(hintEl) hintEl.textContent=enabled ? hint : 'Complete the step above to continue.';
+}
+
+function captureComposerNote(){
+  const input=document.getElementById('freeformInput');
+  const value=input.value.trim();
+  if(!value) return;
+
+  const user=document.createElement('section');
+  user.className='turn visible';
+  user.innerHTML=`<div class="user-summary">${escapeHtml(value)}</div>`;
+  document.getElementById('thread').appendChild(user);
+  input.value='';
+}
+
+function handleContinue(){
+  captureComposerNote();
+
+  const actions={
+    'source-upload':readPages,
+    'source-confirm':confirmSourceText,
+    'ranking':completeRanking,
+    'freedom':completeFreedom,
+    'refrain':completeRefrain,
+    'spread-1':approveSelectedOption,
+    'pattern-prompt':startPatternTest,
+    'pattern-review':finish,
+    'voice-next':continueSelectedNextAction,
+    'rest-upload':readRestBook,
+    'rest-confirm':confirmRestBook,
+    'rest-workshop':approveSelectedRestOption,
+    'rest-complete':continueSelectedNextAction,
+    'review':continueFromReview
+  };
+
+  const fn=actions[state.currentAction];
+  if(fn) fn();
+}
+
+function selectNextAction(el,action){
+  document.querySelectorAll('.next-action').forEach(card=>card.classList.remove('selected'));
+  el.classList.add('selected');
+  state.selectedNextAction=action;
+  enableContinue(true);
+}
+
+function continueSelectedNextAction(){
+  const action=state.selectedNextAction;
+  state.selectedNextAction=null;
+
+  if(action==='upload-rest') startRestUpload();
+  else if(action==='review' || action==='review-complete') reviewCurrentDraft();
+  else if(action==='revisit') restartRestWorkshop();
+}
+
+function previewFile(input,id,index){
+  const file=input.files[0];
+  if(!file) return;
+
+  const url=URL.createObjectURL(file);
+  state.uploads[index]={file,url};
+
+  const img=document.getElementById(id);
+  img.src=url;
+  img.style.display='block';
+
+  const status=document.getElementById(`u${index+1}`);
+  status.textContent='Ready to read';
+  status.classList.add('ready');
+
+  enableContinue(state.uploads.some(Boolean));
+}
+function updateProgress(step){
+  state.step=step;
+  document.getElementById('progressText').textContent=`Setup · ${Math.min(step,6)} of 6`;
+  document.getElementById('progressBar').style.width=`${Math.min(step,6)/6*100}%`;
+}
+function setBookProgress(label,width=100){
+  document.getElementById('progressText').textContent=label;
+  document.getElementById('progressBar').style.width=`${width}%`;
+}
+function showStep(step){
+  const target=document.querySelector(`[data-step="${step}"]`);
+  if(target){
+    target.classList.add('visible');
+    setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'center'}),100);
+  }
+  updateProgress(step);
+}
+function hideStep(step){
+  const target=document.querySelector(`[data-step="${step}"]`);
+  if(target) target.classList.remove('visible');
+}
+function readPages(){
+  hideStep(1);
+
+  const thinking=document.getElementById('sourceThinking');
+  thinking.classList.add('visible');
+  thinking.scrollIntoView({behavior:'smooth',block:'center'});
+
+  setTimeout(()=>{
+    thinking.classList.remove('visible');
+    renderTextConfirmation();
+    document.getElementById('textConfirmTurn').classList.add('visible');
+    document.getElementById('textConfirmTurn').scrollIntoView({behavior:'smooth',block:'center'});
+    setContinue('source-confirm',true,'Confirm the extracted text.');
+  },900);
+}
+
+function renderTextConfirmation(){
+  const list=document.getElementById('confirmList');
+  list.innerHTML='';
+
+  state.uploads.forEach((upload,index)=>{
+    if(!upload) return;
+
+    const row=document.createElement('div');
+    row.className='confirm-row';
+    row.innerHTML=`
+      <img src="${upload.url}" alt="Spread ${index+1} preview"/>
+      <div class="confirm-content">
+        <label for="confirmedText${index}">Spread ${index+1}</label>
+        <textarea id="confirmedText${index}">${state.sourceTexts[index]}</textarea>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+function confirmSourceText(){
+  state.uploads.forEach((upload,index)=>{
+    if(!upload) return;
+    const area=document.getElementById(`confirmedText${index}`);
+    if(area) state.sourceTexts[index]=area.value.trim();
+  });
+
+  document.getElementById('textConfirmTurn').classList.remove('visible');
+  document.getElementById('sourceSummary').classList.add('visible');
+  showStep(2);
+  setContinue('ranking',false,'Drag the priorities into order.');
+}
+
+function backToUploads(){
+  document.getElementById('textConfirmTurn').classList.remove('visible');
+  showStep(1);
+  setContinue('source-upload',state.uploads.some(Boolean),'Upload at least one spread.');
+}
+function renderRanking(){
+  const list=document.getElementById('rankList');
+  list.innerHTML='';
+
+  state.ranking.forEach((item,i)=>{
+    const row=document.createElement('div');
+    row.className='rank-item';
+    row.draggable=true;
+    row.dataset.index=i;
+    row.innerHTML=`
+      <div class="drag-handle">⋮⋮</div>
+      <div class="letter">${item.id}</div>
+      <div>${item.label}</div>`;
+
+    row.addEventListener('dragstart',()=>{
+      row.classList.add('dragging');
+      row.dataset.dragging='true';
+    });
+
+    row.addEventListener('dragend',()=>{
+      row.classList.remove('dragging');
+      delete row.dataset.dragging;
+      document.querySelectorAll('.rank-item').forEach(x=>x.classList.remove('drag-over'));
+    });
+
+    row.addEventListener('dragover',(event)=>{
+      event.preventDefault();
+      row.classList.add('drag-over');
+    });
+
+    row.addEventListener('dragleave',()=>row.classList.remove('drag-over'));
+
+    row.addEventListener('drop',(event)=>{
+      event.preventDefault();
+      const dragging=document.querySelector('.rank-item[data-dragging="true"]');
+      if(!dragging) return;
+
+      const from=Number(dragging.dataset.index);
+      const to=Number(row.dataset.index);
+      const [moved]=state.ranking.splice(from,1);
+      state.ranking.splice(to,0,moved);
+      renderRanking();
+setContinue('source-upload',false,'Upload at least one spread.');
+      enableContinue(true,'Order set. Continue when ready.');
+    });
+
+    list.appendChild(row);
+  });
+}
+
+function completeRanking(){
+  hideStep(2);
+  document.getElementById('rankSummaryText').textContent=
+    state.ranking.map(x=>x.id).join('–')+': '+state.ranking.map(x=>x.label).join(', then ');
+  document.getElementById('rankSummary').classList.add('visible');
+  showStep(3);
+  setContinue('freedom',false,'Choose one adaptation style.');
+}
+function selectFreedom(el){
+  document.querySelectorAll('.choice').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+  state.freedom=el.dataset.freedom;
+  enableContinue(true);
+}
+function completeFreedom(){
+  hideStep(3);
+  document.getElementById('freedomSummaryText').textContent=state.freedom;
+  document.getElementById('freedomSummary').classList.add('visible');
+  showStep(4);
+  setContinue('refrain',false,'Choose or write a refrain.');
+}
+function selectDirection(el){
+  document.querySelectorAll('.direction').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+  state.refrain=el.dataset.refrain;
+  document.getElementById('refrainInput').value=state.refrain;
+  enableContinue(true);
+}
+document.getElementById('refrainInput').addEventListener('input',e=>{
+  state.refrain=e.target.value.trim();
+  enableContinue(Boolean(state.refrain));
+});
+function completeRefrain(){
+  hideStep(4);
+  state.refrain=document.getElementById('refrainInput').value.trim();
+  document.getElementById('refrainSummaryText').textContent=state.refrain;
+  document.getElementById('refrainSummary').classList.add('visible');
+
+  const t=document.getElementById('thinking');
+  t.classList.add('visible');
+  t.scrollIntoView({behavior:'smooth',block:'center'});
+
+  setTimeout(()=>{
+    t.classList.remove('visible');
+    renderOptions();
+    showStep(5);
+    state.selectedOptionIndex=null;
+    setContinue('spread-1',false,'Select one writing option.');
+  },800);
+}
+
+const baseOptions=[
+  {
+    strategy:'Closest to the picture',
+    text:`Nasmeješ me že na prvi pogled,\ntvoj smeh razžene vsak moj nered.\n{REFRAIN}\nOb tebi vsak dan postane mlad.`
+  },
+  {
+    strategy:'More playful',
+    text:`Ko se zasmeješ, smeje se svet,\nob tebi vsak dan zacveti kot cvet.\n{REFRAIN}\nS tabo je gozd moj najlepši zaklad.`
+  },
+  {
+    strategy:'Softer and simpler',
+    text:`Tvoj smeh mi polepša ves dan,\ns tabo noben trenutek ni zaspan.\n{REFRAIN}\nOb tebi sem srečen in radostno mlad.`
+  }
+];
+
+function renderOptions(){
+  const wrap=document.getElementById('options');
+  wrap.innerHTML='';
+  baseOptions.forEach((o,i)=>{
+    const text=o.text.replace('{REFRAIN}',state.refrain);
+    const card=document.createElement('div');
+    card.className='option-card';
+    card.dataset.index=i;
+    card.onclick=(event)=>{
+      if(!event.target.closest('button, textarea')) selectOptionCard(i);
+    };
+    card.innerHTML=`
+      <div class="strategy">${o.strategy}</div>
+      <div class="verse">${text}</div>
+      <textarea>${text}</textarea>
+      <div class="actions">
+        <button onclick="toggleOptionEdit(${i})">Edit</button>
+        
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+function selectOptionCard(i){
+  document.querySelectorAll('.option-card').forEach(x=>x.classList.remove('selected'));
+  const card=document.querySelector(`.option-card[data-index="${i}"]`);
+  if(card) card.classList.add('selected');
+  state.selectedOptionIndex=i;
+  enableContinue(true);
+}
+
+function approveSelectedOption(){
+  if(state.selectedOptionIndex===null) return;
+  chooseOption(state.selectedOptionIndex);
+}
+
+function toggleOptionEdit(i){
+  const card=document.querySelector(`.option-card[data-index="${i}"]`);
+  const verse=card.querySelector('.verse');
+  const area=card.querySelector('textarea');
+  const editing=area.style.display==='block';
+  if(editing){
+    verse.textContent=area.value;
+    area.style.display='none';
+    verse.style.display='block';
+  }else{
+    area.style.display='block';
+    verse.style.display='none';
+    area.focus();
+  }
+}
+function chooseOption(i){
+  const card=document.querySelector(`.option-card[data-index="${i}"]`);
+  document.querySelectorAll('.option-card').forEach(x=>x.classList.remove('selected'));
+  card.classList.add('selected');
+
+  const area=card.querySelector('textarea');
+  state.approvedText=area.style.display==='block' ? area.value : card.querySelector('.verse').textContent;
+
+  setTimeout(()=>{
+    hideStep(5);
+    document.getElementById('optionSummary').classList.add('visible');
+    document.getElementById('patternPrompt').classList.add('visible');
+    updateProgress(5);
+    setContinue('pattern-prompt',true,'Test the voice on two more spreads.');
+    setTimeout(()=>document.getElementById('patternPrompt').scrollIntoView({behavior:'smooth',block:'center'}),100);
+  },180);
+}
+
+function startPatternTest(){
+  document.getElementById('patternPrompt').classList.remove('visible');
+  const t=document.getElementById('patternThinking');
+  t.classList.add('visible');
+  t.scrollIntoView({behavior:'smooth',block:'center'});
+  setTimeout(()=>{
+    t.classList.remove('visible');
+    renderPatternCards();
+    showStep(6);
+    setContinue('pattern-review',true,'Continue when the voice feels consistent.');
+  },800);
+}
+
+function renderPatternCards(){
+  const texts=[
+    {
+      title:'Spread 2 · Magical',
+      text:`Ko pade noč, zasiješ za nas,\nčarobna lučka sveti ves čas.\n${state.refrain}\nV temi si svetel kot pravi zaklad.`
+    },
+    {
+      title:'Spread 3 · Comforting',
+      text:`Ko zunaj dež po listju šumi,\nob tebi se ničesar ne bojim.\n${state.refrain}\nPod tvojim listom je varen moj grad.`
+    }
+  ];
+  const wrap=document.getElementById('patternCards');
+  wrap.innerHTML=texts.map((x,i)=>`
+    <div class="pattern-card" data-pattern="${i}">
+      <h3>${x.title}</h3>
+      <p>${x.text}</p>
+      <textarea>${x.text}</textarea>
+      <div class="inline-actions">
+        <button onclick="togglePatternEdit(${i})">Edit</button>
+      </div>
+    </div>`).join('');
+}
+function togglePatternEdit(i){
+  const card=document.querySelector(`.pattern-card[data-pattern="${i}"]`);
+  const p=card.querySelector('p');
+  const area=card.querySelector('textarea');
+  const editing=area.style.display==='block';
+  if(editing){
+    p.textContent=area.value;
+    area.style.display='none';
+    p.style.display='block';
+  }else{
+    area.style.display='block';
+    p.style.display='none';
+    area.focus();
+  }
+}
+
+function finish(){
+  hideStep(6);
+  document.getElementById('finishTurn').classList.add('visible');
+
+  if(state.approvedDrafts.length===0){
+    const patternCards=[...document.querySelectorAll('.pattern-card p')].map(p=>p.textContent);
+    state.approvedDrafts=[
+      {spread:1,text:state.approvedText},
+      {spread:2,text:patternCards[0] || ''},
+      {spread:3,text:patternCards[1] || ''}
+    ];
+  }
+
+  setBookProgress('Voice locked',100);
+  document.getElementById('finishTurn').scrollIntoView({behavior:'smooth',block:'center'});
+  state.selectedNextAction=null;
+  setContinue('voice-next',false,'Choose what you want to do next.');
+}
+
+
+
+function startRestUpload(){
+  ['finishTurn','fullReviewTurn','restCompleteTurn'].forEach(id=>{
+    document.getElementById(id).classList.remove('visible');
+  });
+  document.getElementById('restUploadTurn').classList.add('visible');
+  setBookProgress('Upload the rest',72);
+  document.getElementById('restUploadTurn').scrollIntoView({behavior:'smooth',block:'center'});
+  setContinue('rest-upload',state.restUploads.length>0,'Upload the remaining pages.');
+}
+
+function backToVoiceLocked(){
+  document.getElementById('restUploadTurn').classList.remove('visible');
+  document.getElementById('finishTurn').classList.add('visible');
+  setBookProgress('Voice locked',100);
+  state.selectedNextAction=null;
+  setContinue('voice-next',false,'Choose what you want to do next.');
+}
+
+function loadRestFiles(input){
+  const files=[...input.files];
+  state.restUploads=files.map(file=>({
+    file,
+    url:URL.createObjectURL(file)
+  }));
+  state.restSourceTexts=state.restUploads.map((_,index)=>{
+    const samples=[
+      'The forest friends dance and play together.',
+      'A funny friend makes everyone smile.',
+      'A glowing friend lights the dark.',
+      'Two clever friends lead the way.',
+      'A large leaf protects us from the rain.',
+      'The friends gather for a nighttime celebration.',
+      'The story ends with a warm declaration of friendship.'
+    ];
+    return samples[index] || `English text detected on remaining spread ${index+1}.`;
+  });
+  renderRestUploadList();
+  enableContinue(state.restUploads.length>0);
+}
+
+function renderRestUploadList(){
+  const list=document.getElementById('restUploadList');
+  if(state.restUploads.length===0){
+    list.innerHTML='';
+    return;
+  }
+
+  list.innerHTML=state.restUploads.map((item,index)=>`
+    <div class="rest-upload-row">
+      <div class="rest-number">${index+4}</div>
+      <img src="${item.url}" alt="Remaining spread ${index+4}"/>
+      <div>
+        <div class="rest-file-name">${escapeHtml(item.file.name)}</div>
+        <div class="meta">Will become Spread ${index+4}</div>
+      </div>
+      <div class="rest-order-buttons">
+        <button ${index===0?'disabled':''} onclick="moveRestPage(${index},-1)">↑</button>
+        <button ${index===state.restUploads.length-1?'disabled':''} onclick="moveRestPage(${index},1)">↓</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function moveRestPage(index,direction){
+  const target=index+direction;
+  if(target<0 || target>=state.restUploads.length) return;
+
+  [state.restUploads[index],state.restUploads[target]]=
+    [state.restUploads[target],state.restUploads[index]];
+  [state.restSourceTexts[index],state.restSourceTexts[target]]=
+    [state.restSourceTexts[target],state.restSourceTexts[index]];
+
+  renderRestUploadList();
+}
+
+function readRestBook(){
+  document.getElementById('restUploadTurn').classList.remove('visible');
+  const thinking=document.getElementById('restReadingThinking');
+  thinking.classList.add('visible');
+  thinking.scrollIntoView({behavior:'smooth',block:'center'});
+
+  setTimeout(()=>{
+    thinking.classList.remove('visible');
+    renderRestConfirmation();
+    document.getElementById('restConfirmTurn').classList.add('visible');
+    document.getElementById('restConfirmTurn').scrollIntoView({behavior:'smooth',block:'center'});
+    setContinue('rest-confirm',true,'Confirm the page order and text.');
+  },900);
+}
+
+function renderRestConfirmation(){
+  document.getElementById('restConfirmCount').textContent=
+    `${state.restUploads.length} remaining spread${state.restUploads.length===1?'':'s'}`;
+
+  const list=document.getElementById('restConfirmList');
+  list.innerHTML=state.restUploads.map((item,index)=>`
+    <div class="confirm-row" data-rest-confirm="${index}">
+      <img src="${item.url}" alt="Spread ${index+4} preview"/>
+      <div class="confirm-content">
+        <label for="restConfirmedText${index}">Spread ${index+4}</label>
+        <textarea id="restConfirmedText${index}">${state.restSourceTexts[index]}</textarea>
+        <div class="rest-order-buttons">
+          <button ${index===0?'disabled':''} onclick="moveRestConfirm(${index},-1)">Move up</button>
+          <button ${index===state.restUploads.length-1?'disabled':''} onclick="moveRestConfirm(${index},1)">Move down</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function moveRestConfirm(index,direction){
+  state.restSourceTexts=state.restSourceTexts.map((text,i)=>{
+    const area=document.getElementById(`restConfirmedText${i}`);
+    return area ? area.value : text;
+  });
+  moveRestPage(index,direction);
+  renderRestConfirmation();
+}
+
+function backToRestUpload(){
+  document.getElementById('restConfirmTurn').classList.remove('visible');
+  document.getElementById('restUploadTurn').classList.add('visible');
+  setContinue('rest-upload',state.restUploads.length>0,'Upload the remaining pages.');
+}
+
+function confirmRestBook(){
+  state.restSourceTexts=state.restSourceTexts.map((text,index)=>{
+    const area=document.getElementById(`restConfirmedText${index}`);
+    return area ? area.value.trim() : text;
+  });
+
+  document.getElementById('restConfirmTurn').classList.remove('visible');
+  state.restDraftIndex=0;
+  showRestWorkshop();
+}
+
+function restOptionsFor(index){
+  const refrain=state.refrain;
+  const sets=[
+    [
+      `Prijatelji plešejo sem ter tja,\nves gozd se z njimi ziblje in igra.\n${refrain}\nZ njimi je lepši prav vsak dan.`,
+      `Ko prijatelji stopijo v krog,\nse zasliši smeh in lahki poskok.\n${refrain}\nZ njimi po gozdu veselo pohajam.`,
+      `Vsi skupaj skačemo, plešemo, se vrtimo,\nob vsakem koraku se glasno smejimo.\n${refrain}\nKako lepo je, ko skupaj živimo.`
+    ],
+    [
+      `Tvoj smešni obraz razvedri moj dan,\nob tebi noben trenutek ni zaspan.\n${refrain}\nS tabo je svet ves nasmejan.`,
+      `Ko narediš obraz ves moder in smešen,\npostane še žalosten dan razigran in uspešen.\n${refrain}\nOb tebi smeh nikoli ni zaman.`,
+      `Pogledaš me — in že se smejim,\nob tvoji norčiji vse skrbi izgubim.\n${refrain}\nS tabo vsak trenutek rad preživim.`
+    ],
+    [
+      `Ko pade noč, zasiješ za nas,\nčarobna lučka sveti ves čas.\n${refrain}\nV temi si svetel kot pravi zaklad.`,
+      `V temi se prižge tvoj nežni sij,\nin gozd za trenutek čarobno zaživi.\n${refrain}\nOb tvoji svetlobi je miren moj korak.`,
+      `Ko noč prekrije zeleni gozd,\ntvoja luč pokaže varno pot.\n${refrain}\nZate v mojem srcu sveti zaklad.`
+    ]
+  ];
+  const fallback=[
+    `Skupaj odkrivava novi svet,\nvsak trenutek zadiši kakor cvet.\n${refrain}\nS tabo je lepši prav vsak dan.`,
+    `Ta prizor me znova razveseli,\nob tebi se gozd v smeh prebudi.\n${refrain}\nS tabo po poti pogumno hitim.`,
+    `Prijateljstvo spremlja vsak najin korak,\nob tebi je svet prijazen in lahek.\n${refrain}\nS tabo noben dan ni enak.`
+  ];
+  return sets[index % sets.length] || fallback;
+}
+
+function showRestWorkshop(){
+  const thinking=document.getElementById('restWritingThinking');
+  thinking.classList.add('visible');
+  thinking.scrollIntoView({behavior:'smooth',block:'center'});
+
+  setTimeout(()=>{
+    thinking.classList.remove('visible');
+
+    const index=state.restDraftIndex;
+    const spreadNumber=index+4;
+    const total=state.restUploads.length;
+
+    document.getElementById('restWorkshopMessage').textContent=
+      `Here are three options for Spread ${spreadNumber}.`;
+    document.getElementById('restWorkshopTitle').textContent=
+      `Spread ${spreadNumber} workshop`;
+    document.getElementById('restWorkshopProgress').textContent=
+      `${index+1} of ${total} remaining`;
+    document.getElementById('restWorkshopImage').src=state.restUploads[index].url;
+    document.getElementById('restWorkshopSource').textContent=state.restSourceTexts[index];
+    document.getElementById('restLockedRefrain').textContent=state.refrain;
+
+    renderRestOptions(index);
+    state.selectedRestOptionIndex=null;
+    document.getElementById('restWorkshopTurn').classList.add('visible');
+    setBookProgress(`Spread ${spreadNumber} of ${total+3}`,78+((index+1)/Math.max(total,1))*22);
+    document.getElementById('restWorkshopTurn').scrollIntoView({behavior:'smooth',block:'center'});
+    setContinue('rest-workshop',false,'Select one writing option.');
+  },650);
+}
+
+function renderRestOptions(index){
+  const options=restOptionsFor(index);
+  const wrap=document.getElementById('restOptions');
+
+  wrap.innerHTML=options.map((text,optionIndex)=>`
+    <div class="option-card" data-rest-option="${optionIndex}" onclick="if(!event.target.closest(\'button, textarea\')) selectRestOptionCard(${optionIndex})">
+      <div class="strategy">${
+        ['Closest to the source','More musical','Freer and warmer'][optionIndex]
+      }</div>
+      <div class="verse">${text}</div>
+      <textarea>${text}</textarea>
+      <div class="actions">
+        <button onclick="toggleRestOptionEdit(${optionIndex})">Edit</button>
+        
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectRestOptionCard(optionIndex){
+  document.querySelectorAll('.option-card[data-rest-option]')
+    .forEach(item=>item.classList.remove('selected'));
+  const card=document.querySelector(`.option-card[data-rest-option="${optionIndex}"]`);
+  if(card) card.classList.add('selected');
+  state.selectedRestOptionIndex=optionIndex;
+  enableContinue(true);
+}
+
+function approveSelectedRestOption(){
+  if(state.selectedRestOptionIndex===null) return;
+  chooseRestOption(state.selectedRestOptionIndex);
+}
+
+function toggleRestOptionEdit(optionIndex){
+  const card=document.querySelector(`.option-card[data-rest-option="${optionIndex}"]`);
+  const verse=card.querySelector('.verse');
+  const area=card.querySelector('textarea');
+  const editing=area.style.display==='block';
+
+  if(editing){
+    verse.textContent=area.value;
+    area.style.display='none';
+    verse.style.display='block';
+  }else{
+    area.style.display='block';
+    verse.style.display='none';
+    area.focus();
+  }
+}
+
+function chooseRestOption(optionIndex){
+  const card=document.querySelector(`.option-card[data-rest-option="${optionIndex}"]`);
+  const verse=card.querySelector('.verse');
+  const area=card.querySelector('textarea');
+  const text=area.style.display==='block' ? area.value : verse.textContent;
+  const spreadNumber=state.restDraftIndex+4;
+
+  document.querySelectorAll('.option-card[data-rest-option]')
+    .forEach(item=>item.classList.remove('selected'));
+  card.classList.add('selected');
+
+  const existing=state.approvedDrafts.findIndex(item=>item.spread===spreadNumber);
+  if(existing>=0){
+    state.approvedDrafts[existing]={spread:spreadNumber,text};
+  }else{
+    state.approvedDrafts.push({spread:spreadNumber,text});
+  }
+
+  setTimeout(()=>{
+    document.getElementById('restWorkshopTurn').classList.remove('visible');
+    state.restDraftIndex+=1;
+
+    if(state.restDraftIndex<state.restUploads.length){
+      showRestWorkshop();
+    }else{
+      state.approvedDrafts.sort((a,b)=>a.spread-b.spread);
+      document.getElementById('restCompleteTurn').classList.add('visible');
+      setBookProgress(`${state.approvedDrafts.length} spreads approved`,100);
+      document.getElementById('restCompleteTurn').scrollIntoView({behavior:'smooth',block:'center'});
+      state.selectedNextAction=null;
+      setContinue('rest-complete',false,'Choose what you want to do next.');
+    }
+  },220);
+}
+
+function restartRestWorkshop(){
+  document.getElementById('restCompleteTurn').classList.remove('visible');
+  state.restDraftIndex=0;
+  showRestWorkshop();
+}
+
+function reviewCurrentDraft(){
+  ['finishTurn','restUploadTurn','restConfirmTurn','restWorkshopTurn','restCompleteTurn']
+    .forEach(id=>document.getElementById(id).classList.remove('visible'));
+
+  const list=document.getElementById('fullReviewList');
+  const drafts=[...state.approvedDrafts].sort((a,b)=>a.spread-b.spread);
+
+  list.innerHTML=drafts.map(item=>`
+    <div class="pattern-card">
+      <h3>Spread ${item.spread}</h3>
+      <p>${escapeHtml(item.text)}</p>
+    </div>
+  `).join('');
+
+  document.getElementById('reviewCount').textContent=
+    `${drafts.length} approved spread${drafts.length===1?'':'s'}`;
+
+  document.getElementById('fullReviewTurn').classList.add('visible');
+  document.getElementById('fullReviewTurn').scrollIntoView({behavior:'smooth',block:'center'});
+  setContinue('review',true,'Continue when you are ready.');
+
+}
+
+function continueFromReview(){
+  document.getElementById('fullReviewTurn').classList.remove('visible');
+
+  if(state.restUploads.length===0){
+    startRestUpload();
+  }else if(state.restDraftIndex<state.restUploads.length){
+    showRestWorkshop();
+  }else{
+    document.getElementById('restCompleteTurn').classList.add('visible');
+  }
+}
+
+function closeReview(){
+  document.getElementById('fullReviewTurn').classList.remove('visible');
+
+  if(state.restUploads.length===0){
+    document.getElementById('finishTurn').classList.add('visible');
+  }else if(state.restDraftIndex<state.restUploads.length){
+    document.getElementById('restWorkshopTurn').classList.add('visible');
+  }else{
+    document.getElementById('restCompleteTurn').classList.add('visible');
+  }
+}
+
+
+function editStep(step){
+  document.querySelectorAll('.turn[data-step], .turn[id$="Summary"], #textConfirmTurn, #patternPrompt, #finishTurn, #restUploadTurn, #restConfirmTurn, #restWorkshopTurn, #restCompleteTurn, #fullReviewTurn')
+    .forEach(el=>el.classList.remove('visible'));
+
+  const summaries=['sourceSummary','rankSummary','freedomSummary','refrainSummary','optionSummary'];
+  summaries.slice(0,Math.max(step-1,0)).forEach(id=>{
+    document.getElementById(id).classList.add('visible');
+  });
+
+  showStep(step);
+
+  const config={
+    1:['source-upload',state.uploads.some(Boolean),'Upload at least one spread.'],
+    2:['ranking',false,'Drag the priorities into order.'],
+    3:['freedom',Boolean(state.freedom),'Choose one adaptation style.'],
+    4:['refrain',Boolean(state.refrain),'Choose or write a refrain.'],
+    5:['spread-1',state.selectedOptionIndex!==null,'Select one writing option.']
+  };
+  const item=config[step];
+  if(item) setContinue(item[0],item[1],item[2]);
+}
+
+function sendFreeform(){
+  const input=document.getElementById('freeformInput');
+  const value=input.value.trim();
+  if(!value) return;
+
+  const user=document.createElement('section');
+  user.className='turn visible';
+  user.innerHTML=`<div class="user-summary">${escapeHtml(value)}</div>`;
+  document.getElementById('thread').appendChild(user);
+
+  input.value='';
+  user.scrollIntoView({behavior:'smooth',block:'center'});
+
+  setTimeout(()=>{
+    const reply=document.createElement('section');
+    reply.className='turn visible';
+    reply.innerHTML=`
+      <div class="assistant">
+        <div class="avatar">b</div>
+        <div class="copy small">Got it. I’ll keep the current step open and use that note in the next revision.</div>
+      </div>
+      <div class="freeform-note">Your note: “${escapeHtml(value)}”</div>`;
+    document.getElementById('thread').appendChild(reply);
+    reply.scrollIntoView({behavior:'smooth',block:'center'});
+  },350);
+}
+
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g,m=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[m]));
+}
+
+document.getElementById('freeformInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter' && (e.metaKey || e.ctrlKey)){
+    e.preventDefault();
+    sendFreeform();
+  }
+});
+
+renderRanking();
+</script>
+</body>
+</html>
