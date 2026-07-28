@@ -1,0 +1,60 @@
+:root {
+  --ink: #191a17;
+  --muted: #696b64;
+  --cream: #f7f4ec;
+  --paper: #fffdf8;
+  --forest: #244f43;
+  --forest-soft: #e6eee9;
+  --line: #dcd8ce;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: var(--cream); font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; }
+button, input, textarea { font: inherit; }
+header { height: 72px; padding: 0 max(24px, calc((100vw - 1080px)/2)); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.brand { color: var(--forest); text-decoration: none; font: 750 22px/1 Georgia, serif; letter-spacing: -.04em; }
+.progress { display: flex; gap: 12px; align-items: center; color: var(--muted); font-size: 13px; }
+.progress i { width: 120px; height: 5px; background: #dfddd5; border-radius: 20px; overflow: hidden; }
+.progress b { display: block; height: 100%; background: var(--forest); transition: width .25s ease; }
+.workshop { width: min(900px, calc(100% - 40px)); margin: 0 auto; padding: 88px 0 140px; }
+.kicker { margin: 0 0 14px; color: var(--forest); font-weight: 750; font-size: 12px; text-transform: uppercase; letter-spacing: .12em; }
+h1 { max-width: 760px; margin: 0; font: 650 clamp(42px, 7vw, 70px)/.98 Georgia, serif; letter-spacing: -.045em; }
+.lead { max-width: 650px; margin: 24px 0 42px; color: var(--muted); font-size: 19px; line-height: 1.55; }
+.uploads { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; min-height: 260px; }
+.drop, .photo { min-height: 260px; border-radius: 20px; overflow: hidden; position: relative; cursor: pointer; }
+.drop { border: 1.5px dashed #9b9d94; display: grid; place-content: center; justify-items: center; background: rgba(255,255,255,.35); color: var(--muted); }
+.drop:hover { border-color: var(--forest); color: var(--forest); background: var(--forest-soft); }
+.drop strong { font-size: 44px; font-weight: 300; line-height: 1; }
+.drop span { margin-top: 15px; font-weight: 700; }
+.drop small { margin-top: 6px; }
+.drop input, .photo input { position: absolute; opacity: 0; pointer-events: none; }
+.photo img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+.photo span { position: absolute; right: 12px; bottom: 12px; padding: 7px 11px; border-radius: 99px; color: white; background: rgba(0,0,0,.68); font-size: 12px; }
+.primary, .secondary { border: 0; border-radius: 999px; padding: 14px 23px; font-weight: 750; cursor: pointer; }
+.primary { margin-top: 34px; color: white; background: var(--forest); }
+.primary:disabled { opacity: .35; cursor: not-allowed; }
+.secondary { margin-top: 34px; color: var(--ink); background: transparent; border: 1px solid var(--line); }
+nav { display: flex; justify-content: space-between; align-items: center; }
+.transcriptions { display: grid; gap: 18px; }
+.transcription { display: grid; grid-template-columns: 210px 1fr; gap: 22px; padding: 16px; border: 1px solid var(--line); background: var(--paper); border-radius: 18px; }
+.transcription img { width: 100%; height: 160px; object-fit: cover; border-radius: 11px; }
+.transcription label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: .08em; }
+textarea { width: 100%; min-height: 115px; padding: 14px; resize: vertical; border: 1px solid var(--line); border-radius: 11px; background: white; line-height: 1.5; }
+textarea:focus { outline: 2px solid #8baca1; border-color: var(--forest); }
+.note { margin: 7px 0 0; color: #8a512f; font-size: 13px; }
+.choices { display: grid; gap: 12px; max-width: 760px; }
+.choice { display: flex; gap: 15px; width: 100%; padding: 20px; text-align: left; border: 1px solid var(--line); border-radius: 16px; color: var(--ink); background: var(--paper); cursor: pointer; }
+.choice:hover, .choice.selected { border-color: var(--forest); background: var(--forest-soft); }
+.radio { flex: 0 0 20px; width: 20px; height: 20px; margin-top: 2px; border: 1.5px solid #8d9188; border-radius: 50%; }
+.selected .radio { border: 6px solid var(--forest); background: white; }
+.choice strong, .choice small { display: block; }
+.choice strong { font-size: 17px; }
+.choice small { margin-top: 5px; color: var(--muted); font-size: 14px; line-height: 1.4; }
+@media (max-width: 700px) {
+  .workshop { padding-top: 55px; }
+  .uploads { grid-template-columns: 1fr; }
+  .drop, .photo { min-height: 220px; }
+  .transcription { grid-template-columns: 1fr; }
+  .transcription img { height: 210px; }
+  .progress i { width: 70px; }
+}
