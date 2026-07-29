@@ -50,6 +50,12 @@ function consented() {
   return localStorage.getItem(CONSENT_KEY) === "granted";
 }
 
+export function getAnalyticsConsent(): boolean | null {
+  if (typeof window === "undefined") return null;
+  const value = localStorage.getItem(CONSENT_KEY);
+  return value === "granted" ? true : value === "denied" ? false : null;
+}
+
 function send(event: FunnelEvent) {
   if (!configured() || !consented() || !window.gtag) return;
   window.gtag("event", event.name, event.params);
@@ -78,6 +84,7 @@ function ensureTag() {
 
 export function setAnalyticsConsent(granted: boolean) {
   localStorage.setItem(CONSENT_KEY, granted ? "granted" : "denied");
+  window.dispatchEvent(new Event("bibaling:analytics-consent"));
   if (!granted) {
     window.gtag?.("consent", "update", { analytics_storage: "denied" });
     return;

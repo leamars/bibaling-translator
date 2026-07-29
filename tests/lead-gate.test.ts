@@ -92,7 +92,7 @@ test("existing Resend contacts update properties and memberships through the doc
 });
 
 test("email gate follows the complete three-page preview and guards paid continuation", async () => {
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
   const route = await readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8");
   const previewEvent = page.indexOf('trackFunnelEventOnce("three_page_preview_seen"');
   const gateEvent = page.indexOf('trackFunnelEventOnce("email_gate_viewed"');

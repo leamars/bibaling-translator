@@ -429,7 +429,7 @@ export async function POST(request: Request) {
       });
     }
     const client = openAIClient();
-    if (!client) return NextResponse.json({ error: "Translation generation isn’t connected. Add a valid OPENAI_API_KEY and restart." }, { status: 503 });
+    if (!client) return NextResponse.json({ error: "Translation generation isn’t connected right now. Please try again later." }, { status: 503 });
     if (input.mode === "fullbook") {
       if (!verifyLeadReceipt(input.leadReceipt, input.bookForm)) {
         return NextResponse.json({ error: "Email capture is required before full-book generation." }, { status: 403 });

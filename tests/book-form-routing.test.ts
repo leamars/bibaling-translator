@@ -118,7 +118,7 @@ test("non-refrain prompts and payload contracts contain no fabricated refrain", 
   assert.match(verse, /End rhyme is not required/);
   assert.doesNotMatch(verse, /Exact refrain\/device:/);
 
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
   const route = await readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8");
   assert.match(page, /\.\.\.\(lockedDirection \? \{ direction: lockedDirection \} : \{\}\)/);
   assert.match(route, /non-refrain workflows must not send a direction/);
@@ -167,7 +167,7 @@ test("full-book editorial contract carries route and source-rhyme context", () =
 });
 
 test("UI preserves recommendation override, Step 5 errors, and accessible cards", async () => {
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
   assert.match(page, /recommendedBookForm === option\.value/);
   assert.match(page, /setRecommendedBookForm\(result\.bookForm\);\s*setBookFormConfirmed\(true\)/);
   assert.match(page, />Recommended<\/small>/);
