@@ -1,0 +1,406 @@
+{
+  "fixture": "rhythm",
+  "promptVersion": "step5-v8-assigned-observable-constructions",
+  "configuration": {
+    "draftModel": "gpt-5.6-sol",
+    "draftTimeoutMs": 150000,
+    "draftOutputLimit": 5000,
+    "privateCandidates": 5,
+    "editorModel": "gpt-5.6-sol",
+    "editorTimeoutMs": 90000,
+    "editorOutputLimit": 3500,
+    "finalOptions": 3,
+    "automaticRetries": 0,
+    "maximumEstimatedCostUsd": 0.295
+  },
+  "completed": true,
+  "totalLatencyMs": 124131,
+  "stages": [
+    {
+      "type": "progress",
+      "event": "drafting_started"
+    },
+    {
+      "type": "progress",
+      "event": "drafting_completed",
+      "usage": {
+        "action": "directions.draft",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_025c6aa21815c173006a6a29e89a7c81a2b613673b2b3d6494",
+        "responseStatus": "completed",
+        "latencyMs": 60764,
+        "inputTokens": 1144,
+        "cachedInputTokens": 1141,
+        "outputTokens": 2156,
+        "reasoningTokens": 1936,
+        "estimatedCostUsd": 0.0652655
+      }
+    },
+    {
+      "type": "progress",
+      "event": "validating_candidates"
+    },
+    {
+      "type": "progress",
+      "event": "editing_started",
+      "candidateCount": 5
+    },
+    {
+      "type": "progress",
+      "event": "editing_completed",
+      "usage": {
+        "action": "directions.edit",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_0b6f1deafa0214d1006a6a2a258ef08192a595031a68920f8a",
+        "responseStatus": "completed",
+        "latencyMs": 63044,
+        "inputTokens": 2563,
+        "cachedInputTokens": 0,
+        "outputTokens": 2135,
+        "reasoningTokens": 1862,
+        "estimatedCostUsd": 0.076865
+      }
+    },
+    {
+      "type": "progress",
+      "event": "completed"
+    },
+    {
+      "type": "result",
+      "data": {
+        "runs": [
+          {
+            "model": "gpt-5.6-sol",
+            "label": "Sol · quality-first",
+            "directions": [
+              {
+                "name": "Warm Direct Couplet",
+                "refrain": "Ker skrbite zame,\nrada imam prav vas same.",
+                "approach": "A tender two-line declaration with a clear, warmly emphatic rhyme.",
+                "genderDependency": "The mushroom narrator is feminine, requiring »rada«."
+              },
+              {
+                "name": "All Together Hook",
+                "refrain": "Vsi, prav vsi — pazite name, pri srcu ste mi!",
+                "approach": "A playful collective pickup followed by two compact, rhythmic phrases.",
+                "genderDependency": "None; the wording is gender-neutral."
+              },
+              {
+                "name": "Tender Flowing Refrain",
+                "refrain": "Rada vas imam, za vašo skrb vam hvalo dam.",
+                "approach": "A flowing love-first refrain balanced by a concise expression of gratitude.",
+                "genderDependency": "The mushroom narrator is feminine, requiring »rada«."
+              }
+            ]
+          }
+        ],
+        "reusedDraft": false,
+        "evaluationDiagnostics": {
+          "budget": {
+            "sourceRefrain": "I really love you oh-so-MUSH for watching over me.",
+            "sourceWordCount": 9,
+            "sourceCharacterCount": 50,
+            "maximumWordCount": 12,
+            "maximumCharacterCount": 65,
+            "maximumSentenceCount": 1,
+            "maximumClauseCount": 2
+          },
+          "rawCandidates": [
+            {
+              "name": "Grateful Embrace",
+              "refrain": "Za vašo skrb vam hvalo dam, saj rada vas imam.",
+              "approach": "Warm collective refrain with a clear dam–imam rhyme."
+            },
+            {
+              "name": "Watchful Friends",
+              "refrain": "Ker name pazite, vam hvalo dam — rada vas imam.",
+              "approach": "Cause-first structure with a lively pivot and exact dam–imam rhyme."
+            },
+            {
+              "name": "Dear to Me",
+              "refrain": "Čuvate me vi, zato ljubi ste mi.",
+              "approach": "Compact call-and-response cadence built on the spoken vi–mi rhyme."
+            },
+            {
+              "name": "All My Friends",
+              "refrain": "Name pazite vi, zato dragi ste mi vsi.",
+              "approach": "Collective address with an energetic vi–vsi end rhyme."
+            },
+            {
+              "name": "Tender Thanks",
+              "refrain": "Rada vas imam, za vašo skrb vam hvalo dam.",
+              "approach": "Love-first declaration with a balanced imam–dam rhyme."
+            }
+          ],
+          "survivors": [
+            {
+              "name": "Grateful Embrace",
+              "refrain": "Za vašo skrb vam hvalo dam, saj rada vas imam.",
+              "approach": "Warm collective refrain with a clear dam–imam rhyme.",
+              "directionIndex": 0
+            },
+            {
+              "name": "Watchful Friends",
+              "refrain": "Ker name pazite, vam hvalo dam — rada vas imam.",
+              "approach": "Cause-first structure with a lively pivot and exact dam–imam rhyme.",
+              "directionIndex": 1
+            },
+            {
+              "name": "Dear to Me",
+              "refrain": "Čuvate me vi, zato ljubi ste mi.",
+              "approach": "Compact call-and-response cadence built on the spoken vi–mi rhyme.",
+              "directionIndex": 2
+            },
+            {
+              "name": "All My Friends",
+              "refrain": "Name pazite vi, zato dragi ste mi vsi.",
+              "approach": "Collective address with an energetic vi–vsi end rhyme.",
+              "directionIndex": 3
+            },
+            {
+              "name": "Tender Thanks",
+              "refrain": "Rada vas imam, za vašo skrb vam hvalo dam.",
+              "approach": "Love-first declaration with a balanced imam–dam rhyme.",
+              "directionIndex": 4
+            }
+          ],
+          "rejections": [],
+          "draftQualityWarnings": [
+            {
+              "code": "SOURCE_RELATIVE_SHAPE",
+              "message": "contains 3 clauses",
+              "candidateIndex": 1
+            },
+            {
+              "code": "NEAR_DUPLICATE",
+              "message": "candidate closely resembles an earlier candidate and may need editorial differentiation",
+              "candidateIndex": 4
+            }
+          ],
+          "editorialOptions": [
+            {
+              "sourceCandidateIndex": 0,
+              "label": "Warm Direct Couplet",
+              "refrain": "Ker skrbite zame,\nrada imam prav vas same.",
+              "description": "A tender two-line declaration with a clear, warmly emphatic rhyme.",
+              "genderDependency": "The mushroom narrator is feminine, requiring »rada«.",
+              "construction": "couplet",
+              "rhymePairs": [
+                {
+                  "endingA": "zame",
+                  "endingB": "same"
+                }
+              ]
+            },
+            {
+              "sourceCandidateIndex": 3,
+              "label": "All Together Hook",
+              "refrain": "Vsi, prav vsi — pazite name, pri srcu ste mi!",
+              "description": "A playful collective pickup followed by two compact, rhythmic phrases.",
+              "genderDependency": "None; the wording is gender-neutral.",
+              "construction": "playful_hook",
+              "rhymePairs": [
+                {
+                  "endingA": "vsi",
+                  "endingB": "mi"
+                }
+              ]
+            },
+            {
+              "sourceCandidateIndex": 4,
+              "label": "Tender Flowing Refrain",
+              "refrain": "Rada vas imam, za vašo skrb vam hvalo dam.",
+              "description": "A flowing love-first refrain balanced by a concise expression of gratitude.",
+              "genderDependency": "The mushroom narrator is feminine, requiring »rada«.",
+              "construction": "lyrical_refrain",
+              "rhymePairs": [
+                {
+                  "endingA": "imam",
+                  "endingB": "dam"
+                }
+              ]
+            }
+          ],
+          "finalValidation": {
+            "hardFailures": [],
+            "qualityWarnings": [
+              {
+                "code": "SOURCE_RELATIVE_SHAPE",
+                "message": "contains 4 clauses",
+                "candidateIndex": 1
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "usage": [
+    {
+      "action": "directions.draft",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_025c6aa21815c173006a6a29e89a7c81a2b613673b2b3d6494",
+      "responseStatus": "completed",
+      "latencyMs": 60764,
+      "inputTokens": 1144,
+      "cachedInputTokens": 1141,
+      "outputTokens": 2156,
+      "reasoningTokens": 1936,
+      "estimatedCostUsd": 0.0652655
+    },
+    {
+      "action": "directions.edit",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_0b6f1deafa0214d1006a6a2a258ef08192a595031a68920f8a",
+      "responseStatus": "completed",
+      "latencyMs": 63044,
+      "inputTokens": 2563,
+      "cachedInputTokens": 0,
+      "outputTokens": 2135,
+      "reasoningTokens": 1862,
+      "estimatedCostUsd": 0.076865
+    }
+  ],
+  "reachedOutputAllowance": false,
+  "candidateCountEnteringEditor": 5,
+  "sourceRefrain": "I really love you oh-so-MUSH for watching over me.",
+  "refrainBudget": {
+    "sourceRefrain": "I really love you oh-so-MUSH for watching over me.",
+    "sourceWordCount": 9,
+    "sourceCharacterCount": 50,
+    "maximumWordCount": 12,
+    "maximumCharacterCount": 65,
+    "maximumSentenceCount": 1,
+    "maximumClauseCount": 2
+  },
+  "rawCandidates": [
+    {
+      "name": "Grateful Embrace",
+      "refrain": "Za vašo skrb vam hvalo dam, saj rada vas imam.",
+      "approach": "Warm collective refrain with a clear dam–imam rhyme."
+    },
+    {
+      "name": "Watchful Friends",
+      "refrain": "Ker name pazite, vam hvalo dam — rada vas imam.",
+      "approach": "Cause-first structure with a lively pivot and exact dam–imam rhyme."
+    },
+    {
+      "name": "Dear to Me",
+      "refrain": "Čuvate me vi, zato ljubi ste mi.",
+      "approach": "Compact call-and-response cadence built on the spoken vi–mi rhyme."
+    },
+    {
+      "name": "All My Friends",
+      "refrain": "Name pazite vi, zato dragi ste mi vsi.",
+      "approach": "Collective address with an energetic vi–vsi end rhyme."
+    },
+    {
+      "name": "Tender Thanks",
+      "refrain": "Rada vas imam, za vašo skrb vam hvalo dam.",
+      "approach": "Love-first declaration with a balanced imam–dam rhyme."
+    }
+  ],
+  "survivors": [
+    {
+      "name": "Grateful Embrace",
+      "refrain": "Za vašo skrb vam hvalo dam, saj rada vas imam.",
+      "approach": "Warm collective refrain with a clear dam–imam rhyme.",
+      "directionIndex": 0
+    },
+    {
+      "name": "Watchful Friends",
+      "refrain": "Ker name pazite, vam hvalo dam — rada vas imam.",
+      "approach": "Cause-first structure with a lively pivot and exact dam–imam rhyme.",
+      "directionIndex": 1
+    },
+    {
+      "name": "Dear to Me",
+      "refrain": "Čuvate me vi, zato ljubi ste mi.",
+      "approach": "Compact call-and-response cadence built on the spoken vi–mi rhyme.",
+      "directionIndex": 2
+    },
+    {
+      "name": "All My Friends",
+      "refrain": "Name pazite vi, zato dragi ste mi vsi.",
+      "approach": "Collective address with an energetic vi–vsi end rhyme.",
+      "directionIndex": 3
+    },
+    {
+      "name": "Tender Thanks",
+      "refrain": "Rada vas imam, za vašo skrb vam hvalo dam.",
+      "approach": "Love-first declaration with a balanced imam–dam rhyme.",
+      "directionIndex": 4
+    }
+  ],
+  "rejectedCandidates": [],
+  "editorialOptions": [
+    {
+      "sourceCandidateIndex": 0,
+      "label": "Warm Direct Couplet",
+      "refrain": "Ker skrbite zame,\nrada imam prav vas same.",
+      "description": "A tender two-line declaration with a clear, warmly emphatic rhyme.",
+      "genderDependency": "The mushroom narrator is feminine, requiring »rada«.",
+      "construction": "couplet",
+      "rhymePairs": [
+        {
+          "endingA": "zame",
+          "endingB": "same"
+        }
+      ]
+    },
+    {
+      "sourceCandidateIndex": 3,
+      "label": "All Together Hook",
+      "refrain": "Vsi, prav vsi — pazite name, pri srcu ste mi!",
+      "description": "A playful collective pickup followed by two compact, rhythmic phrases.",
+      "genderDependency": "None; the wording is gender-neutral.",
+      "construction": "playful_hook",
+      "rhymePairs": [
+        {
+          "endingA": "vsi",
+          "endingB": "mi"
+        }
+      ]
+    },
+    {
+      "sourceCandidateIndex": 4,
+      "label": "Tender Flowing Refrain",
+      "refrain": "Rada vas imam, za vašo skrb vam hvalo dam.",
+      "description": "A flowing love-first refrain balanced by a concise expression of gratitude.",
+      "genderDependency": "The mushroom narrator is feminine, requiring »rada«.",
+      "construction": "lyrical_refrain",
+      "rhymePairs": [
+        {
+          "endingA": "imam",
+          "endingB": "dam"
+        }
+      ]
+    }
+  ],
+  "finalOptionCount": 3,
+  "finalDirections": [
+    {
+      "name": "Warm Direct Couplet",
+      "refrain": "Ker skrbite zame,\nrada imam prav vas same.",
+      "approach": "A tender two-line declaration with a clear, warmly emphatic rhyme.",
+      "genderDependency": "The mushroom narrator is feminine, requiring »rada«."
+    },
+    {
+      "name": "All Together Hook",
+      "refrain": "Vsi, prav vsi — pazite name, pri srcu ste mi!",
+      "approach": "A playful collective pickup followed by two compact, rhythmic phrases.",
+      "genderDependency": "None; the wording is gender-neutral."
+    },
+    {
+      "name": "Tender Flowing Refrain",
+      "refrain": "Rada vas imam, za vašo skrb vam hvalo dam.",
+      "approach": "A flowing love-first refrain balanced by a concise expression of gratitude.",
+      "genderDependency": "The mushroom narrator is feminine, requiring »rada«."
+    }
+  ],
+  "failure": null
+}

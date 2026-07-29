@@ -3,10 +3,12 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
   DIRECTION_PIPELINE_CONFIG,
+  HARD_MAX_REFRAIN_CHARACTERS,
   DirectionPipelineError,
   classifyStageFailure,
   deriveRefrainBudget,
   directionDraftCacheKey,
+  editorialBudgetViolations,
   editorialOptionsSchema,
   finalDirectionSetViolations,
   parseCompletedOutput,
@@ -15,6 +17,7 @@ import {
   rhymePairViolations,
   resolveDirectionDraft,
   validatePrivateCandidates,
+  validateFinalEditorialSet,
   type CachedDirectionDraft,
   type DirectionDraftCache,
   type PrivateDirectionCandidate
@@ -197,7 +200,7 @@ test("changed relevant input invalidates the saved draft key", () => {
   assert.notEqual(first, changed);
 });
 
-test("exact and near-duplicate candidates are rejected", () => {
+test("exact duplicates are rejected while near duplicates become advisory warnings", () => {
   const distinct = [
     { name: "Declaration", refrain: "Prijatelji moji, rada vas imam.", approach: "A compact declaration." },
     { name: "Question", refrain: "Kdo me razveseli? Prav vsi!", approach: "A short question and answer." },
@@ -209,9 +212,10 @@ test("exact and near-duplicate candidates are rejected", () => {
     { ...distinct[0], name: "Near duplicate", refrain: "Prijatelji moji — res rada vas imam!" }
   ];
   const validation = validatePrivateCandidates(duplicated);
-  assert.equal(validation.survivors.length, 3);
+  assert.equal(validation.survivors.length, 4);
   assert.equal(validation.survivors.some((candidate) => candidate.name === "Duplicate"), false);
-  assert.equal(validation.survivors.some((candidate) => candidate.name === "Near duplicate"), false);
+  assert.equal(validation.survivors.some((candidate) => candidate.name === "Near duplicate"), true);
+  assert.ok(validation.qualityWarnings.some((warning) => warning.code === "NEAR_DUPLICATE"));
 });
 
 test("too few valid candidates produces a quality-rejection error", () => {
@@ -233,14 +237,20 @@ test("too few valid candidates produces a quality-rejection error", () => {
   });
 });
 
-test("overlong or three-line refrains are rejected before editorial review", () => {
-  const overlong = candidates.map((candidate, index) => index < 3
-    ? { ...candidate, refrain: "Prva dolga vrstica o prijateljih.\nDruga dolga vrstica o prijateljih.\nTretja vrstica, ki iz refrena naredi celo kitico." }
+test("source-relative shape is advisory but grossly overlong drafts are rejected", () => {
+  const overlong = candidates.map((candidate, index) => index < 4
+    ? { ...candidate, refrain: "x".repeat(HARD_MAX_REFRAIN_CHARACTERS + 1) }
     : candidate);
   assert.throws(
     () => validatePrivateCandidates(overlong),
     (error: unknown) => error instanceof DirectionPipelineError && error.code === "DRAFT_QUALITY_REJECTION"
   );
+  const threeLine = candidates.map((candidate, index) => index === 0
+    ? { ...candidate, refrain: "Prva vrstica.\nDruga vrstica.\nTretja vrstica." }
+    : candidate);
+  const validation = validatePrivateCandidates(threeLine);
+  assert.equal(validation.survivors.length, 5);
+  assert.ok(validation.qualityWarnings.some((warning) => warning.code === "SOURCE_RELATIVE_SHAPE"));
 });
 
 test("complete live fixture derives a source-relative refrain budget", () => {
@@ -294,7 +304,8 @@ test("Step 5 SSE exposes stable stages and error codes", async () => {
     "completed",
     "failed"
   ]) assert.match(route, new RegExp(stage));
-  assert.match(route, /retryMode:\s*typed\.code\.startsWith\("EDITOR_"\) \? "editor_only" : "full"/);
+  assert.match(route, /typed\.code === "FINAL_SET_INVALID"/);
+  assert.match(route, /"editor_only"/);
 });
 
 test("parent-facing result has three concise options and no unused editorial metadata", () => {
@@ -307,14 +318,20 @@ test("parent-facing result has three concise options and no unused editorial met
   assert.equal("changes" in pipeline.options[0], false);
 });
 
-test("final editorial set proves its three assigned constructions in the wording", () => {
+test("declared-construction similarity is a warning rather than a hard failure", () => {
   const options = editorialConstructions.map((_, index) => editorialFixture(index));
-  assert.deepEqual(finalDirectionSetViolations(options, true, 3), []);
-  assert.ok(finalDirectionSetViolations(
-    options.map((option) => ({ ...option, construction: "couplet" as const })),
+  const suspicious = options.map((option, index) => ({
+    ...option,
+    refrain: index === 0 ? option.refrain : `${option.refrain.split(",")[0]}, rada vas imam ves čas!`
+  }));
+  const diagnostics = validateFinalEditorialSet(
+    suspicious,
+    deriveRefrainBudget(completeMushroomSource),
     true,
     3
-  ).some((reason) => reason.includes("exactly one couplet")));
+  );
+  assert.deepEqual(diagnostics.hardFailures, []);
+  assert.ok(diagnostics.qualityWarnings.some((warning) => warning.code === "EDITORIAL_HEURISTIC"));
 });
 
 test("rhyme validation accepts line, echo, and flowing-phrase rhyme structures", () => {
@@ -329,6 +346,68 @@ test("two surviving seeds require one independently sourced construction", () =>
     .some((reason) => reason.includes("independently generate exactly one")));
   options[2].sourceCandidateIndex = -1;
   assert.deepEqual(finalDirectionSetViolations(options, true, 2), []);
+});
+
+test("a compact playful pickup is not miscounted as an overlong grammatical expansion", () => {
+  const budget = deriveRefrainBudget(completeMushroomSource);
+  const editorialOptions = [
+    {
+      ...editorialFixture(0),
+      refrain: "Čuvate me vi,\nrada vas imam vse dni.",
+      rhymePairs: [{ endingA: "vi", endingB: "dni" }]
+    },
+    {
+      ...editorialFixture(1),
+      refrain: "Hvala za skrb, hvala za vas — rada vas imam ves čas!",
+      rhymePairs: [{ endingA: "vas", endingB: "čas" }]
+    },
+    {
+      ...editorialFixture(2),
+      sourceCandidateIndex: -1,
+      refrain: "Vaša skrb me varuje — moje srce vas obožuje.",
+      rhymePairs: [{ endingA: "varuje", endingB: "obožuje" }]
+    }
+  ];
+  const diagnostics = validateFinalEditorialSet(editorialOptions, budget, true, 2);
+  assert.deepEqual(diagnostics.hardFailures, []);
+  assert.ok(diagnostics.qualityWarnings.length >= 0);
+});
+
+test("dubious rhyme and punctuation heuristics warn without failing three valid strings", () => {
+  const options = editorialConstructions.map((_, index) => editorialFixture(index));
+  options[0].rhymePairs = [{ endingA: "rada", endingB: "name" }];
+  const diagnostics = validateFinalEditorialSet(
+    options,
+    deriveRefrainBudget(completeMushroomSource),
+    true,
+    3
+  );
+  assert.deepEqual(diagnostics.hardFailures, []);
+  assert.ok(diagnostics.qualityWarnings.some((warning) =>
+    warning.message.includes("plausible shared spoken ending")
+  ));
+});
+
+test("empty, malformed, identical, placeholder, and grossly overlong final outputs hard-fail", () => {
+  const base = editorialConstructions.map((_, index) => editorialFixture(index));
+  const budget = deriveRefrainBudget(completeMushroomSource);
+  for (const mutate of [
+    (options: typeof base) => { options[0].refrain = ""; },
+    (options: typeof base) => { options[0].refrain = "123"; },
+    (options: typeof base) => { options[1].refrain = options[0].refrain; },
+    (options: typeof base) => { options[0].refrain = "Izberite refren: {{besedilo}}"; },
+    (options: typeof base) => { options[0].refrain = "a".repeat(HARD_MAX_REFRAIN_CHARACTERS + 1); }
+  ]) {
+    const options = structuredClone(base);
+    mutate(options);
+    assert.ok(validateFinalEditorialSet(options, budget, true, 3).hardFailures.length > 0);
+  }
+});
+
+test("Step 5 UI distinguishes a completed but invalid final set from unfinished drafting", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  assert.match(page, /FINAL_SET_INVALID/);
+  assert.match(page, /We couldn’t prepare these options\./);
 });
 
 test("both Step 5 calls are centrally configured to use Sol", () => {

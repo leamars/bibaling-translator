@@ -27,7 +27,7 @@ type TranslationOption = GeneratedOption & {
   originalText: string;
   editNote: string;
 };
-type RequestState = { loading: boolean; error: string | null };
+type RequestState = { loading: boolean; error: string | null; errorCode?: string | null };
 type DirectionProgress = { active: number; completedThrough: number; rejectedCount: number };
 type DirectionStreamResult = {
   runs: Array<{ label: string; directions: Omit<Direction, "modelLabel">[] }>;
@@ -262,6 +262,7 @@ export default function Home() {
     setStep(5);
     setRequest({ loading: true, error: null });
     setDirectionProgress({ active: 0, completedThrough: -1, rejectedCount: 0 });
+    let failureCode: string | null = null;
     try {
       const response = await fetch("/api/directions", {
         method: "POST",
@@ -300,7 +301,10 @@ export default function Home() {
             error?: string;
             data?: DirectionStreamResult;
           };
-          if (event.type === "error") throw new Error(event.error);
+          if (event.type === "error") {
+            failureCode = event.code || null;
+            throw new Error(event.error);
+          }
           if (event.type === "cancelled") throw new DOMException(event.error || "Cancelled", "AbortError");
           if (event.type === "result") result = event.data || null;
           if (event.type === "progress") {
@@ -335,7 +339,11 @@ export default function Home() {
       if (error instanceof Error && error.name === "AbortError") {
         if (directionsAbort.current === controller) setRequest({ loading: false, error: null });
       } else {
-        setRequest({ loading: false, error: error instanceof Error ? error.message : "We couldn’t write the directions." });
+        setRequest({
+          loading: false,
+          error: error instanceof Error ? error.message : "We couldn’t write the directions.",
+          errorCode: failureCode
+        });
       }
     } finally {
       if (directionsAbort.current === controller) directionsAbort.current = null;
@@ -825,7 +833,13 @@ export default function Home() {
                 </article>
               </div>
             )}
-            {request.error && <GenerationError message={request.error} retry={retry} />}
+            {request.error && (
+              <GenerationError
+                title={request.errorCode === "FINAL_SET_INVALID" ? "We couldn’t prepare these options." : undefined}
+                message={request.error}
+                retry={retry}
+              />
+            )}
             <nav><button className="secondary" onClick={() => request.loading ? cancelDirections(true) : setStep(4)}>Back</button><button className="primary" disabled={request.loading || selectedDirection === null || !directions[selectedDirection]?.refrain.trim()} onClick={() => void lockDirectionAndWriteSpread1()}>Lock this direction</button></nav>
           </>
         )}
@@ -1292,8 +1306,16 @@ function OptionList({
   );
 }
 
-function GenerationError({ message, retry }: { message: string; retry: () => void | Promise<void> }) {
+function GenerationError({
+  title = "That draft didn’t finish.",
+  message,
+  retry
+}: {
+  title?: string;
+  message: string;
+  retry: () => void | Promise<void>;
+}) {
   return (
-    <div className="generation-error"><strong>That draft didn’t finish.</strong><p>{message}</p><button type="button" onClick={() => void retry()}>Try again</button></div>
+    <div className="generation-error"><strong>{title}</strong><p>{message}</p><button type="button" onClick={() => void retry()}>Try again</button></div>
   );
 }
