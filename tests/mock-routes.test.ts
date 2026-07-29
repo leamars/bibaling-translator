@@ -38,6 +38,14 @@ test("literary calls are bounded, with extra drafting time at the measured bottl
   const translations = await readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8");
   assert.match(translations, /args\.spreadNumber === 1 && !args\.approvedSpread1 \? 120_000 : 90_000/);
   assert.match(translations, /timeoutMs:\s*requestTimeoutMs/);
+
+  const transcription = await readFile(new URL("../app/api/transcribe/route.ts", import.meta.url), "utf8");
+  assert.match(transcription, /timeoutMs:\s*60_000/);
+  assert.match(transcription, /attempt < 2/);
+  assert.match(transcription, /transcribe\.fallback/);
+  assert.match(transcription, /callCount:\s*2/);
+  assert.match(transcription, /response\.status !== "completed"/);
+  assert.match(transcription, /Transcription completed without output/);
 });
 
 test("direction generation streams genuine progress and propagates cancellation", async () => {

@@ -25,6 +25,12 @@ const transcriptionSchema = {
   required: ["text", "uncertainty", "visualContext"]
 } as const;
 
+const transcriptionResultSchema = z.object({
+  text: z.string(),
+  uncertainty: z.string().nullable(),
+  visualContext: z.string()
+});
+
 export async function POST(request: Request) {
   try {
     const input = bodySchema.parse(await request.json());
@@ -43,49 +49,67 @@ export async function POST(request: Request) {
         { status: 503 }
       );
     }
-    assertActionBudget({ model: "gpt-4.1-mini", maxInputTokens: 4_000, maxOutputTokens: 800, callCount: 1 });
+    assertActionBudget({ model: "gpt-4.1-mini", maxInputTokens: 4_000, maxOutputTokens: 800, callCount: 2 });
     const result = await deduplicate(requestKey("transcribe", input), async () => {
-      const { response } = await controlledResponse({
-        client,
-        requestSignal: request.signal,
-        action: "transcribe",
-        model: "gpt-4.1-mini",
-        maxOutputTokens: 800,
-        body: {
-          model: "gpt-4.1-mini",
-          input: [{
-            role: "user",
-            content: [
-              {
-                type: "input_text",
-                text: [
-                  "Read the printed English story text on this photographed children's-book spread.",
-                  "Return the story text only, in natural reading order.",
-                  "Use sentence context to correct obvious visual character errors into real English words.",
-                  "Preserve intentional capitalization, punctuation, rhyme, and wordplay.",
-                  "Also summarize the essential illustration details in visualContext: characters, actions, setting, mood, and any picture detail the translation must stay faithful to.",
-                  "Ignore page edges, logos, and decorative marks.",
-                  "Never invent words hidden from view. Mention genuine ambiguity briefly in uncertainty."
-                ].join(" ")
-              },
-              { type: "input_image", image_url: input.image, detail: "high" }
-            ]
-          }],
-          text: {
-            format: {
-              type: "json_schema",
-              name: "book_transcription",
-              strict: true,
-              schema: transcriptionSchema
+      let firstFailure: unknown;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          const { response } = await controlledResponse({
+            client,
+            requestSignal: request.signal,
+            action: attempt === 0 ? "transcribe" : "transcribe.fallback",
+            model: "gpt-4.1-mini",
+            maxOutputTokens: 800,
+            timeoutMs: 60_000,
+            body: {
+              model: "gpt-4.1-mini",
+              input: [{
+                role: "user",
+                content: [
+                  {
+                    type: "input_text",
+                    text: attempt === 0
+                      ? [
+                          "Read the printed English story text on this photographed children's-book spread.",
+                          "Return the story text only, in natural reading order.",
+                          "Use sentence context to correct obvious visual character errors into real English words.",
+                          "Preserve intentional capitalization, punctuation, rhyme, and wordplay.",
+                          "Also briefly summarize only clearly visible illustration details in visualContext.",
+                          "Ignore page edges, logos, and decorative marks.",
+                          "Never invent words hidden from view. Mention genuine ambiguity briefly in uncertainty."
+                        ].join(" ")
+                      : [
+                          "Transcribe only the clearly visible printed English story text in this children's-book photo.",
+                          "Read left page before right page. Ignore illustrations, decorative marks, page edges, and logos.",
+                          "Do not describe people or infer sensitive details.",
+                          "Put an empty string in visualContext.",
+                          "If a word is genuinely unreadable, preserve the readable text and briefly identify the uncertainty."
+                        ].join(" ")
+                  },
+                  { type: "input_image", image_url: input.image, detail: "high" }
+                ]
+              }],
+              text: {
+                format: {
+                  type: "json_schema",
+                  name: "book_transcription",
+                  strict: true,
+                  schema: transcriptionSchema
+                }
+              }
             }
+          });
+          if (response.status !== "completed") {
+            throw new Error(`Transcription did not complete: ${response.incomplete_details?.reason ?? response.status}`);
           }
+          if (!response.output_text) throw new Error("Transcription completed without output.");
+          return transcriptionResultSchema.parse(JSON.parse(response.output_text));
+        } catch (error) {
+          if (request.signal.aborted) throw error;
+          firstFailure ??= error;
         }
-      });
-      return JSON.parse(response.output_text) as {
-        text: string;
-        uncertainty: string | null;
-        visualContext: string;
-      };
+      }
+      throw firstFailure ?? new Error("Transcription failed.");
     });
     return NextResponse.json(result);
   } catch (error) {
