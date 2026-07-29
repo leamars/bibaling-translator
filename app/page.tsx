@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, DragEvent, useMemo, useState } from "react";
+import { ChangeEvent, DragEvent, useEffect, useMemo, useState } from "react";
 
 type Spread = {
   id: string;
@@ -106,7 +106,7 @@ export default function Home() {
           await wait(2200);
         }
       }
-      if (!result) throw new Error("I couldn’t read this spread.");
+      if (!result) throw new Error("I couldn’t read this page.");
       setSpreads((current) => current.map((spread) =>
         spread.id === id
           ? { ...spread, text: result.text, uncertainty: result.uncertainty, error: null, status: "done" }
@@ -115,7 +115,7 @@ export default function Home() {
     } catch (error) {
       setSpreads((current) => current.map((spread) =>
         spread.id === id
-          ? { ...spread, error: error instanceof Error ? error.message : "I couldn’t read this spread.", status: "error" }
+          ? { ...spread, error: error instanceof Error ? error.message : "I couldn’t read this page.", status: "error" }
           : spread
       ));
     }
@@ -213,7 +213,7 @@ export default function Home() {
       setStep(6);
       setRequest({ loading: false, error: null });
     } catch (error) {
-      setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write Spread 1." });
+      setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write Page 1." });
     }
   }
 
@@ -247,7 +247,7 @@ export default function Home() {
       setStep(7);
       setRequest({ loading: false, error: null });
     } catch (error) {
-      setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t test the next spreads." });
+      setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t test the next pages." });
     }
   }
 
@@ -328,12 +328,16 @@ export default function Home() {
         {step === 1 && (
           <>
             <p className="kicker">Book workshop</p>
-            <h1>Add the first three spreads.</h1>
-            <p className="lead">We’ll use them to find a Slovenian voice that feels right before working through the whole book.</p>
+            <h1>Add three book photos.</h1>
+            <p className="lead">Start with three pages that feel different from one another. We’ll use them to find the voice for the whole book.</p>
+            <figure className="photo-guide">
+              <div className="photo-guide-art" role="img" aria-label="A phone photographing a whole open picture book from above" />
+              <figcaption><strong>Photograph the whole open page</strong><span>Hold your phone directly above the book. Keep every word and picture edge in frame.</span></figcaption>
+            </figure>
             <div className="uploads">
               {spreads.map((spread, index) => (
                 <label className="photo" key={spread.id}>
-                  <img src={spread.preview} alt={`Book spread ${index + 1}`} />
+                  <img src={spread.preview} alt={`Book page ${index + 1}`} />
                   <input type="file" accept="image/*" onChange={(event) => chooseFile(event, spread.id)} />
                   <span>Replace</span>
                 </label>
@@ -342,7 +346,7 @@ export default function Home() {
                 <label className="drop" onDrop={drop} onDragOver={(event) => event.preventDefault()}>
                   <input type="file" accept="image/*" multiple onChange={(event) => chooseFile(event)} />
                   <strong>+</strong>
-                  <span>{spreads.length ? "Add the remaining spreads" : "Drop three book photos here"}</span>
+                  <span>{spreads.length ? "Add the remaining photos" : "Drop three book photos here"}</span>
                   <small>or click to choose multiple images</small>
                 </label>
               )}
@@ -361,17 +365,17 @@ export default function Home() {
                 <article className={spread.status === "reading" ? "transcription is-reading" : "transcription"} key={spread.id} aria-busy={spread.status === "reading"}>
                   <img src={spread.preview} alt="" />
                   <div>
-                    <label htmlFor={`text-${index}`}>Spread {index + 1}</label>
+                    <label htmlFor={`text-${index}`}>Page {index + 1}</label>
                     {spread.status === "reading" && (
                       <div className="reading-state" role="status">
                         <span className="spinner" />
-                        <span><strong>Reading this spread…</strong><small>Finding the story words and their natural order.</small></span>
+                        <span><strong>Reading this page…</strong><small>Finding the story words and their natural order.</small></span>
                       </div>
                     )}
                     <textarea
                       id={`text-${index}`}
                       value={spread.text}
-                      placeholder={spread.status === "reading" ? "Reading the spread…" : "Type or paste the English text here"}
+                      placeholder={spread.status === "reading" ? "Reading the page…" : "Type or paste the English text here"}
                       disabled={spread.status === "reading"}
                       onChange={(event) => setSpreads((current) => current.map((item, i) =>
                         i === index ? { ...item, text: event.target.value } : item
@@ -431,7 +435,7 @@ export default function Home() {
             <p className="kicker">Refrain lab</p>
             <h1>Compare two ways of finding the voice.</h1>
             <p className="lead">For debugging, Terra and Sol each write three directions from the same material. Choose any one, then make its wording yours.</p>
-            {request.loading && <div className="generation-state"><span className="spinner" />Terra and Sol are reading the pictures and writing in parallel…</div>}
+            {request.loading && <DirectionProgress />}
             {!request.loading && directions.length > 0 && (
               <div className="direction-grid">
                 {directions.map((direction, index) => {
@@ -507,7 +511,7 @@ export default function Home() {
             <div className="approved-grid">
               {[1, 2, 3].map((number) => (
                 <article className="approved-card" key={number}>
-                  <img src={spreads[number - 1].preview} alt={`Spread ${number}`} />
+                  <img src={spreads[number - 1].preview} alt={`Page ${number}`} />
                   <label>Spread {number}</label>
                   <textarea disabled={voiceLocked} value={approvedDrafts[number] || ""} onChange={(event) => setApprovedDrafts((current) => ({ ...current, [number]: event.target.value }))} />
                 </article>
@@ -528,7 +532,7 @@ export default function Home() {
           <>
             <p className="kicker">The rest of the book</p>
             <h1>Now put the whole book in order.</h1>
-            <p className="lead">Drop all the remaining spread photos at once. Then drag every card—including the first three—until the sequence matches the physical book.</p>
+            <p className="lead">Drop all the remaining page photos at once. Then drag every card—including the first three—until the sequence matches the physical book.</p>
             <label
               className="rest-drop"
               onDrop={(event) => { event.preventDefault(); void addRemainingFiles(event.dataTransfer.files); }}
@@ -536,12 +540,12 @@ export default function Home() {
             >
               <input type="file" accept="image/*" multiple onChange={(event) => { void addRemainingFiles(event.target.files ?? undefined); event.target.value = ""; }} />
               <strong>+</strong>
-              <span>Drop all remaining spread photos here</span>
+              <span>Drop all remaining page photos here</span>
               <small>or click to choose multiple images</small>
             </label>
 
             <div className="order-heading">
-              <div><strong>Book order</strong><small>{bookPages.length} spreads · drag to rearrange</small></div>
+              <div><strong>Book order</strong><small>{bookPages.length} pages · drag to rearrange</small></div>
               {bookOrderLocked && <span>Order confirmed</span>}
             </div>
             <div className="book-order">
@@ -560,14 +564,14 @@ export default function Home() {
                   }}
                 >
                   <div className="page-number">{index + 1}</div>
-                  <img src={page.preview} alt={`Book spread ${index + 1}`} />
+                  <img src={page.preview} alt={`Book page ${index + 1}`} />
                   <div className="page-order-meta">
                     <strong>{page.fileName}</strong>
-                    <small>{page.approvedText ? "Approved voice sample" : "New spread"}</small>
+                    <small>{page.approvedText ? "Approved voice sample" : "New page"}</small>
                   </div>
                   <div className="order-buttons">
-                    <button type="button" disabled={index === 0} onClick={() => nudgeBookPage(index, -1)} aria-label={`Move spread ${index + 1} earlier`}>←</button>
-                    <button type="button" disabled={index === bookPages.length - 1} onClick={() => nudgeBookPage(index, 1)} aria-label={`Move spread ${index + 1} later`}>→</button>
+                    <button type="button" disabled={index === 0} onClick={() => nudgeBookPage(index, -1)} aria-label={`Move page ${index + 1} earlier`}>←</button>
+                    <button type="button" disabled={index === bookPages.length - 1} onClick={() => nudgeBookPage(index, 1)} aria-label={`Move page ${index + 1} later`}>→</button>
                   </div>
                 </article>
               ))}
@@ -578,11 +582,37 @@ export default function Home() {
                 {bookOrderLocked ? "Order confirmed" : "This order is right"}
               </button>
             </nav>
-            {bookOrderLocked && <div className="locked-confirmation"><span>Ready for the next stage</span><p>The full book order is saved in this session. Next, Bibaling can read and workshop the remaining spreads one at a time.</p></div>}
+            {bookOrderLocked && <div className="locked-confirmation"><span>Ready for the next stage</span><p>The full book order is saved in this session. Next, Bibaling can read and workshop the remaining pages one at a time.</p></div>}
           </>
         )}
       </section>
     </main>
+  );
+}
+
+function DirectionProgress() {
+  const messages = [
+    "Reading the whole book together…",
+    "Finding the story arc and repeated language…",
+    "Trying several rhyme and rhythm approaches…",
+    "Checking that the Slovenian sounds natural aloud…",
+    "Discarding anything that feels forced…",
+    "Comparing the strongest directions…"
+  ];
+  const [messageIndex, setMessageIndex] = useState(0);
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setMessageIndex((current) => Math.min(current + 1, messages.length - 1));
+    }, 8000);
+    return () => window.clearInterval(interval);
+  }, [messages.length]);
+
+  return (
+    <div className="generation-progress" role="status" aria-live="polite">
+      <div className="generation-progress-title"><span className="spinner" /><strong>Finding your book’s Slovenian voice</strong></div>
+      <p>{messages[messageIndex]}</p>
+      <small>{messageIndex >= 3 ? "Good verse takes a little longer—we’re checking this carefully." : "We’re trying multiple versions and discarding anything that sounds forced."}</small>
+    </div>
   );
 }
 
@@ -600,8 +630,8 @@ function LockedBrief({ direction, priority }: { direction: Direction; priority: 
 function Source({ spread, number }: { spread: Spread; number: number }) {
   return (
     <article className="source-card">
-      <img src={spread.preview} alt={`Spread ${number}`} />
-      <div><span>English source · Spread {number}</span><p>{spread.text}</p></div>
+      <img src={spread.preview} alt={`Page ${number}`} />
+      <div><span>English source · Page {number}</span><p>{spread.text}</p></div>
     </article>
   );
 }
