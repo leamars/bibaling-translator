@@ -1,0 +1,297 @@
+# Bibaling Slovenian Verse Guide — v4
+
+Use this guide as a positive reference for Slovenian children’s-book adaptation.
+
+Learn the principles. Do not mechanically copy the examples.
+
+# TARGET FEEL
+
+Good Bibaling verse should feel:
+
+- natural in the mouth;
+- musical without sounding manufactured;
+- simple without becoming flat;
+- warm, vivid, and playful;
+- faithful to the illustration and emotional beat;
+- pleasant for an adult to repeat many times.
+
+The goal is not literal translation.
+
+The goal is a Slovenian read-aloud experience that feels intentionally written.
+
+# POETIC WORD ORDER
+
+Do not treat ordinary prose order as the only acceptable Slovenian order.
+
+Poetry may use marked word order when:
+- it improves cadence;
+- the meaning remains clear;
+- the line sounds intentional aloud;
+- a native speaker approves it;
+- it strengthens a repeated refrain.
+
+Approved example:
+
+Kako zelo imam te rad!
+
+Why it can work:
+- the final “te rad” gives the refrain a strong landing;
+- the marked order feels poetic rather than accidental;
+- it is memorable and emotionally direct;
+- the parent explicitly approved its rhythm.
+
+Do not automatically rewrite it as:
+
+Kako zelo te imam rad!
+
+The ordinary version may be more neutral prose, but it is not automatically better verse.
+
+Editorial lesson:
+
+Judge a refrain by the whole book’s voice, cadence, and native-speaker response—not ordinary prose order alone.
+
+# APPROVED REFRAIN STRATEGY 1
+
+Kako zelo imam te rad!
+
+What it preserves:
+- explicit declaration of love;
+- strong rhythmic ending;
+- universal emotional meaning.
+
+What it loses:
+- direct mushroom wordplay.
+
+Useful structure:
+
+[first rhyming pair]
+[first rhyming pair]
+Kako zelo imam te rad!
+[line that rhymes naturally with rad]
+
+Do not overuse rad / zaklad / grad / hlad. Change the structure when natural options run out.
+
+# APPROVED REFRAIN STRATEGY 2
+
+Ti si moja ljuba goba!
+
+What it preserves:
+- mushroom identity;
+- affectionate tone;
+- a memorable Slovenian book-level device;
+- no narrator-gender complication.
+
+What it changes:
+- it adapts the emotional meaning rather than translating “I love you so much” literally.
+
+Useful structure:
+
+Ti si moja ljuba goba,
+[line that rhymes naturally]
+[second rhyming pair]
+[second rhyming pair]
+
+Risk:
+
+Do not overuse goba / soba / podoba / roba.
+
+# BOTH REFRAINS CAN BE GOOD
+
+Do not force one “correct” solution.
+
+“Kako zelo imam te rad!” and “Ti si moja ljuba goba!” solve different parts of the source.
+
+One complete version may preserve emotional meaning.
+
+Another may preserve mushroom identity and wordplay.
+
+That is a legitimate reason to give the parent two polished versions.
+
+# STRONG EXAMPLE — NATURAL AABB
+
+Ti si moja ljuba goba,
+v temi žari tvoja podoba.
+Ko pade noč, zasiješ za nas,
+čarobna lučka sveti ves čas.
+
+Why it works:
+- goba / podoba and nas / čas work aloud;
+- word order is clear;
+- imagery matches the scene;
+- vocabulary is simple;
+- each line contributes meaning.
+
+Do not reuse the same rhyme words repeatedly elsewhere.
+
+# SHORT REFRAIN AS A BUTTON
+
+Moja ljuba goba!
+
+A short refrain can sit after a complete stanza rather than carrying the rhyme itself.
+
+Use this when forcing the refrain into the stanza weakens the verse.
+
+# REFRAIN CASE STUDY: ENGLISH MUSH/MUCH PUN
+
+The English source combines:
+- “I love you so much”;
+- mushroom imagery;
+- “mush” as affectionate wordplay.
+
+A Slovenian version cannot preserve every layer literally.
+
+Valid strategies include:
+
+1. Explicit love:
+   Kako zelo imam te rad!
+
+2. Mushroom affection:
+   Ti si moja ljuba goba!
+
+3. Short affectionate tag:
+   Moja ljuba goba!
+
+4. Two complete versions using different strategies.
+
+Do not call one strategy wrong merely because it preserves a different layer.
+
+# NATIVE-PARENT EDITORIAL RULE
+
+If the parent says:
+- “this has better rhythm”;
+- “this is perfect”;
+- “this does not rhyme”;
+- “we would not say it like that”;
+
+treat that as central editorial evidence.
+
+Do not override it with mechanical scansion or ordinary prose preferences.
+
+If the parent approves exact wording, preserve it exactly until asked to revise it.
+
+# CREATIVE SELECTION PROCESS
+
+Before showing one couplet:
+
+1. Draft at least five different sentence structures.
+2. Test each aloud internally.
+3. Remove filler and accidental inversions.
+4. Remove source drift.
+5. Remove weak rhyme.
+6. Keep poetic word order when it genuinely improves cadence.
+7. Choose the strongest surviving option.
+
+# NATURAL DOES NOT MEAN PROSAIC
+
+A line may be:
+- grammatically marked;
+- compressed;
+- reordered;
+- more lyrical than everyday speech;
+
+and still be good children’s verse.
+
+Reject marked word order only when:
+- it sounds accidental;
+- meaning becomes unclear;
+- it exists solely to reach a rhyme;
+- native-speaker reading feels awkward.
+
+# CHILD-FRIENDLY DOES NOT MEAN DIMINUTIVE
+
+Do not automatically create:
+- vodice;
+- posodice;
+- zgodbice;
+- lučkice;
+- mamice;
+
+merely because they sound childlike or rhyme.
+
+Use a diminutive only when it is natural, adds warmth or scale, and is not a rhyme crutch.
+
+# BAD — RHYME-FORCED LANGUAGE
+
+Poljubček v lase ji mama da,
+po stopnicah navzdol se nato poda.
+
+Why it fails:
+- “se nato poda” sounds written for rhyme;
+- the adult reader hears the machinery;
+- poetic order is not the problem—the weak phrase is.
+
+# BAD — SUGARY DIMINUTIVES
+
+Mala lama hoče malo vodice,
+mama pri koritu pomiva posodice.
+
+Why it fails:
+- vodice / posodice feels generated;
+- diminutives do the rhyming work;
+- the language becomes cute rather than good.
+
+# BAD — PROSE BROKEN INTO LINES
+
+Hoče piti.
+Mama je v kuhinji pri koritu.
+
+Why it fails:
+- understandable but shapeless;
+- no memorable cadence, image, or device.
+
+Simple language still needs literary form.
+
+# BAD — INVENTED FILLER
+
+Vodo bi pila! si mala želi,
+mama pri koritu posodo drži.
+
+Why it fails:
+- “posodo drži” adds no meaningful image;
+- it exists mainly to rhyme;
+- it weakens the source.
+
+# BAD — WEAK RHYME PAIRS
+
+pravi / zabavi  
+bolj / dol  
+je / že  
+kliče / pokliče
+
+Problems may include:
+- unsatisfying sound or stress;
+- partial rhyme;
+- repeated word stem;
+- mechanical selection.
+
+# RHYTHM QUALITY
+
+Do not count syllables and declare success.
+
+Listen for:
+- lexical stress;
+- strong-beat spacing;
+- awkward word boundaries;
+- long weak stretches;
+- paired lines wanting incompatible reading speeds.
+
+Bad example:
+
+Kosmati prijatelj na drevesu sedi,
+z visoke veje name pazi in bedi.
+
+Problem:
+
+“prijatelj na” catches in natural speech. End rhyme does not repair the line.
+
+# FINAL CHECK
+
+Before showing a stanza, ask:
+
+- Is it enjoyable aloud?
+- Does it fit the picture?
+- Is the emotional beat intact?
+- Is the rhyme real?
+- Is the vocabulary suitable?
+- Is any unusual word order purposeful?
+- Did I choose this because it is good, or because it was the first rhyme?
