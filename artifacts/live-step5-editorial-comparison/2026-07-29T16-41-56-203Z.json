@@ -1,0 +1,356 @@
+{
+  "experiment": "step5-editorial-comparison-abc",
+  "createdAt": "2026-07-29T16:41:56.197Z",
+  "sourceArtifact": "/Users/leamarolt/Bibaling/bibaling-translator/artifacts/live-step5/2026-07-29T16-29-23-901Z-rhythm.json",
+  "originalEnglishRefrain": "I really love you oh-so-MUSH for watching over me.",
+  "sourceTexts": [
+    "I love my happy, hairy friend who's nestled on a tree.\nI really love you oh-so-MUSH for watching over me.",
+    "These mushroom friends have many hands to hold and spin around.\nI really love you oh-so-MUSH! You lift me off the ground!",
+    "I spy my jiggly orange friends.\nIt's fun the way you move.\nI really love you oh-so-MUSH!"
+  ],
+  "visualContexts": [
+    "A friendly mushroom narrator looks toward a large hairy forest friend resting beside a tree.",
+    "Orange mushroom friends hold hands in a circle and spin around the central mushroom.",
+    "The mushroom narrator watches bright orange friends moving playfully in the forest."
+  ],
+  "cachedPrivateCandidates": [
+    {
+      "name": "Grateful Embrace",
+      "refrain": "Za vašo skrb vam hvalo dam, saj rada vas imam.",
+      "approach": "Warm collective refrain with a clear dam–imam rhyme.",
+      "directionIndex": 0
+    },
+    {
+      "name": "Watchful Friends",
+      "refrain": "Ker name pazite, vam hvalo dam — rada vas imam.",
+      "approach": "Cause-first structure with a lively pivot and exact dam–imam rhyme.",
+      "directionIndex": 1
+    },
+    {
+      "name": "Dear to Me",
+      "refrain": "Čuvate me vi, zato ljubi ste mi.",
+      "approach": "Compact call-and-response cadence built on the spoken vi–mi rhyme.",
+      "directionIndex": 2
+    },
+    {
+      "name": "All My Friends",
+      "refrain": "Name pazite vi, zato dragi ste mi vsi.",
+      "approach": "Collective address with an energetic vi–vsi end rhyme.",
+      "directionIndex": 3
+    },
+    {
+      "name": "Tender Thanks",
+      "refrain": "Rada vas imam, za vašo skrb vam hvalo dam.",
+      "approach": "Love-first declaration with a balanced imam–dam rhyme.",
+      "directionIndex": 4
+    }
+  ],
+  "constants": {
+    "model": "gpt-5.6-sol",
+    "timeoutMsPerCall": 90000,
+    "maxOutputTokensPerCall": 3500,
+    "automaticRetries": 0,
+    "maximumEstimatedCostUsd": 0.375
+  },
+  "prompts": {
+    "current": "AUTHORITATIVE BIBALING STANDARD\nSource: docs/translation/bibaling_gpt_instructions_v8_parent_led.txt\nSource: docs/translation/bibaling_slovenian_verse_guide_v4.txt\n\nRole: You are Bibaling Book Adapter, an English-to-Slovenian children's-book literary adapter. Write for a Slovenian parent reading aloud repeatedly, not for literal translation.\n\nParent authority and workflow:\n- The parent's selected priority is a binding contract, not a preference to mention and ignore.\n- Preserve exact parent-approved wording until the parent asks to revise it.\n- Solve the book-level refrain, structure, rhyme density, voice, and meaning/music balance before scaling.\n- Offer genuine choices with materially different literary strategies.\n- Preserve source action, emotional progression, illustration details, page-turn logic, and approximate text density.\n- Never invent unsupported props, locations, gestures, dialogue, motives, metaphors, or emotional claims to complete a rhyme.\n- Distinguish the character featured in one spread from the audience of a recurring book-level refrain. A spread may describe one friend while a declaration such as \"you all\" addresses the wider group. Follow the corrected source text for singular/plural address; do not override explicit collective wording merely because one character is visually foregrounded.\n\nMandatory Slovenian baseline:\n- Every displayed line must be grammatical, idiomatic, natural Slovenian suitable for a child and enjoyable aloud.\n- Do not use English syntax, incomplete grammar, placeholders, slash forms such as \"rad/a\", or gender alternatives.\n- Infer grammatical gender from the source and illustration. When the narrator or referent is a mushroom described as \"goba\", it is grammatically feminine: use \"rada\", never \"rad/a\".\n- Poetic word order is allowed only when meaning stays clear and it genuinely improves cadence. Reject inversion used merely to reach a rhyme.\n- Reject filler, sugary or rhyme-crutch diminutives, obscure vocabulary, prose arbitrarily broken into lines, repeated stems presented as rhyme, and exhausted rhyme-family repetition.\n\nMandatory verse process whenever rhyme, rhythm, meter, refrain, or verse treatment is requested:\n- For each option that may be displayed, privately generate and compare at least five distinct candidate structures.\n- Judge rhyme phonetically in continuous spoken Slovenian, including lexical stress, phrase grouping, strong-beat spacing, attached prepositions, stress clusters, and paired-line reading speed.\n- Matching spelling is not enough. Repeated words or stems are not rhyme.\n- A rhyme-priority option that is faithful but unrhymed fails and must not be displayed.\n- Never force rhyme through invented expressions, distorted meaning, awkward word order, filler, incomplete grammar, or English syntax.\n- Before returning text, reject weak rhyme, source drift, accidental inversions, awkward word boundaries, and lines chosen merely because they were the first rhyme found.\n\nKnown failure examples are prohibitions, not book-specific translations:\n- Reject forced phrases such as \"čisto do gobic\".\n- Reject invented meaning such as love growing like mushrooms when the source does not say or show it.\n- Reject slash forms such as \"rad/a\".\n- Reject fragments or incomplete, unnatural Slovenian.\n- Reject invented, malformed, or misspelled Slovenian words. Verify that pronouns, possessives, agreement, and inflected forms are real standard Slovenian and correct in context.\n- Reject rhyme judgments based only on shared final letters, a similar-looking suffix, or loose orthographic resemblance. The stressed vowel and following sound sequence must form a convincing rhyme in continuous speech.\n- When two endings have different stressed sound patterns or only an unstressed suffix in common, treat them as non-rhyming even if they look similar on the page.\n\nDo not reveal private candidate deliberation or chain of thought. Return only the requested structured JSON.\n\nROLE: Independent Slovenian literary editor and quality gate. Return exactly three parent-ready literary directions. Start from the strongest submitted approaches, but repair an approach when necessary before selecting it. Never pass a flaw through merely to fill three slots.\n\nSOURCE TEXTS\n1. I love my happy, hairy friend who's nestled on a tree.\nI really love you oh-so-MUSH for watching over me.\n2. These mushroom friends have many hands to hold and spin around.\nI really love you oh-so-MUSH! You lift me off the ground!\n3. I spy my jiggly orange friends.\nIt's fun the way you move.\nI really love you oh-so-MUSH!\n\nESSENTIAL VISUAL CONTEXT\n1. A friendly mushroom narrator looks toward a large hairy forest friend resting beside a tree.\n2. Orange mushroom friends hold hands in a circle and spin around the central mushroom.\n3. The mushroom narrator watches bright orange friends moving playfully in the forest.\n\nLOCKED PRIORITY: RHYME AND READ-ALOUD RHYTHM\nEvery displayed translation must use a coherent verse treatment with genuine phonetic Slovenian rhyme and natural spoken rhythm. An unrhymed, weakly rhymed, spelling-only, repeated-stem, or rhythmically awkward result fails even if faithful. Reject and replace it before returning.\nCREATIVE FREEDOM: Sound naturally Slovenian. Preserve story and illustrations while freely repairing awkward lines, jokes, and rhymes.\n\nSUBMITTED PRIVATE DRAFTS\n[{\"name\":\"Grateful Embrace\",\"refrain\":\"Za vašo skrb vam hvalo dam, saj rada vas imam.\",\"approach\":\"Warm collective refrain with a clear dam–imam rhyme.\",\"directionIndex\":0},{\"name\":\"Watchful Friends\",\"refrain\":\"Ker name pazite, vam hvalo dam — rada vas imam.\",\"approach\":\"Cause-first structure with a lively pivot and exact dam–imam rhyme.\",\"directionIndex\":1},{\"name\":\"Dear to Me\",\"refrain\":\"Čuvate me vi, zato ljubi ste mi.\",\"approach\":\"Compact call-and-response cadence built on the spoken vi–mi rhyme.\",\"directionIndex\":2},{\"name\":\"All My Friends\",\"refrain\":\"Name pazite vi, zato dragi ste mi vsi.\",\"approach\":\"Collective address with an energetic vi–vsi end rhyme.\",\"directionIndex\":3},{\"name\":\"Tender Thanks\",\"refrain\":\"Rada vas imam, za vašo skrb vam hvalo dam.\",\"approach\":\"Love-first declaration with a balanced imam–dam rhyme.\",\"directionIndex\":4}]\n\nHARD SOURCE-RELATIVE CONCISION CONTRACT\nSource refrain: I really love you oh-so-MUSH for watching over me.\nSource word count: 9\nMaximum option word count: 12\nSource character count: 50\nMaximum option character count: 65\nMaximum sentences: 1\nMaximum clauses: 2\nMaximum semantic lines: 2\n\nConstruction-specific clarification: the playful_hook may contain one short repeated pickup plus two rhyme-bearing phrases (at most three compact phrase units total). This is the only exception to the general two-clause limit. It must remain inside the same word, character, sentence, and line budgets.\n\nSOURCE-GROUNDING RULE FOR THIS GATE\nThe corrected English is authoritative for who is being addressed. Do not infer that a recurring refrain must be singular merely because one spread visually foregrounds one friend. If the source declaration says \"you all\" or otherwise addresses the wider group, plural Slovenian such as \"vas\" can faithfully serve as the fixed book-level refrain while surrounding scene lines describe a singular featured friend. Conversely, do not require one fixed refrain to encode every scene-specific noun number.\n\nUse this strict priority order: (1) fidelity to source meaning, (2) natural contemporary Slovenian, (3) refrain-like concision and repeatability, (4) read-aloud rhythm, and then (5) rhyme without harming the first four. Privately verify source and picture fidelity, no unsupported invention, child-friendly language, resolved gender, and locked-priority compliance.\nWhen RHYME AND READ-ALOUD RHYTHM is locked, every standalone refrain must itself contain convincing spoken rhyme. Do not defer rhyme until later page text. A merely rhythmic or unrhymed refrain fails. Declare every rhyme pair in rhymePairs. Each pair's exact ending words must occur at line or phrase endings, be different words, and rhyme phonetically in continuous Slovenian.\n\nEditorial process (perform privately; do not return analysis or scores):\n- compare all supplied valid candidates and return three visibly contrasting creative forms, not three simple declarations or minor variations;\n- return exactly one construction of each assigned type:\n  1. couplet: exactly two short visual lines whose endings form a genuine spoken rhyme;\n  2. playful_hook: a compact refrain with observable, purposeful echo/repetition or wordplay and at least one genuine rhyme pair;\n  3. lyrical_refrain: one flowing visual line made of two balanced phrases, without repeated hook words, with a genuine rhyme pair;\n- construction labels are claims the wording must visibly prove; never attach a label to text that lacks its structural properties;\n- the server may send only two or more private candidates that passed deterministic rules. Treat survivors as inspiration. If an assigned construction is missing, independently write it from the authoritative source; never derive two finalists from the same seed;\n- use a different non-negative sourceCandidateIndex for each finalist developed from a survivor. When only two survivors are supplied, independently create exactly one missing assigned construction from the source, set its sourceCandidateIndex to -1, and do not reuse either seed's wording, opening, clause order, or rhyme pair;\n- ensure the set has visibly different openings, clause order, phrase inventory, repetition pattern, rhyme pairs, and structural form; sharing the same declaration with small changes does not count;\n- when quality is equal, prefer the set with greater imaginative range for the parent;\n- keep every final refrain within the exact source-relative word, character, sentence, clause, and line budgets above;\n- substantially shorten overlong survivors before returning them; never select one merely to fill three slots;\n- reject or compress any option that becomes a miniature verse, adds explanatory question-and-answer absent from the source, introduces new characters/actions/settings/imagery, adds a scene consequence, repeats words as padding, or requires theatrical/inverted Slovenian;\n- silently repair inconsistent rhyme schemes, stiff wording, unsupported actions, density problems, or weak spoken rhyme;\n- after repairing, re-check the complete direction against every gate;\n- return exactly three distinct, parent-ready options with an exact Slovenian refrain, a short English label, a concise structural description, and only the gender dependency needed by downstream translation;\n- preserve source fidelity and the parent's locked priority; never weaken either to fill a slot;\n- output only the required three options, including sourceCandidateIndex, construction, and all exact rhymePairs used for private server validation.\n\nEDITORIAL REGRESSION GUIDANCE\nThe following rejected phrases are quality examples for private editorial judgment, not deterministic string bans:\n- \"Čuvate me vi\" is unnatural inversion; \"čuvati\" is inappropriate or regionally marked here when neutral Slovenian is available.\n- \"Hvala za vas\" is a literal construction that a Slovenian parent would not naturally say.\n- \"Moje srce vas obožuje\" is stiff and overly grand for this compact children's-book refrain.\nAvoid Croatianisms or regionally marked vocabulary when a neutral Slovenian form exists, inversion created solely for rhyme, literal English constructions, overly formal emotional language, and any rhyme a Slovenian parent would not naturally say aloud.\n\nNever output slash forms, placeholders, \"čisto do gobic\", invented love-growing-like-mushrooms meaning, incomplete Slovenian, forced rhyme, or narrator-gender ambiguity. Reject actual unsupported claims, but do not reject a direction merely for a hypothetical risk that can be resolved naturally while writing the finished verse. Finished-verse rhyme enforcement still happens on every generated translation.",
+    "revisedNativeEditor": "VLOGA\nDeluješ kot izkušen slovenski urednik otroške književnosti. Iz petih zasebnih osnutkov pripravi natanko tri kratke, končne refrene. Vrni samo strukturirani JSON. Ne vračaj razlag, ocen ali besedila za starše.\n\nIZVIRNI ANGLEŠKI REFREN\nI really love you oh-so-MUSH for watching over me.\n\nCELOTNO POTRJENO BESEDILO\n1. I love my happy, hairy friend who's nestled on a tree.\nI really love you oh-so-MUSH for watching over me.\n2. These mushroom friends have many hands to hold and spin around.\nI really love you oh-so-MUSH! You lift me off the ground!\n3. I spy my jiggly orange friends.\nIt's fun the way you move.\nI really love you oh-so-MUSH!\n\nUSTREZNI SLIKOVNI IN VSEBINSKI KONTEKST\n1. A friendly mushroom narrator looks toward a large hairy forest friend resting beside a tree.\n2. Orange mushroom friends hold hands in a circle and spin around the central mushroom.\n3. The mushroom narrator watches bright orange friends moving playfully in the forest.\n\nZASEBNI OSNUTKI\n[{\"name\":\"Grateful Embrace\",\"refrain\":\"Za vašo skrb vam hvalo dam, saj rada vas imam.\",\"approach\":\"Warm collective refrain with a clear dam–imam rhyme.\",\"directionIndex\":0},{\"name\":\"Watchful Friends\",\"refrain\":\"Ker name pazite, vam hvalo dam — rada vas imam.\",\"approach\":\"Cause-first structure with a lively pivot and exact dam–imam rhyme.\",\"directionIndex\":1},{\"name\":\"Dear to Me\",\"refrain\":\"Čuvate me vi, zato ljubi ste mi.\",\"approach\":\"Compact call-and-response cadence built on the spoken vi–mi rhyme.\",\"directionIndex\":2},{\"name\":\"All My Friends\",\"refrain\":\"Name pazite vi, zato dragi ste mi vsi.\",\"approach\":\"Collective address with an energetic vi–vsi end rhyme.\",\"directionIndex\":3},{\"name\":\"Tender Thanks\",\"refrain\":\"Rada vas imam, za vašo skrb vam hvalo dam.\",\"approach\":\"Love-first declaration with a balanced imam–dam rhyme.\",\"directionIndex\":4}]\n\nUREDNIŠKA HIERARHIJA — UPOŠTEVAJ JO V TEM VRSTNEM REDU\n1. Idiomatična, sodobna slovenščina, ki bi jo slovenski starš brez zadrege večkrat izgovoril na glas.\n2. Zvestoba pomenu angleškega izvirnika.\n3. Gladek ritem in lahka ponovljivost.\n4. Prepričljiva, nevsiljena zvočna rima.\n5. Smiselna raznolikost med tremi možnostmi.\n\nRima in raznolikost nikoli ne upravičita nenaravne slovenščine.\n\nOBVEZNA JEZIKOVNA MERILA\n- Nikoli ne obračaj običajnega slovenskega besednega reda samo zato, da dosežeš rimo.\n- Ne uporabljaj mašil ali nepotrebnega ponavljanja besed, kot so »vsi«, »prav« in podobni poudarki.\n- Ne izberi zaznamovane, hrvaško zveneče, arhaične ali pretirano knjižne besede, če obstaja nevtralna slovenska možnost.\n- Ne uporabi slovnične oblike z neustreznim ali po nepotrebnem omejenim spolom oziroma številom.\n- Angleške zveze prevedi tako, kot bi isto misel naravno povedali po slovensko; ne prevajaj jih dobesedno.\n- Ne uporabljaj vzvišenih izrazov, kot je »obožuje«, če izvirnik nima takega čustvenega registra.\n- Naravna približna rima je boljša od tehnično natančne rime, dosežene z okorno skladnjo.\n- Če je zasebni osnutek slab, ga zavrzi. Končne možnosti niso dolžne ohraniti njegovega besedila.\n- Vsak predlog v mislih preberi na glas.\n- Pri vsakem se vprašaj: »Bi slovenski starš ta stavek udobno večkrat ponovil med branjem malčku?«\n\nNEGATIVNI UREDNIŠKI PRIMERI — NE POSNEMAJ JIH\n- »Ker skrbite zame, rada imam prav vas same.«: »prav vas same« je prisiljeno, lahko po nepotrebnem odpira vprašanje spola in očitno služi rimi z »zame«.\n- »Vsi, prav vsi — pazite name, pri srcu ste mi!«: »Vsi, prav vsi« je mašilo; »pazite name« zveni kot navodilo; celota je ritmično natrpana.\n- »Rada vas imam, za vašo skrb vam hvalo dam.«: »vam hvalo dam« je nenaraven obrat, narejen zaradi rime z »imam«.\n- »Čuvate me vi«: nenaraven obrat in neustrezno oziroma zaznamovano besedišče.\n- »Hvala za vas«: dobesedna, v slovenščini nenaravna zveza.\n- »Moje srce vas obožuje«: toga in pretirano vzvišena formulacija.\n\nPOZITIVNA SMER ZA TA POMEN\n»Ker skrbite zame vsak dan, prav vse vas rada imam.« ni nujno končna rešitev, vendar pokaže pravilno hierarhijo: najprej naravna slovenščina, nato zvest pomen, nato gladek ritem in šele nato nevsiljena rima.\n\nMOŽNE TEHNIKE\n- balanced_couplet: uravnotežen dvovrstičen refren\n- repeated_hook: kratek ponovljeni vzklik ali sidro\n- call_and_response: naraven klic in odgovor\n- internal_rhyme: notranja rima\n- end_rhyme: končna rima\n- rhythmic_parallelism: ritmični paralelizem\n- grounded_lyrical_image: kratka lirična podoba, ki jo podpira izvirnik\n- direct_affection: neposredna ljubeča izjava\n\nIzberi tri tehnike, ki najbolje služijo temu konkretnemu izvirniku. Ne uporabi neprimerne oblike samo zato, da zapolniš seznam. V dejanskem jeziku morajo biti vidni različni začetki, ritmične oblike, rimski pari in skladenjske zgradbe. Ne vračaj treh sopomenskih preoblikovanj.\n\nOMEJITVE\n- Natanko tri končne možnosti.\n- Vsaka mora biti kratka, samostojna, slovnično dokončana in primerna za ponavljanje.\n- Največ 220 znakov na možnost.\n- Brez novih dejanj, oseb, prizorišč ali čustvenih trditev, ki jih izvirnik ne podpira.\n- Goba kot pripovedovalka je ženskega spola, kadar oblika razkriva spol.\n- V rhymePairs navedi dejanske končne besede rimskega para.\n\nVrni samo zahtevani objekt options."
+  },
+  "results": [
+    {
+      "id": "A",
+      "label": "Current prompt · Sol low",
+      "editorialReasoningEffort": "low",
+      "latencyMs": 69722,
+      "usage": {
+        "inputTokens": 2562,
+        "cachedInputTokens": 0,
+        "outputTokens": 2592,
+        "reasoningTokens": 2310
+      },
+      "estimatedCostUsd": 0.09057,
+      "responseId": "resp_009738509e8adf2d006a6a2c5e4824819ea565bfb7cad2c33b",
+      "responseStatus": "completed",
+      "options": [
+        {
+          "refrain": "Ker name pazite, vam hvalo dam,\nsaj rada vas imam.",
+          "technique": "couplet",
+          "rhymePairs": [
+            {
+              "endingA": "dam",
+              "endingB": "imam"
+            }
+          ]
+        },
+        {
+          "refrain": "Hvala, hvala vam; ker pazite name, rada vas imam!",
+          "technique": "playful_hook",
+          "rhymePairs": [
+            {
+              "endingA": "vam",
+              "endingB": "imam"
+            }
+          ]
+        },
+        {
+          "refrain": "Ker pazite name ves čas, rada imam prav vse vas.",
+          "technique": "lyrical_refrain",
+          "rhymePairs": [
+            {
+              "endingA": "čas",
+              "endingB": "vas"
+            }
+          ]
+        }
+      ],
+      "validation": {
+        "hardFailures": [],
+        "qualityWarnings": [
+          {
+            "code": "SOURCE_RELATIVE_SHAPE",
+            "message": "contains 3 clauses",
+            "option": 1
+          },
+          {
+            "code": "SOURCE_RELATIVE_SHAPE",
+            "message": "contains 4 clauses",
+            "option": 2
+          },
+          {
+            "code": "SOURCE_RELATIVE_SHAPE",
+            "message": "repeats a word consecutively as padding",
+            "option": 2
+          }
+        ]
+      },
+      "rawResponse": {
+        "id": "resp_009738509e8adf2d006a6a2c5e4824819ea565bfb7cad2c33b",
+        "object": "response",
+        "created_at": 1785343070,
+        "status": "completed",
+        "background": false,
+        "billing": {
+          "payer": "developer"
+        },
+        "completed_at": 1785343139,
+        "error": null,
+        "frequency_penalty": 0,
+        "incomplete_details": null,
+        "instructions": null,
+        "max_output_tokens": 3500,
+        "max_tool_calls": null,
+        "model": "gpt-5.6-sol",
+        "moderation": null,
+        "output": [
+          {
+            "id": "rs_009738509e8adf2d006a6a2c5f6a08819e9fd98a600f2c8c1e",
+            "type": "reasoning",
+            "content": [],
+            "encrypted_content": "gAAAAABqaiyjDzIQPo4H4hMKKpGe0mPsU7ePBhilX8CxBU5_aCcMUL4cMme7egDpdkzg08EA7tcNODWiMRGmx78_OaMYrEjGH2jhteuAAYmzykHQuIB06y-1QqLcOWQKookMYPobgJWx7uYnnC9J4QZQHGe3ZCoH2Ek5c_kcJToVmYA_rFB1p3SHFkHjs-scOF2qGLBW01SpvLtWsjwTjCbJ_FBJbIy9YwN2WadkY8mU2R-M6zyq_T-4Yq72077kLOORTMfbFJEyUlpyRJE5ikAWGKucfx7FZbDR7HKIeMFzEb3MDZVtRmNoRtMX__a3diNNanOJzIjl7FlJ6euI7bwdPsOzW16EnXQw46IMDYX7TQ9OGlah0nc_QfDRUD39PYGSAzvxauTxIF2EwwVbc5a3gV_oX6ZKiMxONtbJ2XYX9q1xWbf4PBQU4lerCPduw4EubEiQs14OLocnqjWwTTu_CbAUh7LoLIwmODLcgViIj6_dK7-rxs97Yc8WYCW8GGNuigfo4cLnDX4kbVrkrROenCq0O8wOKVaDyLcCTfCNNJ06_Jt98JhvBg25rQtFFgRbSAXaJh2h9Rm8tOdLn8rp713ShG7lNDMorMxLEdgQlSa8KvNE4C-rQJA9GCaZbvO7rn_oXVB4BUhTAqyL3l8YoUBzeMZfETFeLzpIDJDf-IFOTNxM4lVKEGa2zUA1ixNUkg4lbvcuEkUtYy0LNVLdFqZLE1uRrj7E5BXFtUE-3yU2jEPSxvhGtFJ__2OTTbVRVDKGT9P-s4WsQgIZml9k9rUnQJeV1jJpTD23e7l113542yKHKwDVSfPh4vgLe7568-8ma1xWdFpDQ-7-ASv-ynFVQI5jw_vRM6K5jfoVUc5JMrI8yj5Ma5e3G5_NJcWcG-bmLL8LiIDKie7gIdKY04vSaEjKHw75RM_-s3kccbgfJn9vEcWssKGjaIkN1m2xgUOUvzWgIaoRdMveCMq7X2Guc8UVevry3-WMlPoyRgrmLiaGSS4AobWWL6y5iH0EExkKqegply6YRFvdo_ZKM9EXAF-obFFXjQoBjZki-vkb8_b2At-h_hG2unnNyeD0SNwzvPk7ClCB9L1HlWCe_620Y0aFpZdhLb7JrRqeXWu7cwxw-jgnN6gfhbl_a8qcUAiAgkFASzxJaGO0Qh92C5hLzYqw6GEkdcUKKoN1xeX_YZVD2c9KTe36q0sXeN-590bFMJmsnronrZdeD7_p3pdKWNvI-I1NdDh0Pdvd3jwYpreVMwPEaCnOKijoFt-cRD66QfRqgn_yJfRponzhz7hCDrThwNqIGpNp-Kr0YSgK5XWnnfwS_p70iAe2aI-0ZNWP2mKPep2dKobQ9oHHksOmIzXbh-SGT3kFa8Br3u3gkWJoHZncUWDIwylUi0hf8KNbhLHNSU9vnJWxAv6XF9ST6JZCfmhhY4oioDCn5672AC2Fxw7VkyzOOpWLdFAftrv3ggqLJi9ZGi1qzgWzTZfTnZfLbQWWpWy_LqHFoEIY560Xp2NZ7l7WOK0Vrn45rXsx6IC24yS5xy5gugyXmkxCfkI_x8Jt_xAl_m3uMi9DvvJIY8Lp03NxNsYYUZ-oNjgX9C_Pg4pigNi7LyCNP4MqGg-lEh9zCPVDsRoFoakwcnxBThccud8bdSVu6rLewief7kFU2gOO4vXa4fEqiGurR9QsVkIKbLHA3QkO0pawI4eYM-3Zq34XjknpjhioL778Bk6cfR7zq9Mo2Bz_2rEhH43iQHlfcSeWAqdwqG7CdbTcbCzJoc1t0zCmM9MfJuQBN0XFZ6kmnIiRQ9-DYtWJsJXSB4eMmaPuwMZFtspqqAl2bCMqcTVCP6f2P1No_Owm1nrvS6j4jAoIRkwWiIAb_fRVl5FQY5l6d3t7welqf8vnEchKchGHvM5PxuueXkvjj0HVrD8K63UhaxFXNtCCSs8Fb47rF_j5TMtN4vhBNrpQ8gctHLVYb3rfz1jPEXfKJgymO4sjydpHxGRJ08GvY1nrKzCzIK5Aqt1pRtLHhpjeMwF3uS2I1XNadNccR26ehOEFn2Jen-15dv-n773dIXRUGdOm98j6YH1QlMF8w3Qc1lOwVCUqyWpb1XbpgIlXHMXE8yspUHncy38recv86ai7pAfRDwU_lex3QGaMTQlQgCw12Effh02lelgO_Cm0dQc7PQ3Buxk4LFEch4Q3U7f7vk0dfxSxa1Ekhig8N4KUvlY4xeDK33lTOD9jnL0NR7ZOgP0BzyPHEzXej3GxINkL2h30NTyxEdIdfBY5KX2WaXWLeMoowrUQ-J9QC3tfqeWMR-R7aV7p7cV1JuIstUB5sGMTr5MdIP6RWlo0_1YDmT5PK-RLhUswUM9y3n-wksfEI20ZT-BfpR_bufVT_JAkgDd9YMw_4Br_trAGbW_bqpDIOLzmasezvYqcuHV4ARo7SRZexxXyOtJu-FXo4e1WhdFEBVSTeNY1p9eHbFC6rRGTV5G1xuUveOjxfiBD4_bKe_rNPUQPzA3c0cqGDnM9g6Eie7b7s9gkDGVJ-f9D04xDOFtMUufk5yePCbggbeAKDK91ujhkXIdOzyIhG5404nzCjmsYrozoVC7lYVh21bDKQ5VD33RhhA5VQkaJXmamI_2s9mTw3CR15g3bmK8PJ7ff1RP4fvhC9NTams6XsUpIdCHEfl78PRP-7GQ7VA0PyfqaJCXp-h6j6iQEJdH3D_20pxJBnVZC55FgwiaFnvprWCKMgZo4ugP9Ug-hQavTqgxaBMV5m80emp13B1coS5fUpuIFS4_c2qxq-ATgsbKpU6s_9fyW0KXYM_XAfA9AnHewHMOhHZRbHJd0RGGblDBedgUFDYu8soCkDmHTdYCt3uw5eXckpPxKfhXUszPeQofBvOz-u2Olk_QBphPi-PUg1iZ3Vwim17bQ33zycNarf6uQ97lIzMqkKOg2aIo2Vy_zs-FsgBx36glXcYXTlvc37CQUtwvL0TWTcOUMtZn2VleOZK_zOM11XX7GHrN7qmBFJwzCYHbVTpxFkInjRx9LUWVw0K3rWXinYo310LpHn-47BF6nW12b_2e1itvcVgjBcp8qSvB7bptV07vPLCZJ4oULWV3xzUQqfikcnr62ApMKgdn4LhTq55YIWO__IJQgHg5gBoI-eP-WD_B--E8dWQKZMryb3pXjQw0DHbj6boiazRLkdUJGCOKrCvrCis9GBvouYoo5dGcolJ4XvkMfnNwzqejvjzPksXCHpLs_wIUeduqooZVasAw8v2YWB3b3MLxsSl2iFLf8obJdNXHNuAD5aB52Z8htDPZscqWDqhZ4Iz-FK1LMRnl_0n-aBtLwFmcSvEL_XJv7no1PeDHNrtPW2ck6jNs4BUOv9T2P8PE1aWs3hG5kViF3iO_j6DGNbSBSW_43N5ST2709PbUZjZMDbqWEtK44YptwBZRy_CN7Jfbm57V2kYosvHCKSf0npWgjdS4EcfBJlHy4GJjgoGJrj0IPtnjjv6v1oPjGL83rqPGmxGqxS4-HL9yThL3H6SrHM-RZGfnwnQQ6SXZk2XPkRdRprT4bJVsaB8554En8sIO5LdVya8t_z3EnHXM8jWo2MqamZ6BLzDGiGQ==",
+            "summary": []
+          },
+          {
+            "id": "rs_009738509e8adf2d006a6a2c6d4468819eb02772b7d9f74f3b",
+            "type": "reasoning",
+            "content": [],
+            "encrypted_content": "gAAAAABqaiyjpeQGAciBUG4fhVyh-6z4yiPgQoHWQtE5Nx2Z1bofPx4RPtNgukExhwlncmZXo7elZc1cp5Ch0hoie_mUg8uGM7KI3OlUJ14qNnz06OSNjg-bqMl4_NvQ9ymHpKoujTQNO8oovFz9VmF3qh_fqDm1k1g2juHIxSOCg4xUFhBo4RPMCVxOVcLvy3Og_DT-OnPxQq6-CHvSnBCDROC5BZBpae--zbMnz2f3kbTlJwgjU9Nqnnga8l5ZYoKmYq0hpWAK9Pa0Bnw-NNP7QbMh4wgeqKDN9TDwwIHz7kYwIxE8smeADpnMqOdrImcx9omRC6vKADNbeFu7w9I8N5Ks0OkPtNGfBcN6_wJjl5kFJaIQsKjS06O8LAhEaKpLr5YpzEs4Si5Qk6WnfnzxSKYR1veMktLvg7tS1ncAicqrmG8Lpz0Bq7dRzy51xpyVNf_BdSJuankDV-mrDh8qfAcR11YrOVwQu0gJqqRzG5y2d8F1HwfB2K9e09BCXGH4WEixzY_eoZLtqU-Ewo7CggsMQfokN78hkZ002kbgjJlewmHK8KwdtZkrQmDakQAZ-3rTJICXLT-6Kft3bN0ychcCXEJ-ij2TsrnQa6rlxRUJyTK8KkAD4JlDxCPFK0v_NDtV8qGMWTlq-OZzVe3BWnTwkDOXQYbUs7yFbVh1b16uR7AswEfl2k3TTdFiIdqzOsPOL92437y3YAR0TUqk_H3NWmg_Uqio2Dzt49fgiKAuw8st_ehHTkyAZbPftZKlkbEknrpZ_y9FHgPvpSYsTyfiU-tgZVYvZmz20opY9WRNdAXQXvsyt0ZuzTLxR0TVXvSgdcUHju9EIMDV_ImlxywllCVagwj2I_7ARU8YkC5oyJuXvoseSIe_bp9ZTt3nBUkTXHrJ7wzatpiSG2KAL9bAQNl5hAkt73J2IH_6NvKq4NtdDBRfciw5TSKr3zcg0HM6pXiirZLju36lZPB9OugjKsfk1Acz7Xw7v1WJNT4BYl5F0yJfeD2-Hdo1bAbI0_y021l3aLVHaFNndlbYPDbavM6eMIIJagaP4a33b8GTkxKLMOlhODMy2BlzwKFFDk3f1u-577GTfoEkgi4i2bdMah9JVIY4ABXQg8UYoZmr8oCe7vgP8XLfBwebAeJs2QvJhVnJXNXyePKBagGNwuYi5BJ7CVka7GlYzFn8YhjEXz0_RoXU1g0dYrS4Eon0iIK2jhXmlFrBuyzmVvcDUlXOwdqRqs4YYVV7z7gF2EmQs8Z6B0q81LT9XgG8CPca8s82MmP6cavkpVu-vgDb6lRxInSvj11cqD9WkvyvgHp4L9rVSandg2K7dFXMO4KpOHTUSMKoMBz41HGko5igc93CGgiolVDRfAeW1aiQesOfS2kdlyiZ3uU4l2lTHC02btbz50weIdFX9VAUx-vQ9wptmjdbavrnbYpkI1-8clHlkKFf_ahMchOFFbEwMyMicuA8x8qKyG01ULS0SCct-BoNrQ4RL5M9UJ5lb5mFWD6pYBRRPKy_XFfuve_ejQCB8hbCdppzFlBVek5Oonp89HvSyuhHrEdoyH9uSAzFQRFKurWbFMhjvm1I5PktvVXkrrGCSrs8hzoO5p5VKk1pdHtJkjdgWkq9lrtaIiiKkckAmAZMWjX2syBnWZKdVQxPkuCACykUPCD3s3vSlFP8UILruusr_sqjepq0qJFY2jdnubKFPmfwYJWIy5fwSwxByt900j_kvbXn9sPMb6YQV1c3MIB7y8CDoHyhD0WLS0_jAqvD81S8ww8n7BK0fFrK81Iab5jdk0VGRSbuRpPwY_zXRlXsFsXgMPIgmX_VjUJNQpe999JUx9mqybbR7qtGh0NLOkQh396pKeqZpkVAOQo0ImVu2eoMRdJdTy7NXdBat0JmAqLNvqa8s7hwNqf-GeOPlZ0WHdy69UfhITTJOg_hdb_k-sqaQu6fs_TPbVr2s5dJcJBqEcLH4MXvyiPguXLiLTb4KvTYmUHKQlbHX-1LwPIOYoQA_TsrqjDQC1wG36MgqHe0r-v86TaSi8Lqw3idBQ5hWOR7-7uGYse_2fG7mkQ4L7RO_BMd5KMOzzdEeP6cTod_kj5fq5-8JyDCUasIEhYCS7p96azTHd4EjjE0Y4phv4oOOJXDj-xtPYIArNc5-WFhX6Ko0jDnib3xj2f9I5Iv8LNQowmK9izYlWvjKdX0Rsi9JCpCPX9-CiDCYllb1qnRwD5N_CNpS6TYsUKl7NSKFNeaE2FkzUqrybTJYc8-sVeIRGphkUHgarfggzmppYnoxDAjH9UsKdDsWt25sS92aeM2iQzGdYdlr8I2DnIFiduDJVySxsLye3ZLd7eeKpbcvqWSUl1EpqSakfrVIlKG_H6LM1dyd9BLWP4LUKkZoBCqJZI4tTjJze5YqmWI3rW0grfmwsqOaVFF-3DqvmFjRKrh8SXbw0Ufsj0WAvhZ1Qalm8uffYDO-nvC-tITqm6Tf4_Np-I57Ml0MsWdf_nzmsRHznf6DdzVEwFnQDwN_axjAv4IOS25uReOLeivcrb77aYhkwn_WTkXNejN5I1JS4tc_lKq7hYpjjmMJW1k6iSlbg2bKGfRsQfsjqvdUpxlFDeKpNERy67hpd65oq21DIZIGta-u655BTNI6AQv64CcY--Pv2HHOThaYzZeUW8648UnCd4c850ZyORtfShC5Rt28MtP7ReCnA7ySBPbX6Vmb3h-ouUMGSZQIMSqo6FSoquL3MPC9HPi7f7YI6W2zzpbs01Memq80byePmF-p3CuTGtMjDwKopkL7Ago4ByKwT_5-GIpcIcekg6Bh3imeIMTyppY5uJJeuW52iwoZs5ki8LzLbYUv867E42wz2xHIVGJyTK9orzX5ZshOvYQhJG5mbP-aMl-YSqOQ3y00lojJI9JEIeaq-OUdhZ1iHDFFRv4SZxzMdM1VReEEH8QbpHcjkJf55rqOCX_Vgugj4Tx0Q5P9l6KSOmb7WctMov2GxrBWJAp9VBBMekVSgFxbCWpzg1gJTFERb2dC_73Ah0hNUvnyziza5OKsZh32yH6eFHfF5n4zhzK7u8fQhiC7E-9a4CLLZOQnboPhH7kDYXgtSBqyMJz_BIgigpOCpTnrTGQCaN7LHaEovAWpXN8I--9UQjH4hzrD3EyKu2ENKS3NnMVL2c-JOXoNhWX-C3ykyB2hWjKCTmCSH79usw_WfqD2a9oHXPwO7FxcZyW-xLWxBcRB3jkpjXHDUNa870Iz2cfJ9v53g3enZhe3aV1M6aZbz3Xxa12EY9FcUL5kfucm29JO7ahXKU-uobvMiwSXwyCV4y27bJRz96A5Xu1lfdGdUacLSjX3QQyItkPl5it45iExZscfcv6pDlGFranFNNEy-9f0qBEpCUovhR5o5VNouiGMKZ4dgZzLFP3Vlp7oHt4eUOSCM-4X---pcGKg-xqPzo0BIvGwguoSRwDR61byZrNS5kmdcmyoCiaDJ8Bq-8Vq83QykrLnSTcbafH8pibKPqX74mGCKIvPWCoW3RsmOClH2jHPExL-iMYpw==",
+            "summary": []
+          },
+          {
+            "id": "rs_009738509e8adf2d006a6a2c7cee04819ea63fbe3c9e35e10a",
+            "type": "reasoning",
+            "content": [],
+            "encrypted_content": "gAAAAABqaiyjiTI8ZIrL3nrq6FB9p_fHo0RTb-yk9mwiQKxJbzp3K1mI4-FKz3qg31Nmnw0Ea-ryFmzZbWSFU_YoigyPsvh5re6x3XNGUzlXsYeQPgC247IsxqW7D0lfQO8Y-V5mopMrGfQwT5_x2THFcSM2CfXJIvXmUMGRRdOtCRdN190Hqrn3vPIsSOXIyUlSuXyhngQyyH14cQCmJhC90Hd1uyTeEG2gIxNSXmUP6hoc-2N-q7ilc0atsAoctv66opIcN6bL5RSgwzmQ5n5axI_HT1mEIgbAN-phxIcbYvjA1VS-P6ab4DR7TCeS6yz9el790QkoZH82i7ZYIq6a04s5Oow3wZ0jQjUzojBMSuT3umIl89l2Xm6mJwNlWKwC82ZezcoJQsTf8_0lI-P7OgjO-zEBfw4XHKLNGcbsYRctTqIKsEbGkz61JNeDErGu7mEZhHpyHCZ_GrJoWR9to2xqVGl4lC0q5fnOu6PUl8RoJ3VoV31FCnauM7QW-KWIzb8huDRGuSDRJLzv3rRWQcskkSZYt9uCCYQ2xNxarLsvdc3cTTdnB3Efxt23RURW7qznjdC02SGnTdN5EVVvPeEow6QTCIbSxl_Fa6KZ4ZOU7mLPotGhHAuKDOUp1T5eLl7LRdlJcHHw-qNaOLY4CR_G-ktCgWzjscmFCGZBvYETACs1qw3BQJKfZKaQWzRmqEby6UdInfXTUfPwKrVL8MPP8MtixuebkIWpdKJw2_IVljoeS8HVBRSOpQN_U98DI30KfacnUFAHuT6812FZFxbi6f0YZP0sM3eeZZQUVuBj_jTMylDBAkL_AEMmapg29iJbhzAUBfLj7T850SfQVFYBYLSngjgk65mh9cGVX2pSUYuhwXfoUd633W8NMXnVPgnUm9iJiDza7qk1wVmJ324LKJs18nWWXSgZVRhrzdFh85vCYIgQ6BpA7wJXYiv_5yJhBQpySO--AyhyvDLAyIQCQRjps7dCor9HIhvAA6FRWn1g2itCRRnb9PIDld3qS9C7pj5Ocr-NKUHuNBFqOtVNtTa_pJ3zCzCh8nHxEmI85LIGKPgjXDfw_QD-umnSdbkK_tk_mlZPdY5e5R1rzCt-4ejanio86XenJ7VkEiJubOM-9Clg12luVtkQpOPbndRJ34J4km0XeWMATKbBRR4uKxznICDD95b9ga79oVqF7XwlTIb7yegrb_iveBAEnvfgtM_JscIjQWFB1LimCKQfZGeJC7unLfgDZ0f-jt6_G_AGbJwLLVwnO8XiW4vm7Fpwx6Huhi8oq77CWtXNRwW19yES5WITveyD27s0k4TlH9_qM95UOov-pZR2X9yhODnh1IG6G8QMiYaGkqg6KnQ1b24se01-dsRsh8XCCji16J5zc2vtb60Kk-7bB53goFYv9ilgCUXZPolFct-IEthp-CfibdOpY5gndVVziOBraPUfFd2NFRSbsnVhkGYaaBVigBFvxyvvoLeBy0EnlNJqA1ifaU96SK9rMaFDQBHiNrhlsXMZDW3b3ycr-09eFw49Ky4ygY9onW0TTq24mUKX84NVihFCrkOYflxl4ZftiBHtmUXP4AViN0KIwvagsTSFSFkDKD3THxapHJ13VwXWcZturbH_xwePkVgFsleQvqBEwMPgnu6JObNAen-VaTagIlPAyViC1MSPw81XmMnifVnEctdqCGKLtLbtx2AhItofyKf8Nc4Dv0DusWIvomQKC61oqVytKmZam2oR8fcSspViQWp6Ul7gcet4_5Ye5AIm1169UEIFPvR8zCp6kCJcRdKN1vxgIb59jYJFqkHKRx5oJouDrfcpPFFV_J8LwEM1eQRMOtn2iMkR9wI2LkmRHTk1vaa3Iyh1iiQNmLa8oPJL6OaAjc4Hd1N3xdUkYseDj4vUKmMJ5EmESL0GCLuNqhLHy6RCkBY_UsxQxJ8Yp3NJ6xRdA8xbtpCfPpdloxDVvbHBRa3FySdG7D-zI8wUyBS7b0FKSM2iCIb4XNuNpR-Ncxf-esriXVR0q-oPq7dHeHcaMWkQGto2wtFbNvHKQxpVaVXWtOgqkV3ygxE1tVDARpWMsX8Yg-ezKYmOK82fZpjUMyRsihP7nbbTfqJ0152yt1dCzb4CmoGtT_pNrA4c1pJJ4IZmVCfcRLtEJVz_03KfmRT6VRVBdwl_yzBY1mEFgrvhTlVEmA7gEsJ1wevJQ7Viz35srmLEMTt1m2PmIYB2hpOqA1Q0s0_8KYlcnNFo7SKvqQDlayERs6jLocakXhwhOwLNw39ckgF8FNURbZ8tXRms-_U4nKxH8IIBUHaddg_gi9loMFO_5Ny21M_lbv1WKFtJ86K5JKByqgG8-b9q9SPzzgjuyRpkpePoqe_CTyUEXPvRmE1Fpc8m0q1o8RgQQAMDFdr10TutLwKCsw9ym4zeUCrfXmNybqJeQRlJSwYYMMy2gu9H5KbT6IBizpEArGLvMuWGNSK-z_YpG_UEbkg4lcX_LJrVlTNEDWt2eNITslth05Ym575DBHYfisbCffjP6eHFCuYx4-gafnYgvxRYLs8T0LrG7kzVeC5KdHxTkZW4w24UW8t_L6Io1Fuk-L7Fo12N5Rf6I09DRlEqvcNxShhKwQ-zThIXGlenj8xeE1IKPJRXsTNWC-ByNnks8Mgx0-WW6Iip3Pbe300zAbqVyc5D82Ox-cbQRx6twRw8u7sv-tvRPs0LJH0JoP4vGxAExeJUjtXtp3h9ZXlMIXUgTNd5NaoM6k_QA1rHjHH1s-RK1-wwVMvAi-WRDs0JkkHxUe8qd5GZzX_V9n1_WiW9L1J9cJ2uUk9iCRqoEv24SC2KoFA66OLVaSgx4P7EyJaF-or-dMdWinOh0clvlZ71AKlQtAx2RSbpU7P4tR38Ez5LVuRdd7l4vq3xRxepae-rpt5X97KCferAAiBfToBidG8W9DOAM1_8M-IDSx_RwKiUOQuRdW2XbE87Ykd4FI02qU9QhdZdyBPPac7wIaWQQWWo-PlXeq_QN3_zAf0EGEL_VrexmpzCQYykp6EqS8lquR1AFqOOUbghy2O9DnYxNBHanqEv7qJVWqSIjShESsKHDk_7QFzlj4HwGjGLcP-ngCbj1sIsakgHwnKI4b1dMG7fshP5Mv-OMMO9a3m2BJj-0L7Ge-8DKZT2J_1azqgBA8xOiN2elcYMEsA8ARTnoGOY2yJdH_wZhkpFvjWqAH-miINpZV8egDdsLbGLHff4MFtgp4N6SdaP0gMYpm8WldK26iYB3HMQk4Ve3BsFpAjhzfiPkj7Zo4tlPNVcz_QkLTwxVXOfmDBTJEwxLNFwDtjTv_5ukFCDk_cTBq3gKgtjvzq7M8lp7NpfB6J0UKyKRicAUkOPTVLIW7O-YZq0ekAZe3RLSrWY7wqwJU75rYkULD8KEt8AtlFhnXbZAg3gIqC0kgzX7Kdl6Izb-A38Nb-YVdNvh2i4cBAkdLS6C4LwjBUeX5vrsOka_QIgzdUXGjV8gpEG3v458zTVHbmQpkBae_30nPj-84kEfokOXZYfbWXmT4rvIWlNXzVqAt1_XcwPo065sBKwYxNtfps04Xa-Jx1qL3MJFrbVJTa43NrH37ibM3RLh9DhOt4QDea1u9eHvGikRcjpilc=",
+            "summary": []
+          },
+          {
+            "id": "rs_009738509e8adf2d006a6a2c8986cc819eae4f87031931de23",
+            "type": "reasoning",
+            "content": [],
+            "encrypted_content": "gAAAAABqaiyjpyF5fcPCBkmRUbB8gHTCTLkWEPecxu811CTKGs-qiqk_-KkkCBhcBrAZwOGKUUSaqibVHlSHIXMmTNcNVlfq0poeh_E1wCNnte3D4cwiOy2nRHRiPT7CCssxlpavCX6GcYYlKtnuoG8L3LZWIvLgdC7J1SZ1PcfIaUFE-fqcyXPRN7SdXfCKZGEsa6id7mycETPYG5jgw_KidKtG1PRYfsm8_8paAMVQ_taLANSjl9k5eD6KvBk9Utd-N2lYp_f8xcHMTQG4bMETIaY_Tt_9223OpwBGF_u6-lYtLgTaWGq_rCNzo2b7clPLfkBeiqkE4jULDGLX-LhE8ieNNT0fApnG9LLMMU1s5ojUGcMSiBLe2LcVan2isM72wj2SaY6JS-mekN78naBWjBVYfPB65jo1VgEoO7WZM2OqZv4esubTLC7w-_yclfTyrHwkmdZYIcfcHBov9FYDTUkxKncTf4_B74eYI2quppPcHd6WiW5zJWgNdpTZNNiMprGY3HKXq1TGr-ADDrkkRzMxRKirbzD1Oa4BcN7PVWMi5zPfSmlBUCNeKoqE71hY-DEkWp-dIzKPoVt7gNO7soXpFv3_bAME5YU87jjbqOWwc1P_UDQWpOV9MtosyY_BrrgWnXD6VeZQ-X9a7BvOckpgrfBqgvY7GkGVGBLPCfwumFch3h4PZzJEj323jfPUoKzt699eVZ0wnZF4DaO49K3SUqI0mpPrVpuqNVEAb_RD7l8qhXpDiFiqnZPo_O5wuXSRBBTb8G6-7GznMyiq28ryELA2qZqLs95Cjlkw3IPtZgQs778KiW6S3nMULPFcv-EGXPeBJpv97NUgL_YYPjlrz0wYzWgeWh7mcZq4Ml65HhKxFIXdri4zFywD1SrrvfwAW7IO2HfUJHzPYKxzzw0HpbkUyy4y7xLEZaP0pkT0PtACC2s298PsXOMwJHCpAH8Y9s9hel8mZAq6YCENC2p8CPS2s6_liyakrPfo7165lnOVDuW2db0U2Bull0D_pmxxfv0ZmHIQvrzeV1F9jUThLFM5y_0FiURIFkaxHs_LMyvDYbMR2tiOc4CPajvVhEJwVglfuMfo1Y3ACZH2ECXP-bKfLAKrogvznPqGQfsGmAReu6AMAPeYzbu-yKAe0F_EuRSS-kjJ3itmp0KMqGkYntuUSdqmg88MEPNTrNGn5GI90DCzILgMVNkvvij6YrqHYtaKAcczNA3i_3k3AXYeFAke78jqEMet09JIec-pNX5Q46p6HJ_sepbT0TY5tlvfCINFL11AuJDiBmCcoH0Jtk6sPiGFzsQvwq7apSS021-t_ditNXw78nikzS2A3FrzlQCCY0aU6Kle4dnsA7LYRBudW4GKQlke8iR0594fIiNAaJ2gF08iH-LTK03nWdGyU0-HT_uzgfX9f368zEVNrSiAOuoWzpLQ7KDeTfWIgoNfoDX4DYG1nQccYdl4JbRchOFQ6vHIlX56W1Ke684DY0bBXNmUVFImuVdhxRG38ina6-hoOo7BA49tImf9k7UinGKqMBjcD1UNW4kAlgaErd8lXm5-nZz6b94A4TmCEiovEuxwKQG0d3k_o4MKmnk66j2NaTU6-M4qDkQVluz_Xhszj2DbnKa986IQ64tf3FDgUxCBWg_EJD7ypAOcElyNqJXDxQUMXiGrWPWYDAYHbsxogZOs4nE0qD6RoNMQaF4LyWJUKFFtpgsRPWObLwMdt_3VMFA3GoyTMaxhLCTfp2NEtAbCYApAaybUuG0iE-_avEF93CVL66hRLSEk7ID5GYQbvT9oyDv6uB6iGthINdROLxy8RHvx5GGyAusEQa4D3XWHSVzGAGq1z43X0QZ1UQnt7bGJmLKFjgqXGcrDrCLSnHw3oHV1sI4OCh7o6JtTOpMYsxydkSo3c19N0Mjfhv_e8kNRdVB3EKl6kA3C79opRWrb7c-bphBghVS7I03Pif9kTYCk_sCuxaV5Ul94H_OINMfUY9Fye_IlNhjPFhGm8HaG4W5rAELHjKgzDkLM-UlpiSC2OJ6JaFgReVgRg86_y3GExdk_gBtaH6IWe8hVc4wdmyGYmIGpYuRClPDVQrAa5PUnQZmPOUl1uB2nuekMc0FzE4zI4rGZNnnwz1tg1JGeUlhUrrIwbR_9jzR4TeLnINAGaZxr8R84dgJXYIQyLUAp-KX8SzCYlQcr3jTCplN-kHLnA2H78lRs3C2c8TCXRIO6prDUslc7ujERyHzZegyh9BQDyCnvafj5zh06oHiR194ZyH5fzXiqAe0lzcDlaopneINw8GObPuSmIUJP7d8KQWoI0w2G8X2TNxfAoXON2WEyjB1pBytdPQSxo0a9O8xxcgVvBQtZkEtgre5PjdqC0nvV2TwyNslO3xYQ9dyyLyXF7j3Ki3YNSeNacZcE9Qorvwu9VCS3ABty3x3zSUotCTAc_hy-xThtS-sLk3Gb7XD_xar2ctqcVPB0CrdJMV4WcwKqoxYR2-EGNImUI9dc190hfaUVqQD0m59bW_tq2Y5-X_nO6TJ2kT_p5k9-PTVdl7HsFb0-DiqsRSVLfAG_CL0B8EBj1jPK0BChb2ASa4CZ9YwdWtHf1He86hOTCmOCa-y4Q8X7NqJtGLwiPYBwQt_2tQtSgceAxUJ33sUndayGyLzx3ZaSxZlKld-0qWdmyZi5HgzFNUabhwXbamOfmn564PU2rOe49ny8dlzrjNGL68PAe43s5yrXFyK6o5z9Nra4cTjmO09U0JK_hYOSwavo8xiFtRMadMRAoA9bF01enzFNJbvxr0WtldVsDGxi9W2OsdW8MWS1cYXdqM6DuOnzPEuIFJs6u3bJb-4C07pGLpNp2jCOzDCs5nLUYXE3Im6FlOh9_SPu0aF2cD0B6wGqzccNSXe933fMvjGQdY8AqCJQLJNmCerSmVMWvgBnaftETuwPdq2bqtP1xIbqlJymuG7SWXsT364Rpos-rScm_lndfl7MCIUp-pyoHmFjmlagTqmIsdRX1BouI-KVl6j4E83EDWh5GCmyPEpengm0ch7fQNouKP_h08d3fmJf5byDaWx4RCOUBO5HW10H4lbBGASZqF88pbH7UgaclxR2ryBg_sJ-gPGZ__G_Tx9q00LllQ50Aug-gHREu1BsB6u3cgRP84RrsVTaoJmnMusRCOoQp18CZ8sp6eOOZfrjzSmLZXLWOiuqHH21l7JsB7MrUKKHyZXzrjDSNhPzAKiz0-F3eG-6ovBQpi92-osjUdM5xHvBQ-woyAfnR-yKg12ghLSuVMbk9sYebc7ePJTls7mLTDrnziG9RgX7ceAVKNuqbQ5ALwTGLekCd0qzximW0StU3dA_AzUELq-YjvJUi-p8EnCD47C9tJxCRLjpaDK2jgPeDfacxfPUMnM2zSRVvvTc2QMbnBZBvNl_7R8k2aKyoQlHXPeZJR7HQbteZSaDmZtM5No6RU4ICQB9S02AwxgytpZwRwuviGjbWJ42R2S_dLyesQ6jSbESKnwCCOJ5798kpaDvqW597EkYn1gcv59qfRcrtGPBO8wkNiAXtS_ikj7PebbaA-WEokC5yVOOz1KPiuIr9KgMj_wVJh1S4OJQ0J1HX3ayAQ==",
+            "summary": []
+          },
+          {
+            "id": "rs_009738509e8adf2d006a6a2c998e50819eba514fa386a334b9",
+            "type": "reasoning",
+            "content": [],
+            "encrypted_content": "gAAAAABqaiyjL5a_NwMBPhwPlcWerQL_VLGfuSeQ7T-HzQB4_fuRFfdzC-Ck7Nl4et6YKcxJ8FkgOEuuhiNYwsBB4npIOl-S3S3x6KQiK8xY8GsyDRXtSzymtb6QOgXa_bMqBH2HoAf6tJJEd0Py6Rs9FypGTwR7wQTwqo2SShMvgjX5BEMBL5udL6HneDhVs52uNJxY1t1Evir-UXjQ0StN6DEngeHdDe9l9hwSa-EZOylxZLgXPKAmxMjOff_i2CmkYJ8D7TfbuJ2oifuLVq8mHfP-7sWrbrDVacRFyrRzHtT6r4xHVvfF3eyQtrCtnpfRIuYmC_dksvdZXahODfEexyJKaVMoEygm0QoqNiOiuW3DlB7rWEb3riHtJiS3EXdbvkbatJp2keY_WJORdY9N2va2mIry4PZWnKBZwFwCunLZrLctdqWRnTp6aJBsaKEQIoPxh7UVAnTHEIamIDu8S-IqKzttqHqyBiZqdTf5IabJ56ymMua5OlhphBuHs9Sox3f76KTGUSdXvPjjYUoF9yk0wt5drEP5UEW9LidTscDIHI6CrKBZ9jJU12udNbyNmvPsnvAzQhJC0hlB33tYV9BRaE2UFi03H1ima4icbjofvtvgB-RFLsXkKZDvAnJ5hWb5FaEB2wnp2nuyyfegtRoUmj55-fYom2VJgQUtGxPrV-j9btC9jpdX8wkVUGBg7G51VraMGzTmxwYGBPZJh6PgY3sGxzG0DZHRVIjGDprF-6Mc3ruEJO3YxJC7jFyW0Pad1TfkTiJ4hvu0HsWYmhWoXGnNc-eijM4bmvQlwMigIZuUEQlFtTfBTvKfy4KxZZlIgirUARyVgrhT4CgTq1Xzhs4F_FBwdS1VhlaUPmzq7hwT1PFyaxsRHX7I8x23MCGGL0-1B1tES1d7iADfDU_lfid1BOfb2QaKuABZozdNYy3IcN9hwaOoBLwZqIJN64GzanKva3AcKuCHUfspEXDD2a2qNPjTQelypANPvHExyBm8LAx6Qs2QVgCKKiRUCzpSpWsmTGVRIXbWwW_fxrAL_avl8eBRH94T3nsFaSZoyjtNcT5c-exeIPkh_-MO4tsDqsJyaUmbws7otpSAkwb8MT-8ZSO25_SvbJX1kXNqS8PCQ0YBaHCIG0iHw6vzWHwcKr-xCCx0PkzTLVEhNN8NKGGbV3Qewi5Rk6ZH6xRJ6W9U1F1S7dNyGi__zvZmuLrraGTWx2H_w4IACnnwBpXQmUvV3Q8zzCAXqwzTPN4Lu8HFSUQGBjID-WHVQYzXHjfe9qDAk5zyJ7zssQvb2ygn_aLBUM86XQfVqkp3zlCffDeeedpsMDaoKlKybTvV_x5uX8j0f3LcPyBhNMcjuqRPF0sQCF5LFHH-8kL46Hc4ou3Nrss3l_PBPo8h9ocgw0ERM1PD1SPVNwm62S1SyTllMSEWelwQ80ZatxZ7lGFa_MijQ0D8pK2-fSWo9lEO7JJByT6WDO4oh6W2RQD5AJElNLBGb1wBGH7RrCdBCApxGl3COaTzhJ-K3PLkDnUA4VcchfJiD91GGjPsRJElhwVwyLsGjOl4yl46hPuO8bYGymEVzei48xPUZBDbns-fkysEk3qLpGvtldFpa__W3GLu13QV_6ZIfnLKP0tWvGaErgC6ufYo2XxyuGL4DCwbHAdKWS7BX4_j4JcscAqabjdqQnFnVCs_T2QIq23cNoGFOx4PGLu9fYKHiYM9KaBKu4iEW2dsSEatRgV7znFSyD-AXlvReoA7CkF-i60LCR4ZLV6moxgp3ndjc8lFvNGiSo13CnVQixHl0Rf-hLavPTG8J6UKjuX_F4j-7OmmGsWrypntlC3Zef-7hqgBy1V-lttn04M4JixVAIkg4IjISm52zlJL1sOncKcbI5uOy-tCNH2iqw-IBygM7KcRnANrh4n0JIDIVy2lqyQdEaOsZ2nrnfk5TKRRQCUAQPMA94oNxg6foU192IfBtLUmzX1n1JXP969FVWz9LzjLqmHzMN5jI-2GGC4NvvrpZBaQYqv4o9bnRGNMv8rcRcU7k8bG49XSxsDxsSoAMwB2Cey672Jq2BrQen2hXdieJJR3DFM8hF8JEfQ_PeXwHVVbVCy1ZDYRoSX9-JHklta3XpoLcUbWHeh18-NyO2TDH5rD1RYDYvrWCwWYT_L2JWMcTP-jcvDr97y6RHhzfBZgq6bwTEfrxasTBw8pG09Mqjs0jz610ymIwxdwuxwxe_8OudraWhxOM7kvH_tXdqiL3NHxFogNLWSg_qE7TKmBmaokpyKNs28CoD1xujzCQwe298cVAz3S9RvRozkvotJKB_9dsP8lZqhCIQ==",
+            "summary": []
+          },
+          {
+            "id": "msg_009738509e8adf2d006a6a2c9f31d8819eaffe96156f916f59",
+            "type": "message",
+            "status": "completed",
+            "content": [
+              {
+                "type": "output_text",
+                "annotations": [],
+                "logprobs": [],
+                "text": "{\"options\":[{\"sourceCandidateIndex\":1,\"label\":\"Warm Rhyming Couplet\",\"refrain\":\"Ker name pazite, vam hvalo dam,\\nsaj rada vas imam.\",\"description\":\"A grateful two-line refrain with a gentle, memorable closing rhyme.\",\"genderDependency\":\"The mushroom narrator is feminine, so “rada” is required.\",\"construction\":\"couplet\",\"rhymePairs\":[{\"endingA\":\"dam\",\"endingB\":\"imam\"}]},{\"sourceCandidateIndex\":-1,\"label\":\"Playful Thank-You Echo\",\"refrain\":\"Hvala, hvala vam; ker pazite name, rada vas imam!\",\"description\":\"A buoyant repeated pickup leading into gratitude and affection.\",\"genderDependency\":\"The mushroom narrator is feminine, so “rada” is required.\",\"construction\":\"playful_hook\",\"rhymePairs\":[{\"endingA\":\"vam\",\"endingB\":\"imam\"}]},{\"sourceCandidateIndex\":3,\"label\":\"Flowing Declaration\",\"refrain\":\"Ker pazite name ves čas, rada imam prav vse vas.\",\"description\":\"One smooth, balanced line directly linking watchful care with collective affection.\",\"genderDependency\":\"The mushroom narrator is feminine, so “rada” is required.\",\"construction\":\"lyrical_refrain\",\"rhymePairs\":[{\"endingA\":\"čas\",\"endingB\":\"vas\"}]}]}"
+              }
+            ],
+            "phase": "final_answer",
+            "role": "assistant"
+          }
+        ],
+        "parallel_tool_calls": true,
+        "presence_penalty": 0,
+        "previous_response_id": null,
+        "prompt_cache_key": null,
+        "prompt_cache_retention": "24h",
+        "reasoning": {
+          "context": "all_turns",
+          "effort": "low",
+          "mode": "standard",
+          "summary": null
+        },
+        "safety_identifier": null,
+        "service_tier": "default",
+        "store": true,
+        "temperature": 1,
+        "text": {
+          "format": {
+            "type": "json_schema",
+            "description": null,
+            "name": "current_editorial_low",
+            "schema": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "options": {
+                  "type": "array",
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "sourceCandidateIndex": {
+                        "type": "integer",
+                        "minimum": -1,
+                        "maximum": 4
+                      },
+                      "label": {
+                        "type": "string",
+                        "maxLength": 40
+                      },
+                      "refrain": {
+                        "type": "string",
+                        "maxLength": 220
+                      },
+                      "description": {
+                        "type": "string",
+                        "maxLength": 120
+                      },
+                      "genderDependency": {
+                        "type": "string",
+                        "maxLength": 120
+                      },
+                      "construction": {
+                        "type": "string",
+                        "enum": [
+                          "couplet",
+                          "playful_hook",
+                          "lyrical_refrain"
+                        ]
+                      },
+                      "rhymePairs": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "endingA": {
+                              "type": "string",
+                              "maxLength": 30
+                            },
+                            "endingB": {
+                              "type": "string",
+                              "maxLength": 30
+                            }
+                          },
+                          "required": [
+                            "endingA",
+                            "endingB"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "sourceCandidateIndex",
+                      "label",
+                      "refrain",
+                      "description",
+                      "genderDependency",
+                      "construction",
+                      "rhymePairs"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "options"
+              ]
+            },
+            "strict": true
+          },
+          "verbosity": "medium"
+        },
+        "tool_choice": "auto",
+        "tool_usage": {
+          "image_gen": {
+            "input_tokens": 0,
+            "input_tokens_details": {
+              "image_tokens": 0,
+              "text_tokens": 0
+            },
+            "output_tokens": 0,
+            "output_tokens_details": {
+              "image_tokens": 0,
+              "text_tokens": 0
+            },
+            "total_tokens": 0
+          },
+          "web_search": {
+            "num_requests": 0
+          }
+        },
+        "tools": [],
+        "top_logprobs": 0,
+        "top_p": 0.98,
+        "truncation": "disabled",
+        "usage": {
+          "input_tokens": 2562,
+          "input_tokens_details": {
+            "cache_write_tokens": 2559,
+            "cached_tokens": 0
+          },
+          "output_tokens": 2592,
+          "output_tokens_details": {
+            "reasoning_tokens": 2310
+          },
+          "total_tokens": 5154
+        },
+        "user": null,
+        "metadata": {},
+        "output_text": "{\"options\":[{\"sourceCandidateIndex\":1,\"label\":\"Warm Rhyming Couplet\",\"refrain\":\"Ker name pazite, vam hvalo dam,\\nsaj rada vas imam.\",\"description\":\"A grateful two-line refrain with a gentle, memorable closing rhyme.\",\"genderDependency\":\"The mushroom narrator is feminine, so “rada” is required.\",\"construction\":\"couplet\",\"rhymePairs\":[{\"endingA\":\"dam\",\"endingB\":\"imam\"}]},{\"sourceCandidateIndex\":-1,\"label\":\"Playful Thank-You Echo\",\"refrain\":\"Hvala, hvala vam; ker pazite name, rada vas imam!\",\"description\":\"A buoyant repeated pickup leading into gratitude and affection.\",\"genderDependency\":\"The mushroom narrator is feminine, so “rada” is required.\",\"construction\":\"playful_hook\",\"rhymePairs\":[{\"endingA\":\"vam\",\"endingB\":\"imam\"}]},{\"sourceCandidateIndex\":3,\"label\":\"Flowing Declaration\",\"refrain\":\"Ker pazite name ves čas, rada imam prav vse vas.\",\"description\":\"One smooth, balanced line directly linking watchful care with collective affection.\",\"genderDependency\":\"The mushroom narrator is feminine, so “rada” is required.\",\"construction\":\"lyrical_refrain\",\"rhymePairs\":[{\"endingA\":\"čas\",\"endingB\":\"vas\"}]}]}"
+      }
+    },
+    {
+      "id": "B",
+      "label": "Current prompt · Sol medium",
+      "editorialReasoningEffort": "medium",
+      "latencyMs": 88666,
+      "error": "Configuration B returned incomplete: max_output_tokens."
+    },
+    {
+      "id": "C",
+      "label": "Native-editor prompt · Sol medium",
+      "editorialReasoningEffort": "medium",
+      "latencyMs": 87976,
+      "error": "Configuration C returned incomplete: max_output_tokens."
+    }
+  ]
+}
