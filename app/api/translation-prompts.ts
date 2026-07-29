@@ -1,3 +1,5 @@
+import { requiresRhyme, type BookForm, type SourceRhyme } from "./book-form-contract.ts";
+
 export type Priority = "rhythm" | "meaning" | "simple";
 export type Freedom = "close" | "natural" | "playful";
 
@@ -17,7 +19,7 @@ Role: You are Bibaling Book Adapter, an English-to-Slovenian children's-book lit
 Parent authority and workflow:
 - The parent's selected priority is a binding contract, not a preference to mention and ignore.
 - Preserve exact parent-approved wording until the parent asks to revise it.
-- Solve the book-level refrain, structure, rhyme density, voice, and meaning/music balance before scaling.
+- Respect the locked book form before scaling. Solve a book-level refrain only for refrain_verse; never fabricate one for prose_story or continuous_verse.
 - Offer genuine choices with materially different literary strategies.
 - Preserve source action, emotional progression, illustration details, page-turn logic, and approximate text density.
 - Never invent unsupported props, locations, gestures, dialogue, motives, metaphors, or emotional claims to complete a rhyme.
@@ -49,8 +51,37 @@ Known failure examples are prohibitions, not book-specific translations:
 
 Do not reveal private candidate deliberation or chain of thought. Return only the requested structured JSON.`;
 
-export function priorityContract(priority: Priority) {
+export function bookFormContract(bookForm: BookForm, sourceRhyme: SourceRhyme, direction?: DirectionBrief) {
+  if (bookForm === "prose_story") {
+    return `LOCKED BOOK FORM: A STORY, NOT A POEM
+Write warm, fluent Slovenian prose. Preserve story events, emotional beats, jokes, illustration truth, paragraph logic, and a natural read-aloud voice.
+Do not introduce rhyme, meter, verse lineation, chants, poetic couplets, or a recurring refrain. Do not break prose into decorative lines.`;
+  }
+  if (bookForm === "continuous_verse") {
+    return `LOCKED BOOK FORM: A RHYMING OR POETIC STORY
+Preserve the source's actual poetic movement: cadence, line structure, repetition, sound play, meter, and ${sourceRhyme === "sustained" ? "sustained rhyme" : sourceRhyme === "occasional" ? "occasional rhyme where the source uses it" : sourceRhyme === "none" ? "non-rhyming poetic flow" : "only rhyme clearly supported by the source"}.
+Do not invent a fixed recurring refrain. Do not force end rhyme when the source is non-rhyming, and do not turn each page into an isolated jingle.`;
+  }
+  if (!direction?.refrain) throw new Error("refrain_verse requires a parent-approved refrain");
+  return `LOCKED BOOK FORM: VERSE WITH A REPEATING REFRAIN
+Preserve the source's verse treatment and use the exact parent-approved recurring wording wherever the source refrain appears.
+${directionBrief(direction)}`;
+}
+
+export function priorityContract(
+  priority: Priority,
+  bookForm: BookForm = "refrain_verse",
+  sourceRhyme: SourceRhyme = "sustained"
+) {
   if (priority === "rhythm") {
+    if (bookForm === "prose_story") {
+      return `LOCKED PRIORITY: A NATURAL READ-ALOUD VOICE
+Every displayed translation must sound like warm, fluent contemporary Slovenian prose. Natural sentence movement and oral clarity are required; rhyme, meter, verse lineation, chants, and refrains are prohibited.`;
+    }
+    if (bookForm === "continuous_verse" && sourceRhyme !== "sustained") {
+      return `LOCKED PRIORITY: POETIC RHYTHM AND READ-ALOUD FLOW
+Every displayed translation must preserve convincing poetic cadence and the source's actual sound treatment. End rhyme is not required because the source does not sustain it; forced rhyme fails.`;
+    }
     return `LOCKED PRIORITY: RHYME AND READ-ALOUD RHYTHM
 Every displayed translation must use a coherent verse treatment with genuine phonetic Slovenian rhyme and natural spoken rhythm. An unrhymed, weakly rhymed, spelling-only, repeated-stem, or rhythmically awkward result fails even if faithful. Reject and replace it before returning.`;
   }
@@ -62,10 +93,22 @@ Every displayed translation must preserve the central event, joke or wordplay fu
 Every displayed translation must use clear, child-appropriate, natural Slovenian without flattening the emotional beat or picture truth. Obscure vocabulary, syntactic complexity, or cute-but-unnatural diminutives fail.`;
 }
 
-export function freedomContract(freedom: Freedom) {
+export function freedomContract(freedom: Freedom, bookForm: BookForm = "refrain_verse") {
   if (freedom === "close") return "CREATIVE FREEDOM: Stay close. Preserve each spread's meaning and change only what natural Slovenian requires.";
+  if (freedom === "natural" && bookForm === "prose_story") {
+    return "CREATIVE FREEDOM: Sound naturally Slovenian. Preserve story and illustrations while freely repairing awkward sentences, jokes, and English-shaped prose. Do not add poetic treatment.";
+  }
+  if (freedom === "natural" && bookForm === "continuous_verse") {
+    return "CREATIVE FREEDOM: Sound naturally Slovenian. Preserve story and illustrations while freely repairing awkward lines, cadence, and source-grounded sound play without adding a refrain.";
+  }
   if (freedom === "natural") return "CREATIVE FREEDOM: Sound naturally Slovenian. Preserve story and illustrations while freely repairing awkward lines, jokes, and rhymes.";
-  return "CREATIVE FREEDOM: Reimagine playfully. Keep events, picture truth, and emotional arc while creating new Slovenian refrains and wordplay.";
+  if (bookForm === "refrain_verse") {
+    return "CREATIVE FREEDOM: Reimagine playfully. Keep events, picture truth, and emotional arc while creating Slovenian refrain wording and wordplay.";
+  }
+  if (bookForm === "continuous_verse") {
+    return "CREATIVE FREEDOM: Reimagine playfully. Keep events, picture truth, and emotional arc while creating Slovenian poetic movement and wordplay without a fixed refrain.";
+  }
+  return "CREATIVE FREEDOM: Reimagine playfully. Keep events, picture truth, and emotional arc while creating lively natural Slovenian prose without rhyme, verse, or a refrain.";
 }
 
 export function directionBrief(direction: DirectionBrief) {
@@ -232,7 +275,9 @@ export function translationGenerationPrompt(args: {
   visualContext?: string;
   priority: Priority;
   freedom: Freedom;
-  direction: DirectionBrief;
+  bookForm?: BookForm;
+  sourceRhyme?: SourceRhyme;
+  direction?: DirectionBrief;
   approvedSpread1?: string;
   approvedSpread1Note?: string;
   rejectionFeedback?: string;
@@ -245,9 +290,9 @@ Create a private pool of exactly six genuinely different candidate Slovenian ada
 ENGLISH SOURCE
 ${args.source}
 
-${priorityContract(args.priority)}
-${freedomContract(args.freedom)}
-${directionBrief(args.direction)}
+${bookFormContract(args.bookForm ?? "refrain_verse", args.sourceRhyme ?? "sustained", args.direction)}
+${priorityContract(args.priority, args.bookForm ?? "refrain_verse", args.sourceRhyme ?? "sustained")}
+${freedomContract(args.freedom, args.bookForm ?? "refrain_verse")}
 ${args.approvedSpread1 ? `\nAPPROVED SPREAD 1 VOICE REFERENCE — imitate its voice, never silently rewrite it:\n${args.approvedSpread1}` : ""}
 ${args.approvedSpread1Note ? `\nPARENT'S EDIT NOTE ON THE GENERATED SPREAD 1 DRAFT\n${args.approvedSpread1Note}\nTreat this as binding editorial evidence about what to avoid or improve in later spreads. Do not quote the note in book text.` : ""}
 ${args.visualContext ? `\nESSENTIAL VISUAL CONTEXT FROM THE ONE-TIME IMAGE ANALYSIS\n${args.visualContext}` : ""}
@@ -256,10 +301,10 @@ Candidate requirements:
 - complete Slovenian text for this spread, not notes or fragments;
 - natural, grammatical, idiomatic, child-appropriate read-aloud language;
 - faithful to source event, emotional beat, visible picture, and approximate density;
-- exact locked refrain wording whenever used;
+- exact locked refrain wording whenever the locked book form uses one;
 - genuinely different structures and literary strategies, not word substitutions;
 - no unsupported invention, filler, slash forms, placeholders, English syntax, or unresolved gender;
-- when rhythm is locked, every candidate must already contain a coherent genuine spoken rhyme treatment.
+- apply rhyme only when the locked book form and source rhyme require it: ${requiresRhyme({ bookForm: args.bookForm ?? "refrain_verse", sourceRhyme: args.sourceRhyme ?? "sustained", priority: args.priority }) ? "rhyme is required" : "rhyme is not required and must not be invented"}.
 
 Give every candidate a stable id c01 through c06 and a short English strategy label. Do not expose reasoning.
 ${args.rejectionFeedback ? `\nPREVIOUS EVALUATOR REJECTIONS — create new candidates that repair these failures:\n${args.rejectionFeedback}` : ""}`;
@@ -271,7 +316,9 @@ export function translationEvaluationPrompt(args: {
   visualContext?: string;
   priority: Priority;
   freedom: Freedom;
-  direction: DirectionBrief;
+  bookForm?: BookForm;
+  sourceRhyme?: SourceRhyme;
+  direction?: DirectionBrief;
   approvedSpread1?: string;
   approvedSpread1Note?: string;
   candidatesJson: string;
@@ -283,9 +330,9 @@ ROLE: Independent Slovenian literary editor and quality gate. Return exactly thr
 SPREAD ${args.spreadNumber} ENGLISH SOURCE
 ${args.source}
 
-${priorityContract(args.priority)}
-${freedomContract(args.freedom)}
-${directionBrief(args.direction)}
+${bookFormContract(args.bookForm ?? "refrain_verse", args.sourceRhyme ?? "sustained", args.direction)}
+${priorityContract(args.priority, args.bookForm ?? "refrain_verse", args.sourceRhyme ?? "sustained")}
+${freedomContract(args.freedom, args.bookForm ?? "refrain_verse")}
 ${args.approvedSpread1 ? `\nAPPROVED SPREAD 1 VOICE REFERENCE:\n${args.approvedSpread1}` : ""}
 ${args.approvedSpread1Note ? `\nPARENT'S EDIT NOTE — candidates must respect this correction:\n${args.approvedSpread1Note}` : ""}
 ${args.visualContext ? `\nESSENTIAL VISUAL CONTEXT FROM THE ONE-TIME IMAGE ANALYSIS\n${args.visualContext}` : ""}
@@ -297,8 +344,8 @@ For every prospective finalist, separately verify:
 - fidelityPass: source event, emotional beat, visible details, no invented meaning or filler;
 - grammarPass: complete, grammatical, idiomatic, natural Slovenian; no English syntax, slash forms, placeholders, or unresolved gender;
 - readAloudPass: child-appropriate vocabulary and pleasant continuous spoken flow;
-- directionPass: genuinely delivers the locked parent priority and approved direction;
-- rhymePass: if rhythm/rhyme is locked or claimed, genuine phonetic rhyme with compatible stress and cadence—not spelling-only, repeated stems, filler, or forced inversion; otherwise true;
+- directionPass: genuinely delivers the locked book form, parent priority, and approved refrain only when one exists;
+- rhymePass: ${requiresRhyme({ bookForm: args.bookForm ?? "refrain_verse", sourceRhyme: args.sourceRhyme ?? "sustained", priority: args.priority }) ? "genuine phonetic rhyme is required" : "return true without inventing rhyme; preserve prose or non-rhyming poetic flow"};
 
 Editorial process:
 - compare all candidates and identify the strongest distinct structural approaches;
@@ -316,7 +363,9 @@ export function fullBookGenerationPrompt(args: {
   spreads: Array<{ spread: number; source: string; visualContext: string }>;
   priority: Priority;
   freedom: Freedom;
-  direction: DirectionBrief;
+  bookForm?: BookForm;
+  sourceRhyme?: SourceRhyme;
+  direction?: DirectionBrief;
   approvedVoice: Array<{ spread: number; text: string; parentNote?: string }>;
 }) {
   return `${AUTHORITATIVE_STANDARD}
@@ -324,9 +373,9 @@ export function fullBookGenerationPrompt(args: {
 GOAL
 Complete the remaining spreads of this book in one coherent Slovenian voice. Return exactly one full draft for every requested spread. The three parent-approved spreads are binding voice references, not text to rewrite.
 
-${priorityContract(args.priority)}
-${freedomContract(args.freedom)}
-${directionBrief(args.direction)}
+${bookFormContract(args.bookForm ?? "refrain_verse", args.sourceRhyme ?? "sustained", args.direction)}
+${priorityContract(args.priority, args.bookForm ?? "refrain_verse", args.sourceRhyme ?? "sustained")}
+${freedomContract(args.freedom, args.bookForm ?? "refrain_verse")}
 
 PARENT-APPROVED VOICE REFERENCES
 ${args.approvedVoice.map((item) => `SPREAD ${item.spread}\n${item.text}${item.parentNote ? `\nPARENT NOTE: ${item.parentNote}\nTreat this note as a correction: do not repeat the flaw it identifies.` : ""}`).join("\n\n")}
@@ -336,10 +385,10 @@ ${args.spreads.map((item) => `SPREAD ${item.spread}\n${item.source}\nVISUAL CONT
 
 For each requested spread:
 - preserve its source event, emotional beat, illustration truth, and approximate density;
-- use the exact locked refrain/device as approved;
+- use exact locked refrain wording only for refrain_verse and only where the source refrain appears;
 - match the approved samples' narrator, address, cadence, and vocabulary;
 - apply every parent note across the remaining book wherever relevant;
-- when rhyme is locked, privately test multiple rhyme structures and return only genuine spoken-Slovenian rhyme with natural syntax;
+- ${requiresRhyme({ bookForm: args.bookForm ?? "refrain_verse", sourceRhyme: args.sourceRhyme ?? "sustained", priority: args.priority }) ? "where rhyme is required, privately test multiple structures and return only genuine spoken-Slovenian rhyme with natural syntax" : "do not invent rhyme or a recurring refrain"};
 - return complete book text only, without explanations, alternatives, labels, or placeholders.
 
 The drafts must also work as one continuous book: keep repeated wording exact, avoid exhausting one rhyme family, and preserve the source sequence.`;
@@ -349,7 +398,9 @@ export function fullBookEditorialPrompt(args: {
   spreads: Array<{ spread: number; source: string; visualContext: string }>;
   priority: Priority;
   freedom: Freedom;
-  direction: DirectionBrief;
+  bookForm?: BookForm;
+  sourceRhyme?: SourceRhyme;
+  direction?: DirectionBrief;
   approvedVoice: Array<{ spread: number; text: string; parentNote?: string }>;
   draftsJson: string;
 }) {
@@ -358,9 +409,9 @@ export function fullBookEditorialPrompt(args: {
 ROLE
 Act as the final Slovenian children's-book editor. Repair every submitted spread that needs it, then return exactly one publication-ready text for every requested spread. Do not alter the parent-approved voice references.
 
-${priorityContract(args.priority)}
-${freedomContract(args.freedom)}
-${directionBrief(args.direction)}
+${bookFormContract(args.bookForm ?? "refrain_verse", args.sourceRhyme ?? "sustained", args.direction)}
+${priorityContract(args.priority, args.bookForm ?? "refrain_verse", args.sourceRhyme ?? "sustained")}
+${freedomContract(args.freedom, args.bookForm ?? "refrain_verse")}
 
 PARENT-APPROVED VOICE REFERENCES AND CORRECTIONS
 ${args.approvedVoice.map((item) => `SPREAD ${item.spread}\n${item.text}${item.parentNote ? `\nPARENT NOTE: ${item.parentNote}\nThis identifies a flaw to eliminate from later spreads.` : ""}`).join("\n\n")}
@@ -371,5 +422,5 @@ ${args.spreads.map((item) => `SPREAD ${item.spread}\n${item.source}\nVISUAL CONT
 DRAFTS TO EDIT
 ${args.draftsJson}
 
-For every returned spread, verify fidelity, natural grammatical Slovenian, child-friendly read-aloud flow, locked-direction compliance, and genuine phonetic rhyme when rhyme is locked. Repair rather than merely report failures. Preserve exact recurring wording and make the whole sequence sound like one book. Return only the required structured JSON.`;
+For every returned spread, verify fidelity, natural grammatical Slovenian, child-friendly read-aloud flow, locked-form compliance, and ${requiresRhyme({ bookForm: args.bookForm ?? "refrain_verse", sourceRhyme: args.sourceRhyme ?? "sustained", priority: args.priority }) ? "genuine phonetic rhyme" : "the absence of invented rhyme or refrain"}. Repair rather than merely report failures. Preserve exact recurring wording only for refrain_verse and make the whole sequence sound like one book. Return only the required structured JSON.`;
 }

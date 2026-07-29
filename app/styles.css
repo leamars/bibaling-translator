@@ -72,6 +72,8 @@ textarea:disabled { color: var(--muted); background: #f5f6f3; cursor: wait; }
 .choice strong, .choice small { display: block; }
 .choice strong { font-size: 15.3px; }
 .choice small { margin-top: 5px; color: var(--muted); font-size: 12.6px; line-height: 1.4; }
+.choice .our-read { display: inline-block; margin: 0 0 0 9px; padding: 4px 7px; border-radius: 999px; color: var(--forest); background: var(--forest-soft); font-size: 8.5px; font-weight: 800; letter-spacing: .07em; line-height: 1; text-transform: uppercase; vertical-align: 2px; }
+.classification-explanation { margin: -16px 0 24px; padding: 13px 16px; border-left: 3px solid var(--forest); border-radius: 0 var(--radius-control) var(--radius-control) 0; color: var(--muted); background: var(--forest-soft); line-height: 1.45; }
 .generation-error { margin: 24px 0; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--paper); }
 .direction-progress-log { margin: 24px 0; padding: 20px 22px; border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--paper); }
 .direction-progress-log.transcription-progress { min-height: 115px; margin: 0; display: flex; align-items: center; }

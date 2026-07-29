@@ -4,6 +4,7 @@ import test from "node:test";
 
 test("every OpenAI-backed workshop route has a mock bypass", async () => {
   const routes = [
+    "app/api/book-form/route.ts",
     "app/api/directions/route.ts",
     "app/api/translations/route.ts",
     "app/api/transcribe/route.ts"
@@ -17,6 +18,7 @@ test("every OpenAI-backed workshop route has a mock bypass", async () => {
 
 test("all live Responses calls pass through the controlled request wrapper", async () => {
   const routes = [
+    "app/api/book-form/route.ts",
     "app/api/directions/route.ts",
     "app/api/translations/route.ts",
     "app/api/transcribe/route.ts"
@@ -74,6 +76,7 @@ test("all long-running client states use non-repeating rotating copy", async () 
   assert.match(page, /translationLoadingMessages/);
   assert.match(page, /patternLoadingMessages/);
   assert.match(page, /fullBookLoadingMessages/);
+  assert.match(page, /classificationLoadingMessages/);
   assert.doesNotMatch(page, /<div className="generation-state"/);
 });
 

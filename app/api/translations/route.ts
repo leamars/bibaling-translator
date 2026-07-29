@@ -8,6 +8,7 @@ import {
   deduplicate,
   requestKey
 } from "../openai-control";
+import { BOOK_FORMS, SOURCE_RHYME, type BookForm, type SourceRhyme } from "../book-form-contract.ts";
 import {
   fullBookEditorialPrompt,
   fullBookGenerationPrompt,
@@ -37,7 +38,9 @@ const bodySchema = z.discriminatedUnion("mode", [
     source: z.string().min(1),
     priority: z.enum(["rhythm", "meaning", "simple"]),
     freedom: z.enum(["close", "natural", "playful"]),
-    direction: directionSchema
+    bookForm: z.enum(BOOK_FORMS),
+    sourceRhyme: z.enum(SOURCE_RHYME),
+    direction: directionSchema.optional()
   }),
   z.object({
     mode: z.literal("pattern"),
@@ -45,7 +48,9 @@ const bodySchema = z.discriminatedUnion("mode", [
     sources: z.array(z.string().min(1)).length(2),
     priority: z.enum(["rhythm", "meaning", "simple"]),
     freedom: z.enum(["close", "natural", "playful"]),
-    direction: directionSchema,
+    bookForm: z.enum(BOOK_FORMS),
+    sourceRhyme: z.enum(SOURCE_RHYME),
+    direction: directionSchema.optional(),
     approvedSpread1: z.string().min(1),
     approvedSpread1Note: z.string().max(1200).optional()
   }),
@@ -58,14 +63,23 @@ const bodySchema = z.discriminatedUnion("mode", [
     })).min(1).max(40),
     priority: z.enum(["rhythm", "meaning", "simple"]),
     freedom: z.enum(["close", "natural", "playful"]),
-    direction: directionSchema,
+    bookForm: z.enum(BOOK_FORMS),
+    sourceRhyme: z.enum(SOURCE_RHYME),
+    direction: directionSchema.optional(),
     approvedVoice: z.array(z.object({
       spread: z.number().int().positive(),
       text: z.string().min(1),
       parentNote: z.string().max(1200).optional()
     })).length(3)
   })
-]);
+]).superRefine((input, context) => {
+  if (input.bookForm === "refrain_verse" && !input.direction) {
+    context.addIssue({ code: "custom", message: "refrain_verse requires a parent-approved direction", path: ["direction"] });
+  }
+  if (input.bookForm !== "refrain_verse" && input.direction) {
+    context.addIssue({ code: "custom", message: "non-refrain workflows must not send a direction", path: ["direction"] });
+  }
+});
 
 const candidateSchema = z.object({
   id: z.string().min(1),
@@ -196,7 +210,9 @@ type PipelineArgs = {
   source: string;
   priority: Priority;
   freedom: Freedom;
-  direction: DirectionBrief;
+  bookForm: BookForm;
+  sourceRhyme: SourceRhyme;
+  direction?: DirectionBrief;
   approvedSpread1?: string;
   approvedSpread1Note?: string;
   requestSignal: AbortSignal;
@@ -225,6 +241,8 @@ async function generatePassingOptions(args: PipelineArgs) {
                 visualContext: args.visualContext,
                 priority: args.priority,
                 freedom: args.freedom,
+                bookForm: args.bookForm,
+                sourceRhyme: args.sourceRhyme,
                 direction: args.direction,
                 approvedSpread1: args.approvedSpread1,
                 approvedSpread1Note: args.approvedSpread1Note
@@ -264,6 +282,8 @@ async function generatePassingOptions(args: PipelineArgs) {
                 visualContext: args.visualContext,
                 priority: args.priority,
                 freedom: args.freedom,
+                bookForm: args.bookForm,
+                sourceRhyme: args.sourceRhyme,
                 direction: args.direction,
                 approvedSpread1: args.approvedSpread1,
                 approvedSpread1Note: args.approvedSpread1Note,
@@ -307,6 +327,8 @@ async function generateFullBook(args: {
     spreads: input.spreads.map(({ spread, source, visualContext }) => ({ spread, source, visualContext })),
     priority: input.priority,
     freedom: input.freedom,
+    bookForm: input.bookForm,
+    sourceRhyme: input.sourceRhyme,
     direction: input.direction,
     approvedVoice: input.approvedVoice
   };
@@ -430,6 +452,8 @@ export async function POST(request: Request) {
           source: input.source,
           priority: input.priority,
           freedom: input.freedom,
+          bookForm: input.bookForm,
+          sourceRhyme: input.sourceRhyme,
           direction: input.direction,
           requestSignal: request.signal
         })
@@ -457,6 +481,8 @@ export async function POST(request: Request) {
           source: input.sources[index],
           priority: input.priority,
           freedom: input.freedom,
+          bookForm: input.bookForm,
+          sourceRhyme: input.sourceRhyme,
           direction: input.direction,
           approvedSpread1: input.approvedSpread1,
           approvedSpread1Note: input.approvedSpread1Note,
