@@ -8,6 +8,7 @@ type Spread = {
   preview: string;
   text: string;
   uncertainty: string | null;
+  visualContext: string;
   error: string | null;
   status: "waiting" | "reading" | "done" | "error";
 };
@@ -38,6 +39,7 @@ type BookPage = {
   preview: string;
   fileName: string;
   sourceText: string;
+  visualContext: string;
   approvedText: string | null;
   parentNote?: string;
   voiceSample?: boolean;
@@ -82,7 +84,7 @@ function wait(milliseconds: number) {
 
 function mockPreview(number: number) {
   const colors = ["#dcebe4", "#f2dfb7", "#d9e4f2", "#ead8d1", "#dce4bd", "#e4d8ef"];
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="${colors[(number - 1) % colors.length]}"/><circle cx="400" cy="260" r="120" fill="#fff" opacity=".75"/><text x="400" y="285" text-anchor="middle" font-family="Georgia" font-size="54" fill="#245747">Mock spread ${number}</text></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="${colors[(number - 1) % colors.length]}"/><circle cx="400" cy="260" r="120" fill="#fff" opacity=".75"/><text x="400" y="285" text-anchor="middle" font-family="Georgia" font-size="54" fill="#245747">Mock page ${number}</text></svg>`;
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
@@ -94,6 +96,7 @@ export default function Home() {
   const [directions, setDirections] = useState<Direction[]>([]);
   const [selectedDirection, setSelectedDirection] = useState<number | null>(null);
   const [directionFeedback, setDirectionFeedback] = useState("");
+  const [shownRefrains, setShownRefrains] = useState<string[]>([]);
   const [lockedDirection, setLockedDirection] = useState<Direction | null>(null);
   const [spread1Options, setSpread1Options] = useState<TranslationOption[]>([]);
   const [spread1Selection, setSpread1Selection] = useState<number | null>(null);
@@ -110,6 +113,7 @@ export default function Home() {
   const [bookOrderLocked, setBookOrderLocked] = useState(false);
   const [mockMode, setMockMode] = useState(false);
   const directionsAbort = useRef<AbortController | null>(null);
+  const translationAbort = useRef<AbortController | null>(null);
   const fullBookAbort = useRef<AbortController | null>(null);
 
   const progress = useMemo(() => `${step} of 10`, [step]);
@@ -134,10 +138,11 @@ export default function Home() {
     ];
     setSpreads(sources.map((text, index) => ({
       id: crypto.randomUUID(),
-      file: new File(["mock"], `mock-spread-${index + 1}.png`, { type: "image/png" }),
+      file: new File(["mock"], `mock-page-${index + 1}.png`, { type: "image/png" }),
       preview: mockPreview(index + 1),
       text,
       uncertainty: null,
+      visualContext: "A mock picture-book page.",
       error: null,
       status: "done" as const
     })));
@@ -148,10 +153,10 @@ export default function Home() {
       spread.id === id ? { ...spread, error: null, status: "reading" } : spread
     ));
     try {
-      let result: { text: string; uncertainty: string | null } | null = null;
+      let result: { text: string; uncertainty: string | null; visualContext: string } | null = null;
       for (let attempt = 0; attempt < 2; attempt += 1) {
         try {
-          result = await postJson<{ text: string; uncertainty: string | null }>("/api/transcribe", { image });
+          result = await postJson<{ text: string; uncertainty: string | null; visualContext: string }>("/api/transcribe", { image });
           break;
         } catch (error) {
           const connectionDropped = error instanceof TypeError && error.message === "Failed to fetch";
@@ -159,16 +164,16 @@ export default function Home() {
           await wait(2200);
         }
       }
-      if (!result) throw new Error("I couldn’t read this spread.");
+      if (!result) throw new Error("I couldn’t read this page.");
       setSpreads((current) => current.map((spread) =>
         spread.id === id
-          ? { ...spread, text: result.text, uncertainty: result.uncertainty, error: null, status: "done" }
+          ? { ...spread, text: result.text, uncertainty: result.uncertainty, visualContext: result.visualContext, error: null, status: "done" }
           : spread
       ));
     } catch (error) {
       setSpreads((current) => current.map((spread) =>
         spread.id === id
-          ? { ...spread, error: error instanceof Error ? error.message : "I couldn’t read this spread.", status: "error" }
+          ? { ...spread, error: error instanceof Error ? error.message : "I couldn’t read this page.", status: "error" }
           : spread
       ));
     }
@@ -179,7 +184,7 @@ export default function Home() {
     const preview = await fileToDataUrl(file);
     const id = replaceId ?? crypto.randomUUID();
     const nextSpread: Spread = {
-      id, file, preview, text: "", uncertainty: null, error: null, status: "waiting"
+      id, file, preview, text: "", uncertainty: null, visualContext: "", error: null, status: "waiting"
     };
     setSpreads((current) => replaceId
       ? current.map((spread) => spread.id === replaceId ? nextSpread : spread)
@@ -202,6 +207,7 @@ export default function Home() {
       preview: await fileToDataUrl(file),
       text: "",
       uncertainty: null,
+      visualContext: "",
       error: null,
       status: "waiting" as const
     })));
@@ -233,12 +239,12 @@ export default function Home() {
         headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
         signal: controller.signal,
         body: JSON.stringify({
-          images: spreads.map((spread) => spread.preview),
+          visualContexts: spreads.map((spread) => spread.visualContext),
           texts: spreads.map((spread) => spread.text),
           priority,
           freedom,
           parentFeedback: directionFeedback.trim() || undefined,
-          previousRefrains: directions.map((direction) => direction.refrain)
+          previousRefrains: shownRefrains
         })
       });
       if (!response.ok || !response.body) throw new Error("I couldn’t start the literary workshop.");
@@ -267,13 +273,17 @@ export default function Home() {
           if (event.type === "result") result = event.data || null;
           if (event.type === "progress") {
             if (event.event === "generation.started" || event.event === "request.accepted") {
-              setDirectionProgress((current) => ({ ...current, active: 0 }));
+              setDirectionProgress((current) => ({ ...current, active: 2, completedThrough: 1 }));
             } else if (event.event === "generation.completed") {
               setDirectionProgress((current) => ({ ...current, active: 3, completedThrough: 2 }));
+            } else if (event.event === "filtering.started") {
+              setDirectionProgress((current) => ({ ...current, active: 4, completedThrough: 3 }));
+            } else if (event.event === "filtering.completed") {
+              setDirectionProgress((current) => ({ ...current, active: 5, completedThrough: 4, rejectedCount: event.rejectedCount || 0 }));
             } else if (event.event === "evaluation.started") {
-              setDirectionProgress((current) => ({ ...current, active: 3, completedThrough: 2 }));
-            } else if (event.event === "evaluation.completed") {
               setDirectionProgress((current) => ({ ...current, active: 5, completedThrough: 4 }));
+            } else if (event.event === "evaluation.completed") {
+              setDirectionProgress((current) => ({ ...current, active: 6, completedThrough: 5 }));
             } else if (event.event === "rejection.completed") {
               setDirectionProgress({ active: 6, completedThrough: 5, rejectedCount: event.rejectedCount || 0 });
             } else if (event.event === "selection.completed") {
@@ -286,12 +296,16 @@ export default function Home() {
       setDirections(result.runs.flatMap((run) =>
         run.directions.map((direction) => ({ ...direction, modelLabel: run.label }))
       ));
+      setShownRefrains((current) => Array.from(new Set([
+        ...current,
+        ...result.runs.flatMap((run) => run.directions.map((direction) => direction.refrain.trim()))
+      ])));
       setSelectedDirection(null);
       setLockedDirection(null);
       setRequest({ loading: false, error: null });
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
-        setRequest({ loading: false, error: null });
+        if (directionsAbort.current === controller) setRequest({ loading: false, error: null });
       } else {
         setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write the directions." });
       }
@@ -307,12 +321,21 @@ export default function Home() {
     if (goBack) setStep(4);
   }
 
+  function restartDirections() {
+    directionsAbort.current?.abort();
+    directionsAbort.current = null;
+    setRequest({ loading: false, error: null });
+    window.setTimeout(() => void generateDirections(), 0);
+  }
+
   function updateDirection(index: number, key: keyof Direction, value: string) {
     setDirections((current) => current.map((direction, i) => i === index ? { ...direction, [key]: value } : direction));
   }
 
   async function lockDirectionAndWriteSpread1() {
     if (selectedDirection === null) return;
+    const controller = new AbortController();
+    translationAbort.current = controller;
     const direction = { ...directions[selectedDirection] };
     setLockedDirection(direction);
     setStep(6);
@@ -320,12 +343,12 @@ export default function Home() {
     try {
       const result = await postJson<{ runs: Array<{ label: string; options: GeneratedOption[] }> }>("/api/translations", {
         mode: "spread1",
-        image: spreads[0].preview,
+        visualContext: spreads[0].visualContext,
         source: spreads[0].text,
         priority,
         freedom,
         direction
-      });
+      }, controller.signal);
       setSpread1Options(result.runs.flatMap((run) =>
         run.options.map((option) => ({
           ...option,
@@ -337,7 +360,11 @@ export default function Home() {
       setSpread1Selection(null);
       setRequest({ loading: false, error: null });
     } catch (error) {
-      setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write Spread 1." });
+      if (!(error instanceof Error && error.name === "AbortError")) {
+        setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write Page 1." });
+      }
+    } finally {
+      if (translationAbort.current === controller) translationAbort.current = null;
     }
   }
 
@@ -351,6 +378,8 @@ export default function Home() {
 
   async function approveSpread1AndPatternTest() {
     if (spread1Selection === null || !lockedDirection) return;
+    const controller = new AbortController();
+    translationAbort.current = controller;
     const approved = spread1Options[spread1Selection].text.trim();
     const approvedNote = spread1Options[spread1Selection].editNote.trim();
     setApprovedSpread1(approved);
@@ -360,14 +389,14 @@ export default function Home() {
     try {
       const result = await postJson<{ runs: Array<{ label: string; spreads: Array<{ spread: number; options: GeneratedOption[] }> }> }>("/api/translations", {
         mode: "pattern",
-        images: [spreads[1].preview, spreads[2].preview],
+        visualContexts: [spreads[1].visualContext, spreads[2].visualContext],
         sources: [spreads[1].text, spreads[2].text],
         priority,
         freedom,
         direction: lockedDirection,
         approvedSpread1: approved,
         approvedSpread1Note: approvedNote || undefined
-      });
+      }, controller.signal);
       setPatternOptions(Object.fromEntries([2, 3].map((spreadNumber) => [
         spreadNumber,
         result.runs.flatMap((run) => {
@@ -383,8 +412,19 @@ export default function Home() {
       setPatternSelections({ 2: null, 3: null });
       setRequest({ loading: false, error: null });
     } catch (error) {
-      setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t test the next spreads." });
+      if (!(error instanceof Error && error.name === "AbortError")) {
+        setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t test the next pages." });
+      }
+    } finally {
+      if (translationAbort.current === controller) translationAbort.current = null;
     }
+  }
+
+  function restartTranslation(action: () => Promise<void>) {
+    translationAbort.current?.abort();
+    translationAbort.current = null;
+    setRequest({ loading: false, error: null });
+    window.setTimeout(() => void action(), 0);
   }
 
   function updatePatternOption(spreadNumber: number, optionIndex: number, text: string) {
@@ -425,6 +465,7 @@ export default function Home() {
       preview: spread.preview,
       fileName: spread.file.name,
       sourceText: spread.text,
+      visualContext: spread.visualContext,
       approvedText: approvedDrafts[index + 1] || null,
       parentNote: approvedNotes[index + 1] || undefined,
       voiceSample: true
@@ -432,8 +473,9 @@ export default function Home() {
     const mockRemainder = mockMode ? [4, 5, 6].map((number) => ({
       id: crypto.randomUUID(),
       preview: mockPreview(number),
-      fileName: `mock-spread-${number}.png`,
-      sourceText: `Mock English source for spread ${number}. The friends continue their adventure.`,
+      fileName: `mock-page-${number}.png`,
+      sourceText: `Mock English source for page ${number}. The friends continue their adventure.`,
+      visualContext: "A mock picture-book page continuing the friends’ adventure.",
       approvedText: null,
       parentNote: undefined,
       voiceSample: false
@@ -451,6 +493,7 @@ export default function Home() {
       preview: await fileToDataUrl(file),
       fileName: file.name,
       sourceText: "",
+      visualContext: "",
       approvedText: null,
       parentNote: undefined,
       voiceSample: false
@@ -482,14 +525,14 @@ export default function Home() {
     try {
       const withSources = await Promise.all(bookPages.map(async (page) => {
         if (page.sourceText.trim()) return page;
-        const result = await postJson<{ text: string }>("/api/transcribe", { image: page.preview }, controller.signal);
-        return { ...page, sourceText: result.text };
+        const result = await postJson<{ text: string; visualContext: string }>("/api/transcribe", { image: page.preview }, controller.signal);
+        return { ...page, sourceText: result.text, visualContext: result.visualContext };
       }));
       setBookPages(withSources);
       const remaining = withSources.flatMap((page, index) =>
         page.approvedText ? [] : [{
           spread: index + 1,
-          image: page.preview,
+          visualContext: page.visualContext,
           source: page.sourceText
         }]
       );
@@ -519,7 +562,7 @@ export default function Home() {
       setRequest({ loading: false, error: null });
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
-        setRequest({ loading: false, error: null });
+        if (fullBookAbort.current === controller) setRequest({ loading: false, error: null });
       } else {
         setRequest({
           loading: false,
@@ -531,10 +574,11 @@ export default function Home() {
     }
   }
 
-  function cancelFullBook() {
+  function restartFullBook() {
     fullBookAbort.current?.abort();
     fullBookAbort.current = null;
     setRequest({ loading: false, error: null });
+    window.setTimeout(() => void generateRestOfBook(), 0);
   }
 
   function updateBookTranslation(index: number, approvedText: string) {
@@ -545,7 +589,7 @@ export default function Home() {
 
   function saveFinishedDraft() {
     const text = bookPages
-      .map((page, index) => `SPREAD ${index + 1}\n${page.approvedText?.trim() || ""}`)
+      .map((page, index) => `PAGE ${index + 1}\n${page.approvedText?.trim() || ""}`)
       .join("\n\n");
     const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
     const link = document.createElement("a");
@@ -579,15 +623,22 @@ export default function Home() {
         {step === 1 && (
           <>
             <p className="kicker">Book workshop</p>
-            <h1>Add the first three spreads.</h1>
+            <h1>Add the first three book photos.</h1>
             <p className="lead">We’ll use them to find a Slovenian voice that feels right before working through the whole book.</p>
+            <figure className="photo-guide">
+              <img src="/photo-guide.png" alt="A phone photographing an entire open picture book, with both facing pages fully visible." />
+              <figcaption>
+                <strong>Photograph the whole open book</strong>
+                <span>Keep both pages flat, fully in frame, and easy to read.</span>
+              </figcaption>
+            </figure>
             {mockMode && spreads.length === 0 && (
               <button className="secondary mock-load" type="button" onClick={loadMockBook}>Load a mock book</button>
             )}
             <div className="uploads">
               {spreads.map((spread, index) => (
                 <label className="photo" key={spread.id}>
-                  <img src={spread.preview} alt={`Book spread ${index + 1}`} />
+                  <img src={spread.preview} alt={`Book page ${index + 1}`} />
                   <input type="file" accept="image/*" onChange={(event) => chooseFile(event, spread.id)} />
                   <span>Replace</span>
                 </label>
@@ -596,7 +647,7 @@ export default function Home() {
                 <label className="drop" onDrop={drop} onDragOver={(event) => event.preventDefault()}>
                   <input type="file" accept="image/*" multiple onChange={(event) => chooseFile(event)} />
                   <strong>+</strong>
-                  <span>{spreads.length ? "Add the remaining spreads" : "Drop three book photos here"}</span>
+                  <span>{spreads.length ? "Add the remaining pages" : "Drop three book photos here"}</span>
                   <small>or click to choose multiple images</small>
                 </label>
               )}
@@ -615,7 +666,7 @@ export default function Home() {
                 <article className={spread.status === "reading" ? "transcription is-reading" : "transcription"} key={spread.id} aria-busy={spread.status === "reading"}>
                   <img src={spread.preview} alt="" />
                   <div>
-                    <label htmlFor={`text-${index}`}>Spread {index + 1}</label>
+                    <label htmlFor={`text-${index}`}>Page {index + 1}</label>
                     {spread.status === "reading" && (
                       <div className="reading-state" role="status">
                         <RotatingThinkingLine messages={readingLoadingMessages} />
@@ -624,7 +675,7 @@ export default function Home() {
                     <textarea
                       id={`text-${index}`}
                       value={spread.text}
-                      placeholder={spread.status === "reading" ? "Reading the spread…" : "Type or paste the English text here"}
+                      placeholder={spread.status === "reading" ? "Reading the page…" : "Type or paste the English text here"}
                       disabled={spread.status === "reading"}
                       onChange={(event) => setSpreads((current) => current.map((item, i) =>
                         i === index ? { ...item, text: event.target.value } : item
@@ -684,7 +735,7 @@ export default function Home() {
             <p className="kicker">Refrain lab</p>
             <h1>Three ways the whole book could sound.</h1>
             <p className="lead">Choose one quality-checked direction, then make its wording yours. We’ll lock exactly what you approve.</p>
-            {request.loading && <ProgressLog messages={directionLoadingMessages} onCancel={() => cancelDirections(false)} />}
+            {request.loading && <ProgressLog messages={directionLoadingMessages} progress={directionProgress} onRestart={restartDirections} />}
             {!request.loading && directions.length > 0 && (
               <div className="direction-grid">
                 {directions.map((direction, index) => {
@@ -723,12 +774,12 @@ export default function Home() {
 
         {step === 6 && lockedDirection && (
           <>
-            <p className="kicker">Spread 1 workshop</p>
-            <h1>Let’s test the voice on one spread.</h1>
+            <p className="kicker">Page 1 workshop</p>
+            <h1>Let’s test the voice on one page.</h1>
             <p className="lead">Choose from three Slovenian possibilities that have each passed the locked brief.</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
             <Source spread={spreads[0]} number={1} />
-            {request.loading && <ProgressLog messages={translationLoadingMessages} />}
+            {request.loading && <ProgressLog messages={translationLoadingMessages} onRestart={() => restartTranslation(lockDirectionAndWriteSpread1)} />}
             {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} onNote={updateSpread1Note} />}
             {request.error && <GenerationError message={request.error} retry={retry} />}
             <nav>
@@ -742,15 +793,15 @@ export default function Home() {
           <>
             <p className="kicker">Pattern test</p>
             <h1>Does the voice travel?</h1>
-            <p className="lead">Choose and edit one option for each spread. Spread 1 stays beside us as the voice reference.</p>
+            <p className="lead">Choose and edit one option for each page. Page 1 stays beside us as the voice reference.</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
             <article className="approved-card voice-reference">
-              <img src={spreads[0].preview} alt="Approved Spread 1" />
-              <label>Approved Spread 1 · voice reference</label>
+              <img src={spreads[0].preview} alt="Approved Page 1" />
+              <label>Approved Page 1 · voice reference</label>
               <p>{approvedSpread1}</p>
               {approvedNotes[1] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[1]}</p>}
             </article>
-            {request.loading && <ProgressLog messages={patternLoadingMessages} />}
+            {request.loading && <ProgressLog messages={patternLoadingMessages} onRestart={() => restartTranslation(approveSpread1AndPatternTest)} />}
             {!request.loading && [2, 3].map((number) => (
               <section className="pattern-section" key={number}>
                 <Source spread={spreads[number - 1]} number={number} />
@@ -764,7 +815,7 @@ export default function Home() {
               </section>
             ))}
             {request.error && <GenerationError message={request.error} retry={retry} />}
-            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(6)}>Back to Spread 1</button><button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button></nav>
+            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(6)}>Back to Page 1</button><button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button></nav>
           </>
         )}
 
@@ -772,13 +823,13 @@ export default function Home() {
           <>
             <p className="kicker">Voice review</p>
             <h1>{voiceLocked ? "The voice is locked." : "Do these belong in the same book?"}</h1>
-            <p className="lead">{voiceLocked ? "These three approved spreads are now the voice reference for the rest of the book." : "Read them aloud together. You can still tune any line before confirming."}</p>
+            <p className="lead">{voiceLocked ? "These three approved pages are now the voice reference for the rest of the book." : "Read them aloud together. You can still tune any line before confirming."}</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
             <div className="approved-grid">
               {[1, 2, 3].map((number) => (
                 <article className="approved-card" key={number}>
-                  <img src={spreads[number - 1].preview} alt={`Spread ${number}`} />
-                  <label>Spread {number}</label>
+                  <img src={spreads[number - 1].preview} alt={`Page ${number}`} />
+                  <label>Page {number}</label>
                   <textarea disabled={voiceLocked} value={approvedDrafts[number] || ""} onChange={(event) => setApprovedDrafts((current) => ({ ...current, [number]: event.target.value }))} />
                   {approvedNotes[number] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[number]}</p>}
                 </article>
@@ -788,7 +839,7 @@ export default function Home() {
               <nav><button className="secondary" onClick={() => setStep(7)}>Rework the pattern</button><button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={() => setVoiceLocked(true)}>Yes, the voice feels consistent</button></nav>
             ) : (
               <>
-                <div className="locked-confirmation"><span>Locked by parent</span><p>The exact refrain and these approved drafts will guide every later spread.</p></div>
+                <div className="locked-confirmation"><span>Locked by parent</span><p>The exact refrain and these approved drafts will guide every later page.</p></div>
                 <button className="primary" onClick={startRestOfBook}>Add the rest of the book</button>
               </>
             )}
@@ -799,7 +850,7 @@ export default function Home() {
           <>
             <p className="kicker">The rest of the book</p>
             <h1>Now put the whole book in order.</h1>
-            <p className="lead">Drop all the remaining spread photos at once. Then drag every card—including the first three—until the sequence matches the physical book.</p>
+            <p className="lead">Drop all the remaining book photos at once. Then drag every card—including the first three—until the sequence matches the physical book.</p>
             <label
               className="rest-drop"
               onDrop={(event) => { event.preventDefault(); void addRemainingFiles(event.dataTransfer.files); }}
@@ -807,12 +858,12 @@ export default function Home() {
             >
               <input type="file" accept="image/*" multiple onChange={(event) => { void addRemainingFiles(event.target.files ?? undefined); event.target.value = ""; }} />
               <strong>+</strong>
-              <span>Drop all remaining spread photos here</span>
+              <span>Drop all remaining book photos here</span>
               <small>or click to choose multiple images</small>
             </label>
 
             <div className="order-heading">
-              <div><strong>Book order</strong><small>{bookPages.length} spreads · drag to rearrange</small></div>
+              <div><strong>Book order</strong><small>{bookPages.length} pages · drag to rearrange</small></div>
               {bookOrderLocked && <span>Order confirmed</span>}
             </div>
             <div className="book-order">
@@ -838,10 +889,10 @@ export default function Home() {
                   }}
                 >
                   <div className="page-number">{index + 1}</div>
-                  <img src={page.preview} alt={`Book spread ${index + 1}`} />
+                  <img src={page.preview} alt={`Book page ${index + 1}`} />
                   <div className="page-order-meta">
                     <strong>{page.fileName}</strong>
-                    <small>{page.approvedText ? "Approved voice sample" : "New spread"}</small>
+                    <small>{page.approvedText ? "Approved voice sample" : "New page"}</small>
                   </div>
                 </article>
               ))}
@@ -852,7 +903,7 @@ export default function Home() {
                 {bookOrderLocked ? "Order confirmed" : "This order is right"}
               </button>
             </nav>
-            {bookOrderLocked && <div className="locked-confirmation"><span>Ready for the next stage</span><p>The full book order is saved in this session. Next, Bibaling can read and workshop the remaining spreads one at a time.</p></div>}
+            {bookOrderLocked && <div className="locked-confirmation"><span>Ready for the next stage</span><p>The full book order is saved in this session. Next, Bibaling can read and workshop the remaining pages one at a time.</p></div>}
             {bookOrderLocked && (
               <button className="primary continue-full-book" type="button" onClick={() => void generateRestOfBook()}>
                 Translate the full book
@@ -867,17 +918,17 @@ export default function Home() {
             <h1>{request.loading ? "Writing the rest of your book." : "Your full Slovenian draft."}</h1>
             <p className="lead">
               {request.loading
-                ? "We’re reading the remaining spreads and carrying your approved voice and corrections through the whole story."
-                : "Read through every spread in order. You can edit any line before saving the finished draft."}
+                ? "We’re reading the remaining pages and carrying your approved voice and corrections through the whole story."
+                : "Read through every page in order. You can edit any line before saving the finished draft."}
             </p>
             <LockedBrief direction={lockedDirection} priority={priority} />
-            {request.loading && <ProgressLog messages={fullBookLoadingMessages} onCancel={cancelFullBook} />}
+            {request.loading && <ProgressLog messages={fullBookLoadingMessages} onRestart={restartFullBook} />}
             {!request.loading && (
               <div className="full-book-draft">
                 {bookPages.map((page, index) => (
                   <article className="approved-card" key={page.id}>
-                    <img src={page.preview} alt={`Spread ${index + 1}`} />
-                    <label>Spread {index + 1}{page.voiceSample ? " · parent-approved reference" : ""}</label>
+                    <img src={page.preview} alt={`Page ${index + 1}`} />
+                    <label>Page {index + 1}{page.voiceSample ? " · parent-approved reference" : ""}</label>
                     <textarea
                       value={page.approvedText || ""}
                       onChange={(event) => updateBookTranslation(index, event.target.value)}
@@ -923,7 +974,7 @@ const directionLoadingMessages = [
 ];
 
 const readingLoadingMessages = [
-  "Reading the words on this spread…",
+  "Reading the words on this page…",
   "Checking the line breaks…",
   "Looking closely at the page…",
   "Matching the words to the picture…",
@@ -958,26 +1009,26 @@ const translationLoadingMessages = [
 
 const patternLoadingMessages = [
   "Carrying your approved voice forward…",
-  "Testing the refrain on the next spread…",
+  "Testing the refrain on the next page…",
   "Keeping the rhythm consistent…",
   "Applying your edits to the next choices…",
-  "Checking both spreads side by side…",
+  "Checking both pages side by side…",
   "Making sure the voice travels naturally…",
   ...translationLoadingMessages
 ];
 
 const fullBookLoadingMessages = [
-  "Reading the remaining spreads…",
+  "Reading the remaining pages…",
   "Following the story from beginning to end…",
   "Carrying your approved voice through the book…",
   "Applying your rhyme feedback everywhere…",
   "Keeping repeated language consistent…",
   "Checking the full story arc…",
-  "Making each spread sound like the same book…",
+  "Making each page sound like the same book…",
   "Checking every page against its picture…",
   "Listening for repeated rhyme problems…",
   "Polishing the book as one continuous read…",
-  "Making sure no spread was skipped…",
+  "Making sure no page was skipped…",
   "Preparing the complete editable draft…",
   ...translationLoadingMessages
 ];
@@ -1023,12 +1074,24 @@ function RotatingThinkingLine({ messages }: { messages: readonly string[] }) {
   );
 }
 
+const directionMilestones = [
+  "Reading the complete book",
+  "Finding the story arc and repeated language",
+  "Drafting distinct literary directions",
+  "Testing rhyme and read-aloud rhythm",
+  "Checking fidelity and natural Slovenian",
+  "Rejecting weak or forced candidates",
+  "Selecting the three strongest directions"
+];
+
 function ProgressLog({
   messages,
-  onCancel
+  onRestart,
+  progress
 }: {
   messages: readonly string[];
-  onCancel?: () => void;
+  onRestart?: () => void;
+  progress?: DirectionProgress;
 }) {
   const [showReassurance, setShowReassurance] = useState(false);
 
@@ -1039,10 +1102,20 @@ function ProgressLog({
 
   return (
     <div className="direction-progress-log" aria-live="polite">
+      {progress && (
+        <ol className="progress-milestones">
+          {directionMilestones.map((label, index) => (
+            <li className={index <= progress.completedThrough ? "done" : index === progress.active ? "active" : ""} key={label}>
+              <span aria-hidden="true">{index <= progress.completedThrough ? "✓" : index === progress.active ? "●" : "○"}</span>
+              {label}
+            </li>
+          ))}
+        </ol>
+      )}
       <RotatingThinkingLine messages={messages} />
       <div className="progress-log-footer">
         <p>{showReassurance ? "Good verse takes a little longer—we’re checking this carefully." : "We’re checking this carefully."}</p>
-        {onCancel && <button type="button" onClick={onCancel}>Cancel</button>}
+        {onRestart && <button type="button" onClick={onRestart}>Restart</button>}
       </div>
     </div>
   );
@@ -1062,8 +1135,8 @@ function LockedBrief({ direction, priority }: { direction: Direction; priority: 
 function Source({ spread, number }: { spread: Spread; number: number }) {
   return (
     <article className="source-card">
-      <img src={spread.preview} alt={`Spread ${number}`} />
-      <div><span>English source · Spread {number}</span><p>{spread.text}</p></div>
+      <img src={spread.preview} alt={`Page ${number}`} />
+      <div><span>English source · Page {number}</span><p>{spread.text}</p></div>
     </article>
   );
 }

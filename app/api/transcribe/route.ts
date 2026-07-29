@@ -19,9 +19,10 @@ const transcriptionSchema = {
   additionalProperties: false,
   properties: {
     text: { type: "string" },
-    uncertainty: { type: ["string", "null"] }
+    uncertainty: { type: ["string", "null"] },
+    visualContext: { type: "string" }
   },
-  required: ["text", "uncertainty"]
+  required: ["text", "uncertainty", "visualContext"]
 } as const;
 
 export async function POST(request: Request) {
@@ -31,6 +32,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         text: "[MOCK OCR] Replace this with the corrected English source text.",
         uncertainty: "Mock mode does not inspect or evaluate the uploaded image.",
+        visualContext: "Mock picture-book scene; no real image was inspected.",
         mock: true
       });
     }
@@ -61,7 +63,8 @@ export async function POST(request: Request) {
                   "Return the story text only, in natural reading order.",
                   "Use sentence context to correct obvious visual character errors into real English words.",
                   "Preserve intentional capitalization, punctuation, rhyme, and wordplay.",
-                  "Ignore illustrations, page edges, logos, and decorative marks.",
+                  "Also summarize the essential illustration details in visualContext: characters, actions, setting, mood, and any picture detail the translation must stay faithful to.",
+                  "Ignore page edges, logos, and decorative marks.",
                   "Never invent words hidden from view. Mention genuine ambiguity briefly in uncertainty."
                 ].join(" ")
               },
@@ -81,13 +84,14 @@ export async function POST(request: Request) {
       return JSON.parse(response.output_text) as {
         text: string;
         uncertainty: string | null;
+        visualContext: string;
       };
     });
     return NextResponse.json(result);
   } catch (error) {
     return generationError(
       error,
-      "I couldn’t read this spread reliably. Your photo is still here—please type the text or try again."
+      "I couldn’t read this page reliably. Your photo is still here—please type the text or try again."
     );
   }
 }

@@ -82,6 +82,7 @@ Gender dependency: ${direction.genderDependency}`;
 
 export function directionsGenerationPrompt(args: {
   texts: string[];
+  visualContexts?: string[];
   priority: Priority;
   freedom: Freedom;
   rejectionFeedback?: string;
@@ -95,6 +96,9 @@ Create a private pool of exactly six genuinely different candidate book-level li
 
 CONFIRMED ENGLISH, IN SPREAD ORDER
 ${args.texts.map((text, index) => `${index + 1}. ${text}`).join("\n")}
+
+ESSENTIAL VISUAL CONTEXT, IN THE SAME ORDER
+${(args.visualContexts || []).map((context, index) => `${index + 1}. ${context}`).join("\n")}
 
 ${priorityContract(args.priority)}
 ${freedomContract(args.freedom)}
@@ -118,6 +122,7 @@ ${args.rejectionFeedback ? `\nPREVIOUS EVALUATOR REJECTIONS — repair all of th
 
 export function directionsEvaluationPrompt(args: {
   texts: string[];
+  visualContexts?: string[];
   priority: Priority;
   freedom: Freedom;
   directionsJson: string;
@@ -128,6 +133,9 @@ ROLE: Independent Slovenian literary editor and quality gate. Return exactly thr
 
 SOURCE TEXTS
 ${args.texts.map((text, index) => `${index + 1}. ${text}`).join("\n")}
+
+ESSENTIAL VISUAL CONTEXT
+${(args.visualContexts || []).map((context, index) => `${index + 1}. ${context}`).join("\n")}
 
 ${priorityContract(args.priority)}
 ${freedomContract(args.freedom)}
@@ -158,6 +166,7 @@ Never output slash forms, placeholders, "čisto do gobic", invented love-growing
 export function translationGenerationPrompt(args: {
   spreadNumber: number;
   source: string;
+  visualContext?: string;
   priority: Priority;
   freedom: Freedom;
   direction: DirectionBrief;
@@ -178,6 +187,7 @@ ${freedomContract(args.freedom)}
 ${directionBrief(args.direction)}
 ${args.approvedSpread1 ? `\nAPPROVED SPREAD 1 VOICE REFERENCE — imitate its voice, never silently rewrite it:\n${args.approvedSpread1}` : ""}
 ${args.approvedSpread1Note ? `\nPARENT'S EDIT NOTE ON THE GENERATED SPREAD 1 DRAFT\n${args.approvedSpread1Note}\nTreat this as binding editorial evidence about what to avoid or improve in later spreads. Do not quote the note in book text.` : ""}
+${args.visualContext ? `\nESSENTIAL VISUAL CONTEXT FROM THE ONE-TIME IMAGE ANALYSIS\n${args.visualContext}` : ""}
 
 Candidate requirements:
 - complete Slovenian text for this spread, not notes or fragments;
@@ -195,6 +205,7 @@ ${args.rejectionFeedback ? `\nPREVIOUS EVALUATOR REJECTIONS — create new candi
 export function translationEvaluationPrompt(args: {
   spreadNumber: number;
   source: string;
+  visualContext?: string;
   priority: Priority;
   freedom: Freedom;
   direction: DirectionBrief;
@@ -214,6 +225,7 @@ ${freedomContract(args.freedom)}
 ${directionBrief(args.direction)}
 ${args.approvedSpread1 ? `\nAPPROVED SPREAD 1 VOICE REFERENCE:\n${args.approvedSpread1}` : ""}
 ${args.approvedSpread1Note ? `\nPARENT'S EDIT NOTE — candidates must respect this correction:\n${args.approvedSpread1Note}` : ""}
+${args.visualContext ? `\nESSENTIAL VISUAL CONTEXT FROM THE ONE-TIME IMAGE ANALYSIS\n${args.visualContext}` : ""}
 
 CANDIDATES
 ${args.candidatesJson}
@@ -238,7 +250,7 @@ Never output "čisto do gobic", invented love-growing-like-mushrooms meaning, "r
 }
 
 export function fullBookGenerationPrompt(args: {
-  spreads: Array<{ spread: number; source: string }>;
+  spreads: Array<{ spread: number; source: string; visualContext: string }>;
   priority: Priority;
   freedom: Freedom;
   direction: DirectionBrief;
@@ -257,7 +269,7 @@ PARENT-APPROVED VOICE REFERENCES
 ${args.approvedVoice.map((item) => `SPREAD ${item.spread}\n${item.text}${item.parentNote ? `\nPARENT NOTE: ${item.parentNote}\nTreat this note as a correction: do not repeat the flaw it identifies.` : ""}`).join("\n\n")}
 
 REMAINING CORRECTED ENGLISH SOURCES
-${args.spreads.map((item) => `SPREAD ${item.spread}\n${item.source}`).join("\n\n")}
+${args.spreads.map((item) => `SPREAD ${item.spread}\n${item.source}\nVISUAL CONTEXT: ${item.visualContext}`).join("\n\n")}
 
 For each requested spread:
 - preserve its source event, emotional beat, illustration truth, and approximate density;
@@ -271,7 +283,7 @@ The drafts must also work as one continuous book: keep repeated wording exact, a
 }
 
 export function fullBookEditorialPrompt(args: {
-  spreads: Array<{ spread: number; source: string }>;
+  spreads: Array<{ spread: number; source: string; visualContext: string }>;
   priority: Priority;
   freedom: Freedom;
   direction: DirectionBrief;
@@ -291,7 +303,7 @@ PARENT-APPROVED VOICE REFERENCES AND CORRECTIONS
 ${args.approvedVoice.map((item) => `SPREAD ${item.spread}\n${item.text}${item.parentNote ? `\nPARENT NOTE: ${item.parentNote}\nThis identifies a flaw to eliminate from later spreads.` : ""}`).join("\n\n")}
 
 AUTHORITATIVE ENGLISH SOURCES
-${args.spreads.map((item) => `SPREAD ${item.spread}\n${item.source}`).join("\n\n")}
+${args.spreads.map((item) => `SPREAD ${item.spread}\n${item.source}\nVISUAL CONTEXT: ${item.visualContext}`).join("\n\n")}
 
 DRAFTS TO EDIT
 ${args.draftsJson}

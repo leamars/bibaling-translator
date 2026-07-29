@@ -18,12 +18,12 @@ import { deterministicViolations } from "../translation-quality";
 export const runtime = "nodejs";
 
 const bodySchema = z.object({
-  images: z.array(z.string().startsWith("data:image/")).length(3),
+  visualContexts: z.array(z.string().min(1)).length(3),
   texts: z.array(z.string().min(1)).length(3),
   priority: z.enum(["rhythm", "meaning", "simple"]),
   freedom: z.enum(["close", "natural", "playful"]),
   parentFeedback: z.string().trim().min(1).max(1000).optional(),
-  previousRefrains: z.array(z.string().min(1)).max(6).default([])
+  previousRefrains: z.array(z.string().min(1)).max(100).default([])
 });
 
 const singleDirectionSchema = z.object({
@@ -102,7 +102,7 @@ function editorialJsonSchema() {
 async function generateAndEvaluateDirections(args: {
   client: NonNullable<ReturnType<typeof openAIClient>>;
   model: string;
-  images: string[];
+  visualContexts: string[];
   texts: string[];
   priority: Priority;
   freedom: Freedom;
@@ -113,13 +113,11 @@ async function generateAndEvaluateDirections(args: {
 }) {
   assertActionBudget({ model: args.model, maxInputTokens: 4_000, maxOutputTokens: 3_500, callCount: 2 });
     args.progress("generation.started");
-    const generationContent: Array<
-      { type: "input_text"; text: string } |
-      { type: "input_image"; image_url: string; detail: "high" }
-    > = [{
+    const generationContent: Array<{ type: "input_text"; text: string }> = [{
       type: "input_text",
       text: directionsGenerationPrompt({
         texts: args.texts,
+        visualContexts: args.visualContexts,
         priority: args.priority,
         freedom: args.freedom,
         rejectionFeedback: "",
@@ -127,7 +125,6 @@ async function generateAndEvaluateDirections(args: {
         previousRefrains: args.previousRefrains
       })
     }];
-    args.images.forEach((image) => generationContent.push({ type: "input_image", image_url: image, detail: "high" }));
 
     const { response: generatedResponse } = await controlledResponse({
       client: args.client,
@@ -156,19 +153,16 @@ async function generateAndEvaluateDirections(args: {
     }
     args.progress("filtering.completed", { rejectedCount: generated.directions.length - survivors.length });
 
-    const evaluationContent: Array<
-      { type: "input_text"; text: string } |
-      { type: "input_image"; image_url: string; detail: "high" }
-    > = [{
+    const evaluationContent: Array<{ type: "input_text"; text: string }> = [{
       type: "input_text",
       text: directionsEvaluationPrompt({
         texts: args.texts,
+        visualContexts: args.visualContexts,
         priority: args.priority,
         freedom: args.freedom,
         directionsJson: JSON.stringify(survivors)
       })
     }];
-    args.images.forEach((image) => evaluationContent.push({ type: "input_image", image_url: image, detail: "high" }));
 
     args.progress("evaluation.started");
     const { response: evaluationResponse } = await controlledResponse({

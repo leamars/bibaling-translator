@@ -168,3 +168,25 @@ textarea:disabled { color: var(--muted); background: #f5f6f3; cursor: wait; }
 @media (max-width: 460px) {
   .book-order { grid-template-columns: 1fr; }
 }
+
+.photo-guide {
+  width: min(720px, 100%);
+  margin: 28px 0 34px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--paper);
+  box-shadow: 0 14px 34px rgba(66, 51, 38, 0.08);
+}
+.photo-guide img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+.photo-guide figcaption { display: flex; gap: 6px; flex-direction: column; padding: 16px 20px 18px; color: var(--muted); }
+.photo-guide figcaption strong { color: var(--ink); font-size: 1rem; }
+.photo-guide figcaption span { font-size: 0.9rem; line-height: 1.45; }
+
+.progress-milestones { display: grid; gap: 8px; margin: 0 0 18px; padding: 0; list-style: none; }
+.progress-milestones li { display: flex; gap: 10px; align-items: center; color: var(--muted); font-size: 0.92rem; }
+.progress-milestones li span { width: 18px; color: var(--line); text-align: center; }
+.progress-milestones li.done { color: var(--ink); }
+.progress-milestones li.done span { color: var(--accent); }
+.progress-milestones li.active { color: var(--ink); font-weight: 650; }
+.progress-milestones li.active span { color: var(--accent); animation: pulse 1.25s ease-in-out infinite; }
