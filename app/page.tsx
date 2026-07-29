@@ -437,7 +437,7 @@ export default function Home() {
             <p className="kicker">Book workshop</p>
             <h1>Add the first three book photos.</h1>
             <p className="lead">Photograph two facing pages together. We’ll use the first three photos to find a Slovenian voice that feels right before working through the whole book.</p>
-            <figure className="photo-guide"><img src="/photo-guide.svg" alt="A phone held above an open picture book, with both pages fully visible and readable." /><figcaption><strong>Photograph the whole open book</strong><span>Keep both pages flat, fully in frame, and easy to read.</span></figcaption></figure>
+            <figure className="photo-guide"><img src="/photo-guide.png" alt="A phone held above an open picture book, with both pages fully visible and readable." /><figcaption><strong>Photograph the whole open book</strong><span>Keep both pages flat, fully in frame, and easy to read.</span></figcaption></figure>
             <div className="uploads">
               {spreads.map((spread, index) => (
                 <label className="photo" key={spread.id}>
