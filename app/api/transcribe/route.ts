@@ -19,16 +19,17 @@ const transcriptionSchema = {
 } as const;
 
 export async function POST(request: Request) {
-  if (!process.env.OPENAI_API_KEY) {
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey || apiKey === "your_actual_key_here") {
     return NextResponse.json(
-      { error: "Image reading isn’t connected yet. You can type the text instead." },
+      { error: "Image reading isn’t connected yet. Add a valid OPENAI_API_KEY to .env.local, restart the app, then try again." },
       { status: 503 }
     );
   }
 
   try {
     const { image } = bodySchema.parse(await request.json());
-    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const client = new OpenAI({ apiKey });
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
       input: [{
@@ -65,6 +66,18 @@ export async function POST(request: Request) {
     return NextResponse.json(result);
   } catch (error) {
     console.error("Transcription failed", error);
+    if (error instanceof OpenAI.AuthenticationError) {
+      return NextResponse.json(
+        { error: "The OpenAI API key was rejected. Update OPENAI_API_KEY in .env.local, restart the app, then try again." },
+        { status: 503 }
+      );
+    }
+    if (error instanceof OpenAI.RateLimitError) {
+      return NextResponse.json(
+        { error: "The OpenAI account has no available API quota. Check API billing and usage limits, then try again." },
+        { status: 503 }
+      );
+    }
     return NextResponse.json(
       { error: "I couldn’t read this spread reliably. Your photo is still here—please type or paste the text." },
       { status: 422 }
