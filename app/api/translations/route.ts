@@ -21,6 +21,7 @@ import {
 import {
   deterministicViolations
 } from "../translation-quality";
+import { verifyLeadReceipt } from "../leads/receipt";
 
 export const runtime = "nodejs";
 
@@ -31,10 +32,14 @@ const directionSchema = z.object({
   genderDependency: z.string().min(1)
 });
 
+// OCR can safely recover the complete source text even when optional image
+// analysis is interrupted. Translation must remain available in that case.
+const visualContextSchema = z.string().max(4_000);
+
 const bodySchema = z.discriminatedUnion("mode", [
   z.object({
     mode: z.literal("spread1"),
-    visualContext: z.string().min(1),
+    visualContext: visualContextSchema,
     source: z.string().min(1),
     priority: z.enum(["rhythm", "meaning", "simple"]),
     freedom: z.enum(["close", "natural", "playful"]),
@@ -44,7 +49,7 @@ const bodySchema = z.discriminatedUnion("mode", [
   }),
   z.object({
     mode: z.literal("pattern"),
-    visualContexts: z.array(z.string().min(1)).length(2),
+    visualContexts: z.array(visualContextSchema).length(2),
     sources: z.array(z.string().min(1)).length(2),
     priority: z.enum(["rhythm", "meaning", "simple"]),
     freedom: z.enum(["close", "natural", "playful"]),
@@ -56,9 +61,10 @@ const bodySchema = z.discriminatedUnion("mode", [
   }),
   z.object({
     mode: z.literal("fullbook"),
+    leadReceipt: z.string().min(1),
     spreads: z.array(z.object({
       spread: z.number().int().positive(),
-      visualContext: z.string().min(1),
+      visualContext: visualContextSchema,
       source: z.string().min(1)
     })).min(1).max(40),
     priority: z.enum(["rhythm", "meaning", "simple"]),
@@ -425,6 +431,9 @@ export async function POST(request: Request) {
     const client = openAIClient();
     if (!client) return NextResponse.json({ error: "Translation generation isn’t connected. Add a valid OPENAI_API_KEY and restart." }, { status: 503 });
     if (input.mode === "fullbook") {
+      if (!verifyLeadReceipt(input.leadReceipt, input.bookForm)) {
+        return NextResponse.json({ error: "Email capture is required before full-book generation." }, { status: 403 });
+      }
       const spreads = await deduplicate(requestKey("fullbook", input), () =>
         generateFullBook({ client, requestSignal: request.signal, input })
       );

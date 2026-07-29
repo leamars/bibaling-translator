@@ -169,6 +169,8 @@ test("full-book editorial contract carries route and source-rhyme context", () =
 test("UI preserves recommendation override, Step 5 errors, and accessible cards", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   assert.match(page, /recommendedBookForm === option\.value/);
+  assert.match(page, /setRecommendedBookForm\(result\.bookForm\);\s*setBookFormConfirmed\(true\)/);
+  assert.match(page, />Recommended<\/small>/);
   assert.match(page, /setBookForm\(option\.value\)/);
   assert.match(page, /setBookFormConfirmed\(true\)/);
   assert.match(page, /FINAL_SET_INVALID/);

@@ -50,26 +50,33 @@ export async function POST(request: Request) {
         { status: 503 }
       );
     }
-    assertActionBudget({ model: "gpt-4.1-mini", maxInputTokens: 4_000, maxOutputTokens: 800, callCount: 2 });
+    const attempts = [
+      { model: "gpt-4.1-mini", action: "transcribe" },
+      { model: "gpt-5.6-terra", action: "transcribe.fallback" }
+    ] as const;
+    for (const attempt of attempts) {
+      assertActionBudget({ model: attempt.model, maxInputTokens: 4_000, maxOutputTokens: 800, callCount: 1 });
+    }
     const result = await deduplicate(requestKey("transcribe", input), async () => {
       let firstFailure: unknown;
-      for (let attempt = 0; attempt < 2; attempt += 1) {
+      for (let attemptIndex = 0; attemptIndex < attempts.length; attemptIndex += 1) {
+        const attempt = attempts[attemptIndex];
         try {
           const { response } = await controlledResponse({
             client,
             requestSignal: request.signal,
-            action: attempt === 0 ? "transcribe" : "transcribe.fallback",
-            model: "gpt-4.1-mini",
+            action: attempt.action,
+            model: attempt.model,
             maxOutputTokens: 800,
             timeoutMs: 60_000,
             body: {
-              model: "gpt-4.1-mini",
+              model: attempt.model,
               input: [{
                 role: "user",
                 content: [
                   {
                     type: "input_text",
-                    text: attempt === 0
+                    text: attemptIndex === 0
                       ? [
                           "Read the printed English story text on this photographed children's-book spread.",
                           "Return the story text only, in natural reading order.",

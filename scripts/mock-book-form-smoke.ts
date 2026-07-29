@@ -88,8 +88,27 @@ for (const [bookForm, texts] of Object.entries(fixtures)) {
   });
   assert.equal(JSON.parse(pattern.text).runs[0].spreads.length, 2);
 
+  const lead = await post("/api/leads", {
+    email: `${bookForm}@example.com`,
+    marketingConsent: false,
+    capturedAt: "2026-07-29T18:00:00.000Z",
+    attribution: {
+      source: "mock",
+      medium: "test",
+      campaign: "",
+      content: "",
+      term: "",
+      landingPage: "http://localhost/mock"
+    },
+    languagePair: "en-sl",
+    bookForm
+  });
+  const capturedLead = JSON.parse(lead.text);
+  assert.equal(capturedLead.captured, true);
+
   const fullBook = await post("/api/translations", {
     mode: "fullbook",
+    leadReceipt: capturedLead.receipt,
     spreads: [{ spread: 4, visualContext: "Mock visual context.", source: "The story continues." }],
     approvedVoice: [1, 2, 3].map((spread) => ({
       spread,

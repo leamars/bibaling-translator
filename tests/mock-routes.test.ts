@@ -42,9 +42,10 @@ test("literary calls are bounded, with extra drafting time at the measured bottl
 
   const transcription = await readFile(new URL("../app/api/transcribe/route.ts", import.meta.url), "utf8");
   assert.match(transcription, /timeoutMs:\s*60_000/);
-  assert.match(transcription, /attempt < 2/);
+  assert.match(transcription, /gpt-4\.1-mini/);
+  assert.match(transcription, /gpt-5\.6-terra/);
   assert.match(transcription, /transcribe\.fallback/);
-  assert.match(transcription, /callCount:\s*2/);
+  assert.match(transcription, /callCount:\s*1/);
   assert.match(transcription, /response\.status !== "completed"/);
   assert.match(transcription, /Transcription completed without output/);
 });
@@ -59,6 +60,23 @@ test("OCR recovers only a fully completed text field from an interrupted respons
     }
   );
   assert.equal(recoverCompletedTextField('{"text":"Mama is in the kit'), null);
+});
+
+test("translation routes allow an unavailable optional visual summary", async () => {
+  const source = await readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8");
+  assert.match(source, /const visualContextSchema = z\.string\(\)\.max\(4_000\)/);
+  assert.doesNotMatch(source, /visualContext:\s*z\.string\(\)\.min\(1\)/);
+  assert.doesNotMatch(source, /visualContexts:\s*z\.array\(z\.string\(\)\.min\(1\)\)/);
+});
+
+test("full-book reading preserves successful OCR when another page fails", async () => {
+  const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  assert.match(source, /workStatus = "reading"/);
+  assert.match(source, /workStatus = "translating"/);
+  assert.match(source, /workStatus = "ready"/);
+  assert.match(source, /Everything before it is saved/);
+  assert.match(source, /activePage=\{activeBookPageIndex/);
+  assert.match(source, /Writing the Slovenian translation/);
 });
 
 test("direction generation streams genuine progress and propagates cancellation", async () => {
@@ -85,7 +103,7 @@ test("full-book generation is mocked, bounded, and preserves parent feedback", a
   assert.match(page, /parentNote: page\.parentNote/);
   assert.match(page, /Translate the full book/);
   assert.match(page, /onDragEnter/);
-  assert.match(page, /These pages are ready\. We’re translating the rest of the book now\./);
+  assert.match(page, /activePage=\{activeBookPageIndex/);
   assert.match(page, /approved-while-writing/);
 });
 

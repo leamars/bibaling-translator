@@ -1,6 +1,7 @@
 "use client";
 
-import { ChangeEvent, DragEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, DragEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { setAnalyticsConsent, trackFunnelEventOnce } from "./analytics";
 import {
   BOOK_FORM_OPTIONS,
   bookFormLabel,
@@ -51,6 +52,7 @@ type BookPage = {
   approvedText: string | null;
   parentNote?: string;
   voiceSample?: boolean;
+  workStatus?: "pending" | "reading" | "translating" | "ready" | "failed";
 };
 
 const priorities = [
@@ -151,6 +153,13 @@ export default function Home() {
   const [draggedPage, setDraggedPage] = useState<string | null>(null);
   const [mockMode, setMockMode] = useState(false);
   const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null);
+  const [emailGateVisible, setEmailGateVisible] = useState(false);
+  const [emailCaptured, setEmailCaptured] = useState(false);
+  const [leadReceipt, setLeadReceipt] = useState("");
+  const [email, setEmail] = useState("");
+  const [marketingConsent, setMarketingConsent] = useState(false);
+  const [analyticsConsent, setAnalyticsConsentChoice] = useState(false);
+  const [emailRequest, setEmailRequest] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   const directionsAbort = useRef<AbortController | null>(null);
   const translationAbort = useRef<AbortController | null>(null);
   const fullBookAbort = useRef<AbortController | null>(null);
@@ -228,6 +237,7 @@ export default function Home() {
       }, controller.signal);
       setBookForm(result.bookForm);
       setRecommendedBookForm(result.bookForm);
+      setBookFormConfirmed(true);
       setBookFormExplanation(result.explanation);
       setSourceRhyme(result.sourceRhyme);
       setRequest({ loading: false, error: null });
@@ -486,6 +496,7 @@ export default function Home() {
           editNote: ""
         }))
       ));
+      trackFunnelEventOnce("first_translation_seen", { bookForm, languagePair: "en-sl" });
       setSpread1Selection(null);
       setRequest({ loading: false, error: null });
     } catch (error) {
@@ -593,9 +604,15 @@ export default function Home() {
       3: patternOptions[3][patternSelections[3] as number].editNote.trim()
     }));
     setStep(9);
+    trackFunnelEventOnce("three_page_preview_seen", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
   }
 
-  function startRestOfBook() {
+  function startRestOfBook(captureConfirmed = false) {
+    if (!emailCaptured && !captureConfirmed) {
+      setEmailGateVisible(true);
+      trackFunnelEventOnce("email_gate_viewed", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
+      return;
+    }
     const samples = spreads.map((spread, index) => ({
       id: spread.id,
       preview: spread.preview,
@@ -604,7 +621,8 @@ export default function Home() {
       visualContext: spread.visualContext,
       approvedText: approvedDrafts[index + 1] || null,
       parentNote: approvedNotes[index + 1] || undefined,
-      voiceSample: true
+      voiceSample: true,
+      workStatus: "ready" as const
     }));
     const mockRemainder = mockMode ? [4, 5, 6].map((number) => ({
       id: crypto.randomUUID(),
@@ -614,10 +632,47 @@ export default function Home() {
       visualContext: "A mock picture-book page continuing the friends’ adventure.",
       approvedText: null,
       parentNote: undefined,
-      voiceSample: false
+      voiceSample: false,
+      workStatus: "pending" as const
     })) : [];
     setBookPages([...samples, ...mockRemainder]);
     setStep(10);
+  }
+
+  async function captureEmail(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!bookForm || emailRequest.loading) return;
+    setEmailRequest({ loading: true, error: null });
+    setAnalyticsConsent(analyticsConsent);
+    const params = new URLSearchParams(window.location.search);
+    try {
+      const result = await postJson<{ receipt: string }>("/api/leads", {
+        email,
+        marketingConsent,
+        capturedAt: new Date().toISOString(),
+        attribution: {
+          source: params.get("utm_source") || "",
+          medium: params.get("utm_medium") || "",
+          campaign: params.get("utm_campaign") || "",
+          content: params.get("utm_content") || "",
+          term: params.get("utm_term") || "",
+          landingPage: `${window.location.origin}${window.location.pathname}`
+        },
+        languagePair: "en-sl",
+        bookForm
+      });
+      setLeadReceipt(result.receipt);
+      setEmailCaptured(true);
+      setEmailRequest({ loading: false, error: null });
+      trackFunnelEventOnce("email_captured", { bookForm, languagePair: "en-sl" });
+      trackFunnelEventOnce("qualified_lead", { bookForm, languagePair: "en-sl" });
+      window.setTimeout(() => startRestOfBook(true), 0);
+    } catch (error) {
+      setEmailRequest({
+        loading: false,
+        error: error instanceof Error ? error.message : "We couldn’t save your email. Please try again."
+      });
+    }
   }
 
   async function addRemainingFiles(files?: FileList | File[]) {
@@ -631,7 +686,8 @@ export default function Home() {
       visualContext: "",
       approvedText: null,
       parentNote: undefined,
-      voiceSample: false
+      voiceSample: false,
+      workStatus: "pending" as const
     })));
     setBookPages((current) => [...current, ...additions]);
   }
@@ -650,50 +706,69 @@ export default function Home() {
   }
 
   async function generateRestOfBook() {
-    if (!bookForm || (bookForm === "refrain_verse" && !lockedDirection) || fullBookAbort.current) return;
+    if (!emailCaptured || !leadReceipt || !bookForm || (bookForm === "refrain_verse" && !lockedDirection) || fullBookAbort.current) return;
+    trackFunnelEventOnce("full_book_started", { bookForm, languagePair: "en-sl" });
     const controller = new AbortController();
     fullBookAbort.current = controller;
     setStep(11);
     setRequest({ loading: true, error: null });
     try {
-      const withSources = await Promise.all(bookPages.map(async (page) => {
-        if (page.sourceText.trim()) return page;
-        const result = await postJson<{ text: string; visualContext: string }>("/api/transcribe", { image: page.preview }, controller.signal);
-        return { ...page, sourceText: compactGeneratedText(result.text), visualContext: result.visualContext };
-      }));
-      setBookPages(withSources);
-      const remaining = withSources.flatMap((page, index) =>
-        page.approvedText ? [] : [{
-          spread: index + 1,
-          visualContext: page.visualContext,
-          source: page.sourceText
-        }]
-      );
-      if (remaining.length === 0) {
-        setRequest({ loading: false, error: null });
-        return;
-      }
-      const result = await postJson<{ spreads: Array<{ spread: number; text: string }> }>("/api/translations", {
-        mode: "fullbook",
-        spreads: remaining,
-        priority,
-        freedom,
-        bookForm,
-        sourceRhyme,
-        ...(lockedDirection ? { direction: lockedDirection } : {}),
-        approvedVoice: withSources.flatMap((page, index) =>
-          page.approvedText ? [{
+      const working = bookPages.map((page) => ({ ...page }));
+      const approvedVoice = working.flatMap((page, index) =>
+        page.voiceSample && page.approvedText ? [{
             spread: index + 1,
             text: page.approvedText,
             parentNote: page.parentNote || undefined
           }] : []
-        )
-      }, controller.signal);
-      const translations = new Map(result.spreads.map((spread) => [spread.spread, spread.text]));
-      setBookPages(withSources.map((page, index) => ({
-        ...page,
-        approvedText: page.approvedText || compactGeneratedText(translations.get(index + 1) || "") || null
-      })));
+      );
+      for (let index = 0; index < working.length; index += 1) {
+        if (working[index].approvedText?.trim()) {
+          working[index].workStatus = "ready";
+          continue;
+        }
+        try {
+          if (!working[index].sourceText.trim()) {
+            working[index].workStatus = "reading";
+            setBookPages(working.map((page) => ({ ...page })));
+            const transcription = await postJson<{ text: string; visualContext: string }>(
+              "/api/transcribe",
+              { image: working[index].preview },
+              controller.signal
+            );
+            working[index].sourceText = compactGeneratedText(transcription.text);
+            working[index].visualContext = transcription.visualContext;
+          }
+          working[index].workStatus = "translating";
+          setBookPages(working.map((page) => ({ ...page })));
+          const result = await postJson<{ spreads: Array<{ spread: number; text: string }> }>("/api/translations", {
+            mode: "fullbook",
+            leadReceipt,
+            spreads: [{
+              spread: index + 1,
+              visualContext: working[index].visualContext,
+              source: working[index].sourceText
+            }],
+            priority,
+            freedom,
+            bookForm,
+            sourceRhyme,
+            ...(lockedDirection ? { direction: lockedDirection } : {}),
+            approvedVoice
+          }, controller.signal);
+          const translation = result.spreads.find((spread) => spread.spread === index + 1)?.text;
+          if (!translation?.trim()) throw new Error(`Page ${index + 1} returned without a translation.`);
+          working[index].approvedText = compactGeneratedText(translation);
+          working[index].workStatus = "ready";
+          setBookPages(working.map((page) => ({ ...page })));
+        } catch (error) {
+          working[index].workStatus = "failed";
+          setBookPages(working.map((page) => ({ ...page })));
+          throw new Error(
+            `We couldn’t finish Page ${index + 1}. Everything before it is saved—try again to continue.`,
+            { cause: error }
+          );
+        }
+      }
       setRequest({ loading: false, error: null });
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
@@ -743,6 +818,9 @@ export default function Home() {
       : step === 11
         ? generateRestOfBook
         : approveSpread1AndPatternTest;
+  const activeBookPageIndex = bookPages.findIndex((page) =>
+    page.workStatus === "reading" || page.workStatus === "translating"
+  );
 
   return (
     <main>
@@ -870,7 +948,7 @@ export default function Home() {
                   >
                     <span className="radio" />
                     <span>
-                      <strong>{option.title}{recommendedBookForm === option.value && <small className="our-read">Our read</small>}</strong>
+                      <strong>{option.title}{recommendedBookForm === option.value && <small className="our-read">Recommended</small>}</strong>
                       <small>{option.description}</small>
                     </span>
                   </button>
@@ -1066,14 +1144,38 @@ export default function Home() {
                 </article>
               ))}
             </div>
+            {emailGateVisible && !emailCaptured && (
+              <form className="email-gate" onSubmit={captureEmail}>
+                <h2>Want to translate the rest of the book and keep your work?</h2>
+                <p>We’ve found a voice that carries naturally across these three pages. Enter your email to continue with the rest of the book.</p>
+                <label>
+                  <span>Email</span>
+                  <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" />
+                </label>
+                <label className="consent-choice">
+                  <input type="checkbox" checked={marketingConsent} onChange={(event) => setMarketingConsent(event.target.checked)} />
+                  <span>Send me occasional Bibaling news and product updates. Optional.</span>
+                </label>
+                <label className="consent-choice">
+                  <input type="checkbox" checked={analyticsConsent} onChange={(event) => setAnalyticsConsentChoice(event.target.checked)} />
+                  <span>Allow anonymous usage analytics to help improve Bibaling. Optional.</span>
+                </label>
+                {emailRequest.error && <p className="email-gate-error">{emailRequest.error}</p>}
+                <button className="primary" type="submit" disabled={emailRequest.loading || !email.trim()}>
+                  {emailRequest.loading ? "Saving…" : "Continue with the rest of the book"}
+                </button>
+              </form>
+            )}
             <nav>
               <button className="secondary" onClick={() => setStep(8)}>Back</button>
-              <button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={startRestOfBook}>Add the rest of the book</button>
+              {!emailGateVisible && (
+                <button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={() => startRestOfBook()}>Add the rest of the book</button>
+              )}
             </nav>
           </>
         )}
 
-        {step === 10 && (
+        {step === 10 && emailCaptured && (
           <>
             <h1>Arrange the whole book.</h1>
             <p className="lead">Add the remaining photos, then drag every page into order.</p>
@@ -1132,34 +1234,45 @@ export default function Home() {
 
         {step === 11 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
-            <h1>{request.loading ? "Writing the rest of your book." : "Your full Slovenian draft."}</h1>
+            <h1>{request.loading ? "Writing the rest of your book." : request.error ? "Let’s finish the unread pages." : "Your full Slovenian draft."}</h1>
             <p className="lead">
               {request.loading
                 ? "We’re carrying your approved voice through every page."
+                : request.error
+                ? "Everything we’ve read is saved. Try again to continue."
                 : "Read each page, edit any line, then save your draft."}
             </p>
             <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} />
             {request.loading && (
               <>
                 <div className="full-book-draft approved-while-writing">
-                  {bookPages.map((page, index) => ({ page, index })).filter(({ page }) => page.approvedText).map(({ page, index }) => (
-                    <article className="approved-card" key={page.id}>
+                  {bookPages.map((page, index) => ({ page, index }))
+                    .filter(({ page }) => page.approvedText)
+                    .map(({ page, index }) => (
+                    <article className="approved-card page-ready" key={page.id}>
                       <button className="zoomable-image-button" type="button" aria-label={`Open approved Page ${index + 1} photo at full size`} onClick={() => setExpandedImage({ src: page.preview, alt: `Approved Page ${index + 1}` })}>
                         <img src={page.preview} alt="" />
                       </button>
                       <div className="english-column">
                         <label>Page {index + 1} · English</label>
-                        <p className="english-reference">{page.sourceText}</p>
+                        <p className="english-reference">{page.sourceText || "Reading this page…"}</p>
                       </div>
                       <div className="slovenian-column">
-                        <label>Slovenian · approved</label>
+                        <label>Slovenian · ready</label>
                         <p className="approved-translation">{page.approvedText}</p>
                       </div>
                     </article>
                   ))}
                 </div>
-                <p className="remaining-pages-note">These pages are ready. We’re translating the rest of the book now.</p>
-                <ProgressLog messages={fullBookLoadingMessages} />
+                <ProgressLog
+                  messages={fullBookLoadingMessages}
+                  activePage={activeBookPageIndex >= 0 ? {
+                    number: activeBookPageIndex + 1,
+                    preview: bookPages[activeBookPageIndex].preview,
+                    sourceText: bookPages[activeBookPageIndex].sourceText,
+                    phase: bookPages[activeBookPageIndex].workStatus === "reading" ? "Reading the English text" : "Writing the Slovenian translation"
+                  } : undefined}
+                />
               </>
             )}
             {!request.loading && (
@@ -1336,10 +1449,17 @@ function RotatingThinkingLine({ messages }: { messages: readonly string[] }) {
 }
 
 function ProgressLog({
-  messages
+  messages,
+  activePage
 }: {
   messages: readonly string[];
   progress?: DirectionProgress;
+  activePage?: {
+    number: number;
+    preview: string;
+    sourceText: string;
+    phase: string;
+  };
 }) {
   const [showReassurance, setShowReassurance] = useState(false);
 
@@ -1350,6 +1470,16 @@ function ProgressLog({
 
   return (
     <div className="direction-progress-log" aria-live="polite">
+      {activePage && (
+        <div className="progress-page-context">
+          <img src={activePage.preview} alt="" />
+          <div>
+            <small>Page {activePage.number}</small>
+            <strong>{activePage.phase}</strong>
+            {activePage.sourceText && <p>{activePage.sourceText}</p>}
+          </div>
+        </div>
+      )}
       <RotatingThinkingLine messages={messages} />
       {showReassurance && (
         <div className="progress-log-footer">
