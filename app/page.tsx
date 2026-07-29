@@ -27,7 +27,7 @@ type TranslationOption = GeneratedOption & {
   originalText: string;
   editNote: string;
 };
-type RequestState = { loading: boolean; error: string | null };
+type RequestState = { loading: boolean; error: string | null; errorCode?: string | null };
 type DirectionProgress = { active: number; completedThrough: number; rejectedCount: number };
 type DirectionStreamResult = {
   runs: Array<{ label: string; directions: Omit<Direction, "modelLabel">[] }>;
@@ -262,6 +262,7 @@ export default function Home() {
     setStep(5);
     setRequest({ loading: true, error: null });
     setDirectionProgress({ active: 0, completedThrough: -1, rejectedCount: 0 });
+    let failureCode: string | null = null;
     try {
       const response = await fetch("/api/directions", {
         method: "POST",
@@ -300,7 +301,10 @@ export default function Home() {
             error?: string;
             data?: DirectionStreamResult;
           };
-          if (event.type === "error") throw new Error(event.error);
+          if (event.type === "error") {
+            failureCode = event.code || null;
+            throw new Error(event.error);
+          }
           if (event.type === "cancelled") throw new DOMException(event.error || "Cancelled", "AbortError");
           if (event.type === "result") result = event.data || null;
           if (event.type === "progress") {
@@ -335,7 +339,11 @@ export default function Home() {
       if (error instanceof Error && error.name === "AbortError") {
         if (directionsAbort.current === controller) setRequest({ loading: false, error: null });
       } else {
-        setRequest({ loading: false, error: error instanceof Error ? error.message : "We couldn’t write the directions." });
+        setRequest({
+          loading: false,
+          error: error instanceof Error ? error.message : "We couldn’t write the directions.",
+          errorCode: failureCode
+        });
       }
     } finally {
       if (directionsAbort.current === controller) directionsAbort.current = null;
@@ -786,7 +794,21 @@ export default function Home() {
                 {directions.map((direction, index) => {
                   const selected = selectedDirection === index;
                   return (
-                    <article className={selected ? "direction-card selected-card" : "direction-card"} key={`${direction.name}-${index}`} onClick={() => { setSelectedDirection(index); setEditingDirection(null); }}>
+                    <article
+                      className={selected ? "direction-card selected-card" : "direction-card"}
+                      key={`${direction.name}-${index}`}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={selected}
+                      onClick={() => { setSelectedDirection(index); setEditingDirection(null); }}
+                      onKeyDown={(event) => {
+                        if (event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) {
+                          event.preventDefault();
+                          setSelectedDirection(index);
+                          setEditingDirection(null);
+                        }
+                      }}
+                    >
                       <p className="strategy">Option {(index % 3) + 1}</p>
                       {editingDirection === index ? (
                         <textarea aria-label={`Edit refrain option ${index + 1}`} value={direction.refrain} onClick={(event) => event.stopPropagation()} onChange={(event) => updateDirection(index, "refrain", event.target.value)} />
@@ -825,7 +847,13 @@ export default function Home() {
                 </article>
               </div>
             )}
-            {request.error && <GenerationError message={request.error} retry={retry} />}
+            {request.error && (
+              <GenerationError
+                title={request.errorCode === "FINAL_SET_INVALID" ? "We couldn’t prepare these options." : undefined}
+                message={request.error}
+                retry={retry}
+              />
+            )}
             <nav><button className="secondary" onClick={() => request.loading ? cancelDirections(true) : setStep(4)}>Back</button><button className="primary" disabled={request.loading || selectedDirection === null || !directions[selectedDirection]?.refrain.trim()} onClick={() => void lockDirectionAndWriteSpread1()}>Lock this direction</button></nav>
           </>
         )}
@@ -840,7 +868,7 @@ export default function Home() {
             {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} onNote={updateSpread1Note} />}
             {request.error && <GenerationError message={request.error} retry={retry} />}
             <nav>
-              <button className="secondary" disabled={request.loading} onClick={() => setStep(5)}>Rework direction</button>
+              <button className="secondary" disabled={request.loading} onClick={() => setStep(5)}>Back</button>
               <button className="primary" disabled={request.loading || spread1Selection === null || !spread1Options[spread1Selection]?.text.trim()} onClick={() => void approveSpread1AndPatternTest()}>Approve and test the pattern</button>
             </nav>
           </>
@@ -873,7 +901,7 @@ export default function Home() {
               </section>
             ))}
             {request.error && <GenerationError message={request.error} retry={retry} />}
-            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(6)}>Back to Page 1</button><button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button></nav>
+            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(6)}>Back</button><button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button></nav>
           </>
         )}
 
@@ -885,7 +913,9 @@ export default function Home() {
             <div className="approved-grid">
               {[1, 2, 3].map((number) => (
                 <article className="approved-card" key={number}>
-                  <img src={spreads[number - 1].preview} alt={`Page ${number}`} />
+                  <button className="zoomable-image-button" type="button" aria-label={`Open Page ${number} photo at full size`} onClick={() => setExpandedImage({ src: spreads[number - 1].preview, alt: `Page ${number}` })}>
+                    <img src={spreads[number - 1].preview} alt="" />
+                  </button>
                   <label>Page {number}</label>
                   <textarea value={approvedDrafts[number] || ""} onChange={(event) => setApprovedDrafts((current) => ({ ...current, [number]: event.target.value }))} />
                   {approvedNotes[number] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[number]}</p>}
@@ -893,7 +923,7 @@ export default function Home() {
               ))}
             </div>
             <nav>
-              <button className="secondary" onClick={() => setStep(7)}>Rework the pattern</button>
+              <button className="secondary" onClick={() => setStep(7)}>Back</button>
               <button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={startRestOfBook}>Add the rest of the book</button>
             </nav>
           </>
@@ -948,7 +978,7 @@ export default function Home() {
               ))}
             </div>
             <nav>
-              <button className="secondary" onClick={() => setStep(8)}>Back to voice</button>
+              <button className="secondary" onClick={() => setStep(8)}>Back</button>
               <button className="primary" disabled={bookPages.length < 3} onClick={() => void generateRestOfBook()}>
                 Translate the full book
               </button>
@@ -970,7 +1000,9 @@ export default function Home() {
                 <div className="full-book-draft approved-while-writing">
                   {bookPages.map((page, index) => ({ page, index })).filter(({ page }) => page.approvedText).map(({ page, index }) => (
                     <article className="approved-card" key={page.id}>
-                      <img src={page.preview} alt={`Approved page ${index + 1}`} />
+                      <button className="zoomable-image-button" type="button" aria-label={`Open approved Page ${index + 1} photo at full size`} onClick={() => setExpandedImage({ src: page.preview, alt: `Approved Page ${index + 1}` })}>
+                        <img src={page.preview} alt="" />
+                      </button>
                       <div className="english-column">
                         <label>Page {index + 1} · English</label>
                         <p className="english-reference">{page.sourceText}</p>
@@ -990,7 +1022,9 @@ export default function Home() {
               <div className="full-book-draft">
                 {bookPages.map((page, index) => (
                   <article className="approved-card" key={page.id}>
-                    <img src={page.preview} alt={`Page ${index + 1}`} />
+                    <button className="zoomable-image-button" type="button" aria-label={`Open Page ${index + 1} photo at full size`} onClick={() => setExpandedImage({ src: page.preview, alt: `Page ${index + 1}` })}>
+                      <img src={page.preview} alt="" />
+                    </button>
                     <div className="english-column">
                       <label>Page {index + 1} · English</label>
                       <p className="english-reference">{page.sourceText}</p>
@@ -1010,7 +1044,7 @@ export default function Home() {
             )}
             {request.error && <GenerationError message={request.error} retry={retry} />}
             <nav>
-              <button className="secondary" disabled={request.loading} onClick={() => setStep(9)}>Back to book order</button>
+              <button className="secondary" disabled={request.loading} onClick={() => setStep(9)}>Back</button>
               <button className="primary" onClick={saveFinishedDraft} disabled={request.loading || bookPages.some((page) => !page.approvedText?.trim())}>Save finished draft</button>
             </nav>
           </>
@@ -1144,25 +1178,14 @@ function RotatingThinkingLine({ messages }: { messages: readonly string[] }) {
   const { message, messageIndex } = useRotatingMessage(messages);
   return (
     <div className="thinking-line" key={messageIndex}>
-      <span aria-hidden="true"><i /><i /><i /></span>
+      <span className="pencil-loader" aria-hidden="true"><i /><em /></span>
       <b>{message}</b>
     </div>
   );
 }
 
-const directionMilestones = [
-  "Reading the complete book",
-  "Finding the story arc and repeated language",
-  "Drafting distinct literary directions",
-  "Testing rhyme and read-aloud rhythm",
-  "Checking fidelity and natural Slovenian",
-  "Rejecting weak or forced candidates",
-  "Selecting the three strongest directions"
-];
-
 function ProgressLog({
-  messages,
-  progress
+  messages
 }: {
   messages: readonly string[];
   progress?: DirectionProgress;
@@ -1176,20 +1199,12 @@ function ProgressLog({
 
   return (
     <div className="direction-progress-log" aria-live="polite">
-      {progress && (
-        <ol className="progress-milestones">
-          {directionMilestones.map((label, index) => (
-            <li className={index <= progress.completedThrough ? "done" : index === progress.active ? "active" : ""} key={label}>
-              <span aria-hidden="true">{index <= progress.completedThrough ? "✓" : index === progress.active ? "●" : "○"}</span>
-              {label}
-            </li>
-          ))}
-        </ol>
-      )}
       <RotatingThinkingLine messages={messages} />
-      <div className="progress-log-footer">
-        <p>{showReassurance ? "Good verse takes a little longer—we’re checking this carefully." : "We’re checking this carefully."}</p>
-      </div>
+      {showReassurance && (
+        <div className="progress-log-footer">
+          <p>Good verse takes a little longer—we’re checking this carefully.</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -1262,7 +1277,21 @@ function OptionList({
   return (
     <div className="option-grid">
       {options.map((option, index) => (
-        <article className={selection === index ? "option-card selected-card" : "option-card"} key={`${option.strategy}-${index}`} onClick={() => { onSelect(index); setEditingIndex(null); }}>
+        <article
+          className={selection === index ? "option-card selected-card" : "option-card"}
+          key={`${option.strategy}-${index}`}
+          role="button"
+          tabIndex={0}
+          aria-pressed={selection === index}
+          onClick={() => { onSelect(index); setEditingIndex(null); }}
+          onKeyDown={(event) => {
+            if (event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) {
+              event.preventDefault();
+              onSelect(index);
+              setEditingIndex(null);
+            }
+          }}
+        >
           <p className="strategy">Option {index + 1}</p>
           {editingIndex === index ? (
             <>
@@ -1292,8 +1321,16 @@ function OptionList({
   );
 }
 
-function GenerationError({ message, retry }: { message: string; retry: () => void | Promise<void> }) {
+function GenerationError({
+  title = "That draft didn’t finish.",
+  message,
+  retry
+}: {
+  title?: string;
+  message: string;
+  retry: () => void | Promise<void>;
+}) {
   return (
-    <div className="generation-error"><strong>That draft didn’t finish.</strong><p>{message}</p><button type="button" onClick={() => void retry()}>Try again</button></div>
+    <div className="generation-error"><strong>{title}</strong><p>{message}</p><button type="button" onClick={() => void retry()}>Try again</button></div>
   );
 }

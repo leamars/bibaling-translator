@@ -188,6 +188,8 @@ Maximum sentences: ${args.refrainBudget?.maximumSentenceCount ?? 1}
 Maximum clauses: ${args.refrainBudget?.maximumClauseCount ?? 2}
 Maximum semantic lines: 2
 
+Construction-specific clarification: the playful_hook may contain one short repeated pickup plus two rhyme-bearing phrases (at most three compact phrase units total). This is the only exception to the general two-clause limit. It must remain inside the same word, character, sentence, and line budgets.
+
 SOURCE-GROUNDING RULE FOR THIS GATE
 The corrected English is authoritative for who is being addressed. Do not infer that a recurring refrain must be singular merely because one spread visually foregrounds one friend. If the source declaration says "you all" or otherwise addresses the wider group, plural Slovenian such as "vas" can faithfully serve as the fixed book-level refrain while surrounding scene lines describe a singular featured friend. Conversely, do not require one fixed refrain to encode every scene-specific noun number.
 
@@ -213,6 +215,13 @@ Editorial process (perform privately; do not return analysis or scores):
 - return exactly three distinct, parent-ready options with an exact Slovenian refrain, a short English label, a concise structural description, and only the gender dependency needed by downstream translation;
 - preserve source fidelity and the parent's locked priority; never weaken either to fill a slot;
 - output only the required three options, including sourceCandidateIndex, construction, and all exact rhymePairs used for private server validation.
+
+EDITORIAL REGRESSION GUIDANCE
+The following rejected phrases are quality examples for private editorial judgment, not deterministic string bans:
+- "Čuvate me vi" is unnatural inversion; "čuvati" is inappropriate or regionally marked here when neutral Slovenian is available.
+- "Hvala za vas" is a literal construction that a Slovenian parent would not naturally say.
+- "Moje srce vas obožuje" is stiff and overly grand for this compact children's-book refrain.
+Avoid Croatianisms or regionally marked vocabulary when a neutral Slovenian form exists, inversion created solely for rhyme, literal English constructions, overly formal emotional language, and any rhyme a Slovenian parent would not naturally say aloud.
 
 Never output slash forms, placeholders, "čisto do gobic", invented love-growing-like-mushrooms meaning, incomplete Slovenian, forced rhyme, or narrator-gender ambiguity. Reject actual unsupported claims, but do not reject a direction merely for a hypothetical risk that can be resolved naturally while writing the finished verse. Finished-verse rhyme enforcement still happens on every generated translation.`;
 }

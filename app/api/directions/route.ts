@@ -3,17 +3,17 @@ import { isMockRequest, openAIClient } from "../generation";
 import { MOCK_DIRECTIONS } from "../mock-fixtures";
 import {
   DIRECTION_PIPELINE_CONFIG,
+  HARD_MAX_REFRAIN_CHARACTERS,
   DirectionPipelineError,
   classifyStageFailure,
   deriveRefrainBudget,
   directionDraftCacheKey,
   editorialOptionsSchema,
-  finalDirectionSetViolations,
   parentMessageFor,
   parseCompletedOutput,
   privateCandidatesSchema,
-  refrainBudgetViolations,
   resolveDirectionDraft,
+  validateFinalEditorialSet,
   validatePrivateCandidates,
   type CachedDirectionDraft
 } from "../direction-pipeline";
@@ -30,7 +30,6 @@ import {
   type Freedom,
   type Priority
 } from "../translation-prompts";
-import { deterministicViolations } from "../translation-quality";
 
 export const runtime = "nodejs";
 
@@ -190,7 +189,7 @@ async function draftCandidates(args: {
             type: "json_schema",
             name: "private_refrain_candidates",
             strict: true,
-            schema: privateCandidateJsonSchema(refrainBudget.maximumCharacterCount)
+            schema: privateCandidateJsonSchema(HARD_MAX_REFRAIN_CHARACTERS)
           }
         }
       }
@@ -199,10 +198,17 @@ async function draftCandidates(args: {
     args.progress("drafting_completed", { usage });
     args.progress("validating_candidates");
     const validation = validatePrivateCandidates(parsed.candidates, refrainBudget);
+    if (validation.qualityWarnings.length > 0) {
+      console.warn("direction_quality_warnings", JSON.stringify({
+        stage: "draft",
+        warnings: validation.qualityWarnings
+      }));
+    }
     return {
       candidates: validation.survivors,
       rawCandidates: parsed.candidates,
       rejections: validation.rejections,
+      qualityWarnings: validation.qualityWarnings,
       budget: refrainBudget
     };
   } catch (error) {
@@ -246,57 +252,45 @@ async function editCandidates(args: {
             type: "json_schema",
             name: "parent_refrain_options",
             strict: true,
-            schema: editorialJsonSchema(refrainBudget.maximumCharacterCount)
+            schema: editorialJsonSchema(HARD_MAX_REFRAIN_CHARACTERS)
           }
         }
       }
     });
     const parsed = parseCompletedOutput(response, "editor", editorialOptionsSchema);
-    const optionChecks = parsed.options.map((option, index, all) => ({
-      option,
-      reasons: [
-        ...deterministicViolations(option.refrain, { requireCompleteSentence: false }),
-        ...refrainBudgetViolations(option.refrain, refrainBudget),
-        ...(all.findIndex((other) =>
-          other.refrain.trim().toLocaleLowerCase("sl") === option.refrain.trim().toLocaleLowerCase("sl")
-        ) === index ? [] : ["duplicates another editorial option"])
-      ]
-    }));
-    const options = optionChecks.filter((check) => check.reasons.length === 0).map((check) => check.option);
-    if (options.length !== DIRECTION_PIPELINE_CONFIG.editorial.optionCount) {
+    const validation = validateFinalEditorialSet(
+      parsed.options,
+      refrainBudget,
+      args.input.priority === "rhythm",
+      args.candidates.length
+    );
+    if (validation.hardFailures.length > 0) {
       throw new DirectionPipelineError(
-        "EDITOR_INVALID_OUTPUT",
-        "The editor did not return three valid unique options.",
+        "FINAL_SET_INVALID",
+        "The completed editorial response violated a hard final-set invariant.",
         {
           rawEditorialOptions: parsed.options,
-          editorialRejections: optionChecks
-            .filter((check) => check.reasons.length > 0)
-            .map((check) => ({ option: check.option, reasons: check.reasons })),
+          validation,
           usage
         }
       );
     }
-    const setViolations = finalDirectionSetViolations(
-      options,
-      args.input.priority === "rhythm",
-      args.candidates.length
-    );
-    if (setViolations.length > 0) {
-      throw new DirectionPipelineError(
-        "EDITOR_INVALID_OUTPUT",
-        `The editor returned a set that failed rhyme or diversity validation: ${setViolations.join("; ")}`,
-        { rawEditorialOptions: parsed.options, setViolations, usage }
-      );
+    if (validation.qualityWarnings.length > 0) {
+      console.warn("direction_quality_warnings", JSON.stringify({
+        stage: "editor",
+        warnings: validation.qualityWarnings
+      }));
     }
     args.progress("editing_completed", { usage });
     return {
-      directions: options.map((option) => ({
+      directions: parsed.options.map((option) => ({
         name: option.label,
         refrain: option.refrain,
         approach: option.description,
         genderDependency: option.genderDependency
       })),
-      editorialOptions: options
+      editorialOptions: parsed.options,
+      validation
     };
   } catch (error) {
     const typed = classifyStageFailure("editor", error, args.requestSignal.aborted);
@@ -327,6 +321,7 @@ async function generateAndEvaluateDirections(args: {
   return {
     directions: edited.directions,
     editorialOptions: edited.editorialOptions,
+    validation: edited.validation,
     reusedDraft: draft.reused,
     draft: draft.draft
   };
@@ -398,7 +393,9 @@ export async function POST(request: Request) {
                   rawCandidates: result.draft.rawCandidates,
                   survivors: result.draft.candidates,
                   rejections: result.draft.rejections,
-                  editorialOptions: result.editorialOptions
+                  draftQualityWarnings: result.draft.qualityWarnings,
+                  editorialOptions: result.editorialOptions,
+                  finalValidation: result.validation
                 }
               } : {})
             }
@@ -412,7 +409,9 @@ export async function POST(request: Request) {
             type: "error",
             event: "failed",
             code: typed.code,
-            retryMode: typed.code.startsWith("EDITOR_") ? "editor_only" : "full",
+            retryMode: typed.code.startsWith("EDITOR_") || typed.code === "FINAL_SET_INVALID"
+              ? "editor_only"
+              : "full",
             error: parentMessageFor(typed.code),
             ...(includeDiagnostics && typed.cause && typeof typed.cause === "object"
               ? { evaluationDiagnostics: typed.cause }

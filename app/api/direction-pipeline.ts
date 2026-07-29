@@ -7,8 +7,9 @@ import type { Response } from "openai/resources/responses/responses";
 import { deterministicViolations } from "./translation-quality.ts";
 
 export const DIRECTION_PROMPT_VERSION = "step5-v8-assigned-observable-constructions";
-export const DIRECTION_VALIDATION_VERSION = "step5-validation-v7-observable-form-and-rhyme-pairs";
+export const DIRECTION_VALIDATION_VERSION = "step5-validation-v8-hard-boundary-advisory-quality";
 export const DIRECTION_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+export const HARD_MAX_REFRAIN_CHARACTERS = 220;
 
 export const DIRECTION_PIPELINE_CONFIG = {
   drafting: {
@@ -36,7 +37,19 @@ export type DirectionErrorCode =
   | "EDITOR_TIMEOUT"
   | "EDITOR_OUTPUT_LIMIT"
   | "EDITOR_INVALID_OUTPUT"
+  | "FINAL_SET_INVALID"
   | "NETWORK_FAILURE";
+
+export type ValidationIssue = {
+  code: string;
+  message: string;
+  candidateIndex?: number;
+};
+
+export type ValidationDiagnostics = {
+  hardFailures: ValidationIssue[];
+  qualityWarnings: ValidationIssue[];
+};
 
 export class DirectionPipelineError extends Error {
   readonly code: DirectionErrorCode;
@@ -204,6 +217,19 @@ export function refrainBudgetViolations(refrain: string, budget: RefrainBudget) 
   return violations;
 }
 
+export function editorialBudgetViolations(
+  option: Pick<z.infer<typeof editorialOptionSchema>, "refrain" | "construction">,
+  budget: RefrainBudget
+) {
+  // A playful hook may use one short repeated pickup before its two
+  // rhyme-bearing phrases. Commas are only a conservative phrase proxy here,
+  // not a Slovenian grammar judgment.
+  const maximumClauseCount = option.construction === "playful_hook"
+    ? Math.max(3, budget.maximumClauseCount)
+    : budget.maximumClauseCount;
+  return refrainBudgetViolations(option.refrain, { ...budget, maximumClauseCount });
+}
+
 function nearDuplicate(first: string, second: string) {
   if (first === second) return true;
   const a = new Set(first.split(" ").filter(Boolean));
@@ -225,6 +251,16 @@ function sharedSuffixLength(first: string, second: string) {
     first[first.length - 1 - length] === second[second.length - 1 - length]
   ) length += 1;
   return length;
+}
+
+function hasPlausibleWrittenRhyme(first: string, second: string) {
+  if (sharedSuffixLength(first, second) >= 2) return true;
+  // Short stressed endings such as Slovenian »vi / dni« can form a full-vowel
+  // rhyme even though their written shared suffix is only one character.
+  return first.length <= 3 &&
+    second.length <= 3 &&
+    /[aeiou]/u.test(first.at(-1) || "") &&
+    first.at(-1) === second.at(-1);
 }
 
 function rhymeUnits(refrain: string) {
@@ -249,7 +285,7 @@ export function rhymePairViolations(
     const second = finalWord(pair.endingB);
     if (!first || !second) violations.push(`rhyme pair ${index + 1} is incomplete`);
     else if (first === second) violations.push(`rhyme pair ${index + 1} repeats the same word`);
-    else if (sharedSuffixLength(first, second) < 2) violations.push(`rhyme pair ${index + 1} has no plausible shared spoken ending`);
+    else if (!hasPlausibleWrittenRhyme(first, second)) violations.push(`rhyme pair ${index + 1} has no plausible shared spoken ending`);
     if (first && !unitEndings.includes(first)) violations.push(`rhyme pair ${index + 1}'s first ending is not a line or phrase ending`);
     if (second && !unitEndings.includes(second)) violations.push(`rhyme pair ${index + 1}'s second ending is not a line or phrase ending`);
   }
@@ -347,6 +383,63 @@ export function finalDirectionSetViolations(
   return violations;
 }
 
+function validationIssue(code: string, message: string, candidateIndex?: number): ValidationIssue {
+  return { code, message, ...(candidateIndex === undefined ? {} : { candidateIndex }) };
+}
+
+function unmistakableTextFailures(text: string, candidateIndex: number) {
+  const failures = deterministicViolations(text, { requireCompleteSentence: false })
+    .map((message) => validationIssue("PROHIBITED_NON_FINAL_TEXT", message, candidateIndex));
+  if (!normalizeRefrain(text) || !/\p{L}/u.test(text)) {
+    failures.push(validationIssue("MALFORMED_REFRAIN", "refrain is empty or malformed", candidateIndex));
+  }
+  if (text.length > HARD_MAX_REFRAIN_CHARACTERS) {
+    failures.push(validationIssue(
+      "GROSSLY_OVERLONG",
+      `refrain exceeds the ${HARD_MAX_REFRAIN_CHARACTERS}-character absolute UI limit`,
+      candidateIndex
+    ));
+  }
+  return failures;
+}
+
+export function validateFinalEditorialSet(
+  options: z.infer<typeof editorialOptionsSchema>["options"],
+  budget: RefrainBudget,
+  requireRhyme: boolean,
+  availableSeedCount: number
+): ValidationDiagnostics {
+  const hardFailures: ValidationIssue[] = [];
+  const qualityWarnings: ValidationIssue[] = [];
+  if (options.length !== DIRECTION_PIPELINE_CONFIG.editorial.optionCount) {
+    hardFailures.push(validationIssue("WRONG_FINAL_COUNT", "editor must return exactly three refrains"));
+  }
+  const requiredConstructions = new Set(["couplet", "playful_hook", "lyrical_refrain"]);
+  if (
+    new Set(options.map((option) => option.construction)).size !== 3 ||
+    options.some((option) => !requiredConstructions.has(option.construction))
+  ) {
+    hardFailures.push(validationIssue(
+      "CONSTRUCTION_SCHEMA_INVARIANT",
+      "response must contain exactly one couplet, one playful_hook, and one lyrical_refrain"
+    ));
+  }
+  const seen = new Set<string>();
+  for (const [candidateIndex, option] of options.entries()) {
+    hardFailures.push(...unmistakableTextFailures(option.refrain, candidateIndex));
+    const normalized = normalizeRefrain(option.refrain);
+    if (seen.has(normalized)) {
+      hardFailures.push(validationIssue("EXACT_DUPLICATE", "refrain exactly duplicates another option", candidateIndex));
+    }
+    seen.add(normalized);
+    qualityWarnings.push(...editorialBudgetViolations(option, budget)
+      .map((message) => validationIssue("SOURCE_RELATIVE_SHAPE", message, candidateIndex)));
+  }
+  qualityWarnings.push(...finalDirectionSetViolations(options, requireRhyme, availableSeedCount)
+    .map((message) => validationIssue("EDITORIAL_HEURISTIC", message)));
+  return { hardFailures, qualityWarnings };
+}
+
 export function validatePrivateCandidates(
   candidates: PrivateDirectionCandidate[],
   budget: RefrainBudget = {
@@ -364,20 +457,26 @@ export function validatePrivateCandidates(
   }
   const survivors: Array<PrivateDirectionCandidate & { directionIndex: number }> = [];
   const rejections: Array<{ directionIndex: number; candidate: PrivateDirectionCandidate; reasons: string[] }> = [];
+  const qualityWarnings: ValidationIssue[] = [];
+  const seen = new Set<string>();
   for (const [directionIndex, candidate] of candidates.entries()) {
-    const reasons = [
-      ...refrainBudgetViolations(candidate.refrain, budget),
-      ...deterministicViolations(candidate.refrain, { requireCompleteSentence: false })
-    ];
+    const reasons = unmistakableTextFailures(candidate.refrain, directionIndex).map((failure) => failure.message);
     const normalized = normalizeRefrain(candidate.refrain);
-    if (!normalized) reasons.push("empty after normalization");
+    if (seen.has(normalized)) reasons.push("exactly duplicates an earlier candidate");
     if (survivors.some((other) => nearDuplicate(normalized, normalizeRefrain(other.refrain)))) {
-      reasons.push("duplicates or closely paraphrases an earlier candidate");
+      qualityWarnings.push(validationIssue(
+        "NEAR_DUPLICATE",
+        "candidate closely resembles an earlier candidate and may need editorial differentiation",
+        directionIndex
+      ));
     }
+    qualityWarnings.push(...refrainBudgetViolations(candidate.refrain, budget)
+      .map((message) => validationIssue("SOURCE_RELATIVE_SHAPE", message, directionIndex)));
     if (reasons.length > 0) {
       rejections.push({ directionIndex, candidate, reasons });
       continue;
     }
+    seen.add(normalized);
     survivors.push({ ...candidate, directionIndex });
   }
   if (survivors.length < DIRECTION_PIPELINE_CONFIG.drafting.minimumUsableCandidates) {
@@ -387,7 +486,7 @@ export function validatePrivateCandidates(
       { rawCandidates: candidates, rejections, budget }
     );
   }
-  return { survivors, rejections };
+  return { survivors, rejections, qualityWarnings };
 }
 
 export type CachedDirectionDraft = {
@@ -395,6 +494,7 @@ export type CachedDirectionDraft = {
   candidates: Array<PrivateDirectionCandidate & { directionIndex: number }>;
   rawCandidates?: PrivateDirectionCandidate[];
   rejections?: Array<{ directionIndex: number; candidate: PrivateDirectionCandidate; reasons: string[] }>;
+  qualityWarnings?: ValidationIssue[];
   budget?: RefrainBudget;
 };
 
@@ -454,6 +554,7 @@ export function parentMessageFor(code: DirectionErrorCode) {
   if (code === "EDITOR_TIMEOUT" || code === "EDITOR_OUTPUT_LIMIT" || code === "EDITOR_INVALID_OUTPUT") {
     return "Your options were drafted, but we couldn’t finish reviewing them. Try finishing again.";
   }
+  if (code === "FINAL_SET_INVALID") return "We couldn’t prepare these options for you. Try again.";
   return "We lost the connection while creating your options. Try again.";
 }
 
