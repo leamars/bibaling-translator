@@ -61,6 +61,20 @@ textarea:disabled { color: var(--muted); background: #f5f6f3; cursor: wait; }
 .generation-state { display: flex; gap: 12px; align-items: center; color: var(--forest); font-weight: 700; }
 .spinner { width: 18px; height: 18px; border: 2px solid #c9d6d0; border-top-color: var(--forest); border-radius: 50%; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+.direction-progress-log { margin: 24px 0; padding: 20px 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); }
+.direction-progress-log > strong { display: block; margin-bottom: 15px; color: var(--forest); font-size: 15px; }
+.direction-progress-log ol { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.direction-progress-log li { display: grid; grid-template-columns: 18px 1fr; gap: 10px; align-items: start; }
+.direction-progress-log li > span { color: #a9aaa5; font-size: 14px; line-height: 1.45; text-align: center; }
+.direction-progress-log li b { display: block; font-size: 14px; line-height: 1.45; }
+.direction-progress-log li small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.4; font-weight: 500; }
+.direction-progress-log li.complete > span, .direction-progress-log li.complete b { color: var(--forest); }
+.direction-progress-log li.future b { color: #a3a49e; font-weight: 550; }
+.direction-progress-log li.active > span { color: var(--forest); animation: progress-pulse 1.35s ease-in-out infinite; }
+.direction-progress-log li.active b { color: var(--ink); }
+@keyframes progress-pulse { 50% { opacity: .35; transform: scale(.78); } }
+.direction-progress-log > p { margin: 17px 0 0; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+.direction-progress-log > button { margin-top: 15px; padding: 0; border: 0; color: var(--forest); background: transparent; font-weight: 750; text-decoration: underline; cursor: pointer; }
 .generation-error { color: #7b3f24; background: #fff8f2; border-color: #e5cabb; }
 .generation-error p { margin: 6px 0 12px; }
 .generation-error button { padding: 0; border: 0; color: inherit; background: transparent; font-weight: 750; text-decoration: underline; cursor: pointer; }
@@ -90,12 +104,18 @@ textarea:disabled { color: var(--muted); background: #f5f6f3; cursor: wait; }
 .option-card { display: flex; flex-direction: column; min-height: 270px; }
 .option-card .verse { margin: 4px 0 18px; white-space: pre-line; font-size: 17px; line-height: 1.55; }
 .option-card textarea { flex: 1; min-height: 165px; margin-bottom: 13px; font-size: 16px; }
+.edit-feedback { display: grid; gap: 7px; margin: 2px 0 16px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--ink); font-size: 13px; font-weight: 750; }
+.edit-feedback > span { display: flex; justify-content: space-between; gap: 10px; }
+.edit-feedback small { color: var(--muted); font-weight: 500; line-height: 1.35; }
+.option-card .edit-feedback textarea { min-height: 82px; margin: 0; padding: 10px 11px; font-size: 14px; font-weight: 500; }
 .select-option { align-self: flex-start; margin-top: auto; padding: 9px 14px; border: 1px solid var(--line); border-radius: 99px; color: var(--ink); background: white; font-weight: 750; cursor: pointer; }
 .pattern-section { margin-top: 38px; padding-top: 24px; border-top: 1px solid var(--line); }
 .approved-grid { display: grid; gap: 16px; }
 .approved-card { display: grid; grid-template-columns: 180px 1fr; gap: 12px 18px; cursor: default; }
 .approved-card img { grid-row: span 2; width: 180px; height: 145px; object-fit: cover; border-radius: 10px; }
 .approved-card textarea { min-height: 130px; }
+.parent-edit-note { grid-column: 2; margin: 0; padding: 10px 12px; border-radius: 10px; color: var(--muted); background: var(--forest-soft); font-size: 13px; line-height: 1.4; }
+.parent-edit-note strong { display: block; margin-bottom: 3px; color: var(--forest); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
 .locked-confirmation { margin-top: 28px; padding: 24px; border: 1px solid #b9cdc3; border-radius: 17px; background: var(--forest-soft); }
 .locked-confirmation p { margin: 7px 0 0; }
 .sample-note { margin: 24px 0 0; padding: 14px 17px; border: 1px solid var(--line); border-radius: 13px; color: var(--muted); background: var(--paper); line-height: 1.45; }

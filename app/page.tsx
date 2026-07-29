@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, DragEvent, useMemo, useState } from "react";
+import { ChangeEvent, DragEvent, useEffect, useMemo, useRef, useState } from "react";
 
 type Spread = {
   id: string;
@@ -22,8 +22,17 @@ type Direction = {
   modelLabel: string;
 };
 
-type TranslationOption = { strategy: string; text: string; modelLabel: string };
+type GeneratedOption = { strategy: string; text: string };
+type TranslationOption = GeneratedOption & {
+  modelLabel: string;
+  originalText: string;
+  editNote: string;
+};
 type RequestState = { loading: boolean; error: string | null };
+type DirectionProgress = { active: number; completedThrough: number; rejectedCount: number };
+type DirectionStreamResult = {
+  runs: Array<{ label: string; directions: Omit<Direction, "modelLabel">[] }>;
+};
 type BookPage = {
   id: string;
   preview: string;
@@ -82,11 +91,14 @@ export default function Home() {
   const [patternOptions, setPatternOptions] = useState<Record<number, TranslationOption[]>>({});
   const [patternSelections, setPatternSelections] = useState<Record<number, number | null>>({ 2: null, 3: null });
   const [approvedDrafts, setApprovedDrafts] = useState<Record<number, string>>({});
+  const [approvedNotes, setApprovedNotes] = useState<Record<number, string>>({});
   const [voiceLocked, setVoiceLocked] = useState(false);
   const [request, setRequest] = useState<RequestState>({ loading: false, error: null });
+  const [directionProgress, setDirectionProgress] = useState<DirectionProgress>({ active: 0, completedThrough: -1, rejectedCount: 0 });
   const [bookPages, setBookPages] = useState<BookPage[]>([]);
   const [draggedPage, setDraggedPage] = useState<string | null>(null);
   const [bookOrderLocked, setBookOrderLocked] = useState(false);
+  const directionsAbort = useRef<AbortController | null>(null);
 
   const progress = useMemo(() => `${step} of 9`, [step]);
 
@@ -168,15 +180,66 @@ export default function Home() {
   }
 
   async function generateDirections() {
+    if (directionsAbort.current) return;
+    const controller = new AbortController();
+    directionsAbort.current = controller;
     setStep(5);
     setRequest({ loading: true, error: null });
+    setDirectionProgress({ active: 0, completedThrough: -1, rejectedCount: 0 });
     try {
-      const result = await postJson<{ runs: Array<{ label: string; directions: Omit<Direction, "modelLabel">[] }> }>("/api/directions", {
-        images: spreads.map((spread) => spread.preview),
-        texts: spreads.map((spread) => spread.text),
-        priority,
-        freedom
+      const response = await fetch("/api/directions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          images: spreads.map((spread) => spread.preview),
+          texts: spreads.map((spread) => spread.text),
+          priority,
+          freedom
+        })
       });
+      if (!response.ok || !response.body) throw new Error("I couldn’t start the literary workshop.");
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let result: DirectionStreamResult | null = null;
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split("\n\n");
+        buffer = events.pop() || "";
+        for (const block of events) {
+          const dataLine = block.split("\n").find((line) => line.startsWith("data: "));
+          if (!dataLine) continue;
+          const event = JSON.parse(dataLine.slice(6)) as {
+            type: string;
+            event?: string;
+            rejectedCount?: number;
+            error?: string;
+            data?: DirectionStreamResult;
+          };
+          if (event.type === "error") throw new Error(event.error);
+          if (event.type === "cancelled") throw new DOMException(event.error || "Cancelled", "AbortError");
+          if (event.type === "result") result = event.data || null;
+          if (event.type === "progress") {
+            if (event.event === "generation.started" || event.event === "request.accepted") {
+              setDirectionProgress((current) => ({ ...current, active: 0 }));
+            } else if (event.event === "generation.completed") {
+              setDirectionProgress((current) => ({ ...current, active: 3, completedThrough: 2 }));
+            } else if (event.event === "evaluation.started") {
+              setDirectionProgress((current) => ({ ...current, active: 3, completedThrough: 2 }));
+            } else if (event.event === "evaluation.completed") {
+              setDirectionProgress((current) => ({ ...current, active: 5, completedThrough: 4 }));
+            } else if (event.event === "rejection.completed") {
+              setDirectionProgress({ active: 6, completedThrough: 5, rejectedCount: event.rejectedCount || 0 });
+            } else if (event.event === "selection.completed") {
+              setDirectionProgress((current) => ({ ...current, active: 6, completedThrough: 6 }));
+            }
+          }
+        }
+      }
+      if (!result) throw new Error("I couldn’t finish those literary options. Your choices and edits are still here—please try again.");
       setDirections(result.runs.flatMap((run) =>
         run.directions.map((direction) => ({ ...direction, modelLabel: run.label }))
       ));
@@ -184,8 +247,21 @@ export default function Home() {
       setLockedDirection(null);
       setRequest({ loading: false, error: null });
     } catch (error) {
-      setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write the directions." });
+      if (error instanceof Error && error.name === "AbortError") {
+        setRequest({ loading: false, error: null });
+      } else {
+        setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write the directions." });
+      }
+    } finally {
+      if (directionsAbort.current === controller) directionsAbort.current = null;
     }
+  }
+
+  function cancelDirections(goBack = false) {
+    directionsAbort.current?.abort();
+    directionsAbort.current = null;
+    setRequest({ loading: false, error: null });
+    if (goBack) setStep(4);
   }
 
   function updateDirection(index: number, key: keyof Direction, value: string) {
@@ -198,7 +274,7 @@ export default function Home() {
     setLockedDirection(direction);
     setRequest({ loading: true, error: null });
     try {
-      const result = await postJson<{ runs: Array<{ label: string; options: Array<Omit<TranslationOption, "modelLabel">> }> }>("/api/translations", {
+      const result = await postJson<{ runs: Array<{ label: string; options: GeneratedOption[] }> }>("/api/translations", {
         mode: "spread1",
         image: spreads[0].preview,
         source: spreads[0].text,
@@ -207,7 +283,12 @@ export default function Home() {
         direction
       });
       setSpread1Options(result.runs.flatMap((run) =>
-        run.options.map((option) => ({ ...option, modelLabel: run.label }))
+        run.options.map((option) => ({
+          ...option,
+          modelLabel: run.label,
+          originalText: option.text,
+          editNote: ""
+        }))
       ));
       setSpread1Selection(null);
       setStep(6);
@@ -221,26 +302,38 @@ export default function Home() {
     setSpread1Options((current) => current.map((option, i) => i === index ? { ...option, text } : option));
   }
 
+  function updateSpread1Note(index: number, editNote: string) {
+    setSpread1Options((current) => current.map((option, i) => i === index ? { ...option, editNote } : option));
+  }
+
   async function approveSpread1AndPatternTest() {
     if (spread1Selection === null || !lockedDirection) return;
     const approved = spread1Options[spread1Selection].text.trim();
+    const approvedNote = spread1Options[spread1Selection].editNote.trim();
     setApprovedSpread1(approved);
+    setApprovedNotes((current) => ({ ...current, 1: approvedNote }));
     setRequest({ loading: true, error: null });
     try {
-      const result = await postJson<{ runs: Array<{ label: string; spreads: Array<{ spread: number; options: Array<Omit<TranslationOption, "modelLabel">> }> }> }>("/api/translations", {
+      const result = await postJson<{ runs: Array<{ label: string; spreads: Array<{ spread: number; options: GeneratedOption[] }> }> }>("/api/translations", {
         mode: "pattern",
         images: [spreads[1].preview, spreads[2].preview],
         sources: [spreads[1].text, spreads[2].text],
         priority,
         freedom,
         direction: lockedDirection,
-        approvedSpread1: approved
+        approvedSpread1: approved,
+        approvedSpread1Note: approvedNote || undefined
       });
       setPatternOptions(Object.fromEntries([2, 3].map((spreadNumber) => [
         spreadNumber,
         result.runs.flatMap((run) => {
           const spread = run.spreads.find((item) => item.spread === spreadNumber);
-          return (spread?.options || []).map((option) => ({ ...option, modelLabel: run.label }));
+          return (spread?.options || []).map((option) => ({
+            ...option,
+            modelLabel: run.label,
+            originalText: option.text,
+            editNote: ""
+          }));
         })
       ])));
       setPatternSelections({ 2: null, 3: null });
@@ -258,6 +351,15 @@ export default function Home() {
     }));
   }
 
+  function updatePatternNote(spreadNumber: number, optionIndex: number, editNote: string) {
+    setPatternOptions((current) => ({
+      ...current,
+      [spreadNumber]: current[spreadNumber].map((option, index) =>
+        index === optionIndex ? { ...option, editNote } : option
+      )
+    }));
+  }
+
   function approvePattern() {
     if (patternSelections[2] === null || patternSelections[3] === null) return;
     setApprovedDrafts({
@@ -265,6 +367,11 @@ export default function Home() {
       2: patternOptions[2][patternSelections[2] as number].text.trim(),
       3: patternOptions[3][patternSelections[3] as number].text.trim()
     });
+    setApprovedNotes((current) => ({
+      ...current,
+      2: patternOptions[2][patternSelections[2] as number].editNote.trim(),
+      3: patternOptions[3][patternSelections[3] as number].editNote.trim()
+    }));
     setStep(8);
     setVoiceLocked(false);
   }
@@ -429,9 +536,9 @@ export default function Home() {
         {step === 5 && (
           <>
             <p className="kicker">Refrain lab</p>
-            <h1>Compare two ways of finding the voice.</h1>
-            <p className="lead">For debugging, Terra and Sol each write three directions from the same material. Choose any one, then make its wording yours.</p>
-            {request.loading && <div className="generation-state"><span className="spinner" />Terra and Sol are reading the pictures and writing in parallel…</div>}
+            <h1>Three ways the whole book could sound.</h1>
+            <p className="lead">Choose one quality-checked direction, then make its wording yours. We’ll lock exactly what you approve.</p>
+            {request.loading && <DirectionProgressLog progress={directionProgress} onCancel={() => cancelDirections(false)} />}
             {!request.loading && directions.length > 0 && (
               <div className="direction-grid">
                 {directions.map((direction, index) => {
@@ -454,7 +561,7 @@ export default function Home() {
               </div>
             )}
             {request.error && <GenerationError message={request.error} retry={retry} />}
-            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(4)}>Back</button><button className="primary" disabled={request.loading || selectedDirection === null || !directions[selectedDirection]?.refrain.trim()} onClick={() => void lockDirectionAndWriteSpread1()}>Lock this direction</button></nav>
+            <nav><button className="secondary" onClick={() => request.loading ? cancelDirections(true) : setStep(4)}>Back</button><button className="primary" disabled={request.loading || selectedDirection === null || !directions[selectedDirection]?.refrain.trim()} onClick={() => void lockDirectionAndWriteSpread1()}>Lock this direction</button></nav>
           </>
         )}
 
@@ -462,11 +569,11 @@ export default function Home() {
           <>
             <p className="kicker">Spread 1 workshop</p>
             <h1>Let’s test the voice on one spread.</h1>
-            <p className="lead">Terra and Sol each offer three Slovenian possibilities from the same locked brief.</p>
+            <p className="lead">Choose from three Slovenian possibilities that have each passed the locked brief.</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
             <Source spread={spreads[0]} number={1} />
-            {request.loading && <div className="generation-state"><span className="spinner" />Terra and Sol are writing six Slovenian possibilities in parallel…</div>}
-            {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} />}
+            {request.loading && <div className="generation-state"><span className="spinner" />Writing several candidates and checking the strongest three…</div>}
+            {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} onNote={updateSpread1Note} />}
             {request.error && <GenerationError message={request.error} retry={retry} />}
             <nav>
               <button className="secondary" disabled={request.loading} onClick={() => setStep(5)}>Rework direction</button>
@@ -481,7 +588,7 @@ export default function Home() {
             <h1>Does the voice travel?</h1>
             <p className="lead">Choose and edit one option for each spread. Spread 1 stays beside us as the voice reference.</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
-            {request.loading && <div className="generation-state"><span className="spinner" />Terra and Sol are applying the approved voice to two different spreads…</div>}
+            {request.loading && <div className="generation-state"><span className="spinner" />Applying the approved voice and checking both spreads…</div>}
             {!request.loading && [2, 3].map((number) => (
               <section className="pattern-section" key={number}>
                 <Source spread={spreads[number - 1]} number={number} />
@@ -490,6 +597,7 @@ export default function Home() {
                   selection={patternSelections[number]}
                   onSelect={(index) => setPatternSelections((current) => ({ ...current, [number]: index }))}
                   onEdit={(index, text) => updatePatternOption(number, index, text)}
+                  onNote={(index, note) => updatePatternNote(number, index, note)}
                 />
               </section>
             ))}
@@ -510,6 +618,7 @@ export default function Home() {
                   <img src={spreads[number - 1].preview} alt={`Spread ${number}`} />
                   <label>Spread {number}</label>
                   <textarea disabled={voiceLocked} value={approvedDrafts[number] || ""} onChange={(event) => setApprovedDrafts((current) => ({ ...current, [number]: event.target.value }))} />
+                  {approvedNotes[number] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[number]}</p>}
                 </article>
               ))}
             </div>
@@ -586,6 +695,72 @@ export default function Home() {
   );
 }
 
+const directionStages = [
+  "Reading the complete book and source text",
+  "Identifying the story arc, repeated language, and wordplay",
+  "Drafting multiple literary directions",
+  "Testing rhyme and read-aloud rhythm",
+  "Checking fidelity and natural Slovenian",
+  "Rejecting weak or forced candidates",
+  "Selecting the three strongest directions"
+];
+
+const overallTaskMessages = [
+  "Looking across the book for repeated language and wordplay…",
+  "Trying several literary structures…",
+  "Trying several rhyme structures…",
+  "Checking that the Slovenian sounds natural aloud…",
+  "Making sure repeated language stays consistent…",
+  "Checking each direction against the corrected source text…",
+  "Looking for forced wording before anything reaches you…",
+  "Comparing the strongest drafts…"
+];
+
+function DirectionProgressLog({
+  progress,
+  onCancel
+}: {
+  progress: DirectionProgress;
+  onCancel: () => void;
+}) {
+  const [messageIndex, setMessageIndex] = useState(0);
+  const [showReassurance, setShowReassurance] = useState(false);
+
+  useEffect(() => {
+    const rotation = window.setInterval(() => {
+      setMessageIndex((current) => (current + 1) % overallTaskMessages.length);
+    }, 7000);
+    const reassurance = window.setTimeout(() => setShowReassurance(true), 25000);
+    return () => {
+      window.clearInterval(rotation);
+      window.clearTimeout(reassurance);
+    };
+  }, []);
+
+  return (
+    <div className="direction-progress-log" aria-live="polite">
+      <strong>Creating three literary directions</strong>
+      <ol>
+        {directionStages.map((stage, index) => {
+          const complete = index <= progress.completedThrough;
+          const active = !complete && index === progress.active;
+          return (
+            <li className={complete ? "complete" : active ? "active" : "future"} key={stage}>
+              <span aria-hidden="true">{complete ? "✓" : active ? "●" : "○"}</span>
+              <div>
+                <b>{stage}</b>
+                {active && <small>{overallTaskMessages[messageIndex]}</small>}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+      {showReassurance && <p>Good verse takes a little longer—we’re checking this carefully.</p>}
+      <button type="button" onClick={onCancel}>Cancel</button>
+    </div>
+  );
+}
+
 function LockedBrief({ direction, priority }: { direction: Direction; priority: string }) {
   return (
     <aside className="locked-brief">
@@ -610,12 +785,14 @@ function OptionList({
   options,
   selection,
   onSelect,
-  onEdit
+  onEdit,
+  onNote
 }: {
   options: TranslationOption[];
   selection: number | null;
   onSelect: (index: number) => void;
   onEdit: (index: number, text: string) => void;
+  onNote: (index: number, note: string) => void;
 }) {
   return (
     <div className="option-grid">
@@ -623,7 +800,21 @@ function OptionList({
         <article className={selection === index ? "option-card selected-card" : "option-card"} key={`${option.strategy}-${index}`} onClick={() => onSelect(index)}>
           <p className="strategy">{option.modelLabel} · {option.strategy}</p>
           {selection === index ? (
-            <textarea aria-label={`Edit ${option.strategy}`} value={option.text} onChange={(event) => onEdit(index, event.target.value)} />
+            <>
+              <textarea aria-label={`Edit ${option.strategy}`} value={option.text} onChange={(event) => onEdit(index, event.target.value)} />
+              {option.text.trim() !== option.originalText.trim() && (
+                <label className="edit-feedback">
+                  <span>What felt off in the original? <small>Optional</small></span>
+                  <textarea
+                    aria-label={`Comment on ${option.strategy}`}
+                    value={option.editNote}
+                    onChange={(event) => onNote(index, event.target.value)}
+                    placeholder="For example: this phrase felt unnatural, the rhyme was weak, or the meaning drifted."
+                  />
+                  <small>We’ll carry this note into the next voice test.</small>
+                </label>
+              )}
+            </>
           ) : <p className="verse">{option.text}</p>}
           <button type="button" className="select-option" onClick={() => onSelect(index)}>{selection === index ? "Selected · edit above" : "Choose"}</button>
         </article>

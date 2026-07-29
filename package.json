@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "NEXT_DIST_DIR=.next-build next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "live-eval:describe": "node --env-file=.env.local --experimental-strip-types scripts/live-prompt-evaluation.ts",
+    "live-generation:describe": "node --env-file=.env.local --experimental-strip-types scripts/live-generation-review.ts",
+    "live-generation-v2:describe": "node --env-file=.env.local --experimental-strip-types scripts/live-generation-review-v2.ts"
   },
   "dependencies": {
     "next": "15.5.22",
