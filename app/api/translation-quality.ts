@@ -1,4 +1,5 @@
 import type { Priority } from "./translation-prompts";
+import { requiresRhyme, type BookForm, type SourceRhyme } from "./book-form-contract.ts";
 
 export type CandidateEvaluation = {
   candidateId: string;
@@ -81,10 +82,14 @@ export function structuralDiversityViolations(structureIds: string[], selectedId
 export function evaluationPasses(
   text: string,
   priority: Priority,
-  evaluation: CandidateEvaluation
+  evaluation: CandidateEvaluation,
+  context?: { bookForm: BookForm; sourceRhyme: SourceRhyme }
 ) {
   if (deterministicViolations(text).length > 0) return false;
   if (!evaluation.fidelityPass || !evaluation.grammarPass || !evaluation.readAloudPass || !evaluation.directionPass) return false;
-  if (priority === "rhythm" && !evaluation.rhymePass) return false;
+  const rhymeRequired = context
+    ? requiresRhyme({ ...context, priority })
+    : priority === "rhythm";
+  if (rhymeRequired && !evaluation.rhymePass) return false;
   return evaluation.pass;
 }

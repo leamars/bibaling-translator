@@ -1,6 +1,17 @@
 "use client";
 
-import { ChangeEvent, DragEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, DragEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { setAnalyticsConsent, trackFunnelEventOnce } from "./analytics";
+import {
+  BOOK_FORM_OPTIONS,
+  bookFormLabel,
+  nextAfterFreedom,
+  page1BackStep,
+  workshopProgress,
+  type BookForm,
+  type BookFormAnalysis,
+  type SourceRhyme
+} from "./api/book-form-contract.ts";
 
 type Spread = {
   id: string;
@@ -41,6 +52,7 @@ type BookPage = {
   approvedText: string | null;
   parentNote?: string;
   voiceSample?: boolean;
+  workStatus?: "pending" | "reading" | "translating" | "ready" | "failed";
 };
 
 const priorities = [
@@ -48,6 +60,24 @@ const priorities = [
   ["meaning", "Meaning and picture details", "Keep the joke, emotional beat, and what the child sees."],
   ["simple", "Simple language", "Use words that are easy for a young child to follow."]
 ] as const;
+
+function prioritiesFor(bookForm: BookForm | null) {
+  if (bookForm === "prose_story") {
+    return [
+      ["rhythm", "A natural read-aloud voice", "Make the storytelling warm, fluent, and satisfying to say."],
+      priorities[1],
+      priorities[2]
+    ] as const;
+  }
+  if (bookForm === "continuous_verse") {
+    return [
+      ["rhythm", "Poetic rhythm and read-aloud flow", "Preserve the poem’s movement without inventing a refrain."],
+      priorities[1],
+      priorities[2]
+    ] as const;
+  }
+  return priorities;
+}
 
 const freedoms = [
   ["close", "Stay close", "Preserve each page’s meaning; change only what’s necessary."],
@@ -98,6 +128,11 @@ export default function Home() {
   const [spreads, setSpreads] = useState<Spread[]>([]);
   const [priority, setPriority] = useState("");
   const [freedom, setFreedom] = useState("");
+  const [bookForm, setBookForm] = useState<BookForm | null>(null);
+  const [recommendedBookForm, setRecommendedBookForm] = useState<BookForm | null>(null);
+  const [bookFormConfirmed, setBookFormConfirmed] = useState(false);
+  const [bookFormExplanation, setBookFormExplanation] = useState("");
+  const [sourceRhyme, setSourceRhyme] = useState<SourceRhyme>("uncertain");
   const [directions, setDirections] = useState<Direction[]>([]);
   const [selectedDirection, setSelectedDirection] = useState<number | null>(null);
   const [editingDirection, setEditingDirection] = useState<number | null>(null);
@@ -118,11 +153,22 @@ export default function Home() {
   const [draggedPage, setDraggedPage] = useState<string | null>(null);
   const [mockMode, setMockMode] = useState(false);
   const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null);
+  const [emailGateVisible, setEmailGateVisible] = useState(false);
+  const [emailCaptured, setEmailCaptured] = useState(false);
+  const [leadReceipt, setLeadReceipt] = useState("");
+  const [email, setEmail] = useState("");
+  const [marketingConsent, setMarketingConsent] = useState(false);
+  const [analyticsConsent, setAnalyticsConsentChoice] = useState(false);
+  const [emailRequest, setEmailRequest] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   const directionsAbort = useRef<AbortController | null>(null);
   const translationAbort = useRef<AbortController | null>(null);
   const fullBookAbort = useRef<AbortController | null>(null);
+  const classifierAbort = useRef<AbortController | null>(null);
 
-  const progress = useMemo(() => `${step} of 10`, [step]);
+  const progress = useMemo(() => {
+    const position = workshopProgress(bookForm, step);
+    return `${position.current} of ${position.total}`;
+  }, [bookForm, step]);
 
   useEffect(() => {
     setMockMode(document.cookie.split(";").some((part) => part.trim() === "bibaling_mock_mode=true"));
@@ -138,7 +184,7 @@ export default function Home() {
   }, [expandedImage]);
 
   useEffect(() => {
-    if (step !== 5) return;
+    if (step !== 6) return;
     const deselectOutside = (event: PointerEvent) => {
       const target = event.target;
       if (target instanceof Element && !target.closest(".direction-card") && !target.closest("nav")) {
@@ -175,6 +221,45 @@ export default function Home() {
       error: null,
       status: "done" as const
     })));
+  }
+
+  async function analyzeBookForm() {
+    classifierAbort.current?.abort();
+    const controller = new AbortController();
+    classifierAbort.current = controller;
+    setStep(3);
+    setBookFormConfirmed(false);
+    setRequest({ loading: true, error: null });
+    try {
+      const result = await postJson<BookFormAnalysis>("/api/book-form", {
+        texts: spreads.map((spread) => spread.text),
+        visualContexts: spreads.map((spread) => spread.visualContext)
+      }, controller.signal);
+      setBookForm(result.bookForm);
+      setRecommendedBookForm(result.bookForm);
+      setBookFormConfirmed(true);
+      setBookFormExplanation(result.explanation);
+      setSourceRhyme(result.sourceRhyme);
+      setRequest({ loading: false, error: null });
+    } catch (error) {
+      if (!(error instanceof Error && error.name === "AbortError")) {
+        setRecommendedBookForm(null);
+        setBookFormExplanation("");
+        setRequest({
+          loading: false,
+          error: error instanceof Error ? error.message : "We couldn’t recommend a book form. Choose one below."
+        });
+      }
+    } finally {
+      if (classifierAbort.current === controller) classifierAbort.current = null;
+    }
+  }
+
+  function backFromBookForm() {
+    classifierAbort.current?.abort();
+    classifierAbort.current = null;
+    setRequest({ loading: false, error: null });
+    setStep(2);
   }
 
   async function readSpread(id: string, image: string) {
@@ -259,7 +344,7 @@ export default function Home() {
     if (directionsAbort.current) return;
     const controller = new AbortController();
     directionsAbort.current = controller;
-    setStep(5);
+    setStep(6);
     setRequest({ loading: true, error: null });
     setDirectionProgress({ active: 0, completedThrough: -1, rejectedCount: 0 });
     let failureCode: string | null = null;
@@ -354,7 +439,7 @@ export default function Home() {
     directionsAbort.current?.abort();
     directionsAbort.current = null;
     setRequest({ loading: false, error: null });
-    if (goBack) setStep(4);
+    if (goBack) setStep(5);
   }
 
   function restartDirections() {
@@ -384,13 +469,12 @@ export default function Home() {
     setCustomRefrain("");
   }
 
-  async function lockDirectionAndWriteSpread1() {
-    if (selectedDirection === null) return;
+  async function writeSpread1(direction?: Direction) {
+    if (!bookForm || (bookForm === "refrain_verse" && !direction)) return;
     const controller = new AbortController();
     translationAbort.current = controller;
-    const direction = { ...directions[selectedDirection] };
-    setLockedDirection(direction);
-    setStep(6);
+    setLockedDirection(direction ?? null);
+    setStep(7);
     setRequest({ loading: true, error: null });
     try {
       const result = await postJson<{ runs: Array<{ label: string; options: GeneratedOption[] }> }>("/api/translations", {
@@ -399,7 +483,9 @@ export default function Home() {
         source: spreads[0].text,
         priority,
         freedom,
-        direction
+        bookForm,
+        sourceRhyme,
+        ...(direction ? { direction } : {})
       }, controller.signal);
       setSpread1Options(result.runs.flatMap((run) =>
         run.options.map((option) => ({
@@ -410,6 +496,7 @@ export default function Home() {
           editNote: ""
         }))
       ));
+      trackFunnelEventOnce("first_translation_seen", { bookForm, languagePair: "en-sl" });
       setSpread1Selection(null);
       setRequest({ loading: false, error: null });
     } catch (error) {
@@ -421,6 +508,11 @@ export default function Home() {
     }
   }
 
+  async function lockDirectionAndWriteSpread1() {
+    if (selectedDirection === null) return;
+    await writeSpread1({ ...directions[selectedDirection] });
+  }
+
   function updateSpread1Option(index: number, text: string) {
     setSpread1Options((current) => current.map((option, i) => i === index ? { ...option, text } : option));
   }
@@ -430,14 +522,14 @@ export default function Home() {
   }
 
   async function approveSpread1AndPatternTest() {
-    if (spread1Selection === null || !lockedDirection) return;
+    if (spread1Selection === null || !bookForm || (bookForm === "refrain_verse" && !lockedDirection)) return;
     const controller = new AbortController();
     translationAbort.current = controller;
     const approved = spread1Options[spread1Selection].text.trim();
     const approvedNote = spread1Options[spread1Selection].editNote.trim();
     setApprovedSpread1(approved);
     setApprovedNotes((current) => ({ ...current, 1: approvedNote }));
-    setStep(7);
+    setStep(8);
     setRequest({ loading: true, error: null });
     try {
       const result = await postJson<{ runs: Array<{ label: string; spreads: Array<{ spread: number; options: GeneratedOption[] }> }> }>("/api/translations", {
@@ -446,7 +538,9 @@ export default function Home() {
         sources: [spreads[1].text, spreads[2].text],
         priority,
         freedom,
-        direction: lockedDirection,
+        bookForm,
+        sourceRhyme,
+        ...(lockedDirection ? { direction: lockedDirection } : {}),
         approvedSpread1: approved,
         approvedSpread1Note: approvedNote || undefined
       }, controller.signal);
@@ -509,10 +603,16 @@ export default function Home() {
       2: patternOptions[2][patternSelections[2] as number].editNote.trim(),
       3: patternOptions[3][patternSelections[3] as number].editNote.trim()
     }));
-    setStep(8);
+    setStep(9);
+    trackFunnelEventOnce("three_page_preview_seen", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
   }
 
-  function startRestOfBook() {
+  function startRestOfBook(captureConfirmed = false) {
+    if (!emailCaptured && !captureConfirmed) {
+      setEmailGateVisible(true);
+      trackFunnelEventOnce("email_gate_viewed", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
+      return;
+    }
     const samples = spreads.map((spread, index) => ({
       id: spread.id,
       preview: spread.preview,
@@ -521,7 +621,8 @@ export default function Home() {
       visualContext: spread.visualContext,
       approvedText: approvedDrafts[index + 1] || null,
       parentNote: approvedNotes[index + 1] || undefined,
-      voiceSample: true
+      voiceSample: true,
+      workStatus: "ready" as const
     }));
     const mockRemainder = mockMode ? [4, 5, 6].map((number) => ({
       id: crypto.randomUUID(),
@@ -531,10 +632,47 @@ export default function Home() {
       visualContext: "A mock picture-book page continuing the friends’ adventure.",
       approvedText: null,
       parentNote: undefined,
-      voiceSample: false
+      voiceSample: false,
+      workStatus: "pending" as const
     })) : [];
     setBookPages([...samples, ...mockRemainder]);
-    setStep(9);
+    setStep(10);
+  }
+
+  async function captureEmail(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!bookForm || emailRequest.loading) return;
+    setEmailRequest({ loading: true, error: null });
+    setAnalyticsConsent(analyticsConsent);
+    const params = new URLSearchParams(window.location.search);
+    try {
+      const result = await postJson<{ receipt: string }>("/api/leads", {
+        email,
+        marketingConsent,
+        capturedAt: new Date().toISOString(),
+        attribution: {
+          source: params.get("utm_source") || "",
+          medium: params.get("utm_medium") || "",
+          campaign: params.get("utm_campaign") || "",
+          content: params.get("utm_content") || "",
+          term: params.get("utm_term") || "",
+          landingPage: `${window.location.origin}${window.location.pathname}`
+        },
+        languagePair: "en-sl",
+        bookForm
+      });
+      setLeadReceipt(result.receipt);
+      setEmailCaptured(true);
+      setEmailRequest({ loading: false, error: null });
+      trackFunnelEventOnce("email_captured", { bookForm, languagePair: "en-sl" });
+      trackFunnelEventOnce("qualified_lead", { bookForm, languagePair: "en-sl" });
+      window.setTimeout(() => startRestOfBook(true), 0);
+    } catch (error) {
+      setEmailRequest({
+        loading: false,
+        error: error instanceof Error ? error.message : "We couldn’t save your email. Please try again."
+      });
+    }
   }
 
   async function addRemainingFiles(files?: FileList | File[]) {
@@ -548,7 +686,8 @@ export default function Home() {
       visualContext: "",
       approvedText: null,
       parentNote: undefined,
-      voiceSample: false
+      voiceSample: false,
+      workStatus: "pending" as const
     })));
     setBookPages((current) => [...current, ...additions]);
   }
@@ -567,48 +706,69 @@ export default function Home() {
   }
 
   async function generateRestOfBook() {
-    if (!lockedDirection || fullBookAbort.current) return;
+    if (!emailCaptured || !leadReceipt || !bookForm || (bookForm === "refrain_verse" && !lockedDirection) || fullBookAbort.current) return;
+    trackFunnelEventOnce("full_book_started", { bookForm, languagePair: "en-sl" });
     const controller = new AbortController();
     fullBookAbort.current = controller;
-    setStep(10);
+    setStep(11);
     setRequest({ loading: true, error: null });
     try {
-      const withSources = await Promise.all(bookPages.map(async (page) => {
-        if (page.sourceText.trim()) return page;
-        const result = await postJson<{ text: string; visualContext: string }>("/api/transcribe", { image: page.preview }, controller.signal);
-        return { ...page, sourceText: compactGeneratedText(result.text), visualContext: result.visualContext };
-      }));
-      setBookPages(withSources);
-      const remaining = withSources.flatMap((page, index) =>
-        page.approvedText ? [] : [{
-          spread: index + 1,
-          visualContext: page.visualContext,
-          source: page.sourceText
-        }]
-      );
-      if (remaining.length === 0) {
-        setRequest({ loading: false, error: null });
-        return;
-      }
-      const result = await postJson<{ spreads: Array<{ spread: number; text: string }> }>("/api/translations", {
-        mode: "fullbook",
-        spreads: remaining,
-        priority,
-        freedom,
-        direction: lockedDirection,
-        approvedVoice: withSources.flatMap((page, index) =>
-          page.approvedText ? [{
+      const working = bookPages.map((page) => ({ ...page }));
+      const approvedVoice = working.flatMap((page, index) =>
+        page.voiceSample && page.approvedText ? [{
             spread: index + 1,
             text: page.approvedText,
             parentNote: page.parentNote || undefined
           }] : []
-        )
-      }, controller.signal);
-      const translations = new Map(result.spreads.map((spread) => [spread.spread, spread.text]));
-      setBookPages(withSources.map((page, index) => ({
-        ...page,
-        approvedText: page.approvedText || compactGeneratedText(translations.get(index + 1) || "") || null
-      })));
+      );
+      for (let index = 0; index < working.length; index += 1) {
+        if (working[index].approvedText?.trim()) {
+          working[index].workStatus = "ready";
+          continue;
+        }
+        try {
+          if (!working[index].sourceText.trim()) {
+            working[index].workStatus = "reading";
+            setBookPages(working.map((page) => ({ ...page })));
+            const transcription = await postJson<{ text: string; visualContext: string }>(
+              "/api/transcribe",
+              { image: working[index].preview },
+              controller.signal
+            );
+            working[index].sourceText = compactGeneratedText(transcription.text);
+            working[index].visualContext = transcription.visualContext;
+          }
+          working[index].workStatus = "translating";
+          setBookPages(working.map((page) => ({ ...page })));
+          const result = await postJson<{ spreads: Array<{ spread: number; text: string }> }>("/api/translations", {
+            mode: "fullbook",
+            leadReceipt,
+            spreads: [{
+              spread: index + 1,
+              visualContext: working[index].visualContext,
+              source: working[index].sourceText
+            }],
+            priority,
+            freedom,
+            bookForm,
+            sourceRhyme,
+            ...(lockedDirection ? { direction: lockedDirection } : {}),
+            approvedVoice
+          }, controller.signal);
+          const translation = result.spreads.find((spread) => spread.spread === index + 1)?.text;
+          if (!translation?.trim()) throw new Error(`Page ${index + 1} returned without a translation.`);
+          working[index].approvedText = compactGeneratedText(translation);
+          working[index].workStatus = "ready";
+          setBookPages(working.map((page) => ({ ...page })));
+        } catch (error) {
+          working[index].workStatus = "failed";
+          setBookPages(working.map((page) => ({ ...page })));
+          throw new Error(
+            `We couldn’t finish Page ${index + 1}. Everything before it is saved—try again to continue.`,
+            { cause: error }
+          );
+        }
+      }
       setRequest({ loading: false, error: null });
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
@@ -649,13 +809,18 @@ export default function Home() {
     URL.revokeObjectURL(url);
   }
 
-  const retry = step === 5
-    ? generateDirections
+  const retry = step === 3
+    ? analyzeBookForm
     : step === 6
-      ? lockDirectionAndWriteSpread1
-      : step === 10
+    ? generateDirections
+    : step === 7
+      ? () => writeSpread1(lockedDirection ?? undefined)
+      : step === 11
         ? generateRestOfBook
         : approveSpread1AndPatternTest;
+  const activeBookPageIndex = bookPages.findIndex((page) =>
+    page.workStatus === "reading" || page.workStatus === "translating"
+  );
 
   return (
     <main>
@@ -749,27 +914,71 @@ export default function Home() {
             </div>
             <nav>
               <button className="secondary" onClick={() => setStep(1)}>Back</button>
-              <button className="primary" disabled={spreads.some((spread) => !spread.text.trim())} onClick={() => setStep(3)}>Looks right</button>
+              <button className="primary" disabled={spreads.some((spread) => !spread.text.trim())} onClick={() => void analyzeBookForm()}>Looks right</button>
             </nav>
           </>
         )}
 
         {step === 3 && (
           <>
+            <h1>How is this book written?</h1>
+            <p className="lead">We’ve suggested a translation path. Choose the one that fits the book.</p>
+            {request.loading && <ProgressLog messages={classificationLoadingMessages} />}
+            {bookFormExplanation && !request.loading && (
+              <p className="classification-explanation">{bookFormExplanation}</p>
+            )}
+            <div className="choices book-form-choices">
+              {BOOK_FORM_OPTIONS.map((option) => {
+                const selected = bookForm === option.value;
+                return (
+                  <button
+                    className={selected ? "choice selected" : "choice"}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => {
+                      setBookForm(option.value);
+                      setBookFormConfirmed(true);
+                      setPriority("");
+                      setDirections([]);
+                      setSelectedDirection(null);
+                      setLockedDirection(null);
+                    }}
+                    key={option.value}
+                  >
+                    <span className="radio" />
+                    <span>
+                      <strong>{option.title}{recommendedBookForm === option.value && <small className="our-read">Recommended</small>}</strong>
+                      <small>{option.description}</small>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            {request.error && <GenerationError title="We couldn’t recommend a path." message={request.error} retry={retry} />}
+            <nav>
+              <button className="secondary" onClick={backFromBookForm}>Back</button>
+              <button className="primary" disabled={request.loading || !bookForm || !bookFormConfirmed} onClick={() => { setRequest({ loading: false, error: null }); setStep(4); }}>Continue</button>
+            </nav>
+          </>
+        )}
+
+        {step === 4 && (
+          <>
             <h1>What matters most for this book?</h1>
             <p className="lead">Choose the quality we must protect.</p>
             <div className="choices">
-              {priorities.map(([value, title, description]) => (
+              {prioritiesFor(bookForm).map(([value, title, description]) => (
                 <button className={priority === value ? "choice selected" : "choice"} onClick={() => setPriority(value)} key={value}>
                   <span className="radio" /><span><strong>{title}</strong><small>{description}</small></span>
                 </button>
               ))}
             </div>
-            <nav><button className="secondary" onClick={() => setStep(2)}>Back</button><button className="primary" disabled={!priority} onClick={() => setStep(4)}>Continue</button></nav>
+            <nav><button className="secondary" onClick={() => setStep(3)}>Back</button><button className="primary" disabled={!priority} onClick={() => setStep(5)}>Continue</button></nav>
           </>
         )}
 
-        {step === 4 && (
+        {step === 5 && (
           <>
             <h1>How freely should we adapt it?</h1>
             <p className="lead">Choose how closely Slovenian should follow the English.</p>
@@ -780,11 +989,24 @@ export default function Home() {
                 </button>
               ))}
             </div>
-            <nav><button className="secondary" onClick={() => setStep(3)}>Back</button><button className="primary" disabled={!freedom} onClick={() => void generateDirections()}>Find our book’s voice</button></nav>
+            <nav>
+              <button className="secondary" onClick={() => setStep(4)}>Back</button>
+              <button
+                className="primary"
+                disabled={!freedom || !bookForm}
+                onClick={() => {
+                  if (!bookForm) return;
+                  if (nextAfterFreedom(bookForm) === "refrain_lab") void generateDirections();
+                  else void writeSpread1();
+                }}
+              >
+                Find our book’s voice
+              </button>
+            </nav>
           </>
         )}
 
-        {step === 5 && (
+        {step === 6 && bookForm === "refrain_verse" && (
           <>
             <h1>Choose the best option for the refrain.</h1>
             <p className="lead">Re-roll for a fresh set of options, or add your own.</p>
@@ -854,31 +1076,31 @@ export default function Home() {
                 retry={retry}
               />
             )}
-            <nav><button className="secondary" onClick={() => request.loading ? cancelDirections(true) : setStep(4)}>Back</button><button className="primary" disabled={request.loading || selectedDirection === null || !directions[selectedDirection]?.refrain.trim()} onClick={() => void lockDirectionAndWriteSpread1()}>Lock this direction</button></nav>
+            <nav><button className="secondary" onClick={() => request.loading ? cancelDirections(true) : setStep(5)}>Back</button><button className="primary" disabled={request.loading || selectedDirection === null || !directions[selectedDirection]?.refrain.trim()} onClick={() => void lockDirectionAndWriteSpread1()}>Lock this direction</button></nav>
           </>
         )}
 
-        {step === 6 && lockedDirection && (
+        {step === 7 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
             <h1>Let’s test the voice on one full page.</h1>
             <p className="lead">Choose and edit the strongest Slovenian version.</p>
-            <LockedBrief direction={lockedDirection} priority={priority} freedom={freedom} />
+            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} />
             <Source spread={spreads[0]} number={1} onExpand={setExpandedImage} />
             {request.loading && <ProgressLog messages={translationLoadingMessages} />}
             {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} onNote={updateSpread1Note} />}
             {request.error && <GenerationError message={request.error} retry={retry} />}
             <nav>
-              <button className="secondary" disabled={request.loading} onClick={() => setStep(5)}>Back</button>
+              <button className="secondary" disabled={request.loading} onClick={() => setStep(page1BackStep(bookForm))}>Back</button>
               <button className="primary" disabled={request.loading || spread1Selection === null || !spread1Options[spread1Selection]?.text.trim()} onClick={() => void approveSpread1AndPatternTest()}>Approve and test the pattern</button>
             </nav>
           </>
         )}
 
-        {step === 7 && lockedDirection && (
+        {step === 8 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
             <h1>Does this voice work on every page?</h1>
             <p className="lead">Choose one version for each page. Use Page 1 as your guide.</p>
-            <LockedBrief direction={lockedDirection} priority={priority} freedom={freedom} />
+            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} />
             <article className="approved-card voice-reference">
               <button className="zoomable-image-button" type="button" aria-label="Open approved Page 1 photo at full size" onClick={() => setExpandedImage({ src: spreads[0].preview, alt: "Approved Page 1" })}>
                 <img src={spreads[0].preview} alt="" />
@@ -901,15 +1123,15 @@ export default function Home() {
               </section>
             ))}
             {request.error && <GenerationError message={request.error} retry={retry} />}
-            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(6)}>Back</button><button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button></nav>
+            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(7)}>Back</button><button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button></nav>
           </>
         )}
 
-        {step === 8 && lockedDirection && (
+        {step === 9 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
             <h1>Do these belong in the same book?</h1>
             <p className="lead">Read them aloud and tune any line that feels off.</p>
-            <LockedBrief direction={lockedDirection} priority={priority} freedom={freedom} />
+            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} />
             <div className="approved-grid">
               {[1, 2, 3].map((number) => (
                 <article className="approved-card" key={number}>
@@ -922,14 +1144,38 @@ export default function Home() {
                 </article>
               ))}
             </div>
+            {emailGateVisible && !emailCaptured && (
+              <form className="email-gate" onSubmit={captureEmail}>
+                <h2>Want to translate the rest of the book and keep your work?</h2>
+                <p>We’ve found a voice that carries naturally across these three pages. Enter your email to continue with the rest of the book.</p>
+                <label>
+                  <span>Email</span>
+                  <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" />
+                </label>
+                <label className="consent-choice">
+                  <input type="checkbox" checked={marketingConsent} onChange={(event) => setMarketingConsent(event.target.checked)} />
+                  <span>Send me occasional Bibaling news and product updates. Optional.</span>
+                </label>
+                <label className="consent-choice">
+                  <input type="checkbox" checked={analyticsConsent} onChange={(event) => setAnalyticsConsentChoice(event.target.checked)} />
+                  <span>Allow anonymous usage analytics to help improve Bibaling. Optional.</span>
+                </label>
+                {emailRequest.error && <p className="email-gate-error">{emailRequest.error}</p>}
+                <button className="primary" type="submit" disabled={emailRequest.loading || !email.trim()}>
+                  {emailRequest.loading ? "Saving…" : "Continue with the rest of the book"}
+                </button>
+              </form>
+            )}
             <nav>
-              <button className="secondary" onClick={() => setStep(7)}>Back</button>
-              <button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={startRestOfBook}>Add the rest of the book</button>
+              <button className="secondary" onClick={() => setStep(8)}>Back</button>
+              {!emailGateVisible && (
+                <button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={() => startRestOfBook()}>Add the rest of the book</button>
+              )}
             </nav>
           </>
         )}
 
-        {step === 9 && (
+        {step === 10 && emailCaptured && (
           <>
             <h1>Arrange the whole book.</h1>
             <p className="lead">Add the remaining photos, then drag every page into order.</p>
@@ -978,7 +1224,7 @@ export default function Home() {
               ))}
             </div>
             <nav>
-              <button className="secondary" onClick={() => setStep(8)}>Back</button>
+              <button className="secondary" onClick={() => setStep(9)}>Back</button>
               <button className="primary" disabled={bookPages.length < 3} onClick={() => void generateRestOfBook()}>
                 Translate the full book
               </button>
@@ -986,36 +1232,47 @@ export default function Home() {
           </>
         )}
 
-        {step === 10 && lockedDirection && (
+        {step === 11 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
-            <h1>{request.loading ? "Writing the rest of your book." : "Your full Slovenian draft."}</h1>
+            <h1>{request.loading ? "Writing the rest of your book." : request.error ? "Let’s finish the unread pages." : "Your full Slovenian draft."}</h1>
             <p className="lead">
               {request.loading
                 ? "We’re carrying your approved voice through every page."
+                : request.error
+                ? "Everything we’ve read is saved. Try again to continue."
                 : "Read each page, edit any line, then save your draft."}
             </p>
-            <LockedBrief direction={lockedDirection} priority={priority} freedom={freedom} />
+            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} />
             {request.loading && (
               <>
                 <div className="full-book-draft approved-while-writing">
-                  {bookPages.map((page, index) => ({ page, index })).filter(({ page }) => page.approvedText).map(({ page, index }) => (
-                    <article className="approved-card" key={page.id}>
+                  {bookPages.map((page, index) => ({ page, index }))
+                    .filter(({ page }) => page.approvedText)
+                    .map(({ page, index }) => (
+                    <article className="approved-card page-ready" key={page.id}>
                       <button className="zoomable-image-button" type="button" aria-label={`Open approved Page ${index + 1} photo at full size`} onClick={() => setExpandedImage({ src: page.preview, alt: `Approved Page ${index + 1}` })}>
                         <img src={page.preview} alt="" />
                       </button>
                       <div className="english-column">
                         <label>Page {index + 1} · English</label>
-                        <p className="english-reference">{page.sourceText}</p>
+                        <p className="english-reference">{page.sourceText || "Reading this page…"}</p>
                       </div>
                       <div className="slovenian-column">
-                        <label>Slovenian · approved</label>
+                        <label>Slovenian · ready</label>
                         <p className="approved-translation">{page.approvedText}</p>
                       </div>
                     </article>
                   ))}
                 </div>
-                <p className="remaining-pages-note">These pages are ready. We’re translating the rest of the book now.</p>
-                <ProgressLog messages={fullBookLoadingMessages} />
+                <ProgressLog
+                  messages={fullBookLoadingMessages}
+                  activePage={activeBookPageIndex >= 0 ? {
+                    number: activeBookPageIndex + 1,
+                    preview: bookPages[activeBookPageIndex].preview,
+                    sourceText: bookPages[activeBookPageIndex].sourceText,
+                    phase: bookPages[activeBookPageIndex].workStatus === "reading" ? "Reading the English text" : "Writing the Slovenian translation"
+                  } : undefined}
+                />
               </>
             )}
             {!request.loading && (
@@ -1044,7 +1301,7 @@ export default function Home() {
             )}
             {request.error && <GenerationError message={request.error} retry={retry} />}
             <nav>
-              <button className="secondary" disabled={request.loading} onClick={() => setStep(9)}>Back</button>
+              <button className="secondary" disabled={request.loading} onClick={() => setStep(10)}>Back</button>
               <button className="primary" onClick={saveFinishedDraft} disabled={request.loading || bookPages.some((page) => !page.approvedText?.trim())}>Save finished draft</button>
             </nav>
           </>
@@ -1081,6 +1338,13 @@ const directionLoadingMessages = [
   "Making the words sing together…",
   "Bringing the strongest voices forward…",
   "Giving the final choices one more listen…"
+];
+
+const classificationLoadingMessages = [
+  "Reading how the three samples are structured…",
+  "Checking whether a meaningful line really repeats…",
+  "Listening for prose, poetic movement, and rhyme…",
+  "Choosing the translation path that best fits the source…"
 ];
 
 const readingLoadingMessages = [
@@ -1185,10 +1449,17 @@ function RotatingThinkingLine({ messages }: { messages: readonly string[] }) {
 }
 
 function ProgressLog({
-  messages
+  messages,
+  activePage
 }: {
   messages: readonly string[];
   progress?: DirectionProgress;
+  activePage?: {
+    number: number;
+    preview: string;
+    sourceText: string;
+    phase: string;
+  };
 }) {
   const [showReassurance, setShowReassurance] = useState(false);
 
@@ -1199,6 +1470,16 @@ function ProgressLog({
 
   return (
     <div className="direction-progress-log" aria-live="polite">
+      {activePage && (
+        <div className="progress-page-context">
+          <img src={activePage.preview} alt="" />
+          <div>
+            <small>Page {activePage.number}</small>
+            <strong>{activePage.phase}</strong>
+            {activePage.sourceText && <p>{activePage.sourceText}</p>}
+          </div>
+        </div>
+      )}
       <RotatingThinkingLine messages={messages} />
       {showReassurance && (
         <div className="progress-log-footer">
@@ -1209,13 +1490,23 @@ function ProgressLog({
   );
 }
 
-function LockedBrief({ direction, priority, freedom }: { direction: Direction; priority: string; freedom: string }) {
-  const priorityLabel = priorities.find(([value]) => value === priority)?.[1];
+function VoiceBrief({
+  bookForm,
+  direction,
+  priority,
+  freedom
+}: {
+  bookForm: BookForm;
+  direction: Direction | null;
+  priority: string;
+  freedom: string;
+}) {
+  const priorityLabel = prioritiesFor(bookForm).find(([value]) => value === priority)?.[1];
   const freedomLabel = freedoms.find(([value]) => value === freedom)?.[1];
   return (
     <aside className="locked-brief">
-      <span>Refrain</span>
-      <blockquote>{direction.refrain}</blockquote>
+      <span>{direction ? "Refrain" : "Book form"}</span>
+      <blockquote>{direction?.refrain || bookFormLabel(bookForm)}</blockquote>
       <div className="brief-selections">
         <p><strong>Most important</strong><span>{priorityLabel}</span></p>
         <p><strong>Adaptation</strong><span>{freedomLabel}</span></p>
