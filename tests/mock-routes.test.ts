@@ -28,24 +28,25 @@ test("all live Responses calls pass through the controlled request wrapper", asy
   }
 });
 
-test("literary calls use the empirically validated 90-second timeout", async () => {
-  for (const route of ["app/api/directions/route.ts", "app/api/translations/route.ts"]) {
-    const source = await readFile(new URL(`../${route}`, import.meta.url), "utf8");
-    const controlledCalls = (source.match(/controlledResponse\(\{/g) || []).length;
-    const literaryTimeouts = (source.match(/timeoutMs:\s*90_000/g) || []).length;
-    assert.equal(literaryTimeouts, controlledCalls);
-  }
+test("literary calls are bounded, with extra drafting time at the measured bottlenecks", async () => {
+  const pipeline = await readFile(new URL("../app/api/direction-pipeline.ts", import.meta.url), "utf8");
+  assert.match(pipeline, /model:\s*"gpt-5\.6-sol"[\s\S]*timeoutMs:\s*150_000[\s\S]*maxOutputTokens:\s*5_000/);
+  assert.match(pipeline, /editorial:[\s\S]*model:\s*"gpt-5\.6-sol"[\s\S]*timeoutMs:\s*90_000[\s\S]*maxOutputTokens:\s*3_500/);
+
+  const translations = await readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8");
+  assert.match(translations, /args\.spreadNumber === 1 && !args\.approvedSpread1 \? 120_000 : 90_000/);
+  assert.match(translations, /timeoutMs:\s*requestTimeoutMs/);
 });
 
 test("direction generation streams genuine progress and propagates cancellation", async () => {
   const source = await readFile(new URL("../app/api/directions/route.ts", import.meta.url), "utf8");
   for (const event of [
-    "generation.started",
-    "generation.completed",
-    "evaluation.started",
-    "evaluation.completed",
-    "rejection.completed",
-    "selection.completed"
+    "drafting_started",
+    "drafting_completed",
+    "validating_candidates",
+    "editing_started",
+    "editing_completed",
+    "completed"
   ]) assert.match(source, new RegExp(event.replace(".", "\\.")));
   assert.match(source, /Content-Type": "text\/event-stream/);
   assert.match(source, /streamAbort\.abort\(new Error\("Client disconnected"\)\)/);
@@ -61,6 +62,8 @@ test("full-book generation is mocked, bounded, and preserves parent feedback", a
   assert.match(page, /parentNote: page\.parentNote/);
   assert.match(page, /Translate the full book/);
   assert.match(page, /onDragEnter/);
+  assert.match(page, /These pages are ready\. We’re translating the rest of the book now\./);
+  assert.match(page, /approved-while-writing/);
 });
 
 test("all long-running client states use non-repeating rotating copy", async () => {
@@ -79,6 +82,7 @@ test("mock mode can be toggled in the UI without restarting the server", async (
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   assert.match(generation, /bibaling_mock_mode=true/);
   assert.match(page, /Mock mode/);
-  assert.match(page, /Load a mock book/);
+  assert.match(page, /loadMockBook/);
+  assert.doesNotMatch(page, />Load a mock book</);
   assert.match(page, /document\.cookie/);
 });

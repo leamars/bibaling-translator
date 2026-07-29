@@ -27,8 +27,6 @@ const directionSchema = z.object({
   name: z.string().min(1),
   refrain: z.string().min(1),
   approach: z.string().min(1),
-  keeps: z.string().min(1),
-  changes: z.string().min(1),
   genderDependency: z.string().min(1)
 });
 
@@ -205,13 +203,14 @@ type PipelineArgs = {
 };
 
 async function generatePassingOptions(args: PipelineArgs) {
+  const requestTimeoutMs = args.spreadNumber === 1 && !args.approvedSpread1 ? 120_000 : 90_000;
   const { response: generationResponse } = await controlledResponse({
     client: args.client,
     requestSignal: args.requestSignal,
     action: `spread${args.spreadNumber}.generate`,
     model: args.model,
     maxOutputTokens: 3_500,
-    timeoutMs: 90_000,
+    timeoutMs: requestTimeoutMs,
     body: {
       model: args.model,
       reasoning: { effort: "low" },
@@ -250,7 +249,7 @@ async function generatePassingOptions(args: PipelineArgs) {
       action: `spread${args.spreadNumber}.evaluate`,
       model: "gpt-5.6-sol",
       maxOutputTokens: 2_500,
-      timeoutMs: 90_000,
+      timeoutMs: requestTimeoutMs,
       body: {
         model: "gpt-5.6-sol",
         reasoning: { effort: "low" },
@@ -478,7 +477,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return generationError(
       error,
-      "I couldn’t finish these translations. Your direction, choices, and edits are still here—please try again."
+      "We couldn’t finish these translations. Your direction, choices, and edits are still here—please try again."
     );
   }
 }

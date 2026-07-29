@@ -137,8 +137,6 @@ test("parent edit commentary becomes binding context without entering book text"
       name: "Test",
       refrain: "Rada vas imam!",
       approach: "Rhyming couplets",
-      keeps: "Meaning",
-      changes: "Wordplay",
       genderDependency: "Feminine narrator"
     },
     approvedSpread1: "Approved parent-edited text.",
@@ -159,8 +157,6 @@ test("translation prompts reject malformed Slovenian and spelling-only rhyme gen
       name: "Test",
       refrain: "Rada vas imam!",
       approach: "Rhyming couplets",
-      keeps: "Meaning",
-      changes: "Wordplay",
       genderDependency: "Feminine narrator"
     }
   });
@@ -171,15 +167,13 @@ test("translation prompts reject malformed Slovenian and spelling-only rhyme gen
 
 test("full-book editing treats parent rhyme feedback as a correction", () => {
   const prompt = fullBookEditorialPrompt({
-    spreads: [{ spread: 4, source: "The friends splash all day." }],
+    spreads: [{ spread: 4, source: "The friends splash all day.", visualContext: "Friends splashing in shallow water." }],
     priority: "rhythm",
     freedom: "natural",
     direction: {
       name: "Test",
       refrain: "Rada vas imam!",
       approach: "Rhyming couplets",
-      keeps: "Meaning",
-      changes: "Wordplay",
       genderDependency: "Feminine narrator"
     },
     approvedVoice: [

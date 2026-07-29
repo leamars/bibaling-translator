@@ -1,0 +1,85 @@
+{
+  "fixture": "rhythm",
+  "promptVersion": "step5-v8-assigned-observable-constructions",
+  "configuration": {
+    "draftModel": "gpt-5.6-sol",
+    "draftTimeoutMs": 150000,
+    "draftOutputLimit": 5000,
+    "privateCandidates": 5,
+    "editorModel": "gpt-5.6-sol",
+    "editorTimeoutMs": 90000,
+    "editorOutputLimit": 3500,
+    "finalOptions": 3,
+    "automaticRetries": 0,
+    "maximumEstimatedCostUsd": 0.295
+  },
+  "completed": false,
+  "totalLatencyMs": 91922,
+  "stages": [
+    {
+      "type": "progress",
+      "event": "drafting_started"
+    },
+    {
+      "type": "progress",
+      "event": "drafting_completed",
+      "usage": {
+        "action": "directions.draft",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_0f70c9e55ed44c88006a6a26175358819e83dcecbc3c5235a0",
+        "responseStatus": "completed",
+        "latencyMs": 60377,
+        "inputTokens": 1144,
+        "cachedInputTokens": 0,
+        "outputTokens": 1629,
+        "reasoningTokens": 1406,
+        "estimatedCostUsd": 0.05459
+      }
+    },
+    {
+      "type": "progress",
+      "event": "validating_candidates"
+    },
+    {
+      "type": "progress",
+      "event": "editing_started",
+      "candidateCount": 5
+    },
+    {
+      "type": "error",
+      "event": "failed",
+      "code": "EDITOR_INVALID_OUTPUT",
+      "retryMode": "editor_only",
+      "error": "Your options were drafted, but we couldn’t finish reviewing them. Try finishing again.",
+      "diagnostic": "The editor did not return three valid unique options."
+    }
+  ],
+  "usage": [
+    {
+      "action": "directions.draft",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_0f70c9e55ed44c88006a6a26175358819e83dcecbc3c5235a0",
+      "responseStatus": "completed",
+      "latencyMs": 60377,
+      "inputTokens": 1144,
+      "cachedInputTokens": 0,
+      "outputTokens": 1629,
+      "reasoningTokens": 1406,
+      "estimatedCostUsd": 0.05459
+    }
+  ],
+  "reachedOutputAllowance": false,
+  "candidateCountEnteringEditor": 5,
+  "finalOptionCount": 0,
+  "finalDirections": [],
+  "failure": {
+    "type": "error",
+    "event": "failed",
+    "code": "EDITOR_INVALID_OUTPUT",
+    "retryMode": "editor_only",
+    "error": "Your options were drafted, but we couldn’t finish reviewing them. Try finishing again.",
+    "diagnostic": "The editor did not return three valid unique options."
+  }
+}

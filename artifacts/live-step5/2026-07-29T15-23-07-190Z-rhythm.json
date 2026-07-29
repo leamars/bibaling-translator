@@ -1,0 +1,79 @@
+{
+  "fixture": "rhythm",
+  "promptVersion": "step5-v4-compact-refrains",
+  "configuration": {
+    "draftModel": "gpt-5.6-sol",
+    "draftTimeoutMs": 150000,
+    "draftOutputLimit": 5000,
+    "privateCandidates": 5,
+    "editorModel": "gpt-5.6-sol",
+    "editorTimeoutMs": 90000,
+    "editorOutputLimit": 3500,
+    "finalOptions": 3,
+    "automaticRetries": 0,
+    "maximumEstimatedCostUsd": 0.295
+  },
+  "completed": false,
+  "totalLatencyMs": 64014,
+  "stages": [
+    {
+      "type": "progress",
+      "event": "drafting_started"
+    },
+    {
+      "type": "progress",
+      "event": "drafting_completed",
+      "usage": {
+        "action": "directions.draft",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_06ee4d5e38953383006a6a1a9befe881a18831a821256ffcfd",
+        "responseStatus": "completed",
+        "latencyMs": 63712,
+        "inputTokens": 1125,
+        "cachedInputTokens": 0,
+        "outputTokens": 2236,
+        "reasoningTokens": 1985,
+        "estimatedCostUsd": 0.072705
+      }
+    },
+    {
+      "type": "progress",
+      "event": "validating_candidates"
+    },
+    {
+      "type": "error",
+      "event": "failed",
+      "code": "DRAFT_QUALITY_REJECTION",
+      "retryMode": "full",
+      "error": "We couldn’t create three options we felt good about. Let’s try a fresh set.",
+      "diagnostic": "Only 0 private candidates survived deterministic validation."
+    }
+  ],
+  "usage": [
+    {
+      "action": "directions.draft",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_06ee4d5e38953383006a6a1a9befe881a18831a821256ffcfd",
+      "responseStatus": "completed",
+      "latencyMs": 63712,
+      "inputTokens": 1125,
+      "cachedInputTokens": 0,
+      "outputTokens": 2236,
+      "reasoningTokens": 1985,
+      "estimatedCostUsd": 0.072705
+    }
+  ],
+  "reachedOutputAllowance": false,
+  "finalOptionCount": 0,
+  "finalDirections": [],
+  "failure": {
+    "type": "error",
+    "event": "failed",
+    "code": "DRAFT_QUALITY_REJECTION",
+    "retryMode": "full",
+    "error": "We couldn’t create three options we felt good about. Let’s try a fresh set.",
+    "diagnostic": "Only 0 private candidates survived deterministic validation."
+  }
+}

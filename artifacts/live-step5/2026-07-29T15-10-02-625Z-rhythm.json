@@ -1,0 +1,155 @@
+{
+  "fixture": "rhythm",
+  "promptVersion": "step5-v3-five-concise-drafts",
+  "configuration": {
+    "draftModel": "gpt-5.6-sol",
+    "draftTimeoutMs": 150000,
+    "draftOutputLimit": 5000,
+    "privateCandidates": 5,
+    "editorModel": "gpt-5.6-sol",
+    "editorTimeoutMs": 90000,
+    "editorOutputLimit": 3500,
+    "finalOptions": 3,
+    "automaticRetries": 0,
+    "maximumEstimatedCostUsd": 0.295
+  },
+  "completed": true,
+  "totalLatencyMs": 142776,
+  "stages": [
+    {
+      "type": "progress",
+      "event": "drafting_started"
+    },
+    {
+      "type": "progress",
+      "event": "drafting_completed",
+      "usage": {
+        "action": "directions.draft",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_0550a527032f979b006a6a173ca47481a080edac3e58ae74d5",
+        "responseStatus": "completed",
+        "latencyMs": 94853,
+        "inputTokens": 987,
+        "cachedInputTokens": 0,
+        "outputTokens": 2492,
+        "reasoningTokens": 2220,
+        "estimatedCostUsd": 0.079695
+      }
+    },
+    {
+      "type": "progress",
+      "event": "validating_candidates"
+    },
+    {
+      "type": "progress",
+      "event": "editing_started",
+      "candidateCount": 4
+    },
+    {
+      "type": "progress",
+      "event": "editing_completed",
+      "usage": {
+        "action": "directions.edit",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_0a9a6b2096a0e1ac006a6a179b426c81a0b82be4cac7b32bde",
+        "responseStatus": "completed",
+        "latencyMs": 47479,
+        "inputTokens": 1818,
+        "cachedInputTokens": 0,
+        "outputTokens": 1724,
+        "reasoningTokens": 1459,
+        "estimatedCostUsd": 0.06081
+      }
+    },
+    {
+      "type": "progress",
+      "event": "completed"
+    },
+    {
+      "type": "result",
+      "data": {
+        "runs": [
+          {
+            "model": "gpt-5.6-sol",
+            "label": "Sol · quality-first",
+            "directions": [
+              {
+                "name": "Warm Rhyming Couplet",
+                "refrain": "Rada vas imam zelo,\nker z vami mi je res lepo.",
+                "approach": "A gentle two-line refrain built on the clear zelo–lepo rhyme, with an even cadence for repeated read-aloud use.",
+                "genderDependency": "The mushroom narrator is grammatically feminine, so the fixed form is »rada«."
+              },
+              {
+                "name": "Playful Call and Response",
+                "refrain": "Koga imam rada, kdo me razveseli?\nMoji prijatelji — prav vsi!",
+                "approach": "An energetic question-and-answer refrain with a strong final reveal and the genuine razveseli–vsi rhyme.",
+                "genderDependency": "The mushroom narrator is grammatically feminine, so the fixed form is »rada«."
+              },
+              {
+                "name": "Compact Rhyming Tag",
+                "refrain": "Rada vas imam, prav vsem to priznam!",
+                "approach": "A short closing tag with a crisp imam–priznam rhyme, designed to land firmly at the end of each spread.",
+                "genderDependency": "The mushroom narrator is grammatically feminine, so the fixed form is »rada«."
+              }
+            ]
+          }
+        ],
+        "reusedDraft": false
+      }
+    }
+  ],
+  "usage": [
+    {
+      "action": "directions.draft",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_0550a527032f979b006a6a173ca47481a080edac3e58ae74d5",
+      "responseStatus": "completed",
+      "latencyMs": 94853,
+      "inputTokens": 987,
+      "cachedInputTokens": 0,
+      "outputTokens": 2492,
+      "reasoningTokens": 2220,
+      "estimatedCostUsd": 0.079695
+    },
+    {
+      "action": "directions.edit",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_0a9a6b2096a0e1ac006a6a179b426c81a0b82be4cac7b32bde",
+      "responseStatus": "completed",
+      "latencyMs": 47479,
+      "inputTokens": 1818,
+      "cachedInputTokens": 0,
+      "outputTokens": 1724,
+      "reasoningTokens": 1459,
+      "estimatedCostUsd": 0.06081
+    }
+  ],
+  "reachedOutputAllowance": false,
+  "candidateCountEnteringEditor": 4,
+  "finalOptionCount": 3,
+  "finalDirections": [
+    {
+      "name": "Warm Rhyming Couplet",
+      "refrain": "Rada vas imam zelo,\nker z vami mi je res lepo.",
+      "approach": "A gentle two-line refrain built on the clear zelo–lepo rhyme, with an even cadence for repeated read-aloud use.",
+      "genderDependency": "The mushroom narrator is grammatically feminine, so the fixed form is »rada«."
+    },
+    {
+      "name": "Playful Call and Response",
+      "refrain": "Koga imam rada, kdo me razveseli?\nMoji prijatelji — prav vsi!",
+      "approach": "An energetic question-and-answer refrain with a strong final reveal and the genuine razveseli–vsi rhyme.",
+      "genderDependency": "The mushroom narrator is grammatically feminine, so the fixed form is »rada«."
+    },
+    {
+      "name": "Compact Rhyming Tag",
+      "refrain": "Rada vas imam, prav vsem to priznam!",
+      "approach": "A short closing tag with a crisp imam–priznam rhyme, designed to land firmly at the end of each spread.",
+      "genderDependency": "The mushroom narrator is grammatically feminine, so the fixed form is »rada«."
+    }
+  ],
+  "failure": null
+}

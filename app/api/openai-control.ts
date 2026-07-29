@@ -18,10 +18,14 @@ export type UsageRecord = {
   action: string;
   model: string;
   reasoningEffort: "low";
+  responseId?: string;
+  responseStatus?: string;
+  incompleteReason?: string;
   latencyMs: number;
   inputTokens: number;
   cachedInputTokens: number;
   outputTokens: number;
+  reasoningTokens: number;
   estimatedCostUsd: number;
 };
 
@@ -119,14 +123,19 @@ export async function controlledResponse(args: {
     const inputTokens = usage?.input_tokens || 0;
     const cachedInputTokens = usage?.input_tokens_details?.cached_tokens || 0;
     const outputTokens = usage?.output_tokens || 0;
+    const reasoningTokens = usage?.output_tokens_details?.reasoning_tokens || 0;
     const record: UsageRecord = {
       action: args.action,
       model: args.model,
       reasoningEffort: "low",
+      responseId: response.id,
+      responseStatus: response.status,
+      incompleteReason: response.incomplete_details?.reason,
       latencyMs: Date.now() - started,
       inputTokens,
       cachedInputTokens,
       outputTokens,
+      reasoningTokens,
       estimatedCostUsd: calculateCost(
         { inputTokens, cachedInputTokens, outputTokens },
         pricingFor(args.model)

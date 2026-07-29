@@ -25,7 +25,7 @@ export function isMockRequest(request: Request) {
 
 export function generationError(
   error: unknown,
-  fallback = "I couldn’t finish those literary options. Your choices and edits are still here—please try again."
+  fallback = "We couldn’t finish those literary options. Your choices and edits are still here—please try again."
 ) {
   console.error("Literary generation failed", error);
   if (error instanceof OpenAI.AuthenticationError) {
