@@ -340,7 +340,7 @@ export default function Home() {
       setStep(7);
       setRequest({ loading: false, error: null });
     } catch (error) {
-      setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t test the next spreads." });
+      setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t test the next pages." });
     }
   }
 
@@ -469,17 +469,17 @@ export default function Home() {
                 <article className={spread.status === "reading" ? "transcription is-reading" : "transcription"} key={spread.id} aria-busy={spread.status === "reading"}>
                   <img src={spread.preview} alt="" />
                   <div>
-                    <label htmlFor={`text-${index}`}>Spread {index + 1}</label>
+                    <label htmlFor={`text-${index}`}>Book photo {index + 1}</label>
                     {spread.status === "reading" && (
                       <div className="reading-state" role="status">
                         <span className="spinner" />
-                        <span><strong>Reading this spread…</strong><small>Finding the story words and their natural order.</small></span>
+                        <span><strong>Reading this book photo…</strong><small>Finding the story words and their natural order.</small></span>
                       </div>
                     )}
                     <textarea
                       id={`text-${index}`}
                       value={spread.text}
-                      placeholder={spread.status === "reading" ? "Reading the spread…" : "Type or paste the English text here"}
+                      placeholder={spread.status === "reading" ? "Reading the book photo…" : "Type or paste the English text here"}
                       disabled={spread.status === "reading"}
                       onChange={(event) => setSpreads((current) => current.map((item, i) =>
                         i === index ? { ...item, text: event.target.value } : item
