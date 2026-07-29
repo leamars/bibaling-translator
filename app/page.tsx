@@ -696,24 +696,13 @@ export default function Home() {
 }
 
 const directionStages = [
-  "Reading the complete book and source text",
-  "Identifying the story arc, repeated language, and wordplay",
-  "Drafting multiple literary directions",
-  "Testing rhyme and read-aloud rhythm",
-  "Checking fidelity and natural Slovenian",
-  "Rejecting weak or forced candidates",
-  "Selecting the three strongest directions"
-];
-
-const overallTaskMessages = [
-  "Looking across the book for repeated language and wordplay…",
-  "Trying several literary structures…",
-  "Trying several rhyme structures…",
-  "Checking that the Slovenian sounds natural aloud…",
-  "Making sure repeated language stays consistent…",
-  "Checking each direction against the corrected source text…",
-  "Looking for forced wording before anything reaches you…",
-  "Comparing the strongest drafts…"
+  "Reading your book…",
+  "Finding its voice…",
+  "Trying a few different directions…",
+  "Listening to how they sound aloud…",
+  "Making sure the Slovenian feels natural…",
+  "Polishing the strongest ideas…",
+  "Choosing the best three…"
 ];
 
 function DirectionProgressLog({
@@ -723,38 +712,21 @@ function DirectionProgressLog({
   progress: DirectionProgress;
   onCancel: () => void;
 }) {
-  const [messageIndex, setMessageIndex] = useState(0);
   const [showReassurance, setShowReassurance] = useState(false);
 
   useEffect(() => {
-    const rotation = window.setInterval(() => {
-      setMessageIndex((current) => (current + 1) % overallTaskMessages.length);
-    }, 7000);
     const reassurance = window.setTimeout(() => setShowReassurance(true), 25000);
     return () => {
-      window.clearInterval(rotation);
       window.clearTimeout(reassurance);
     };
   }, []);
 
   return (
     <div className="direction-progress-log" aria-live="polite">
-      <strong>Creating three literary directions</strong>
-      <ol>
-        {directionStages.map((stage, index) => {
-          const complete = index <= progress.completedThrough;
-          const active = !complete && index === progress.active;
-          return (
-            <li className={complete ? "complete" : active ? "active" : "future"} key={stage}>
-              <span aria-hidden="true">{complete ? "✓" : active ? "●" : "○"}</span>
-              <div>
-                <b>{stage}</b>
-                {active && <small>{overallTaskMessages[messageIndex]}</small>}
-              </div>
-            </li>
-          );
-        })}
-      </ol>
+      <div className="thinking-line" key={progress.active}>
+        <span aria-hidden="true"><i /><i /><i /></span>
+        <b>{directionStages[progress.active]}</b>
+      </div>
       {showReassurance && <p>Good verse takes a little longer—we’re checking this carefully.</p>}
       <button type="button" onClick={onCancel}>Cancel</button>
     </div>
