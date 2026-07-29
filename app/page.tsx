@@ -464,8 +464,8 @@ export default function Home() {
 
         {step === 6 && lockedDirection && (
           <>
-            <p className="kicker">Spread 1 workshop</p>
-            <h1>Let’s test the voice on one spread.</h1>
+            <p className="kicker">Page 1 workshop</p>
+            <h1>Let’s test the voice on one page.</h1>
             <p className="lead">Terra and Sol each offer three Slovenian possibilities from the same locked brief.</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
             <Source spread={spreads[0]} number={1} />
@@ -483,9 +483,9 @@ export default function Home() {
           <>
             <p className="kicker">Pattern test</p>
             <h1>Does the voice travel?</h1>
-            <p className="lead">Choose and edit one option for each spread. Spread 1 stays beside us as the voice reference.</p>
+            <p className="lead">Choose and edit one option for each page. Page 1 stays beside us as the voice reference.</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
-            {request.loading && <div className="generation-state"><span className="spinner" />Terra and Sol are applying the approved voice to two different spreads…</div>}
+            {request.loading && <div className="generation-state"><span className="spinner" />Terra and Sol are applying the approved voice to two different pages…</div>}
             {!request.loading && [2, 3].map((number) => (
               <section className="pattern-section" key={number}>
                 <Source spread={spreads[number - 1]} number={number} />
@@ -498,7 +498,7 @@ export default function Home() {
               </section>
             ))}
             {request.error && <GenerationError message={request.error} retry={retry} />}
-            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(6)}>Back to Spread 1</button><button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button></nav>
+            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(6)}>Back to Page 1</button><button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button></nav>
           </>
         )}
 
@@ -506,13 +506,13 @@ export default function Home() {
           <>
             <p className="kicker">Voice review</p>
             <h1>{voiceLocked ? "The voice is locked." : "Do these belong in the same book?"}</h1>
-            <p className="lead">{voiceLocked ? "These three approved spreads are now the voice reference for the rest of the book." : "Read them aloud together. You can still tune any line before confirming."}</p>
+            <p className="lead">{voiceLocked ? "These three approved pages are now the voice reference for the rest of the book." : "Read them aloud together. You can still tune any line before confirming."}</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
             <div className="approved-grid">
               {[1, 2, 3].map((number) => (
                 <article className="approved-card" key={number}>
                   <img src={spreads[number - 1].preview} alt={`Page ${number}`} />
-                  <label>Spread {number}</label>
+                  <label>Page {number}</label>
                   <textarea disabled={voiceLocked} value={approvedDrafts[number] || ""} onChange={(event) => setApprovedDrafts((current) => ({ ...current, [number]: event.target.value }))} />
                 </article>
               ))}
@@ -521,7 +521,7 @@ export default function Home() {
               <nav><button className="secondary" onClick={() => setStep(7)}>Rework the pattern</button><button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={() => setVoiceLocked(true)}>Yes, the voice feels consistent</button></nav>
             ) : (
               <>
-                <div className="locked-confirmation"><span>Locked by parent</span><p>The exact refrain and these approved drafts will guide every later spread.</p></div>
+                <div className="locked-confirmation"><span>Locked by parent</span><p>The exact refrain and these approved drafts will guide every later page.</p></div>
                 <button className="primary" onClick={startRestOfBook}>Add the rest of the book</button>
               </>
             )}
