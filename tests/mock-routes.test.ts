@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { recoverCompletedTextField } from "../app/api/transcription-recovery.ts";
 
 test("every OpenAI-backed workshop route has a mock bypass", async () => {
   const routes = [
@@ -46,6 +47,18 @@ test("literary calls are bounded, with extra drafting time at the measured bottl
   assert.match(transcription, /callCount:\s*2/);
   assert.match(transcription, /response\.status !== "completed"/);
   assert.match(transcription, /Transcription completed without output/);
+});
+
+test("OCR recovers only a fully completed text field from an interrupted response", () => {
+  assert.deepEqual(
+    recoverCompletedTextField('{"text":"Mama is in the kitchen.","uncertainty":"'),
+    {
+      text: "Mama is in the kitchen.",
+      uncertainty: "We recovered the complete story text, but could not finish checking the illustration details.",
+      visualContext: ""
+    }
+  );
+  assert.equal(recoverCompletedTextField('{"text":"Mama is in the kit'), null);
 });
 
 test("direction generation streams genuine progress and propagates cancellation", async () => {

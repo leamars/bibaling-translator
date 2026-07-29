@@ -7,6 +7,7 @@ import {
   deduplicate,
   requestKey
 } from "../openai-control";
+import { recoverCompletedTextField } from "../transcription-recovery";
 
 export const runtime = "nodejs";
 
@@ -100,6 +101,10 @@ export async function POST(request: Request) {
             }
           });
           if (response.status !== "completed") {
+            if (response.incomplete_details?.reason === "content_filter" && response.output_text) {
+              const recovered = recoverCompletedTextField(response.output_text);
+              if (recovered) return recovered;
+            }
             throw new Error(`Transcription did not complete: ${response.incomplete_details?.reason ?? response.status}`);
           }
           if (!response.output_text) throw new Error("Transcription completed without output.");
