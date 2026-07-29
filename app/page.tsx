@@ -538,7 +538,7 @@ export default function Home() {
             <p className="kicker">Refrain lab</p>
             <h1>Three ways the whole book could sound.</h1>
             <p className="lead">Choose one quality-checked direction, then make its wording yours. We’ll lock exactly what you approve.</p>
-            {request.loading && <DirectionProgressLog progress={directionProgress} onCancel={() => cancelDirections(false)} />}
+            {request.loading && <DirectionProgressLog onCancel={() => cancelDirections(false)} />}
             {!request.loading && directions.length > 0 && (
               <div className="direction-grid">
                 {directions.map((direction, index) => {
@@ -695,7 +695,7 @@ export default function Home() {
   );
 }
 
-const directionStages = [
+const directionLoadingMessages = [
   "Reading your book…",
   "Finding its voice…",
   "Trying a few different directions…",
@@ -706,26 +706,39 @@ const directionStages = [
 ];
 
 function DirectionProgressLog({
-  progress,
   onCancel
 }: {
-  progress: DirectionProgress;
   onCancel: () => void;
 }) {
+  const [messageIndex, setMessageIndex] = useState(0);
   const [showReassurance, setShowReassurance] = useState(false);
 
   useEffect(() => {
+    let rotation: number;
+    const showAnotherMessage = () => {
+      const delay = 5000 + Math.floor(Math.random() * 3001);
+      rotation = window.setTimeout(() => {
+        setMessageIndex((current) => {
+          const offset = 1 + Math.floor(Math.random() * (directionLoadingMessages.length - 1));
+          return (current + offset) % directionLoadingMessages.length;
+        });
+        showAnotherMessage();
+      }, delay);
+    };
+    showAnotherMessage();
+
     const reassurance = window.setTimeout(() => setShowReassurance(true), 25000);
     return () => {
+      window.clearTimeout(rotation);
       window.clearTimeout(reassurance);
     };
   }, []);
 
   return (
     <div className="direction-progress-log" aria-live="polite">
-      <div className="thinking-line" key={progress.active}>
+      <div className="thinking-line" key={messageIndex}>
         <span aria-hidden="true"><i /><i /><i /></span>
-        <b>{directionStages[progress.active]}</b>
+        <b>{directionLoadingMessages[messageIndex]}</b>
       </div>
       {showReassurance && <p>Good verse takes a little longer—we’re checking this carefully.</p>}
       <button type="button" onClick={onCancel}>Cancel</button>
