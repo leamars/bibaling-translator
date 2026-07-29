@@ -45,6 +45,9 @@ Known failure examples are prohibitions, not book-specific translations:
 - Reject invented meaning such as love growing like mushrooms when the source does not say or show it.
 - Reject slash forms such as "rad/a".
 - Reject fragments or incomplete, unnatural Slovenian.
+- Reject invented, malformed, or misspelled Slovenian words. Verify that pronouns, possessives, agreement, and inflected forms are real standard Slovenian and correct in context.
+- Reject rhyme judgments based only on shared final letters, a similar-looking suffix, or loose orthographic resemblance. The stressed vowel and following sound sequence must form a convincing rhyme in continuous speech.
+- When two endings have different stressed sound patterns or only an unstressed suffix in common, treat them as non-rhyming even if they look similar on the page.
 
 Do not reveal private candidate deliberation or chain of thought. Return only the requested structured JSON.`;
 
@@ -82,6 +85,8 @@ export function directionsGenerationPrompt(args: {
   priority: Priority;
   freedom: Freedom;
   rejectionFeedback?: string;
+  parentFeedback?: string;
+  previousRefrains?: string[];
 }) {
   return `${AUTHORITATIVE_STANDARD}
 
@@ -93,6 +98,8 @@ ${args.texts.map((text, index) => `${index + 1}. ${text}`).join("\n")}
 
 ${priorityContract(args.priority)}
 ${freedomContract(args.freedom)}
+${args.parentFeedback ? `\nPARENT'S REQUEST FOR THIS NEW SET\n${args.parentFeedback}\nTreat this as binding preference feedback while still satisfying the authoritative quality rules. Return three genuinely new parent-facing refrains, not minor rewrites of the previous set.` : ""}
+${args.previousRefrains?.length ? `\nPREVIOUSLY SHOWN REFRAINS — do not repeat or lightly reword these:\n${args.previousRefrains.map((refrain) => `- ${refrain}`).join("\n")}` : ""}
 
 Each direction must include:
 - a concise English name;
@@ -117,7 +124,7 @@ export function directionsEvaluationPrompt(args: {
 }) {
   return `${AUTHORITATIVE_STANDARD}
 
-ROLE: Independent gatekeeper. Do not improve, rewrite, or excuse the submitted directions. Evaluate them.
+ROLE: Independent Slovenian literary editor and quality gate. Return exactly three parent-ready literary directions. Start from the strongest submitted approaches, but repair an approach when necessary before selecting it. Never pass a flaw through merely to fill three slots.
 
 SOURCE TEXTS
 ${args.texts.map((text, index) => `${index + 1}. ${text}`).join("\n")}
@@ -131,13 +138,21 @@ ${args.directionsJson}
 SOURCE-GROUNDING RULE FOR THIS GATE
 The corrected English is authoritative for who is being addressed. Do not infer that a recurring refrain must be singular merely because one spread visually foregrounds one friend. If the source declaration says "you all" or otherwise addresses the wider group, plural Slovenian such as "vas" can faithfully serve as the fixed book-level refrain while surrounding scene lines describe a singular featured friend. Conversely, do not require one fixed refrain to encode every scene-specific noun number.
 
-For every direction, separately judge:
+For every prospective finalist, separately verify:
 1. baselinePass: natural grammatical Slovenian refrain/device, source and picture fidelity, no unsupported invention, suitable child read-aloud language, resolved gender;
 2. directionPass: it genuinely delivers the locked parent priority and declared literary approach;
 3. rhymePass: at this direction stage, whether the proposed structure presents a credible path to genuine phonetic spoken-Slovenian rhyme and usable cadence without exhausting or forcing a rhyme family. A standalone refrain does not need to rhyme by itself because no paired line has been written yet;
-4. pass: true when baselinePass and directionPass are true and the literary plan is viable. Finished-verse rhyme enforcement happens later on every generated translation.
 
-Reject any direction containing slash forms, placeholders, "čisto do gobic", invented love-growing-like-mushrooms meaning, incomplete Slovenian, forced rhyme, or narrator-gender ambiguity. Reject actual unsupported claims, but do not reject a direction merely for a hypothetical risk that later scene-specific verse might be forced; this stage evaluates whether the plan is viable. Return concise reasons, not rewrites.`;
+Editorial process:
+- compare all six candidates and retain three materially different structural approaches;
+- silently repair inconsistent rhyme schemes, stiff wording, unsupported actions, density problems, or weak spoken rhyme;
+- after repairing, re-check the complete direction against every gate;
+- return exactly three distinct, parent-ready directions with exact Slovenian refrain/device wording;
+- preserve source fidelity and the parent's locked priority; never weaken either to fill a slot;
+- set every pass field to true only after the returned direction itself satisfies that gate;
+- output only the required three finalists, including the source direction index each developed from.
+
+Never output slash forms, placeholders, "čisto do gobic", invented love-growing-like-mushrooms meaning, incomplete Slovenian, forced rhyme, or narrator-gender ambiguity. Reject actual unsupported claims, but do not reject a direction merely for a hypothetical risk that can be resolved naturally while writing the finished verse. Finished-verse rhyme enforcement still happens on every generated translation.`;
 }
 
 export function translationGenerationPrompt(args: {
@@ -189,7 +204,7 @@ export function translationEvaluationPrompt(args: {
 }) {
   return `${AUTHORITATIVE_STANDARD}
 
-ROLE: Independent Slovenian literary quality gate. Do not rewrite or generously reinterpret candidates. Reject every candidate that fails.
+ROLE: Independent Slovenian literary editor and quality gate. Return exactly three publication-ready finalists. Start from the strongest submitted candidates, but repair a candidate when necessary before selecting it. Never pass a flaw through merely to fill three slots.
 
 SPREAD ${args.spreadNumber} ENGLISH SOURCE
 ${args.source}
@@ -203,13 +218,83 @@ ${args.approvedSpread1Note ? `\nPARENT'S EDIT NOTE — candidates must respect t
 CANDIDATES
 ${args.candidatesJson}
 
-For every candidate, separately judge:
+For every prospective finalist, separately verify:
 - fidelityPass: source event, emotional beat, visible details, no invented meaning or filler;
 - grammarPass: complete, grammatical, idiomatic, natural Slovenian; no English syntax, slash forms, placeholders, or unresolved gender;
 - readAloudPass: child-appropriate vocabulary and pleasant continuous spoken flow;
 - directionPass: genuinely delivers the locked parent priority and approved direction;
 - rhymePass: if rhythm/rhyme is locked or claimed, genuine phonetic rhyme with compatible stress and cadence—not spelling-only, repeated stems, filler, or forced inversion; otherwise true;
-- pass: true only when every applicable gate is true.
 
-Hard reject "čisto do gobic", invented love-growing-like-mushrooms meaning, "rad/a", incomplete grammar, awkward unnatural Slovenian, and any unrhymed candidate under rhythm priority. Give concise failure reasons. Do not provide revised text.`;
+Editorial process:
+- compare all candidates and identify the strongest distinct structural approaches;
+- silently repair grammar, fidelity, cadence, or rhyme failures in those approaches;
+- after any repair, re-check the complete resulting text against every gate;
+- return exactly three genuinely different final texts, not minor wording variants;
+- set every pass field to true only after the returned text itself satisfies that gate;
+- preserve the exact locked refrain whenever it is used;
+- output only the three finalists in the required schema, with a short English strategy label and the source candidate id each finalist developed from.
+
+Never output "čisto do gobic", invented love-growing-like-mushrooms meaning, "rad/a", incomplete grammar, awkward or unnatural Slovenian, forced rhyme, or an unrhymed finalist under rhythm priority. If a submitted candidate has one of these failures, repair it fully or use another approach.`;
+}
+
+export function fullBookGenerationPrompt(args: {
+  spreads: Array<{ spread: number; source: string }>;
+  priority: Priority;
+  freedom: Freedom;
+  direction: DirectionBrief;
+  approvedVoice: Array<{ spread: number; text: string; parentNote?: string }>;
+}) {
+  return `${AUTHORITATIVE_STANDARD}
+
+GOAL
+Complete the remaining spreads of this book in one coherent Slovenian voice. Return exactly one full draft for every requested spread. The three parent-approved spreads are binding voice references, not text to rewrite.
+
+${priorityContract(args.priority)}
+${freedomContract(args.freedom)}
+${directionBrief(args.direction)}
+
+PARENT-APPROVED VOICE REFERENCES
+${args.approvedVoice.map((item) => `SPREAD ${item.spread}\n${item.text}${item.parentNote ? `\nPARENT NOTE: ${item.parentNote}\nTreat this note as a correction: do not repeat the flaw it identifies.` : ""}`).join("\n\n")}
+
+REMAINING CORRECTED ENGLISH SOURCES
+${args.spreads.map((item) => `SPREAD ${item.spread}\n${item.source}`).join("\n\n")}
+
+For each requested spread:
+- preserve its source event, emotional beat, illustration truth, and approximate density;
+- use the exact locked refrain/device as approved;
+- match the approved samples' narrator, address, cadence, and vocabulary;
+- apply every parent note across the remaining book wherever relevant;
+- when rhyme is locked, privately test multiple rhyme structures and return only genuine spoken-Slovenian rhyme with natural syntax;
+- return complete book text only, without explanations, alternatives, labels, or placeholders.
+
+The drafts must also work as one continuous book: keep repeated wording exact, avoid exhausting one rhyme family, and preserve the source sequence.`;
+}
+
+export function fullBookEditorialPrompt(args: {
+  spreads: Array<{ spread: number; source: string }>;
+  priority: Priority;
+  freedom: Freedom;
+  direction: DirectionBrief;
+  approvedVoice: Array<{ spread: number; text: string; parentNote?: string }>;
+  draftsJson: string;
+}) {
+  return `${AUTHORITATIVE_STANDARD}
+
+ROLE
+Act as the final Slovenian children's-book editor. Repair every submitted spread that needs it, then return exactly one publication-ready text for every requested spread. Do not alter the parent-approved voice references.
+
+${priorityContract(args.priority)}
+${freedomContract(args.freedom)}
+${directionBrief(args.direction)}
+
+PARENT-APPROVED VOICE REFERENCES AND CORRECTIONS
+${args.approvedVoice.map((item) => `SPREAD ${item.spread}\n${item.text}${item.parentNote ? `\nPARENT NOTE: ${item.parentNote}\nThis identifies a flaw to eliminate from later spreads.` : ""}`).join("\n\n")}
+
+AUTHORITATIVE ENGLISH SOURCES
+${args.spreads.map((item) => `SPREAD ${item.spread}\n${item.source}`).join("\n\n")}
+
+DRAFTS TO EDIT
+${args.draftsJson}
+
+For every returned spread, verify fidelity, natural grammatical Slovenian, child-friendly read-aloud flow, locked-direction compliance, and genuine phonetic rhyme when rhyme is locked. Repair rather than merely report failures. Preserve exact recurring wording and make the whole sequence sound like one book. Return only the required structured JSON.`;
 }

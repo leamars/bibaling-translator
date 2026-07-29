@@ -39,6 +39,8 @@ type BookPage = {
   fileName: string;
   sourceText: string;
   approvedText: string | null;
+  parentNote?: string;
+  voiceSample?: boolean;
 };
 
 const priorities = [
@@ -62,11 +64,12 @@ async function fileToDataUrl(file: File) {
   });
 }
 
-async function postJson<T>(url: string, body: unknown): Promise<T> {
+async function postJson<T>(url: string, body: unknown, signal?: AbortSignal): Promise<T> {
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    signal
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || "Something went wrong.");
@@ -77,6 +80,12 @@ function wait(milliseconds: number) {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 }
 
+function mockPreview(number: number) {
+  const colors = ["#dcebe4", "#f2dfb7", "#d9e4f2", "#ead8d1", "#dce4bd", "#e4d8ef"];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="${colors[(number - 1) % colors.length]}"/><circle cx="400" cy="260" r="120" fill="#fff" opacity=".75"/><text x="400" y="285" text-anchor="middle" font-family="Georgia" font-size="54" fill="#245747">Mock spread ${number}</text></svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
 export default function Home() {
   const [step, setStep] = useState(1);
   const [spreads, setSpreads] = useState<Spread[]>([]);
@@ -84,6 +93,7 @@ export default function Home() {
   const [freedom, setFreedom] = useState("");
   const [directions, setDirections] = useState<Direction[]>([]);
   const [selectedDirection, setSelectedDirection] = useState<number | null>(null);
+  const [directionFeedback, setDirectionFeedback] = useState("");
   const [lockedDirection, setLockedDirection] = useState<Direction | null>(null);
   const [spread1Options, setSpread1Options] = useState<TranslationOption[]>([]);
   const [spread1Selection, setSpread1Selection] = useState<number | null>(null);
@@ -98,9 +108,40 @@ export default function Home() {
   const [bookPages, setBookPages] = useState<BookPage[]>([]);
   const [draggedPage, setDraggedPage] = useState<string | null>(null);
   const [bookOrderLocked, setBookOrderLocked] = useState(false);
+  const [mockMode, setMockMode] = useState(false);
   const directionsAbort = useRef<AbortController | null>(null);
+  const fullBookAbort = useRef<AbortController | null>(null);
 
-  const progress = useMemo(() => `${step} of 9`, [step]);
+  const progress = useMemo(() => `${step} of 10`, [step]);
+
+  useEffect(() => {
+    setMockMode(document.cookie.split(";").some((part) => part.trim() === "bibaling_mock_mode=true"));
+  }, []);
+
+  function toggleMockMode() {
+    setMockMode((current) => {
+      const next = !current;
+      document.cookie = `bibaling_mock_mode=${next}; path=/; SameSite=Lax`;
+      return next;
+    });
+  }
+
+  function loadMockBook() {
+    const sources = [
+      "A small friend watches over me. I love you all.",
+      "These friends hold hands and spin around. I love you all.",
+      "My bright friend makes the whole forest glow. I love you all."
+    ];
+    setSpreads(sources.map((text, index) => ({
+      id: crypto.randomUUID(),
+      file: new File(["mock"], `mock-spread-${index + 1}.png`, { type: "image/png" }),
+      preview: mockPreview(index + 1),
+      text,
+      uncertainty: null,
+      error: null,
+      status: "done" as const
+    })));
+  }
 
   async function readSpread(id: string, image: string) {
     setSpreads((current) => current.map((spread) =>
@@ -195,7 +236,9 @@ export default function Home() {
           images: spreads.map((spread) => spread.preview),
           texts: spreads.map((spread) => spread.text),
           priority,
-          freedom
+          freedom,
+          parentFeedback: directionFeedback.trim() || undefined,
+          previousRefrains: directions.map((direction) => direction.refrain)
         })
       });
       if (!response.ok || !response.body) throw new Error("I couldn’t start the literary workshop.");
@@ -272,6 +315,7 @@ export default function Home() {
     if (selectedDirection === null) return;
     const direction = { ...directions[selectedDirection] };
     setLockedDirection(direction);
+    setStep(6);
     setRequest({ loading: true, error: null });
     try {
       const result = await postJson<{ runs: Array<{ label: string; options: GeneratedOption[] }> }>("/api/translations", {
@@ -291,7 +335,6 @@ export default function Home() {
         }))
       ));
       setSpread1Selection(null);
-      setStep(6);
       setRequest({ loading: false, error: null });
     } catch (error) {
       setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write Spread 1." });
@@ -312,6 +355,7 @@ export default function Home() {
     const approvedNote = spread1Options[spread1Selection].editNote.trim();
     setApprovedSpread1(approved);
     setApprovedNotes((current) => ({ ...current, 1: approvedNote }));
+    setStep(7);
     setRequest({ loading: true, error: null });
     try {
       const result = await postJson<{ runs: Array<{ label: string; spreads: Array<{ spread: number; options: GeneratedOption[] }> }> }>("/api/translations", {
@@ -337,7 +381,6 @@ export default function Home() {
         })
       ])));
       setPatternSelections({ 2: null, 3: null });
-      setStep(7);
       setRequest({ loading: false, error: null });
     } catch (error) {
       setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t test the next spreads." });
@@ -377,13 +420,25 @@ export default function Home() {
   }
 
   function startRestOfBook() {
-    setBookPages(spreads.map((spread, index) => ({
+    const samples = spreads.map((spread, index) => ({
       id: spread.id,
       preview: spread.preview,
       fileName: spread.file.name,
       sourceText: spread.text,
-      approvedText: approvedDrafts[index + 1] || null
-    })));
+      approvedText: approvedDrafts[index + 1] || null,
+      parentNote: approvedNotes[index + 1] || undefined,
+      voiceSample: true
+    }));
+    const mockRemainder = mockMode ? [4, 5, 6].map((number) => ({
+      id: crypto.randomUUID(),
+      preview: mockPreview(number),
+      fileName: `mock-spread-${number}.png`,
+      sourceText: `Mock English source for spread ${number}. The friends continue their adventure.`,
+      approvedText: null,
+      parentNote: undefined,
+      voiceSample: false
+    })) : [];
+    setBookPages([...samples, ...mockRemainder]);
     setBookOrderLocked(false);
     setStep(9);
   }
@@ -396,7 +451,9 @@ export default function Home() {
       preview: await fileToDataUrl(file),
       fileName: file.name,
       sourceText: "",
-      approvedText: null
+      approvedText: null,
+      parentNote: undefined,
+      voiceSample: false
     })));
     setBookPages((current) => [...current, ...additions]);
     setBookOrderLocked(false);
@@ -416,19 +473,106 @@ export default function Home() {
     setBookOrderLocked(false);
   }
 
-  function nudgeBookPage(index: number, direction: -1 | 1) {
-    const target = index + direction;
-    if (target < 0 || target >= bookPages.length) return;
-    moveBookPage(bookPages[index].id, bookPages[target].id);
+  async function generateRestOfBook() {
+    if (!lockedDirection || fullBookAbort.current) return;
+    const controller = new AbortController();
+    fullBookAbort.current = controller;
+    setStep(10);
+    setRequest({ loading: true, error: null });
+    try {
+      const withSources = await Promise.all(bookPages.map(async (page) => {
+        if (page.sourceText.trim()) return page;
+        const result = await postJson<{ text: string }>("/api/transcribe", { image: page.preview }, controller.signal);
+        return { ...page, sourceText: result.text };
+      }));
+      setBookPages(withSources);
+      const remaining = withSources.flatMap((page, index) =>
+        page.approvedText ? [] : [{
+          spread: index + 1,
+          image: page.preview,
+          source: page.sourceText
+        }]
+      );
+      if (remaining.length === 0) {
+        setRequest({ loading: false, error: null });
+        return;
+      }
+      const result = await postJson<{ spreads: Array<{ spread: number; text: string }> }>("/api/translations", {
+        mode: "fullbook",
+        spreads: remaining,
+        priority,
+        freedom,
+        direction: lockedDirection,
+        approvedVoice: withSources.flatMap((page, index) =>
+          page.approvedText ? [{
+            spread: index + 1,
+            text: page.approvedText,
+            parentNote: page.parentNote || undefined
+          }] : []
+        )
+      }, controller.signal);
+      const translations = new Map(result.spreads.map((spread) => [spread.spread, spread.text]));
+      setBookPages(withSources.map((page, index) => ({
+        ...page,
+        approvedText: page.approvedText || translations.get(index + 1) || null
+      })));
+      setRequest({ loading: false, error: null });
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        setRequest({ loading: false, error: null });
+      } else {
+        setRequest({
+          loading: false,
+          error: error instanceof Error ? error.message : "I couldn’t finish the full book. Everything approved so far is still here."
+        });
+      }
+    } finally {
+      if (fullBookAbort.current === controller) fullBookAbort.current = null;
+    }
   }
 
-  const retry = step === 5 ? generateDirections : step === 6 ? lockDirectionAndWriteSpread1 : approveSpread1AndPatternTest;
+  function cancelFullBook() {
+    fullBookAbort.current?.abort();
+    fullBookAbort.current = null;
+    setRequest({ loading: false, error: null });
+  }
+
+  function updateBookTranslation(index: number, approvedText: string) {
+    setBookPages((current) => current.map((page, pageIndex) =>
+      pageIndex === index ? { ...page, approvedText } : page
+    ));
+  }
+
+  function saveFinishedDraft() {
+    const text = bookPages
+      .map((page, index) => `SPREAD ${index + 1}\n${page.approvedText?.trim() || ""}`)
+      .join("\n\n");
+    const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "bibaling-slovenian-draft.txt";
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  const retry = step === 5
+    ? generateDirections
+    : step === 6
+      ? lockDirectionAndWriteSpread1
+      : step === 10
+        ? generateRestOfBook
+        : approveSpread1AndPatternTest;
 
   return (
     <main>
       <header>
         <a className="brand" href="#" onClick={(event) => { event.preventDefault(); setStep(1); }}>bibaling</a>
-        <div className="progress"><span>{progress}</span><i><b style={{ width: `${step / 9 * 100}%` }} /></i></div>
+        <div className="header-tools">
+          <button className={mockMode ? "mock-toggle active" : "mock-toggle"} type="button" onClick={toggleMockMode}>
+            Mock mode {mockMode ? "on" : "off"}
+          </button>
+          <div className="progress"><span>{progress}</span><i><b style={{ width: `${step / 10 * 100}%` }} /></i></div>
+        </div>
       </header>
 
       <section className="workshop">
@@ -437,6 +581,9 @@ export default function Home() {
             <p className="kicker">Book workshop</p>
             <h1>Add the first three spreads.</h1>
             <p className="lead">We’ll use them to find a Slovenian voice that feels right before working through the whole book.</p>
+            {mockMode && spreads.length === 0 && (
+              <button className="secondary mock-load" type="button" onClick={loadMockBook}>Load a mock book</button>
+            )}
             <div className="uploads">
               {spreads.map((spread, index) => (
                 <label className="photo" key={spread.id}>
@@ -471,8 +618,7 @@ export default function Home() {
                     <label htmlFor={`text-${index}`}>Spread {index + 1}</label>
                     {spread.status === "reading" && (
                       <div className="reading-state" role="status">
-                        <span className="spinner" />
-                        <span><strong>Reading this spread…</strong><small>Finding the story words and their natural order.</small></span>
+                        <RotatingThinkingLine messages={readingLoadingMessages} />
                       </div>
                     )}
                     <textarea
@@ -538,7 +684,7 @@ export default function Home() {
             <p className="kicker">Refrain lab</p>
             <h1>Three ways the whole book could sound.</h1>
             <p className="lead">Choose one quality-checked direction, then make its wording yours. We’ll lock exactly what you approve.</p>
-            {request.loading && <DirectionProgressLog progress={directionProgress} onCancel={() => cancelDirections(false)} />}
+            {request.loading && <ProgressLog messages={directionLoadingMessages} onCancel={() => cancelDirections(false)} />}
             {!request.loading && directions.length > 0 && (
               <div className="direction-grid">
                 {directions.map((direction, index) => {
@@ -546,18 +692,28 @@ export default function Home() {
                   return (
                     <article className={selected ? "direction-card selected-card" : "direction-card"} key={`${direction.name}-${index}`} onClick={() => setSelectedDirection(index)}>
                       {selected ? (
-                        <>
-                          <label>Name<input value={direction.name} onChange={(event) => updateDirection(index, "name", event.target.value)} /></label>
-                          <label>Exact refrain or device<textarea value={direction.refrain} onChange={(event) => updateDirection(index, "refrain", event.target.value)} /></label>
-                          <label>Structure approach<textarea value={direction.approach} onChange={(event) => updateDirection(index, "approach", event.target.value)} /></label>
-                        </>
+                        <label>Make this refrain yours<textarea value={direction.refrain} onChange={(event) => updateDirection(index, "refrain", event.target.value)} /></label>
                       ) : (
-                        <><p className="strategy">{direction.modelLabel} · Option {(index % 3) + 1}</p><h2>{direction.name}</h2><blockquote>{direction.refrain}</blockquote><p>{direction.approach}</p></>
+                        <><p className="strategy">Option {(index % 3) + 1}</p><blockquote>{direction.refrain}</blockquote></>
                       )}
-                      <dl><div><dt>Keeps</dt><dd>{direction.keeps}</dd></div><div><dt>Changes</dt><dd>{direction.changes}</dd></div><div><dt>Gender</dt><dd>{direction.genderDependency}</dd></div></dl>
                     </article>
                   );
                 })}
+              </div>
+            )}
+            {!request.loading && directions.length > 0 && (
+              <div className="reroll-directions">
+                <label>
+                  Want something different?
+                  <textarea
+                    value={directionFeedback}
+                    onChange={(event) => setDirectionFeedback(event.target.value)}
+                    placeholder="Add a note about what you’d prefer (optional)"
+                  />
+                </label>
+                <button className="secondary" type="button" onClick={() => void generateDirections()}>
+                  Try three different ones
+                </button>
               </div>
             )}
             {request.error && <GenerationError message={request.error} retry={retry} />}
@@ -572,7 +728,7 @@ export default function Home() {
             <p className="lead">Choose from three Slovenian possibilities that have each passed the locked brief.</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
             <Source spread={spreads[0]} number={1} />
-            {request.loading && <div className="generation-state"><span className="spinner" />Writing several candidates and checking the strongest three…</div>}
+            {request.loading && <ProgressLog messages={translationLoadingMessages} />}
             {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} onNote={updateSpread1Note} />}
             {request.error && <GenerationError message={request.error} retry={retry} />}
             <nav>
@@ -588,7 +744,13 @@ export default function Home() {
             <h1>Does the voice travel?</h1>
             <p className="lead">Choose and edit one option for each spread. Spread 1 stays beside us as the voice reference.</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
-            {request.loading && <div className="generation-state"><span className="spinner" />Applying the approved voice and checking both spreads…</div>}
+            <article className="approved-card voice-reference">
+              <img src={spreads[0].preview} alt="Approved Spread 1" />
+              <label>Approved Spread 1 · voice reference</label>
+              <p>{approvedSpread1}</p>
+              {approvedNotes[1] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[1]}</p>}
+            </article>
+            {request.loading && <ProgressLog messages={patternLoadingMessages} />}
             {!request.loading && [2, 3].map((number) => (
               <section className="pattern-section" key={number}>
                 <Source spread={spreads[number - 1]} number={number} />
@@ -659,12 +821,19 @@ export default function Home() {
                   className={draggedPage === page.id ? "page-order-card dragging" : "page-order-card"}
                   key={page.id}
                   draggable
-                  onDragStart={() => setDraggedPage(page.id)}
+                  onDragStart={(event) => {
+                    event.dataTransfer.effectAllowed = "move";
+                    event.dataTransfer.setData("text/plain", page.id);
+                    setDraggedPage(page.id);
+                  }}
                   onDragEnd={() => setDraggedPage(null)}
                   onDragOver={(event) => event.preventDefault()}
+                  onDragEnter={(event) => {
+                    event.preventDefault();
+                    if (draggedPage && draggedPage !== page.id) moveBookPage(draggedPage, page.id);
+                  }}
                   onDrop={(event) => {
                     event.preventDefault();
-                    if (draggedPage) moveBookPage(draggedPage, page.id);
                     setDraggedPage(null);
                   }}
                 >
@@ -673,10 +842,6 @@ export default function Home() {
                   <div className="page-order-meta">
                     <strong>{page.fileName}</strong>
                     <small>{page.approvedText ? "Approved voice sample" : "New spread"}</small>
-                  </div>
-                  <div className="order-buttons">
-                    <button type="button" disabled={index === 0} onClick={() => nudgeBookPage(index, -1)} aria-label={`Move spread ${index + 1} earlier`}>←</button>
-                    <button type="button" disabled={index === bookPages.length - 1} onClick={() => nudgeBookPage(index, 1)} aria-label={`Move spread ${index + 1} later`}>→</button>
                   </div>
                 </article>
               ))}
@@ -688,6 +853,45 @@ export default function Home() {
               </button>
             </nav>
             {bookOrderLocked && <div className="locked-confirmation"><span>Ready for the next stage</span><p>The full book order is saved in this session. Next, Bibaling can read and workshop the remaining spreads one at a time.</p></div>}
+            {bookOrderLocked && (
+              <button className="primary continue-full-book" type="button" onClick={() => void generateRestOfBook()}>
+                Translate the full book
+              </button>
+            )}
+          </>
+        )}
+
+        {step === 10 && lockedDirection && (
+          <>
+            <p className="kicker">Full book</p>
+            <h1>{request.loading ? "Writing the rest of your book." : "Your full Slovenian draft."}</h1>
+            <p className="lead">
+              {request.loading
+                ? "We’re reading the remaining spreads and carrying your approved voice and corrections through the whole story."
+                : "Read through every spread in order. You can edit any line before saving the finished draft."}
+            </p>
+            <LockedBrief direction={lockedDirection} priority={priority} />
+            {request.loading && <ProgressLog messages={fullBookLoadingMessages} onCancel={cancelFullBook} />}
+            {!request.loading && (
+              <div className="full-book-draft">
+                {bookPages.map((page, index) => (
+                  <article className="approved-card" key={page.id}>
+                    <img src={page.preview} alt={`Spread ${index + 1}`} />
+                    <label>Spread {index + 1}{page.voiceSample ? " · parent-approved reference" : ""}</label>
+                    <textarea
+                      value={page.approvedText || ""}
+                      onChange={(event) => updateBookTranslation(index, event.target.value)}
+                    />
+                    {page.parentNote && <p className="parent-edit-note"><strong>Parent’s note</strong>{page.parentNote}</p>}
+                  </article>
+                ))}
+              </div>
+            )}
+            {request.error && <GenerationError message={request.error} retry={retry} />}
+            <nav>
+              <button className="secondary" disabled={request.loading} onClick={() => setStep(9)}>Back to book order</button>
+              <button className="primary" onClick={saveFinishedDraft} disabled={request.loading || bookPages.some((page) => !page.approvedText?.trim())}>Save finished draft</button>
+            </nav>
           </>
         )}
       </section>
@@ -695,68 +899,151 @@ export default function Home() {
   );
 }
 
-const directionStages = [
-  "Reading the complete book and source text",
-  "Identifying the story arc, repeated language, and wordplay",
-  "Drafting multiple literary directions",
-  "Testing rhyme and read-aloud rhythm",
-  "Checking fidelity and natural Slovenian",
-  "Rejecting weak or forced candidates",
-  "Selecting the three strongest directions"
+const directionLoadingMessages = [
+  "Reading your book…",
+  "Finding its voice…",
+  "Trying a few different directions…",
+  "Listening to how they sound aloud…",
+  "Making sure the Slovenian feels natural…",
+  "Polishing the strongest ideas…",
+  "Choosing the best three…",
+  "Exploring how the story could flow…",
+  "Finding words that feel good to say…",
+  "Looking for the book’s natural rhythm…",
+  "Trying another way to tell it…",
+  "Shaping the repeated lines…",
+  "Comparing a few strong possibilities…",
+  "Making every line feel at home…",
+  "Keeping the story clear and playful…",
+  "Giving each idea a careful read…",
+  "Finding the warmest way to say it…",
+  "Making the words sing together…",
+  "Bringing the strongest voices forward…",
+  "Giving the final choices one more listen…"
 ];
 
-const overallTaskMessages = [
-  "Looking across the book for repeated language and wordplay…",
-  "Trying several literary structures…",
-  "Trying several rhyme structures…",
-  "Checking that the Slovenian sounds natural aloud…",
-  "Making sure repeated language stays consistent…",
-  "Checking each direction against the corrected source text…",
-  "Looking for forced wording before anything reaches you…",
-  "Comparing the strongest drafts…"
+const readingLoadingMessages = [
+  "Reading the words on this spread…",
+  "Checking the line breaks…",
+  "Looking closely at the page…",
+  "Matching the words to the picture…",
+  "Checking names and repeated phrases…",
+  "Making sure no line was missed…",
+  "Reading the small print carefully…",
+  "Giving the transcription one last check…"
 ];
 
-function DirectionProgressLog({
-  progress,
+const translationLoadingMessages = [
+  "Trying several Slovenian versions…",
+  "Listening to each version aloud…",
+  "Checking the meaning against the page…",
+  "Finding a more natural rhythm…",
+  "Trying another rhyme structure…",
+  "Keeping the approved refrain exact…",
+  "Making the Slovenian feel effortless…",
+  "Comparing the strongest drafts…",
+  "Checking every ending aloud…",
+  "Keeping the picture details intact…",
+  "Polishing the most promising version…",
+  "Making sure the narrator sounds consistent…",
+  "Trying a different line shape…",
+  "Checking that nothing feels forced…",
+  "Keeping the language clear for children…",
+  "Testing the cadence one more time…",
+  "Looking for the warmest natural phrasing…",
+  "Making the rhyme work in real speech…",
+  "Giving the strongest choices a final read…",
+  "Preparing three choices for you…"
+];
+
+const patternLoadingMessages = [
+  "Carrying your approved voice forward…",
+  "Testing the refrain on the next spread…",
+  "Keeping the rhythm consistent…",
+  "Applying your edits to the next choices…",
+  "Checking both spreads side by side…",
+  "Making sure the voice travels naturally…",
+  ...translationLoadingMessages
+];
+
+const fullBookLoadingMessages = [
+  "Reading the remaining spreads…",
+  "Following the story from beginning to end…",
+  "Carrying your approved voice through the book…",
+  "Applying your rhyme feedback everywhere…",
+  "Keeping repeated language consistent…",
+  "Checking the full story arc…",
+  "Making each spread sound like the same book…",
+  "Checking every page against its picture…",
+  "Listening for repeated rhyme problems…",
+  "Polishing the book as one continuous read…",
+  "Making sure no spread was skipped…",
+  "Preparing the complete editable draft…",
+  ...translationLoadingMessages
+];
+
+function shuffledMessages(messages: readonly string[]) {
+  const shuffled = [...messages];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapWith = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapWith]] = [shuffled[swapWith], shuffled[index]];
+  }
+  return shuffled;
+}
+
+function useRotatingMessage(messages: readonly string[]) {
+  const [shuffled] = useState(() => shuffledMessages(messages));
+  const [messageIndex, setMessageIndex] = useState(0);
+
+  useEffect(() => {
+    let rotation: number;
+    let nextIndex = 1;
+    const showAnotherMessage = () => {
+      const delay = 5000 + Math.floor(Math.random() * 3001);
+      rotation = window.setTimeout(() => {
+        setMessageIndex(nextIndex);
+        nextIndex += 1;
+        if (nextIndex < shuffled.length) showAnotherMessage();
+      }, delay);
+    };
+    showAnotherMessage();
+    return () => window.clearTimeout(rotation);
+  }, [shuffled.length]);
+
+  return { message: shuffled[messageIndex], messageIndex };
+}
+
+function RotatingThinkingLine({ messages }: { messages: readonly string[] }) {
+  const { message, messageIndex } = useRotatingMessage(messages);
+  return (
+    <div className="thinking-line" key={messageIndex}>
+      <span aria-hidden="true"><i /><i /><i /></span>
+      <b>{message}</b>
+    </div>
+  );
+}
+
+function ProgressLog({
+  messages,
   onCancel
 }: {
-  progress: DirectionProgress;
-  onCancel: () => void;
+  messages: readonly string[];
+  onCancel?: () => void;
 }) {
-  const [messageIndex, setMessageIndex] = useState(0);
   const [showReassurance, setShowReassurance] = useState(false);
 
   useEffect(() => {
-    const rotation = window.setInterval(() => {
-      setMessageIndex((current) => (current + 1) % overallTaskMessages.length);
-    }, 7000);
     const reassurance = window.setTimeout(() => setShowReassurance(true), 25000);
-    return () => {
-      window.clearInterval(rotation);
-      window.clearTimeout(reassurance);
-    };
+    return () => window.clearTimeout(reassurance);
   }, []);
 
   return (
     <div className="direction-progress-log" aria-live="polite">
-      <strong>Creating three literary directions</strong>
-      <ol>
-        {directionStages.map((stage, index) => {
-          const complete = index <= progress.completedThrough;
-          const active = !complete && index === progress.active;
-          return (
-            <li className={complete ? "complete" : active ? "active" : "future"} key={stage}>
-              <span aria-hidden="true">{complete ? "✓" : active ? "●" : "○"}</span>
-              <div>
-                <b>{stage}</b>
-                {active && <small>{overallTaskMessages[messageIndex]}</small>}
-              </div>
-            </li>
-          );
-        })}
-      </ol>
-      {showReassurance && <p>Good verse takes a little longer—we’re checking this carefully.</p>}
-      <button type="button" onClick={onCancel}>Cancel</button>
+      <RotatingThinkingLine messages={messages} />
+      <div className="progress-log-footer">
+        <p>{showReassurance ? "Good verse takes a little longer—we’re checking this carefully." : "We’re checking this carefully."}</p>
+        {onCancel && <button type="button" onClick={onCancel}>Cancel</button>}
+      </div>
     </div>
   );
 }

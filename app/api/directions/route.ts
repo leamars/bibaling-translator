@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { COMPARISON_MODELS, openAIClient } from "../generation";
+import { COMPARISON_MODELS, isMockRequest, openAIClient } from "../generation";
 import { MOCK_DIRECTIONS } from "../mock-fixtures";
 import {
   assertActionBudget,
@@ -21,7 +21,9 @@ const bodySchema = z.object({
   images: z.array(z.string().startsWith("data:image/")).length(3),
   texts: z.array(z.string().min(1)).length(3),
   priority: z.enum(["rhythm", "meaning", "simple"]),
-  freedom: z.enum(["close", "natural", "playful"])
+  freedom: z.enum(["close", "natural", "playful"]),
+  parentFeedback: z.string().trim().min(1).max(1000).optional(),
+  previousRefrains: z.array(z.string().min(1)).max(6).default([])
 });
 
 const singleDirectionSchema = z.object({
@@ -34,13 +36,11 @@ const singleDirectionSchema = z.object({
 });
 const DIRECTION_CANDIDATE_COUNT = 6;
 const directionsResultSchema = z.object({ directions: z.array(singleDirectionSchema).length(DIRECTION_CANDIDATE_COUNT) });
-const directionEvaluationItemSchema = z.object({
-    directionIndex: z.number().int().min(0).max(DIRECTION_CANDIDATE_COUNT - 1),
-    baselinePass: z.boolean(),
-    directionPass: z.boolean(),
-    rhymePass: z.boolean(),
-    pass: z.boolean(),
-    reasons: z.array(z.string())
+const directionFinalistSchema = singleDirectionSchema.extend({
+    sourceDirectionIndex: z.number().int().min(0).max(DIRECTION_CANDIDATE_COUNT - 1),
+    baselinePass: z.literal(true),
+    directionPass: z.literal(true),
+    rhymePass: z.literal(true)
 });
 
 const directionObject = {
@@ -66,31 +66,36 @@ const directionsJsonSchema = {
   required: ["directions"]
 } as const;
 
-function evaluationJsonSchema(candidateCount: number) {
+function editorialJsonSchema() {
   return {
   type: "object",
   additionalProperties: false,
   properties: {
-    evaluations: {
+    finalists: {
       type: "array",
-      minItems: candidateCount,
-      maxItems: candidateCount,
+      minItems: 3,
+      maxItems: 3,
       items: {
         type: "object",
         additionalProperties: false,
         properties: {
-          directionIndex: { type: "integer", minimum: 0, maximum: DIRECTION_CANDIDATE_COUNT - 1 },
+          sourceDirectionIndex: { type: "integer", minimum: 0, maximum: DIRECTION_CANDIDATE_COUNT - 1 },
+          ...directionObject.properties,
           baselinePass: { type: "boolean" },
           directionPass: { type: "boolean" },
-          rhymePass: { type: "boolean" },
-          pass: { type: "boolean" },
-          reasons: { type: "array", items: { type: "string" } }
+          rhymePass: { type: "boolean" }
         },
-        required: ["directionIndex", "baselinePass", "directionPass", "rhymePass", "pass", "reasons"]
+        required: [
+          "sourceDirectionIndex",
+          ...directionObject.required,
+          "baselinePass",
+          "directionPass",
+          "rhymePass"
+        ]
       }
     }
   },
-  required: ["evaluations"]
+  required: ["finalists"]
   } as const;
 }
 
@@ -101,6 +106,8 @@ async function generateAndEvaluateDirections(args: {
   texts: string[];
   priority: Priority;
   freedom: Freedom;
+  parentFeedback?: string;
+  previousRefrains: string[];
   requestSignal: AbortSignal;
   progress: (event: string, detail?: Record<string, unknown>) => void;
 }) {
@@ -115,7 +122,9 @@ async function generateAndEvaluateDirections(args: {
         texts: args.texts,
         priority: args.priority,
         freedom: args.freedom,
-        rejectionFeedback: ""
+        rejectionFeedback: "",
+        parentFeedback: args.parentFeedback,
+        previousRefrains: args.previousRefrains
       })
     }];
     args.images.forEach((image) => generationContent.push({ type: "input_image", image_url: image, detail: "high" }));
@@ -173,34 +182,26 @@ async function generateAndEvaluateDirections(args: {
         model: "gpt-5.6-sol",
         reasoning: { effort: "low" },
         input: [{ role: "user", content: evaluationContent }],
-        text: { format: { type: "json_schema", name: "direction_evaluation", strict: true, schema: evaluationJsonSchema(survivors.length) } }
+        text: { format: { type: "json_schema", name: "direction_editorial_finalists", strict: true, schema: editorialJsonSchema() } }
       }
     });
     args.progress("evaluation.completed");
-    const evaluation = z.object({
-      evaluations: z.array(directionEvaluationItemSchema).length(survivors.length)
+    const editorial = z.object({
+      finalists: z.array(directionFinalistSchema).length(3)
     }).parse(JSON.parse(evaluationResponse.output_text));
-    const judgments = new Map(evaluation.evaluations.map((item) => [item.directionIndex, item]));
-
-    const failures: string[] = [];
-    const passing: z.infer<typeof singleDirectionSchema>[] = [];
-    survivors.forEach(({ direction, directionIndex }) => {
-      const judgment = judgments.get(directionIndex);
-      const passes = judgment?.baselinePass &&
-        judgment.directionPass &&
-        judgment.pass;
-      if (passes) {
-        const duplicate = passing.some((item) =>
-          item.refrain.trim().toLocaleLowerCase("sl") === direction.refrain.trim().toLocaleLowerCase("sl")
-        );
-        if (!duplicate && passing.length < 3) passing.push(direction);
-      } else {
-        failures.push(`Direction ${directionIndex + 1}: ${(judgment?.reasons || ["missing evaluation"]).join("; ")}`);
-      }
-    });
-    args.progress("rejection.completed", { rejectedCount: failures.length });
-
-    return { directions: passing, rejectionFeedback: failures.join("\n") };
+    const passing = editorial.finalists
+      .filter((direction) => deterministicViolations(direction.refrain, { requireCompleteSentence: false }).length === 0)
+      .filter((direction, index, all) =>
+        all.findIndex((other) =>
+          other.refrain.trim().toLocaleLowerCase("sl") === direction.refrain.trim().toLocaleLowerCase("sl")
+        ) === index
+      )
+      .map(({ sourceDirectionIndex: _source, baselinePass: _baseline, directionPass: _direction, rhymePass: _rhyme, ...direction }) => direction);
+    args.progress("rejection.completed", { rejectedCount: 3 - passing.length });
+    if (passing.length !== 3) {
+      throw new Error(`Only ${passing.length} editorial directions passed deterministic quality checks.`);
+    }
+    return { directions: passing, rejectionFeedback: "" };
 }
 
 export async function POST(request: Request) {
@@ -225,7 +226,7 @@ export async function POST(request: Request) {
       void (async () => {
         try {
           send({ type: "progress", event: "request.accepted" });
-          if (process.env.BIBALING_MOCK_MODE === "true") {
+          if (isMockRequest(request)) {
             for (const event of [
               "generation.started",
               "generation.completed",

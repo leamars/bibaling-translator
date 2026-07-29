@@ -10,7 +10,7 @@ test("every OpenAI-backed workshop route has a mock bypass", async () => {
   ];
   for (const route of routes) {
     const source = await readFile(new URL(`../${route}`, import.meta.url), "utf8");
-    assert.match(source, /process\.env\.BIBALING_MOCK_MODE === "true"/);
+    assert.match(source, /isMockRequest\(request\)/);
     assert.match(source, /mock:\s*true/);
   }
 });
@@ -49,4 +49,36 @@ test("direction generation streams genuine progress and propagates cancellation"
   ]) assert.match(source, new RegExp(event.replace(".", "\\.")));
   assert.match(source, /Content-Type": "text\/event-stream/);
   assert.match(source, /streamAbort\.abort\(new Error\("Client disconnected"\)\)/);
+});
+
+test("full-book generation is mocked, bounded, and preserves parent feedback", async () => {
+  const route = await readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  assert.match(route, /input\.mode === "fullbook"/);
+  assert.match(route, /assertActionBudget\(\{/);
+  assert.match(route, /fullbook\.generate/);
+  assert.match(route, /fullbook\.edit/);
+  assert.match(page, /parentNote: page\.parentNote/);
+  assert.match(page, /Translate the full book/);
+  assert.match(page, /onDragEnter/);
+});
+
+test("all long-running client states use non-repeating rotating copy", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  assert.match(page, /5000 \+ Math\.floor\(Math\.random\(\) \* 3001\)/);
+  assert.match(page, /shuffledMessages\(messages\)/);
+  assert.match(page, /readingLoadingMessages/);
+  assert.match(page, /translationLoadingMessages/);
+  assert.match(page, /patternLoadingMessages/);
+  assert.match(page, /fullBookLoadingMessages/);
+  assert.doesNotMatch(page, /<div className="generation-state"/);
+});
+
+test("mock mode can be toggled in the UI without restarting the server", async () => {
+  const generation = await readFile(new URL("../app/api/generation.ts", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  assert.match(generation, /bibaling_mock_mode=true/);
+  assert.match(page, /Mock mode/);
+  assert.match(page, /Load a mock book/);
+  assert.match(page, /document\.cookie/);
 });

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { COMPARISON_MODELS, generationError, openAIClient } from "../generation";
+import { COMPARISON_MODELS, generationError, isMockRequest, openAIClient } from "../generation";
 import { mockOptions } from "../mock-fixtures";
 import {
   assertActionBudget,
@@ -9,6 +9,8 @@ import {
   requestKey
 } from "../openai-control";
 import {
+  fullBookEditorialPrompt,
+  fullBookGenerationPrompt,
   translationEvaluationPrompt,
   translationGenerationPrompt,
   type DirectionBrief,
@@ -16,9 +18,7 @@ import {
   type Priority
 } from "../translation-prompts";
 import {
-  deterministicViolations,
-  evaluationPasses,
-  type CandidateEvaluation
+  deterministicViolations
 } from "../translation-quality";
 
 export const runtime = "nodejs";
@@ -50,6 +50,22 @@ const bodySchema = z.discriminatedUnion("mode", [
     direction: directionSchema,
     approvedSpread1: z.string().min(1),
     approvedSpread1Note: z.string().max(1200).optional()
+  }),
+  z.object({
+    mode: z.literal("fullbook"),
+    spreads: z.array(z.object({
+      spread: z.number().int().positive(),
+      image: z.string().startsWith("data:image/"),
+      source: z.string().min(1)
+    })).min(1).max(40),
+    priority: z.enum(["rhythm", "meaning", "simple"]),
+    freedom: z.enum(["close", "natural", "playful"]),
+    direction: directionSchema,
+    approvedVoice: z.array(z.object({
+      spread: z.number().int().positive(),
+      text: z.string().min(1),
+      parentNote: z.string().max(1200).optional()
+    })).length(3)
   })
 ]);
 
@@ -60,15 +76,15 @@ const candidateSchema = z.object({
 });
 const CANDIDATE_COUNT = 6;
 const candidatePoolSchema = z.object({ candidates: z.array(candidateSchema).length(CANDIDATE_COUNT) });
-const evaluationItemSchema = z.object({
-    candidateId: z.string().min(1),
-    fidelityPass: z.boolean(),
-    grammarPass: z.boolean(),
-    readAloudPass: z.boolean(),
-    directionPass: z.boolean(),
-    rhymePass: z.boolean(),
-    pass: z.boolean(),
-    reasons: z.array(z.string())
+const finalistSchema = z.object({
+    sourceCandidateId: z.string().min(1),
+    strategy: z.string().min(1),
+    text: z.string().min(1),
+    fidelityPass: z.literal(true),
+    grammarPass: z.literal(true),
+    readAloudPass: z.literal(true),
+    directionPass: z.literal(true),
+    rhymePass: z.literal(true)
 });
 
 const candidateJsonSchema = {
@@ -94,42 +110,83 @@ const candidateJsonSchema = {
   required: ["candidates"]
 } as const;
 
-function evaluationJsonSchema(candidateCount: number) {
+function editorialJsonSchema() {
   return {
   type: "object",
   additionalProperties: false,
   properties: {
-    evaluations: {
+    finalists: {
       type: "array",
-      minItems: candidateCount,
-      maxItems: candidateCount,
+      minItems: 3,
+      maxItems: 3,
       items: {
         type: "object",
         additionalProperties: false,
         properties: {
-          candidateId: { type: "string" },
+          sourceCandidateId: { type: "string" },
+          strategy: { type: "string" },
+          text: { type: "string" },
           fidelityPass: { type: "boolean" },
           grammarPass: { type: "boolean" },
           readAloudPass: { type: "boolean" },
           directionPass: { type: "boolean" },
-          rhymePass: { type: "boolean" },
-          pass: { type: "boolean" },
-          reasons: { type: "array", items: { type: "string" } }
+          rhymePass: { type: "boolean" }
         },
         required: [
-          "candidateId",
+          "sourceCandidateId",
+          "strategy",
+          "text",
           "fidelityPass",
           "grammarPass",
           "readAloudPass",
           "directionPass",
-          "rhymePass",
-          "pass",
-          "reasons"
+          "rhymePass"
         ]
       }
     }
   },
-  required: ["evaluations"]
+  required: ["finalists"]
+  } as const;
+}
+
+const fullBookItemSchema = z.object({
+  spread: z.number().int().positive(),
+  text: z.string().min(1),
+  fidelityPass: z.literal(true).optional(),
+  grammarPass: z.literal(true).optional(),
+  readAloudPass: z.literal(true).optional(),
+  directionPass: z.literal(true).optional(),
+  rhymePass: z.literal(true).optional()
+});
+
+function fullBookJsonSchema(spreadCount: number, editorial: boolean) {
+  const properties: Record<string, unknown> = {
+    spread: { type: "integer" },
+    text: { type: "string" }
+  };
+  const required = ["spread", "text"];
+  if (editorial) {
+    Object.assign(properties, {
+      fidelityPass: { type: "boolean" },
+      grammarPass: { type: "boolean" },
+      readAloudPass: { type: "boolean" },
+      directionPass: { type: "boolean" },
+      rhymePass: { type: "boolean" }
+    });
+    required.push("fidelityPass", "grammarPass", "readAloudPass", "directionPass", "rhymePass");
+  }
+  return {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      spreads: {
+        type: "array",
+        minItems: spreadCount,
+        maxItems: spreadCount,
+        items: { type: "object", additionalProperties: false, properties, required }
+      }
+    },
+    required: ["spreads"]
   } as const;
 }
 
@@ -216,33 +273,128 @@ async function generatePassingOptions(args: PipelineArgs) {
             { type: "input_image", image_url: args.image, detail: "high" }
           ]
         }],
-        text: { format: { type: "json_schema", name: "translation_quality_evaluation", strict: true, schema: evaluationJsonSchema(survivors.length) } }
+        text: { format: { type: "json_schema", name: "translation_editorial_finalists", strict: true, schema: editorialJsonSchema() } }
       }
     });
-    const evaluated = z.object({
-      evaluations: z.array(evaluationItemSchema).length(survivors.length)
+    const edited = z.object({
+      finalists: z.array(finalistSchema).length(3)
     }).parse(JSON.parse(evaluationResponse.output_text));
-    const evaluations = new Map(evaluated.evaluations.map((item) => [item.candidateId, item]));
-    const passing: Array<{ strategy: string; text: string }> = [];
+    const passing = edited.finalists
+      .filter((candidate) => deterministicViolations(candidate.text).length === 0)
+      .filter((candidate, index, all) =>
+        all.findIndex((other) => other.text.trim().toLocaleLowerCase("sl") === candidate.text.trim().toLocaleLowerCase("sl")) === index
+      )
+      .map(({ strategy, text }) => ({ strategy, text }));
 
-    for (const candidate of survivors) {
-      const evaluation = evaluations.get(candidate.id) as CandidateEvaluation | undefined;
-      if (evaluation && evaluationPasses(candidate.text, args.priority, evaluation)) {
-        const duplicate = passing.some((option) => option.text.trim() === candidate.text.trim());
-        if (!duplicate && passing.length < 3) passing.push({ strategy: candidate.strategy, text: candidate.text });
-      }
+    if (passing.length !== 3) {
+      throw new Error(`Only ${passing.length} editorial finalists passed deterministic quality checks`);
     }
+    return passing;
+}
 
-  if (passing.length !== 3) {
-    throw new Error(`Only ${passing.length} translations passed the authoritative quality gate`);
+async function generateFullBook(args: {
+  client: NonNullable<ReturnType<typeof openAIClient>>;
+  requestSignal: AbortSignal;
+  input: Extract<z.infer<typeof bodySchema>, { mode: "fullbook" }>;
+}) {
+  const { input } = args;
+  assertActionBudget({
+    model: "gpt-5.6-sol",
+    maxInputTokens: 12_000,
+    maxOutputTokens: 5_000,
+    callCount: 2
+  });
+  const imageContent = input.spreads.map((spread) => ({
+    type: "input_image" as const,
+    image_url: spread.image,
+    detail: "high" as const
+  }));
+  const promptArgs = {
+    spreads: input.spreads.map(({ spread, source }) => ({ spread, source })),
+    priority: input.priority,
+    freedom: input.freedom,
+    direction: input.direction,
+    approvedVoice: input.approvedVoice
+  };
+  const { response: draftResponse } = await controlledResponse({
+    client: args.client,
+    requestSignal: args.requestSignal,
+    action: "fullbook.generate",
+    model: "gpt-5.6-sol",
+    maxOutputTokens: 5_000,
+    timeoutMs: 90_000,
+    body: {
+      model: "gpt-5.6-sol",
+      reasoning: { effort: "low" },
+      input: [{
+        role: "user",
+        content: [
+          { type: "input_text", text: fullBookGenerationPrompt(promptArgs) },
+          ...imageContent
+        ]
+      }],
+      text: { format: { type: "json_schema", name: "full_book_drafts", strict: true, schema: fullBookJsonSchema(input.spreads.length, false) } }
+    }
+  });
+  const drafts = z.object({
+    spreads: z.array(fullBookItemSchema.pick({ spread: true, text: true })).length(input.spreads.length)
+  }).parse(JSON.parse(draftResponse.output_text));
+
+  const { response: editorialResponse } = await controlledResponse({
+    client: args.client,
+    requestSignal: args.requestSignal,
+    action: "fullbook.edit",
+    model: "gpt-5.6-sol",
+    maxOutputTokens: 5_000,
+    timeoutMs: 90_000,
+    body: {
+      model: "gpt-5.6-sol",
+      reasoning: { effort: "low" },
+      input: [{
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text: fullBookEditorialPrompt({ ...promptArgs, draftsJson: JSON.stringify(drafts.spreads) })
+          },
+          ...imageContent
+        ]
+      }],
+      text: { format: { type: "json_schema", name: "full_book_final", strict: true, schema: fullBookJsonSchema(input.spreads.length, true) } }
+    }
+  });
+  const final = z.object({
+    spreads: z.array(fullBookItemSchema.extend({
+      fidelityPass: z.literal(true),
+      grammarPass: z.literal(true),
+      readAloudPass: z.literal(true),
+      directionPass: z.literal(true),
+      rhymePass: z.literal(true)
+    })).length(input.spreads.length)
+  }).parse(JSON.parse(editorialResponse.output_text));
+  const expected = new Set(input.spreads.map((spread) => spread.spread));
+  const unique = new Set(final.spreads.map((spread) => spread.spread));
+  if (unique.size !== expected.size || final.spreads.some((spread) =>
+    !expected.has(spread.spread) || deterministicViolations(spread.text).length > 0
+  )) {
+    throw new Error("The full-book editorial response did not contain one valid translation for every spread.");
   }
-  return passing;
+  return final.spreads.map(({ spread, text }) => ({ spread, text }));
 }
 
 export async function POST(request: Request) {
   try {
     const input = bodySchema.parse(await request.json());
-    if (process.env.BIBALING_MOCK_MODE === "true") {
+    if (isMockRequest(request)) {
+      if (input.mode === "fullbook") {
+        return NextResponse.json({
+          spreads: input.spreads.map(({ spread }) => ({
+            spread,
+            text: `[MOCK — NOT QUALITY EVALUATED] Full-book spread ${spread}.`
+          })),
+          mock: true
+        });
+      }
       const spreads = input.mode === "spread1"
         ? undefined
         : [2, 3].map((spread) => ({ spread, options: mockOptions(spread) }));
@@ -258,6 +410,12 @@ export async function POST(request: Request) {
     }
     const client = openAIClient();
     if (!client) return NextResponse.json({ error: "Translation generation isn’t connected. Add a valid OPENAI_API_KEY and restart." }, { status: 503 });
+    if (input.mode === "fullbook") {
+      const spreads = await deduplicate(requestKey("fullbook", input), () =>
+        generateFullBook({ client, requestSignal: request.signal, input })
+      );
+      return NextResponse.json({ spreads });
+    }
     for (const { model } of COMPARISON_MODELS) {
       assertActionBudget({
         model,
@@ -325,6 +483,9 @@ export async function POST(request: Request) {
     if (runs.length === 0) throw new Error(rejectedRuns.map((run) => `${run.model}: ${run.error}`).join("\n"));
     return NextResponse.json({ runs, rejectedRuns });
   } catch (error) {
-    return generationError(error);
+    return generationError(
+      error,
+      "I couldn’t finish these translations. Your direction, choices, and edits are still here—please try again."
+    );
   }
 }

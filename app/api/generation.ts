@@ -16,6 +16,13 @@ export function openAIClient() {
   return new OpenAI({ apiKey, maxRetries: 0 });
 }
 
+export function isMockRequest(request: Request) {
+  if (process.env.BIBALING_MOCK_MODE === "true") return true;
+  return request.headers.get("cookie")
+    ?.split(";")
+    .some((part) => part.trim() === "bibaling_mock_mode=true") ?? false;
+}
+
 export function generationError(
   error: unknown,
   fallback = "I couldn’t finish those literary options. Your choices and edits are still here—please try again."
