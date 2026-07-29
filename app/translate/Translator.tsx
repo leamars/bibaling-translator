@@ -117,6 +117,10 @@ function compactGeneratedText(text: string) {
     .trim();
 }
 
+function validEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
 function mockPreview(number: number) {
   const colors = ["#dcebe4", "#f2dfb7", "#d9e4f2", "#ead8d1", "#dce4bd", "#e4d8ef"];
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="${colors[(number - 1) % colors.length]}"/><circle cx="400" cy="260" r="120" fill="#fff" opacity=".75"/><text x="400" y="285" text-anchor="middle" font-family="Georgia" font-size="54" fill="#245747">Mock page ${number}</text></svg>`;
@@ -501,6 +505,8 @@ export default function Translator() {
         }))
       ));
       trackFunnelEventOnce("first_translation_seen", { bookForm, languagePair: "en-sl" });
+      setEmailGateVisible(true);
+      trackFunnelEventOnce("email_gate_viewed", { bookForm, languagePair: "en-sl" });
       setSpread1Selection(null);
       setRequest({ loading: false, error: null });
     } catch (error) {
@@ -525,12 +531,10 @@ export default function Translator() {
     setSpread1Options((current) => current.map((option, i) => i === index ? { ...option, editNote } : option));
   }
 
-  async function approveSpread1AndPatternTest() {
-    if (spread1Selection === null || !bookForm || (bookForm === "refrain_verse" && !lockedDirection)) return;
+  async function startPatternTest(approved: string, approvedNote: string, captureReceipt = leadReceipt) {
+    if (!captureReceipt || !bookForm || (bookForm === "refrain_verse" && !lockedDirection)) return;
     const controller = new AbortController();
     translationAbort.current = controller;
-    const approved = spread1Options[spread1Selection].text.trim();
-    const approvedNote = spread1Options[spread1Selection].editNote.trim();
     setApprovedSpread1(approved);
     setApprovedNotes((current) => ({ ...current, 1: approvedNote }));
     setStep(8);
@@ -538,6 +542,7 @@ export default function Translator() {
     try {
       const result = await postJson<{ runs: Array<{ label: string; spreads: Array<{ spread: number; options: GeneratedOption[] }> }> }>("/api/translations", {
         mode: "pattern",
+        leadReceipt: captureReceipt,
         visualContexts: [spreads[1].visualContext, spreads[2].visualContext],
         sources: [spreads[1].text, spreads[2].text],
         priority,
@@ -609,14 +614,13 @@ export default function Translator() {
     }));
     setStep(9);
     trackFunnelEventOnce("three_page_preview_seen", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
+    if (emailCaptured) {
+      trackFunnelEventOnce("qualified_lead", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
+    }
   }
 
-  function startRestOfBook(captureConfirmed = false) {
-    if (!emailCaptured && !captureConfirmed) {
-      setEmailGateVisible(true);
-      trackFunnelEventOnce("email_gate_viewed", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
-      return;
-    }
+  function startRestOfBook() {
+    if (!emailCaptured || !leadReceipt) return;
     const samples = spreads.map((spread, index) => ({
       id: spread.id,
       preview: spread.preview,
@@ -645,7 +649,16 @@ export default function Translator() {
 
   async function captureEmail(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!bookForm || emailRequest.loading) return;
+    if (
+      !bookForm ||
+      emailRequest.loading ||
+      spread1Selection === null ||
+      !spread1Options[spread1Selection]?.text.trim()
+    ) return;
+    const approved = spread1Options[spread1Selection].text.trim();
+    const approvedNote = spread1Options[spread1Selection].editNote.trim();
+    setApprovedSpread1(approved);
+    setApprovedNotes((current) => ({ ...current, 1: approvedNote }));
     setEmailRequest({ loading: true, error: null });
     setAnalyticsConsent(analyticsConsent);
     const params = new URLSearchParams(window.location.search);
@@ -670,8 +683,7 @@ export default function Translator() {
       setEmailCaptured(true);
       setEmailRequest({ loading: false, error: null });
       trackFunnelEventOnce("email_captured", { bookForm, languagePair: "en-sl" });
-      trackFunnelEventOnce("qualified_lead", { bookForm, languagePair: "en-sl" });
-      window.setTimeout(() => startRestOfBook(true), 0);
+      window.setTimeout(() => void startPatternTest(approved, approvedNote, result.receipt), 0);
     } catch (error) {
       setEmailRequest({
         loading: false,
@@ -822,7 +834,7 @@ export default function Translator() {
       ? () => writeSpread1(lockedDirection ?? undefined)
       : step === 11
         ? generateRestOfBook
-        : approveSpread1AndPatternTest;
+        : () => startPatternTest(approvedSpread1, approvedNotes[1] || "");
   const activeBookPageIndex = bookPages.findIndex((page) =>
     page.workStatus === "reading" || page.workStatus === "translating"
   );
@@ -1094,9 +1106,61 @@ export default function Translator() {
             {request.loading && <ProgressLog messages={translationLoadingMessages} />}
             {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} onNote={updateSpread1Note} />}
             {request.error && <GenerationError message={request.error} retry={retry} />}
+            {!request.loading && emailGateVisible && !emailCaptured && spread1Options.length > 0 && (
+              <form className="email-gate" onSubmit={captureEmail}>
+                <h2>Want to translate the rest of the book and keep your work?</h2>
+                <p>We’ve found a voice that works naturally on your first page. Enter your email to continue with the rest of the book.</p>
+                <label>
+                  <span>Email</span>
+                  <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" />
+                </label>
+                <label className="consent-choice">
+                  <input type="checkbox" checked={marketingConsent} onChange={(event) => setMarketingConsent(event.target.checked)} />
+                  <span>Send me occasional Bibaling news and product updates.</span>
+                </label>
+                <label className="consent-choice">
+                  <input
+                    type="checkbox"
+                    checked={analyticsConsent}
+                    onChange={(event) => {
+                      setAnalyticsConsentChoice(event.target.checked);
+                      setAnalyticsConsent(event.target.checked);
+                    }}
+                  />
+                  <span>Allow anonymous usage analytics to help improve Bibaling.</span>
+                </label>
+                {emailRequest.error && <p className="email-gate-error">{emailRequest.error}</p>}
+                <button
+                  className="primary"
+                  type="submit"
+                  disabled={
+                    emailRequest.loading ||
+                    !validEmail(email) ||
+                    spread1Selection === null ||
+                    !spread1Options[spread1Selection]?.text.trim()
+                  }
+                >
+                  {emailRequest.loading ? "Saving…" : "Continue with the rest of the book"}
+                </button>
+              </form>
+            )}
             <nav>
               <button className="secondary" disabled={request.loading} onClick={() => setStep(page1BackStep(bookForm))}>Back</button>
-              <button className="primary" disabled={request.loading || spread1Selection === null || !spread1Options[spread1Selection]?.text.trim()} onClick={() => void approveSpread1AndPatternTest()}>Approve and test the pattern</button>
+              {emailCaptured && leadReceipt && (
+                <button
+                  className="primary"
+                  disabled={spread1Selection === null || !spread1Options[spread1Selection]?.text.trim()}
+                  onClick={() => {
+                    if (spread1Selection === null) return;
+                    void startPatternTest(
+                      spread1Options[spread1Selection].text.trim(),
+                      spread1Options[spread1Selection].editNote.trim()
+                    );
+                  }}
+                >
+                  Continue
+                </button>
+              )}
             </nav>
           </>
         )}
@@ -1149,40 +1213,9 @@ export default function Translator() {
                 </article>
               ))}
             </div>
-            {emailGateVisible && !emailCaptured && (
-              <form className="email-gate" onSubmit={captureEmail}>
-                <h2>Want to translate the rest of the book and keep your work?</h2>
-                <p>We’ve found a voice that carries naturally across these three pages. Enter your email to continue with the rest of the book.</p>
-                <label>
-                  <span>Email</span>
-                  <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" />
-                </label>
-                <label className="consent-choice">
-                  <input type="checkbox" checked={marketingConsent} onChange={(event) => setMarketingConsent(event.target.checked)} />
-                  <span>Send me occasional Bibaling news and product updates. Optional.</span>
-                </label>
-                <label className="consent-choice">
-                  <input
-                    type="checkbox"
-                    checked={analyticsConsent}
-                    onChange={(event) => {
-                      setAnalyticsConsentChoice(event.target.checked);
-                      setAnalyticsConsent(event.target.checked);
-                    }}
-                  />
-                  <span>Allow anonymous usage analytics to help improve Bibaling. Optional.</span>
-                </label>
-                {emailRequest.error && <p className="email-gate-error">{emailRequest.error}</p>}
-                <button className="primary" type="submit" disabled={emailRequest.loading || !email.trim()}>
-                  {emailRequest.loading ? "Saving…" : "Continue with the rest of the book"}
-                </button>
-              </form>
-            )}
             <nav>
               <button className="secondary" onClick={() => setStep(8)}>Back</button>
-              {!emailGateVisible && (
-                <button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={() => startRestOfBook()}>Add the rest of the book</button>
-              )}
+              <button className="primary" disabled={!emailCaptured || !leadReceipt || [1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={() => startRestOfBook()}>Add the rest of the book</button>
             </nav>
           </>
         )}

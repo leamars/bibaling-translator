@@ -1,6 +1,6 @@
 # Analytics and lead capture
 
-The three-page preview is free to complete. Resend capture gates only the remaining-page upload and full-book generation.
+Parents upload and correct three sample photos, confirm the book form and voice settings, and receive completed Page 1 translation options before the email gate appears. Successful Resend capture automatically unlocks the Pages 2–3 pattern test. Remaining-page upload and full-book generation stay unavailable until capture succeeds.
 
 ## Resend
 
@@ -20,6 +20,6 @@ Register these event-scoped custom dimensions in GA4:
 - `language_pair`
 - `session_id`
 
-Events: `first_translation_seen`, `three_page_preview_seen`, `email_gate_viewed`, `email_captured`, `qualified_lead`, and `full_book_started`.
+Event order: `first_translation_seen`, `email_gate_viewed`, `email_captured`, `three_page_preview_seen`, `qualified_lead`, and `full_book_started`.
 
 Mark `qualified_lead` as a GA4 key event. It fires only after the three-page preview milestone and successful Resend capture, making it suitable for later Google Ads import.

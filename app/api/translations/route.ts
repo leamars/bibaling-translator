@@ -49,6 +49,7 @@ const bodySchema = z.discriminatedUnion("mode", [
   }),
   z.object({
     mode: z.literal("pattern"),
+    leadReceipt: z.string().min(1),
     visualContexts: z.array(visualContextSchema).length(2),
     sources: z.array(z.string().min(1)).length(2),
     priority: z.enum(["rhythm", "meaning", "simple"]),
@@ -438,6 +439,9 @@ export async function POST(request: Request) {
         generateFullBook({ client, requestSignal: request.signal, input })
       );
       return NextResponse.json({ spreads });
+    }
+    if (input.mode === "pattern" && !verifyLeadReceipt(input.leadReceipt, input.bookForm)) {
+      return NextResponse.json({ error: "Email capture is required before generating Pages 2 and 3." }, { status: 403 });
     }
     for (const { model } of COMPARISON_MODELS) {
       assertActionBudget({

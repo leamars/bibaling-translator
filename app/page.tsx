@@ -56,7 +56,7 @@ export default function LandingPage() {
       <section className="home-section privacy-callout">
         <p className="eyebrow">Your family’s reading project</p>
         <h2>Made for bilingual families, not publishers.</h2>
-        <p>Book photos and text are sent to OpenAI to read and translate them. Your email is sent separately to Resend only after the complete three-page preview. Marketing and GA4 analytics are optional, and analytics never receives your email or book content.</p>
+        <p>Book photos and text are sent to OpenAI to read and translate them. After all three sample photos are uploaded and the first translated page is visible, your email is sent separately to Resend to unlock Pages 2 and 3 and the rest of the book. Marketing and GA4 analytics are optional, and analytics never receives your email or book content.</p>
       </section>
 
       <section className="home-section faq">
@@ -64,7 +64,7 @@ export default function LandingPage() {
         <h2>Before you photograph the first page</h2>
         <details><summary>Which languages work today?</summary><p>The current translator supports English to Slovenian. Other language pairs are future possibilities, not available features.</p></details>
         <details><summary>Can I correct the translation?</summary><p>Yes. You can correct extracted English, choose and edit Slovenian options, leave feedback, and revise the full draft.</p></details>
-        <details><summary>When do you ask for email?</summary><p>Only after you have seen the complete translated three-page preview, before adding the rest of the book.</p></details>
+        <details><summary>When do you ask for email?</summary><p>After you upload three sample photos, shape the book’s voice, and see the completed Page 1 translation options. A successful capture unlocks Pages 2 and 3 and, after their review, the rest of the book.</p></details>
         <details><summary>Is the output guaranteed to be perfect?</summary><p>No. Machine-assisted translations can contain errors. A parent should review every page before using it.</p></details>
       </section>
 

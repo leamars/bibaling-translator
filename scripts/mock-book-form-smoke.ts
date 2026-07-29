@@ -79,15 +79,6 @@ for (const [bookForm, texts] of Object.entries(fixtures)) {
   });
   assert.equal(JSON.parse(spread1.text).runs[0].options.length, 3);
 
-  const pattern = await post("/api/translations", {
-    mode: "pattern",
-    visualContexts: ["Mock visual context.", "Mock visual context."],
-    sources: [texts[1], texts[2]],
-    approvedSpread1: "[MOCK — NOT QUALITY EVALUATED] Approved Page 1.",
-    ...context
-  });
-  assert.equal(JSON.parse(pattern.text).runs[0].spreads.length, 2);
-
   const lead = await post("/api/leads", {
     email: `${bookForm}@example.com`,
     marketingConsent: false,
@@ -105,6 +96,16 @@ for (const [bookForm, texts] of Object.entries(fixtures)) {
   });
   const capturedLead = JSON.parse(lead.text);
   assert.equal(capturedLead.captured, true);
+
+  const pattern = await post("/api/translations", {
+    mode: "pattern",
+    leadReceipt: capturedLead.receipt,
+    visualContexts: ["Mock visual context.", "Mock visual context."],
+    sources: [texts[1], texts[2]],
+    approvedSpread1: "[MOCK — NOT QUALITY EVALUATED] Approved Page 1.",
+    ...context
+  });
+  assert.equal(JSON.parse(pattern.text).runs[0].spreads.length, 2);
 
   const fullBook = await post("/api/translations", {
     mode: "fullbook",
