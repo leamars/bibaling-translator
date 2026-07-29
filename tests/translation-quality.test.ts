@@ -9,6 +9,7 @@ import {
 } from "../app/api/translation-quality.ts";
 import {
   directionsEvaluationPrompt,
+  fullBookEditorialPrompt,
   translationGenerationPrompt
 } from "../app/api/translation-prompts.ts";
 
@@ -146,4 +147,49 @@ test("parent edit commentary becomes binding context without entering book text"
   assert.match(prompt, /The original rhyme sounded forced/);
   assert.match(prompt, /binding editorial evidence/);
   assert.match(prompt, /Do not quote the note in book text/);
+});
+
+test("translation prompts reject malformed Slovenian and spelling-only rhyme generally", () => {
+  const prompt = translationGenerationPrompt({
+    spreadNumber: 4,
+    source: "The friends play together.",
+    priority: "rhythm",
+    freedom: "natural",
+    direction: {
+      name: "Test",
+      refrain: "Rada vas imam!",
+      approach: "Rhyming couplets",
+      keeps: "Meaning",
+      changes: "Wordplay",
+      genderDependency: "Feminine narrator"
+    }
+  });
+  assert.match(prompt, /invented, malformed, or misspelled Slovenian words/);
+  assert.match(prompt, /pronouns, possessives, agreement, and inflected forms/);
+  assert.match(prompt, /stressed vowel and following sound sequence/);
+});
+
+test("full-book editing treats parent rhyme feedback as a correction", () => {
+  const prompt = fullBookEditorialPrompt({
+    spreads: [{ spread: 4, source: "The friends splash all day." }],
+    priority: "rhythm",
+    freedom: "natural",
+    direction: {
+      name: "Test",
+      refrain: "Rada vas imam!",
+      approach: "Rhyming couplets",
+      keeps: "Meaning",
+      changes: "Wordplay",
+      genderDependency: "Feminine narrator"
+    },
+    approvedVoice: [
+      { spread: 1, text: "First approved spread." },
+      { spread: 2, text: "Second approved spread.", parentNote: "These line endings do not rhyme aloud." },
+      { spread: 3, text: "Third approved spread." }
+    ],
+    draftsJson: JSON.stringify([{ spread: 4, text: "Draft." }])
+  });
+  assert.match(prompt, /These line endings do not rhyme aloud/);
+  assert.match(prompt, /flaw to eliminate from later spreads/);
+  assert.match(prompt, /Repair every submitted spread/);
 });

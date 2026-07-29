@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { generationError, openAIClient } from "../generation";
+import { generationError, isMockRequest, openAIClient } from "../generation";
 import {
   assertActionBudget,
   controlledResponse,
@@ -27,7 +27,7 @@ const transcriptionSchema = {
 export async function POST(request: Request) {
   try {
     const input = bodySchema.parse(await request.json());
-    if (process.env.BIBALING_MOCK_MODE === "true") {
+    if (isMockRequest(request)) {
       return NextResponse.json({
         text: "[MOCK OCR] Replace this with the corrected English source text.",
         uncertainty: "Mock mode does not inspect or evaluate the uploaded image.",
