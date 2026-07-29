@@ -17,8 +17,6 @@ type Direction = {
   name: string;
   refrain: string;
   approach: string;
-  keeps: string;
-  changes: string;
   genderDependency: string;
   modelLabel: string;
 };
@@ -82,6 +80,13 @@ function wait(milliseconds: number) {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 }
 
+function compactGeneratedText(text: string) {
+  return text
+    .replace(/\r\n?/g, "\n")
+    .replace(/\n[ \t]*\n+/g, "\n")
+    .trim();
+}
+
 function mockPreview(number: number) {
   const colors = ["#dcebe4", "#f2dfb7", "#d9e4f2", "#ead8d1", "#dce4bd", "#e4d8ef"];
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="${colors[(number - 1) % colors.length]}"/><circle cx="400" cy="260" r="120" fill="#fff" opacity=".75"/><text x="400" y="285" text-anchor="middle" font-family="Georgia" font-size="54" fill="#245747">Mock page ${number}</text></svg>`;
@@ -95,7 +100,9 @@ export default function Home() {
   const [freedom, setFreedom] = useState("");
   const [directions, setDirections] = useState<Direction[]>([]);
   const [selectedDirection, setSelectedDirection] = useState<number | null>(null);
+  const [editingDirection, setEditingDirection] = useState<number | null>(null);
   const [directionFeedback, setDirectionFeedback] = useState("");
+  const [customRefrain, setCustomRefrain] = useState("");
   const [shownRefrains, setShownRefrains] = useState<string[]>([]);
   const [lockedDirection, setLockedDirection] = useState<Direction | null>(null);
   const [spread1Options, setSpread1Options] = useState<TranslationOption[]>([]);
@@ -105,13 +112,12 @@ export default function Home() {
   const [patternSelections, setPatternSelections] = useState<Record<number, number | null>>({ 2: null, 3: null });
   const [approvedDrafts, setApprovedDrafts] = useState<Record<number, string>>({});
   const [approvedNotes, setApprovedNotes] = useState<Record<number, string>>({});
-  const [voiceLocked, setVoiceLocked] = useState(false);
   const [request, setRequest] = useState<RequestState>({ loading: false, error: null });
   const [directionProgress, setDirectionProgress] = useState<DirectionProgress>({ active: 0, completedThrough: -1, rejectedCount: 0 });
   const [bookPages, setBookPages] = useState<BookPage[]>([]);
   const [draggedPage, setDraggedPage] = useState<string | null>(null);
-  const [bookOrderLocked, setBookOrderLocked] = useState(false);
   const [mockMode, setMockMode] = useState(false);
+  const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null);
   const directionsAbort = useRef<AbortController | null>(null);
   const translationAbort = useRef<AbortController | null>(null);
   const fullBookAbort = useRef<AbortController | null>(null);
@@ -122,10 +128,33 @@ export default function Home() {
     setMockMode(document.cookie.split(";").some((part) => part.trim() === "bibaling_mock_mode=true"));
   }, []);
 
+  useEffect(() => {
+    if (!expandedImage) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setExpandedImage(null);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [expandedImage]);
+
+  useEffect(() => {
+    if (step !== 5) return;
+    const deselectOutside = (event: PointerEvent) => {
+      const target = event.target;
+      if (target instanceof Element && !target.closest(".direction-card") && !target.closest("nav")) {
+        setSelectedDirection(null);
+        setEditingDirection(null);
+      }
+    };
+    document.addEventListener("pointerdown", deselectOutside);
+    return () => document.removeEventListener("pointerdown", deselectOutside);
+  }, [step]);
+
   function toggleMockMode() {
     setMockMode((current) => {
       const next = !current;
       document.cookie = `bibaling_mock_mode=${next}; path=/; SameSite=Lax`;
+      if (next && spreads.length === 0) window.setTimeout(loadMockBook, 0);
       return next;
     });
   }
@@ -164,16 +193,16 @@ export default function Home() {
           await wait(2200);
         }
       }
-      if (!result) throw new Error("I couldn’t read this page.");
+      if (!result) throw new Error("We couldn’t read this page.");
       setSpreads((current) => current.map((spread) =>
         spread.id === id
-          ? { ...spread, text: result.text, uncertainty: result.uncertainty, visualContext: result.visualContext, error: null, status: "done" }
+          ? { ...spread, text: compactGeneratedText(result.text), uncertainty: result.uncertainty, visualContext: result.visualContext, error: null, status: "done" }
           : spread
       ));
     } catch (error) {
       setSpreads((current) => current.map((spread) =>
         spread.id === id
-          ? { ...spread, error: error instanceof Error ? error.message : "I couldn’t read this page.", status: "error" }
+          ? { ...spread, error: error instanceof Error ? error.message : "We couldn’t read this page.", status: "error" }
           : spread
       ));
     }
@@ -226,7 +255,7 @@ export default function Home() {
     void addFiles(event.dataTransfer.files);
   }
 
-  async function generateDirections() {
+  async function generateDirections(freshDraft = false) {
     if (directionsAbort.current) return;
     const controller = new AbortController();
     directionsAbort.current = controller;
@@ -244,10 +273,11 @@ export default function Home() {
           priority,
           freedom,
           parentFeedback: directionFeedback.trim() || undefined,
-          previousRefrains: shownRefrains
+          previousRefrains: shownRefrains,
+          freshDraft
         })
       });
-      if (!response.ok || !response.body) throw new Error("I couldn’t start the literary workshop.");
+      if (!response.ok || !response.body) throw new Error("We couldn’t start the literary workshop.");
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
@@ -265,6 +295,8 @@ export default function Home() {
             type: string;
             event?: string;
             rejectedCount?: number;
+            code?: string;
+            retryMode?: "editor_only" | "full";
             error?: string;
             data?: DirectionStreamResult;
           };
@@ -272,27 +304,23 @@ export default function Home() {
           if (event.type === "cancelled") throw new DOMException(event.error || "Cancelled", "AbortError");
           if (event.type === "result") result = event.data || null;
           if (event.type === "progress") {
-            if (event.event === "generation.started" || event.event === "request.accepted") {
+            if (event.event === "drafting_started") {
               setDirectionProgress((current) => ({ ...current, active: 2, completedThrough: 1 }));
-            } else if (event.event === "generation.completed") {
+            } else if (event.event === "drafting_completed") {
               setDirectionProgress((current) => ({ ...current, active: 3, completedThrough: 2 }));
-            } else if (event.event === "filtering.started") {
+            } else if (event.event === "validating_candidates") {
               setDirectionProgress((current) => ({ ...current, active: 4, completedThrough: 3 }));
-            } else if (event.event === "filtering.completed") {
-              setDirectionProgress((current) => ({ ...current, active: 5, completedThrough: 4, rejectedCount: event.rejectedCount || 0 }));
-            } else if (event.event === "evaluation.started") {
+            } else if (event.event === "editing_started") {
               setDirectionProgress((current) => ({ ...current, active: 5, completedThrough: 4 }));
-            } else if (event.event === "evaluation.completed") {
+            } else if (event.event === "editing_completed") {
               setDirectionProgress((current) => ({ ...current, active: 6, completedThrough: 5 }));
-            } else if (event.event === "rejection.completed") {
-              setDirectionProgress({ active: 6, completedThrough: 5, rejectedCount: event.rejectedCount || 0 });
-            } else if (event.event === "selection.completed") {
+            } else if (event.event === "completed") {
               setDirectionProgress((current) => ({ ...current, active: 6, completedThrough: 6 }));
             }
           }
         }
       }
-      if (!result) throw new Error("I couldn’t finish those literary options. Your choices and edits are still here—please try again.");
+      if (!result) throw new Error("We couldn’t finish those literary options. Your choices and edits are still here—please try again.");
       setDirections(result.runs.flatMap((run) =>
         run.directions.map((direction) => ({ ...direction, modelLabel: run.label }))
       ));
@@ -307,7 +335,7 @@ export default function Home() {
       if (error instanceof Error && error.name === "AbortError") {
         if (directionsAbort.current === controller) setRequest({ loading: false, error: null });
       } else {
-        setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write the directions." });
+        setRequest({ loading: false, error: error instanceof Error ? error.message : "We couldn’t write the directions." });
       }
     } finally {
       if (directionsAbort.current === controller) directionsAbort.current = null;
@@ -332,6 +360,22 @@ export default function Home() {
     setDirections((current) => current.map((direction, i) => i === index ? { ...direction, [key]: value } : direction));
   }
 
+  function addCustomDirection() {
+    const refrain = customRefrain.trim();
+    const base = directions[selectedDirection ?? 0];
+    if (!refrain || !base) return;
+    const custom = {
+      ...base,
+      name: "Parent’s refrain",
+      refrain,
+      modelLabel: "Parent"
+    };
+    setDirections((current) => [...current, custom]);
+    setSelectedDirection(directions.length);
+    setEditingDirection(null);
+    setCustomRefrain("");
+  }
+
   async function lockDirectionAndWriteSpread1() {
     if (selectedDirection === null) return;
     const controller = new AbortController();
@@ -352,8 +396,9 @@ export default function Home() {
       setSpread1Options(result.runs.flatMap((run) =>
         run.options.map((option) => ({
           ...option,
+          text: compactGeneratedText(option.text),
           modelLabel: run.label,
-          originalText: option.text,
+          originalText: compactGeneratedText(option.text),
           editNote: ""
         }))
       ));
@@ -361,7 +406,7 @@ export default function Home() {
       setRequest({ loading: false, error: null });
     } catch (error) {
       if (!(error instanceof Error && error.name === "AbortError")) {
-        setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write Page 1." });
+        setRequest({ loading: false, error: error instanceof Error ? error.message : "We couldn’t write Page 1." });
       }
     } finally {
       if (translationAbort.current === controller) translationAbort.current = null;
@@ -403,8 +448,9 @@ export default function Home() {
           const spread = run.spreads.find((item) => item.spread === spreadNumber);
           return (spread?.options || []).map((option) => ({
             ...option,
+            text: compactGeneratedText(option.text),
             modelLabel: run.label,
-            originalText: option.text,
+            originalText: compactGeneratedText(option.text),
             editNote: ""
           }));
         })
@@ -413,7 +459,7 @@ export default function Home() {
       setRequest({ loading: false, error: null });
     } catch (error) {
       if (!(error instanceof Error && error.name === "AbortError")) {
-        setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t test the next pages." });
+        setRequest({ loading: false, error: error instanceof Error ? error.message : "We couldn’t test the next pages." });
       }
     } finally {
       if (translationAbort.current === controller) translationAbort.current = null;
@@ -456,7 +502,6 @@ export default function Home() {
       3: patternOptions[3][patternSelections[3] as number].editNote.trim()
     }));
     setStep(8);
-    setVoiceLocked(false);
   }
 
   function startRestOfBook() {
@@ -481,7 +526,6 @@ export default function Home() {
       voiceSample: false
     })) : [];
     setBookPages([...samples, ...mockRemainder]);
-    setBookOrderLocked(false);
     setStep(9);
   }
 
@@ -499,7 +543,6 @@ export default function Home() {
       voiceSample: false
     })));
     setBookPages((current) => [...current, ...additions]);
-    setBookOrderLocked(false);
   }
 
   function moveBookPage(fromId: string, toId: string) {
@@ -513,7 +556,6 @@ export default function Home() {
       next.splice(to, 0, moved);
       return next;
     });
-    setBookOrderLocked(false);
   }
 
   async function generateRestOfBook() {
@@ -526,7 +568,7 @@ export default function Home() {
       const withSources = await Promise.all(bookPages.map(async (page) => {
         if (page.sourceText.trim()) return page;
         const result = await postJson<{ text: string; visualContext: string }>("/api/transcribe", { image: page.preview }, controller.signal);
-        return { ...page, sourceText: result.text, visualContext: result.visualContext };
+        return { ...page, sourceText: compactGeneratedText(result.text), visualContext: result.visualContext };
       }));
       setBookPages(withSources);
       const remaining = withSources.flatMap((page, index) =>
@@ -557,7 +599,7 @@ export default function Home() {
       const translations = new Map(result.spreads.map((spread) => [spread.spread, spread.text]));
       setBookPages(withSources.map((page, index) => ({
         ...page,
-        approvedText: page.approvedText || translations.get(index + 1) || null
+        approvedText: page.approvedText || compactGeneratedText(translations.get(index + 1) || "") || null
       })));
       setRequest({ loading: false, error: null });
     } catch (error) {
@@ -566,7 +608,7 @@ export default function Home() {
       } else {
         setRequest({
           loading: false,
-          error: error instanceof Error ? error.message : "I couldn’t finish the full book. Everything approved so far is still here."
+          error: error instanceof Error ? error.message : "We couldn’t finish the full book. Everything approved so far is still here."
         });
       }
     } finally {
@@ -622,65 +664,71 @@ export default function Home() {
       <section className="workshop">
         {step === 1 && (
           <>
-            <p className="kicker">Book workshop</p>
-            <h1>Add the first three book photos.</h1>
-            <p className="lead">We’ll use them to find a Slovenian voice that feels right before working through the whole book.</p>
-            <figure className="photo-guide">
-              <img src="/photo-guide.png" alt="A phone photographing an entire open picture book, with both facing pages fully visible." />
-              <figcaption>
-                <strong>Photograph the whole open book</strong>
-                <span>Keep both pages flat, fully in frame, and easy to read.</span>
-              </figcaption>
-            </figure>
-            {mockMode && spreads.length === 0 && (
-              <button className="secondary mock-load" type="button" onClick={loadMockBook}>Load a mock book</button>
-            )}
-            <div className="uploads">
-              {spreads.map((spread, index) => (
-                <label className="photo" key={spread.id}>
-                  <img src={spread.preview} alt={`Book page ${index + 1}`} />
-                  <input type="file" accept="image/*" onChange={(event) => chooseFile(event, spread.id)} />
-                  <span>Replace</span>
-                </label>
-              ))}
-              {spreads.length < 3 && (
-                <label className="drop" onDrop={drop} onDragOver={(event) => event.preventDefault()}>
-                  <input type="file" accept="image/*" multiple onChange={(event) => chooseFile(event)} />
-                  <strong>+</strong>
-                  <span>{spreads.length ? "Add the remaining pages" : "Drop three book photos here"}</span>
-                  <small>or click to choose multiple images</small>
-                </label>
-              )}
+            <h1>Add three photos from your book.</h1>
+            <p className="lead">Choose three clear photos that show both open pages.</p>
+            <div className="upload-onboarding">
+              <figure className="photo-guide">
+                <img src="/photo-guide.png" alt="A phone photographing an entire open picture book, with both facing pages fully visible." />
+                <figcaption>
+                  <strong>Photograph both open pages together</strong>
+                  <span>Hold the book open and make sure the <b>full left and right pages</b> are visible in one photo.</span>
+                </figcaption>
+              </figure>
+              <div className={spreads.length ? "uploads" : "uploads empty"}>
+                {spreads.map((spread, index) => (
+                  <label className="photo" key={spread.id}>
+                    <img src={spread.preview} alt={`Book page ${index + 1}`} />
+                    <input type="file" accept="image/*" onChange={(event) => chooseFile(event, spread.id)} />
+                    <span>Replace</span>
+                  </label>
+                ))}
+                {spreads.length < 3 && (
+                  <label className="drop" onDrop={drop} onDragOver={(event) => event.preventDefault()}>
+                    <input type="file" accept="image/*" multiple onChange={(event) => chooseFile(event)} />
+                    <strong>+</strong>
+                    <span>{spreads.length ? "Add the remaining photos" : "Add three sample photos."}</span>
+                    {spreads.length > 0 && <small>Drop photos or click to choose multiple images</small>}
+                  </label>
+                )}
+              </div>
             </div>
-            <button className="primary" disabled={spreads.length !== 3} onClick={() => setStep(2)}>Continue</button>
+            <nav className="forward-only">
+              <button className="primary" disabled={spreads.length !== 3} onClick={() => setStep(2)}>Continue</button>
+            </nav>
           </>
         )}
 
         {step === 2 && (
           <>
-            <p className="kicker">Check the words</p>
-            <h1>Did I read these correctly?</h1>
-            <p className="lead">Fix anything I missed. Your wording here becomes the source for the Slovenian version.</p>
+            <h1>Did we read these correctly?</h1>
+            <p className="lead">If we got something wrong, edit it directly.</p>
             <div className="transcriptions">
               {spreads.map((spread, index) => (
                 <article className={spread.status === "reading" ? "transcription is-reading" : "transcription"} key={spread.id} aria-busy={spread.status === "reading"}>
-                  <img src={spread.preview} alt="" />
+                  <button
+                    className="zoomable-image-button"
+                    type="button"
+                    aria-label={`Open Page ${index + 1} photo at full size`}
+                    onClick={() => setExpandedImage({ src: spread.preview, alt: `Book page ${index + 1}` })}
+                  >
+                    <img src={spread.preview} alt="" />
+                  </button>
                   <div>
                     <label htmlFor={`text-${index}`}>Page {index + 1}</label>
-                    {spread.status === "reading" && (
-                      <div className="reading-state" role="status">
+                    {spread.status === "reading" ? (
+                      <div className="direction-progress-log transcription-progress" role="status">
                         <RotatingThinkingLine messages={readingLoadingMessages} />
                       </div>
+                    ) : (
+                      <textarea
+                        id={`text-${index}`}
+                        value={spread.text}
+                        placeholder="Type or paste the English text here"
+                        onChange={(event) => setSpreads((current) => current.map((item, i) =>
+                          i === index ? { ...item, text: event.target.value } : item
+                        ))}
+                      />
                     )}
-                    <textarea
-                      id={`text-${index}`}
-                      value={spread.text}
-                      placeholder={spread.status === "reading" ? "Reading the page…" : "Type or paste the English text here"}
-                      disabled={spread.status === "reading"}
-                      onChange={(event) => setSpreads((current) => current.map((item, i) =>
-                        i === index ? { ...item, text: event.target.value } : item
-                      ))}
-                    />
                     {spread.status === "error" && (
                       <p className="note">{spread.error}{" "}
                         <button className="retry" type="button" onClick={() => void readSpread(spread.id, spread.preview)}>Try again</button>
@@ -700,9 +748,8 @@ export default function Home() {
 
         {step === 3 && (
           <>
-            <p className="kicker">Your taste</p>
             <h1>What matters most for this book?</h1>
-            <p className="lead">We’ll balance all three. Choose the one you’d least want us to compromise.</p>
+            <p className="lead">Choose the quality we must protect.</p>
             <div className="choices">
               {priorities.map(([value, title, description]) => (
                 <button className={priority === value ? "choice selected" : "choice"} onClick={() => setPriority(value)} key={value}>
@@ -716,9 +763,8 @@ export default function Home() {
 
         {step === 4 && (
           <>
-            <p className="kicker">Creative freedom</p>
             <h1>How freely should we adapt it?</h1>
-            <p className="lead">There’s no “correct” answer. Choose how you want this family version to feel.</p>
+            <p className="lead">Choose how closely Slovenian should follow the English.</p>
             <div className="choices">
               {freedoms.map(([value, title, description]) => (
                 <button className={freedom === value ? "choice selected" : "choice"} onClick={() => setFreedom(value)} key={value}>
@@ -732,20 +778,25 @@ export default function Home() {
 
         {step === 5 && (
           <>
-            <p className="kicker">Refrain lab</p>
-            <h1>Three ways the whole book could sound.</h1>
-            <p className="lead">Choose one quality-checked direction, then make its wording yours. We’ll lock exactly what you approve.</p>
-            {request.loading && <ProgressLog messages={directionLoadingMessages} progress={directionProgress} onRestart={restartDirections} />}
+            <h1>Choose the best option for the refrain.</h1>
+            <p className="lead">Re-roll for a fresh set of options, or add your own.</p>
+            {request.loading && <ProgressLog messages={directionLoadingMessages} progress={directionProgress} />}
             {!request.loading && directions.length > 0 && (
               <div className="direction-grid">
                 {directions.map((direction, index) => {
                   const selected = selectedDirection === index;
                   return (
-                    <article className={selected ? "direction-card selected-card" : "direction-card"} key={`${direction.name}-${index}`} onClick={() => setSelectedDirection(index)}>
-                      {selected ? (
-                        <label>Make this refrain yours<textarea value={direction.refrain} onChange={(event) => updateDirection(index, "refrain", event.target.value)} /></label>
+                    <article className={selected ? "direction-card selected-card" : "direction-card"} key={`${direction.name}-${index}`} onClick={() => { setSelectedDirection(index); setEditingDirection(null); }}>
+                      <p className="strategy">Option {(index % 3) + 1}</p>
+                      {editingDirection === index ? (
+                        <textarea aria-label={`Edit refrain option ${index + 1}`} value={direction.refrain} onClick={(event) => event.stopPropagation()} onChange={(event) => updateDirection(index, "refrain", event.target.value)} />
                       ) : (
-                        <><p className="strategy">Option {(index % 3) + 1}</p><blockquote>{direction.refrain}</blockquote></>
+                        <blockquote>{direction.refrain}</blockquote>
+                      )}
+                      {selected && (
+                        <button className="edit-option" type="button" onClick={(event) => { event.stopPropagation(); setEditingDirection(editingDirection === index ? null : index); }}>
+                          {editingDirection === index ? "Done" : "Edit"}
+                        </button>
                       )}
                     </article>
                   );
@@ -753,18 +804,25 @@ export default function Home() {
               </div>
             )}
             {!request.loading && directions.length > 0 && (
-              <div className="reroll-directions">
-                <label>
-                  Want something different?
+              <div className="refrain-actions">
+                <article className="direction-card action-card">
+                  <p className="strategy">Add your own</p>
+                  <textarea
+                    value={customRefrain}
+                    onChange={(event) => setCustomRefrain(event.target.value)}
+                    placeholder="Write your refrain"
+                  />
+                  <button className="select-option" type="button" disabled={!customRefrain.trim()} onClick={addCustomDirection}>Use this refrain</button>
+                </article>
+                <article className="direction-card action-card">
+                  <p className="strategy">Fresh options</p>
                   <textarea
                     value={directionFeedback}
                     onChange={(event) => setDirectionFeedback(event.target.value)}
-                    placeholder="Add a note about what you’d prefer (optional)"
+                    placeholder="What should we try differently? (optional)"
                   />
-                </label>
-                <button className="secondary" type="button" onClick={() => void generateDirections()}>
-                  Try three different ones
-                </button>
+                  <button className="select-option" type="button" onClick={() => void generateDirections(true)}>Re-roll</button>
+                </article>
               </div>
             )}
             {request.error && <GenerationError message={request.error} retry={retry} />}
@@ -774,12 +832,11 @@ export default function Home() {
 
         {step === 6 && lockedDirection && (
           <>
-            <p className="kicker">Page 1 workshop</p>
-            <h1>Let’s test the voice on one page.</h1>
-            <p className="lead">Choose from three Slovenian possibilities that have each passed the locked brief.</p>
-            <LockedBrief direction={lockedDirection} priority={priority} />
-            <Source spread={spreads[0]} number={1} />
-            {request.loading && <ProgressLog messages={translationLoadingMessages} onRestart={() => restartTranslation(lockDirectionAndWriteSpread1)} />}
+            <h1>Let’s test the voice on one full page.</h1>
+            <p className="lead">Choose and edit the strongest Slovenian version.</p>
+            <LockedBrief direction={lockedDirection} priority={priority} freedom={freedom} />
+            <Source spread={spreads[0]} number={1} onExpand={setExpandedImage} />
+            {request.loading && <ProgressLog messages={translationLoadingMessages} />}
             {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} onNote={updateSpread1Note} />}
             {request.error && <GenerationError message={request.error} retry={retry} />}
             <nav>
@@ -791,20 +848,21 @@ export default function Home() {
 
         {step === 7 && lockedDirection && (
           <>
-            <p className="kicker">Pattern test</p>
-            <h1>Does the voice travel?</h1>
-            <p className="lead">Choose and edit one option for each page. Page 1 stays beside us as the voice reference.</p>
-            <LockedBrief direction={lockedDirection} priority={priority} />
+            <h1>Does this voice work on every page?</h1>
+            <p className="lead">Choose one version for each page. Use Page 1 as your guide.</p>
+            <LockedBrief direction={lockedDirection} priority={priority} freedom={freedom} />
             <article className="approved-card voice-reference">
-              <img src={spreads[0].preview} alt="Approved Page 1" />
+              <button className="zoomable-image-button" type="button" aria-label="Open approved Page 1 photo at full size" onClick={() => setExpandedImage({ src: spreads[0].preview, alt: "Approved Page 1" })}>
+                <img src={spreads[0].preview} alt="" />
+              </button>
               <label>Approved Page 1 · voice reference</label>
               <p>{approvedSpread1}</p>
               {approvedNotes[1] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[1]}</p>}
             </article>
-            {request.loading && <ProgressLog messages={patternLoadingMessages} onRestart={() => restartTranslation(approveSpread1AndPatternTest)} />}
+            {request.loading && <ProgressLog messages={patternLoadingMessages} />}
             {!request.loading && [2, 3].map((number) => (
               <section className="pattern-section" key={number}>
-                <Source spread={spreads[number - 1]} number={number} />
+                <Source spread={spreads[number - 1]} number={number} onExpand={setExpandedImage} />
                 <OptionList
                   options={patternOptions[number] || []}
                   selection={patternSelections[number]}
@@ -821,36 +879,30 @@ export default function Home() {
 
         {step === 8 && lockedDirection && (
           <>
-            <p className="kicker">Voice review</p>
-            <h1>{voiceLocked ? "The voice is locked." : "Do these belong in the same book?"}</h1>
-            <p className="lead">{voiceLocked ? "These three approved pages are now the voice reference for the rest of the book." : "Read them aloud together. You can still tune any line before confirming."}</p>
-            <LockedBrief direction={lockedDirection} priority={priority} />
+            <h1>Do these belong in the same book?</h1>
+            <p className="lead">Read them aloud and tune any line that feels off.</p>
+            <LockedBrief direction={lockedDirection} priority={priority} freedom={freedom} />
             <div className="approved-grid">
               {[1, 2, 3].map((number) => (
                 <article className="approved-card" key={number}>
                   <img src={spreads[number - 1].preview} alt={`Page ${number}`} />
                   <label>Page {number}</label>
-                  <textarea disabled={voiceLocked} value={approvedDrafts[number] || ""} onChange={(event) => setApprovedDrafts((current) => ({ ...current, [number]: event.target.value }))} />
+                  <textarea value={approvedDrafts[number] || ""} onChange={(event) => setApprovedDrafts((current) => ({ ...current, [number]: event.target.value }))} />
                   {approvedNotes[number] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[number]}</p>}
                 </article>
               ))}
             </div>
-            {!voiceLocked ? (
-              <nav><button className="secondary" onClick={() => setStep(7)}>Rework the pattern</button><button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={() => setVoiceLocked(true)}>Yes, the voice feels consistent</button></nav>
-            ) : (
-              <>
-                <div className="locked-confirmation"><span>Locked by parent</span><p>The exact refrain and these approved drafts will guide every later page.</p></div>
-                <button className="primary" onClick={startRestOfBook}>Add the rest of the book</button>
-              </>
-            )}
+            <nav>
+              <button className="secondary" onClick={() => setStep(7)}>Rework the pattern</button>
+              <button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={startRestOfBook}>Add the rest of the book</button>
+            </nav>
           </>
         )}
 
         {step === 9 && (
           <>
-            <p className="kicker">The rest of the book</p>
-            <h1>Now put the whole book in order.</h1>
-            <p className="lead">Drop all the remaining book photos at once. Then drag every card—including the first three—until the sequence matches the physical book.</p>
+            <h1>Arrange the whole book.</h1>
+            <p className="lead">Add the remaining photos, then drag every page into order.</p>
             <label
               className="rest-drop"
               onDrop={(event) => { event.preventDefault(); void addRemainingFiles(event.dataTransfer.files); }}
@@ -859,12 +911,10 @@ export default function Home() {
               <input type="file" accept="image/*" multiple onChange={(event) => { void addRemainingFiles(event.target.files ?? undefined); event.target.value = ""; }} />
               <strong>+</strong>
               <span>Drop all remaining book photos here</span>
-              <small>or click to choose multiple images</small>
             </label>
 
             <div className="order-heading">
               <div><strong>Book order</strong><small>{bookPages.length} pages · drag to rearrange</small></div>
-              {bookOrderLocked && <span>Order confirmed</span>}
             </div>
             <div className="book-order">
               {bookPages.map((page, index) => (
@@ -899,40 +949,60 @@ export default function Home() {
             </div>
             <nav>
               <button className="secondary" onClick={() => setStep(8)}>Back to voice</button>
-              <button className="primary" disabled={bookPages.length < 3 || bookOrderLocked} onClick={() => setBookOrderLocked(true)}>
-                {bookOrderLocked ? "Order confirmed" : "This order is right"}
-              </button>
-            </nav>
-            {bookOrderLocked && <div className="locked-confirmation"><span>Ready for the next stage</span><p>The full book order is saved in this session. Next, Bibaling can read and workshop the remaining pages one at a time.</p></div>}
-            {bookOrderLocked && (
-              <button className="primary continue-full-book" type="button" onClick={() => void generateRestOfBook()}>
+              <button className="primary" disabled={bookPages.length < 3} onClick={() => void generateRestOfBook()}>
                 Translate the full book
               </button>
-            )}
+            </nav>
           </>
         )}
 
         {step === 10 && lockedDirection && (
           <>
-            <p className="kicker">Full book</p>
             <h1>{request.loading ? "Writing the rest of your book." : "Your full Slovenian draft."}</h1>
             <p className="lead">
               {request.loading
-                ? "We’re reading the remaining pages and carrying your approved voice and corrections through the whole story."
-                : "Read through every page in order. You can edit any line before saving the finished draft."}
+                ? "We’re carrying your approved voice through every page."
+                : "Read each page, edit any line, then save your draft."}
             </p>
-            <LockedBrief direction={lockedDirection} priority={priority} />
-            {request.loading && <ProgressLog messages={fullBookLoadingMessages} onRestart={restartFullBook} />}
+            <LockedBrief direction={lockedDirection} priority={priority} freedom={freedom} />
+            {request.loading && (
+              <>
+                <div className="full-book-draft approved-while-writing">
+                  {bookPages.map((page, index) => ({ page, index })).filter(({ page }) => page.approvedText).map(({ page, index }) => (
+                    <article className="approved-card" key={page.id}>
+                      <img src={page.preview} alt={`Approved page ${index + 1}`} />
+                      <div className="english-column">
+                        <label>Page {index + 1} · English</label>
+                        <p className="english-reference">{page.sourceText}</p>
+                      </div>
+                      <div className="slovenian-column">
+                        <label>Slovenian · approved</label>
+                        <p className="approved-translation">{page.approvedText}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+                <p className="remaining-pages-note">These pages are ready. We’re translating the rest of the book now.</p>
+                <ProgressLog messages={fullBookLoadingMessages} />
+              </>
+            )}
             {!request.loading && (
               <div className="full-book-draft">
                 {bookPages.map((page, index) => (
                   <article className="approved-card" key={page.id}>
                     <img src={page.preview} alt={`Page ${index + 1}`} />
-                    <label>Page {index + 1}{page.voiceSample ? " · parent-approved reference" : ""}</label>
-                    <textarea
-                      value={page.approvedText || ""}
-                      onChange={(event) => updateBookTranslation(index, event.target.value)}
-                    />
+                    <div className="english-column">
+                      <label>Page {index + 1} · English</label>
+                      <p className="english-reference">{page.sourceText}</p>
+                    </div>
+                    <div className="slovenian-column">
+                      <label htmlFor={`slovenian-page-${index + 1}`}>Slovenian</label>
+                      <textarea
+                        id={`slovenian-page-${index + 1}`}
+                        value={page.approvedText || ""}
+                        onChange={(event) => updateBookTranslation(index, event.target.value)}
+                      />
+                    </div>
                     {page.parentNote && <p className="parent-edit-note"><strong>Parent’s note</strong>{page.parentNote}</p>}
                   </article>
                 ))}
@@ -946,6 +1016,12 @@ export default function Home() {
           </>
         )}
       </section>
+      {expandedImage && (
+        <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Expanded book page" onClick={() => setExpandedImage(null)}>
+          <button type="button" className="image-lightbox-close" onClick={() => setExpandedImage(null)}>Close</button>
+          <img src={expandedImage.src} alt={expandedImage.alt} onClick={(event) => event.stopPropagation()} />
+        </div>
+      )}
     </main>
   );
 }
@@ -1086,11 +1162,9 @@ const directionMilestones = [
 
 function ProgressLog({
   messages,
-  onRestart,
   progress
 }: {
   messages: readonly string[];
-  onRestart?: () => void;
   progress?: DirectionProgress;
 }) {
   const [showReassurance, setShowReassurance] = useState(false);
@@ -1115,27 +1189,40 @@ function ProgressLog({
       <RotatingThinkingLine messages={messages} />
       <div className="progress-log-footer">
         <p>{showReassurance ? "Good verse takes a little longer—we’re checking this carefully." : "We’re checking this carefully."}</p>
-        {onRestart && <button type="button" onClick={onRestart}>Restart</button>}
       </div>
     </div>
   );
 }
 
-function LockedBrief({ direction, priority }: { direction: Direction; priority: string }) {
+function LockedBrief({ direction, priority, freedom }: { direction: Direction; priority: string; freedom: string }) {
+  const priorityLabel = priorities.find(([value]) => value === priority)?.[1];
+  const freedomLabel = freedoms.find(([value]) => value === freedom)?.[1];
   return (
     <aside className="locked-brief">
-      <span>Locked by parent</span>
-      <strong>{direction.name}</strong>
+      <span>Refrain</span>
       <blockquote>{direction.refrain}</blockquote>
-      <small>{direction.modelLabel} · Most important: {priorities.find(([value]) => value === priority)?.[1]}</small>
+      <div className="brief-selections">
+        <p><strong>Most important</strong><span>{priorityLabel}</span></p>
+        <p><strong>Adaptation</strong><span>{freedomLabel}</span></p>
+      </div>
     </aside>
   );
 }
 
-function Source({ spread, number }: { spread: Spread; number: number }) {
+function Source({
+  spread,
+  number,
+  onExpand
+}: {
+  spread: Spread;
+  number: number;
+  onExpand: (image: { src: string; alt: string }) => void;
+}) {
   return (
     <article className="source-card">
-      <img src={spread.preview} alt={`Page ${number}`} />
+      <button className="zoomable-image-button" type="button" aria-label={`Open Page ${number} photo at full size`} onClick={() => onExpand({ src: spread.preview, alt: `Page ${number}` })}>
+        <img src={spread.preview} alt="" />
+      </button>
       <div><span>English source · Page {number}</span><p>{spread.text}</p></div>
     </article>
   );
@@ -1150,20 +1237,38 @@ function OptionList({
 }: {
   options: TranslationOption[];
   selection: number | null;
-  onSelect: (index: number) => void;
+  onSelect: (index: number | null) => void;
   onEdit: (index: number, text: string) => void;
   onNote: (index: number, note: string) => void;
 }) {
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const deselectOutside = (event: PointerEvent) => {
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        !target.closest(".option-grid") &&
+        !target.closest("nav")
+      ) {
+        onSelect(null);
+        setEditingIndex(null);
+      }
+    };
+    document.addEventListener("pointerdown", deselectOutside);
+    return () => document.removeEventListener("pointerdown", deselectOutside);
+  }, [onSelect]);
+
   return (
     <div className="option-grid">
       {options.map((option, index) => (
-        <article className={selection === index ? "option-card selected-card" : "option-card"} key={`${option.strategy}-${index}`} onClick={() => onSelect(index)}>
-          <p className="strategy">{option.modelLabel} · {option.strategy}</p>
-          {selection === index ? (
+        <article className={selection === index ? "option-card selected-card" : "option-card"} key={`${option.strategy}-${index}`} onClick={() => { onSelect(index); setEditingIndex(null); }}>
+          <p className="strategy">Option {index + 1}</p>
+          {editingIndex === index ? (
             <>
-              <textarea aria-label={`Edit ${option.strategy}`} value={option.text} onChange={(event) => onEdit(index, event.target.value)} />
+              <textarea aria-label={`Edit ${option.strategy}`} value={option.text} onClick={(event) => event.stopPropagation()} onChange={(event) => onEdit(index, event.target.value)} />
               {option.text.trim() !== option.originalText.trim() && (
-                <label className="edit-feedback">
+                <label className="edit-feedback" onClick={(event) => event.stopPropagation()}>
                   <span>What felt off in the original? <small>Optional</small></span>
                   <textarea
                     aria-label={`Comment on ${option.strategy}`}
@@ -1176,7 +1281,11 @@ function OptionList({
               )}
             </>
           ) : <p className="verse">{option.text}</p>}
-          <button type="button" className="select-option" onClick={() => onSelect(index)}>{selection === index ? "Selected · edit above" : "Choose"}</button>
+          {selection === index ? (
+            <button type="button" className="select-option" onClick={(event) => { event.stopPropagation(); setEditingIndex(editingIndex === index ? null : index); }}>
+              {editingIndex === index ? "Done" : "Edit"}
+            </button>
+          ) : null}
         </article>
       ))}
     </div>

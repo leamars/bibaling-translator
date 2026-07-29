@@ -5,8 +5,6 @@ export type DirectionBrief = {
   name: string;
   refrain: string;
   approach: string;
-  keeps: string;
-  changes: string;
   genderDependency: string;
 };
 
@@ -75,8 +73,6 @@ export function directionBrief(direction: DirectionBrief) {
 Name: ${direction.name}
 Exact refrain/device: ${direction.refrain}
 Approach: ${direction.approach}
-Keeps: ${direction.keeps}
-Changes: ${direction.changes}
 Gender dependency: ${direction.genderDependency}`;
 }
 
@@ -88,11 +84,41 @@ export function directionsGenerationPrompt(args: {
   rejectionFeedback?: string;
   parentFeedback?: string;
   previousRefrains?: string[];
+  refrainBudget?: {
+    sourceRefrain: string;
+    sourceWordCount: number;
+    sourceCharacterCount: number;
+    maximumWordCount: number;
+    maximumCharacterCount: number;
+    maximumSentenceCount: number;
+    maximumClauseCount: number;
+  };
 }) {
-  return `${AUTHORITATIVE_STANDARD}
+  return `ROLE
+Draft five concise Slovenian refrain possibilities for a children's picture book. This is a breadth pass, not the final editorial review. Return structured JSON only and never explain your reasoning.
 
-GOAL
-Create a private pool of exactly six genuinely different candidate book-level literary directions before translating any spread. The server will deterministically remove obvious violations, then an independent editor will select exactly three for the parent; do not assume every candidate will be shown.
+HARD SLOVENIAN REQUIREMENTS
+- Every refrain must be complete, grammatical, idiomatic Slovenian suitable for a child and natural aloud.
+- Preserve the source's central meaning, imagery, emotional address, and singular/plural relationships.
+- Never invent unsupported meaning, actions, metaphors, props, or claims to obtain rhyme.
+- Never use English syntax, awkward inversion, filler, placeholders, slash forms, malformed words, or unresolved gender.
+- When the narrator is a mushroom described as "goba", feminine grammar is mandatory, such as "rada".
+- When rhyme is requested, use genuine phonetic spoken-Slovenian rhyme and natural cadence, not matching spelling or repeated stems.
+
+TASK
+Create exactly five genuinely different candidate book-level refrains. Vary at least two of rhythm, rhyme strategy, sentence structure, refrain function, emotional energy, or degree of literalness. Do not produce five rewrites of one simple declaration.
+Every refrain must remain a compact repeatable book device. Diversity must come from concise word choice, rhythm, rhyme, and syntax—not additional content or length. Prefer one strong short line over two explanatory lines. Do not expand the refrain into a stanza, scene summary, explanation, or new narrative consequence.
+When RHYME AND READ-ALOUD RHYTHM is locked, every candidate must contain a genuine internal spoken rhyme across two compact parts inside the refrain itself. Do not postpone the rhyme to surrounding page text, and do not treat rhythm alone as compliance.
+
+SOURCE-RELATIVE REFRAIN BUDGET
+Source refrain: ${args.refrainBudget?.sourceRefrain || "Use the recurring source declaration shown below."}
+Source refrain word count: ${args.refrainBudget?.sourceWordCount ?? "unknown"}
+Maximum candidate word count: ${args.refrainBudget?.maximumWordCount ?? 12}
+Source refrain character count: ${args.refrainBudget?.sourceCharacterCount ?? "unknown"}
+Maximum candidate character count: ${args.refrainBudget?.maximumCharacterCount ?? 120}
+Maximum sentences: ${args.refrainBudget?.maximumSentenceCount ?? 1}
+Maximum clauses: ${args.refrainBudget?.maximumClauseCount ?? 2}
+Maximum semantic lines: 2
 
 CONFIRMED ENGLISH, IN SPREAD ORDER
 ${args.texts.map((text, index) => `${index + 1}. ${text}`).join("\n")}
@@ -102,18 +128,18 @@ ${(args.visualContexts || []).map((context, index) => `${index + 1}. ${context}`
 
 ${priorityContract(args.priority)}
 ${freedomContract(args.freedom)}
-${args.parentFeedback ? `\nPARENT'S REQUEST FOR THIS NEW SET\n${args.parentFeedback}\nTreat this as binding preference feedback while still satisfying the authoritative quality rules. Return three genuinely new parent-facing refrains, not minor rewrites of the previous set.` : ""}
+${args.parentFeedback ? `\nPARENT'S REQUEST FOR THIS NEW SET\n${args.parentFeedback}\nTreat this as binding preference feedback while still satisfying the hard requirements.` : ""}
 ${args.previousRefrains?.length ? `\nPREVIOUSLY SHOWN REFRAINS — do not repeat or lightly reword these:\n${args.previousRefrains.map((refrain) => `- ${refrain}`).join("\n")}` : ""}
 
-Each direction must include:
-- a concise English name;
+Each private draft must include only:
+- a concise English name of at most 40 characters;
 - the exact proposed Slovenian refrain or recurring device;
-- a concrete rhyme-density and structure approach;
-- what source meaning/picture truth it keeps;
-- what it deliberately changes;
-- any grammatical-gender dependency, or "None".
+- one concise approach sentence of at most 120 characters.
 
-The strategies must differ materially in refrain function, placement, rhyme density, or story-first structure—not merely swap words. Any Slovenian refrain must already meet the mandatory baseline and locked priority. For mushroom language, respect feminine "goba" grammar without placeholders.
+Every refrain must stay within the supplied source-relative budget. Do not write analysis, scores, keeps/changes documentation, alternatives within a field, or private deliberation. Use the required \`candidates\` response schema.
+
+Treat creative range as a parent-facing requirement, not an invitation to expand semantic scope. Make the five compact candidates differ through concise word choice, cadence, phonetic rhyme strategy, clause order, tone, and sound pattern—not extra lines, explanations, imagery, actions, or characters. Use question-and-answer only when the supplied source budget explicitly permits multiple sentences because the source itself uses that form.
+The strategies must differ materially in rhythm, syntax, rhyme treatment, tone, or sound—not merely swap words and never by becoming longer.
 Every field must commit to one complete proposal. Never use slashes, multiple alternatives inside one field, ellipses, fill-in-the-blank forms, unfinished phrases such as "Rada te imam, ker …", or meta-instructions that the parent would have to complete. A direction may describe flexible placement, but its displayed refrain/device must be exact, complete Slovenian wording. Make the named rhyme scheme agree with the structure you describe.
 When the source uses collective address such as "you all", a plural book-level refrain is faithful even on a spread that foregrounds one friend. Keep scene-specific singular details in the surrounding verse.
 Do not add superlatives or absolutes such as "najlepši", generalized "every day" claims, heart-space metaphors, public proclamations, or claims that the forest is playful unless the confirmed source supports them.
@@ -126,6 +152,15 @@ export function directionsEvaluationPrompt(args: {
   priority: Priority;
   freedom: Freedom;
   directionsJson: string;
+  refrainBudget?: {
+    sourceRefrain: string;
+    sourceWordCount: number;
+    sourceCharacterCount: number;
+    maximumWordCount: number;
+    maximumCharacterCount: number;
+    maximumSentenceCount: number;
+    maximumClauseCount: number;
+  };
 }) {
   return `${AUTHORITATIVE_STANDARD}
 
@@ -140,25 +175,44 @@ ${(args.visualContexts || []).map((context, index) => `${index + 1}. ${context}`
 ${priorityContract(args.priority)}
 ${freedomContract(args.freedom)}
 
-SUBMITTED DIRECTIONS
+SUBMITTED PRIVATE DRAFTS
 ${args.directionsJson}
+
+HARD SOURCE-RELATIVE CONCISION CONTRACT
+Source refrain: ${args.refrainBudget?.sourceRefrain || "Use the recurring source declaration above."}
+Source word count: ${args.refrainBudget?.sourceWordCount ?? "unknown"}
+Maximum option word count: ${args.refrainBudget?.maximumWordCount ?? 12}
+Source character count: ${args.refrainBudget?.sourceCharacterCount ?? "unknown"}
+Maximum option character count: ${args.refrainBudget?.maximumCharacterCount ?? 120}
+Maximum sentences: ${args.refrainBudget?.maximumSentenceCount ?? 1}
+Maximum clauses: ${args.refrainBudget?.maximumClauseCount ?? 2}
+Maximum semantic lines: 2
 
 SOURCE-GROUNDING RULE FOR THIS GATE
 The corrected English is authoritative for who is being addressed. Do not infer that a recurring refrain must be singular merely because one spread visually foregrounds one friend. If the source declaration says "you all" or otherwise addresses the wider group, plural Slovenian such as "vas" can faithfully serve as the fixed book-level refrain while surrounding scene lines describe a singular featured friend. Conversely, do not require one fixed refrain to encode every scene-specific noun number.
 
-For every prospective finalist, separately verify:
-1. baselinePass: natural grammatical Slovenian refrain/device, source and picture fidelity, no unsupported invention, suitable child read-aloud language, resolved gender;
-2. directionPass: it genuinely delivers the locked parent priority and declared literary approach;
-3. rhymePass: at this direction stage, whether the proposed structure presents a credible path to genuine phonetic spoken-Slovenian rhyme and usable cadence without exhausting or forcing a rhyme family. A standalone refrain does not need to rhyme by itself because no paired line has been written yet;
+Use this strict priority order: (1) fidelity to source meaning, (2) natural contemporary Slovenian, (3) refrain-like concision and repeatability, (4) read-aloud rhythm, and then (5) rhyme without harming the first four. Privately verify source and picture fidelity, no unsupported invention, child-friendly language, resolved gender, and locked-priority compliance.
+When RHYME AND READ-ALOUD RHYTHM is locked, every standalone refrain must itself contain convincing spoken rhyme. Do not defer rhyme until later page text. A merely rhythmic or unrhymed refrain fails. Declare every rhyme pair in rhymePairs. Each pair's exact ending words must occur at line or phrase endings, be different words, and rhyme phonetically in continuous Slovenian.
 
-Editorial process:
-- compare all six candidates and retain three materially different structural approaches;
+Editorial process (perform privately; do not return analysis or scores):
+- compare all supplied valid candidates and return three visibly contrasting creative forms, not three simple declarations or minor variations;
+- return exactly one construction of each assigned type:
+  1. couplet: exactly two short visual lines whose endings form a genuine spoken rhyme;
+  2. playful_hook: a compact refrain with observable, purposeful echo/repetition or wordplay and at least one genuine rhyme pair;
+  3. lyrical_refrain: one flowing visual line made of two balanced phrases, without repeated hook words, with a genuine rhyme pair;
+- construction labels are claims the wording must visibly prove; never attach a label to text that lacks its structural properties;
+- the server may send only two or more private candidates that passed deterministic rules. Treat survivors as inspiration. If an assigned construction is missing, independently write it from the authoritative source; never derive two finalists from the same seed;
+- use a different non-negative sourceCandidateIndex for each finalist developed from a survivor. When only two survivors are supplied, independently create exactly one missing assigned construction from the source, set its sourceCandidateIndex to -1, and do not reuse either seed's wording, opening, clause order, or rhyme pair;
+- ensure the set has visibly different openings, clause order, phrase inventory, repetition pattern, rhyme pairs, and structural form; sharing the same declaration with small changes does not count;
+- when quality is equal, prefer the set with greater imaginative range for the parent;
+- keep every final refrain within the exact source-relative word, character, sentence, clause, and line budgets above;
+- substantially shorten overlong survivors before returning them; never select one merely to fill three slots;
+- reject or compress any option that becomes a miniature verse, adds explanatory question-and-answer absent from the source, introduces new characters/actions/settings/imagery, adds a scene consequence, repeats words as padding, or requires theatrical/inverted Slovenian;
 - silently repair inconsistent rhyme schemes, stiff wording, unsupported actions, density problems, or weak spoken rhyme;
 - after repairing, re-check the complete direction against every gate;
-- return exactly three distinct, parent-ready directions with exact Slovenian refrain/device wording;
+- return exactly three distinct, parent-ready options with an exact Slovenian refrain, a short English label, a concise structural description, and only the gender dependency needed by downstream translation;
 - preserve source fidelity and the parent's locked priority; never weaken either to fill a slot;
-- set every pass field to true only after the returned direction itself satisfies that gate;
-- output only the required three finalists, including the source direction index each developed from.
+- output only the required three options, including sourceCandidateIndex, construction, and all exact rhymePairs used for private server validation.
 
 Never output slash forms, placeholders, "čisto do gobic", invented love-growing-like-mushrooms meaning, incomplete Slovenian, forced rhyme, or narrator-gender ambiguity. Reject actual unsupported claims, but do not reject a direction merely for a hypothetical risk that can be resolved naturally while writing the finished verse. Finished-verse rhyme enforcement still happens on every generated translation.`;
 }

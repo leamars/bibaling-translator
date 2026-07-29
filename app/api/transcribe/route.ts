@@ -91,7 +91,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return generationError(
       error,
-      "I couldn’t read this page reliably. Your photo is still here—please type the text or try again."
+      "We couldn’t read this page reliably. Your photo is still here—please type the text or try again."
     );
   }
 }
