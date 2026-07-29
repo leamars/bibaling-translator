@@ -118,7 +118,7 @@ export default function Home() {
           await wait(2200);
         }
       }
-      if (!result) throw new Error("I couldn’t read this spread.");
+      if (!result) throw new Error("I couldn’t read this book photo.");
       setSpreads((current) => current.map((spread) =>
         spread.id === id
           ? { ...spread, text: result.text, uncertainty: result.uncertainty, error: null, status: "done" }
@@ -127,7 +127,7 @@ export default function Home() {
     } catch (error) {
       setSpreads((current) => current.map((spread) =>
         spread.id === id
-          ? { ...spread, error: error instanceof Error ? error.message : "I couldn’t read this spread.", status: "error" }
+          ? { ...spread, error: error instanceof Error ? error.message : "I couldn’t read this book photo.", status: "error" }
           : spread
       ));
     }
@@ -294,7 +294,7 @@ export default function Home() {
       setStep(6);
       setRequest({ loading: false, error: null });
     } catch (error) {
-      setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write Spread 1." });
+      setRequest({ loading: false, error: error instanceof Error ? error.message : "I couldn’t write the first page." });
     }
   }
 
@@ -435,12 +435,13 @@ export default function Home() {
         {step === 1 && (
           <>
             <p className="kicker">Book workshop</p>
-            <h1>Add the first three spreads.</h1>
-            <p className="lead">We’ll use them to find a Slovenian voice that feels right before working through the whole book.</p>
+            <h1>Add the first three book photos.</h1>
+            <p className="lead">Photograph two facing pages together. We’ll use the first three photos to find a Slovenian voice that feels right before working through the whole book.</p>
+            <figure className="photo-guide"><img src="/photo-guide.svg" alt="A phone held above an open picture book, with both pages fully visible and readable." /><figcaption><strong>Photograph the whole open book</strong><span>Keep both pages flat, fully in frame, and easy to read.</span></figcaption></figure>
             <div className="uploads">
               {spreads.map((spread, index) => (
                 <label className="photo" key={spread.id}>
-                  <img src={spread.preview} alt={`Book spread ${index + 1}`} />
+                  <img src={spread.preview} alt={`Book photo ${index + 1}`} />
                   <input type="file" accept="image/*" onChange={(event) => chooseFile(event, spread.id)} />
                   <span>Replace</span>
                 </label>
@@ -449,7 +450,7 @@ export default function Home() {
                 <label className="drop" onDrop={drop} onDragOver={(event) => event.preventDefault()}>
                   <input type="file" accept="image/*" multiple onChange={(event) => chooseFile(event)} />
                   <strong>+</strong>
-                  <span>{spreads.length ? "Add the remaining spreads" : "Drop three book photos here"}</span>
+                  <span>{spreads.length ? "Add the remaining book photos" : "Drop three book photos here"}</span>
                   <small>or click to choose multiple images</small>
                 </label>
               )}
@@ -567,8 +568,8 @@ export default function Home() {
 
         {step === 6 && lockedDirection && (
           <>
-            <p className="kicker">Spread 1 workshop</p>
-            <h1>Let’s test the voice on one spread.</h1>
+            <p className="kicker">First page workshop</p>
+            <h1>Let’s test the voice on the first page.</h1>
             <p className="lead">Choose from three Slovenian possibilities that have each passed the locked brief.</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
             <Source spread={spreads[0]} number={1} />
@@ -586,9 +587,9 @@ export default function Home() {
           <>
             <p className="kicker">Pattern test</p>
             <h1>Does the voice travel?</h1>
-            <p className="lead">Choose and edit one option for each spread. Spread 1 stays beside us as the voice reference.</p>
+            <p className="lead">Choose and edit one option for each page. The first page stays beside us as the voice reference.</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
-            {request.loading && <div className="generation-state"><span className="spinner" />Applying the approved voice and checking both spreads…</div>}
+            {request.loading && <div className="generation-state"><span className="spinner" />Applying the approved voice and checking both pages…</div>}
             {!request.loading && [2, 3].map((number) => (
               <section className="pattern-section" key={number}>
                 <Source spread={spreads[number - 1]} number={number} />
@@ -602,7 +603,7 @@ export default function Home() {
               </section>
             ))}
             {request.error && <GenerationError message={request.error} retry={retry} />}
-            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(6)}>Back to Spread 1</button><button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button></nav>
+            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(6)}>Back to the first page</button><button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button></nav>
           </>
         )}
 
@@ -610,13 +611,13 @@ export default function Home() {
           <>
             <p className="kicker">Voice review</p>
             <h1>{voiceLocked ? "The voice is locked." : "Do these belong in the same book?"}</h1>
-            <p className="lead">{voiceLocked ? "These three approved spreads are now the voice reference for the rest of the book." : "Read them aloud together. You can still tune any line before confirming."}</p>
+            <p className="lead">{voiceLocked ? "These three approved pages are now the voice reference for the rest of the book." : "Read them aloud together. You can still tune any line before confirming."}</p>
             <LockedBrief direction={lockedDirection} priority={priority} />
             <div className="approved-grid">
               {[1, 2, 3].map((number) => (
                 <article className="approved-card" key={number}>
-                  <img src={spreads[number - 1].preview} alt={`Spread ${number}`} />
-                  <label>Spread {number}</label>
+                  <img src={spreads[number - 1].preview} alt={`Book page ${number}`} />
+                  <label>Page {number}</label>
                   <textarea disabled={voiceLocked} value={approvedDrafts[number] || ""} onChange={(event) => setApprovedDrafts((current) => ({ ...current, [number]: event.target.value }))} />
                   {approvedNotes[number] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[number]}</p>}
                 </article>
@@ -626,7 +627,7 @@ export default function Home() {
               <nav><button className="secondary" onClick={() => setStep(7)}>Rework the pattern</button><button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={() => setVoiceLocked(true)}>Yes, the voice feels consistent</button></nav>
             ) : (
               <>
-                <div className="locked-confirmation"><span>Locked by parent</span><p>The exact refrain and these approved drafts will guide every later spread.</p></div>
+                <div className="locked-confirmation"><span>Locked by parent</span><p>The exact refrain and these approved drafts will guide every later page.</p></div>
                 <button className="primary" onClick={startRestOfBook}>Add the rest of the book</button>
               </>
             )}
@@ -637,7 +638,7 @@ export default function Home() {
           <>
             <p className="kicker">The rest of the book</p>
             <h1>Now put the whole book in order.</h1>
-            <p className="lead">Drop all the remaining spread photos at once. Then drag every card—including the first three—until the sequence matches the physical book.</p>
+            <p className="lead">Drop all the remaining book photos at once. Then drag every card—including the first three—until the sequence matches the physical book.</p>
             <label
               className="rest-drop"
               onDrop={(event) => { event.preventDefault(); void addRemainingFiles(event.dataTransfer.files); }}
@@ -645,12 +646,12 @@ export default function Home() {
             >
               <input type="file" accept="image/*" multiple onChange={(event) => { void addRemainingFiles(event.target.files ?? undefined); event.target.value = ""; }} />
               <strong>+</strong>
-              <span>Drop all remaining spread photos here</span>
+              <span>Drop all remaining book photos here</span>
               <small>or click to choose multiple images</small>
             </label>
 
             <div className="order-heading">
-              <div><strong>Book order</strong><small>{bookPages.length} spreads · drag to rearrange</small></div>
+              <div><strong>Book order</strong><small>{bookPages.length} photos · drag to rearrange</small></div>
               {bookOrderLocked && <span>Order confirmed</span>}
             </div>
             <div className="book-order">
@@ -669,14 +670,14 @@ export default function Home() {
                   }}
                 >
                   <div className="page-number">{index + 1}</div>
-                  <img src={page.preview} alt={`Book spread ${index + 1}`} />
+                  <img src={page.preview} alt={`Book photo ${index + 1}`} />
                   <div className="page-order-meta">
                     <strong>{page.fileName}</strong>
-                    <small>{page.approvedText ? "Approved voice sample" : "New spread"}</small>
+                    <small>{page.approvedText ? "Approved voice sample" : "New book photo"}</small>
                   </div>
                   <div className="order-buttons">
-                    <button type="button" disabled={index === 0} onClick={() => nudgeBookPage(index, -1)} aria-label={`Move spread ${index + 1} earlier`}>←</button>
-                    <button type="button" disabled={index === bookPages.length - 1} onClick={() => nudgeBookPage(index, 1)} aria-label={`Move spread ${index + 1} later`}>→</button>
+                    <button type="button" disabled={index === 0} onClick={() => nudgeBookPage(index, -1)} aria-label={`Move photo ${index + 1} earlier`}>←</button>
+                    <button type="button" disabled={index === bookPages.length - 1} onClick={() => nudgeBookPage(index, 1)} aria-label={`Move photo ${index + 1} later`}>→</button>
                   </div>
                 </article>
               ))}
@@ -687,7 +688,7 @@ export default function Home() {
                 {bookOrderLocked ? "Order confirmed" : "This order is right"}
               </button>
             </nav>
-            {bookOrderLocked && <div className="locked-confirmation"><span>Ready for the next stage</span><p>The full book order is saved in this session. Next, Bibaling can read and workshop the remaining spreads one at a time.</p></div>}
+            {bookOrderLocked && <div className="locked-confirmation"><span>Ready for the next stage</span><p>The full book order is saved in this session. Next, Bibaling can read and workshop the remaining pages one at a time.</p></div>}
           </>
         )}
       </section>
@@ -775,8 +776,8 @@ function LockedBrief({ direction, priority }: { direction: Direction; priority: 
 function Source({ spread, number }: { spread: Spread; number: number }) {
   return (
     <article className="source-card">
-      <img src={spread.preview} alt={`Spread ${number}`} />
-      <div><span>English source · Spread {number}</span><p>{spread.text}</p></div>
+      <img src={spread.preview} alt={`Book page ${number}`} />
+      <div><span>English source · Page {number}</span><p>{spread.text}</p></div>
     </article>
   );
 }
