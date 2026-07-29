@@ -35,7 +35,7 @@ const directionSchema = z.object({
 const bodySchema = z.discriminatedUnion("mode", [
   z.object({
     mode: z.literal("spread1"),
-    image: z.string().startsWith("data:image/"),
+    visualContext: z.string().min(1),
     source: z.string().min(1),
     priority: z.enum(["rhythm", "meaning", "simple"]),
     freedom: z.enum(["close", "natural", "playful"]),
@@ -43,7 +43,7 @@ const bodySchema = z.discriminatedUnion("mode", [
   }),
   z.object({
     mode: z.literal("pattern"),
-    images: z.array(z.string().startsWith("data:image/")).length(2),
+    visualContexts: z.array(z.string().min(1)).length(2),
     sources: z.array(z.string().min(1)).length(2),
     priority: z.enum(["rhythm", "meaning", "simple"]),
     freedom: z.enum(["close", "natural", "playful"]),
@@ -55,7 +55,7 @@ const bodySchema = z.discriminatedUnion("mode", [
     mode: z.literal("fullbook"),
     spreads: z.array(z.object({
       spread: z.number().int().positive(),
-      image: z.string().startsWith("data:image/"),
+      visualContext: z.string().min(1),
       source: z.string().min(1)
     })).min(1).max(40),
     priority: z.enum(["rhythm", "meaning", "simple"]),
@@ -193,7 +193,7 @@ function fullBookJsonSchema(spreadCount: number, editorial: boolean) {
 type PipelineArgs = {
   client: NonNullable<ReturnType<typeof openAIClient>>;
   model: string;
-  image: string;
+  visualContext: string;
   spreadNumber: number;
   source: string;
   priority: Priority;
@@ -223,14 +223,14 @@ async function generatePassingOptions(args: PipelineArgs) {
               text: translationGenerationPrompt({
                 spreadNumber: args.spreadNumber,
                 source: args.source,
+                visualContext: args.visualContext,
                 priority: args.priority,
                 freedom: args.freedom,
                 direction: args.direction,
                 approvedSpread1: args.approvedSpread1,
                 approvedSpread1Note: args.approvedSpread1Note
               })
-            },
-            { type: "input_image", image_url: args.image, detail: "high" }
+            }
           ]
         }],
         text: { format: { type: "json_schema", name: "private_translation_candidates", strict: true, schema: candidateJsonSchema } }
@@ -262,6 +262,7 @@ async function generatePassingOptions(args: PipelineArgs) {
               text: translationEvaluationPrompt({
                 spreadNumber: args.spreadNumber,
                 source: args.source,
+                visualContext: args.visualContext,
                 priority: args.priority,
                 freedom: args.freedom,
                 direction: args.direction,
@@ -269,8 +270,7 @@ async function generatePassingOptions(args: PipelineArgs) {
                 approvedSpread1Note: args.approvedSpread1Note,
                 candidatesJson: JSON.stringify(survivors)
               })
-            },
-            { type: "input_image", image_url: args.image, detail: "high" }
+            }
           ]
         }],
         text: { format: { type: "json_schema", name: "translation_editorial_finalists", strict: true, schema: editorialJsonSchema() } }
@@ -304,13 +304,8 @@ async function generateFullBook(args: {
     maxOutputTokens: 5_000,
     callCount: 2
   });
-  const imageContent = input.spreads.map((spread) => ({
-    type: "input_image" as const,
-    image_url: spread.image,
-    detail: "high" as const
-  }));
   const promptArgs = {
-    spreads: input.spreads.map(({ spread, source }) => ({ spread, source })),
+    spreads: input.spreads.map(({ spread, source, visualContext }) => ({ spread, source, visualContext })),
     priority: input.priority,
     freedom: input.freedom,
     direction: input.direction,
@@ -329,8 +324,7 @@ async function generateFullBook(args: {
       input: [{
         role: "user",
         content: [
-          { type: "input_text", text: fullBookGenerationPrompt(promptArgs) },
-          ...imageContent
+          { type: "input_text", text: fullBookGenerationPrompt(promptArgs) }
         ]
       }],
       text: { format: { type: "json_schema", name: "full_book_drafts", strict: true, schema: fullBookJsonSchema(input.spreads.length, false) } }
@@ -356,8 +350,7 @@ async function generateFullBook(args: {
           {
             type: "input_text",
             text: fullBookEditorialPrompt({ ...promptArgs, draftsJson: JSON.stringify(drafts.spreads) })
-          },
-          ...imageContent
+          }
         ]
       }],
       text: { format: { type: "json_schema", name: "full_book_final", strict: true, schema: fullBookJsonSchema(input.spreads.length, true) } }
@@ -433,7 +426,7 @@ export async function POST(request: Request) {
         options: await generatePassingOptions({
           client,
           model,
-          image: input.image,
+          visualContext: input.visualContext,
           spreadNumber: 1,
           source: input.source,
           priority: input.priority,
@@ -460,7 +453,7 @@ export async function POST(request: Request) {
         options: await generatePassingOptions({
           client,
           model,
-          image: input.images[index],
+          visualContext: input.visualContexts[index],
           spreadNumber,
           source: input.sources[index],
           priority: input.priority,
