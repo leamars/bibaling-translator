@@ -168,3 +168,17 @@ textarea:disabled { color: var(--muted); background: #f5f6f3; cursor: wait; }
 @media (max-width: 460px) {
   .book-order { grid-template-columns: 1fr; }
 }
+
+.photo-guide {
+  width: min(720px, 100%);
+  margin: 28px 0 34px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--paper);
+  box-shadow: 0 14px 34px rgba(66, 51, 38, 0.08);
+}
+.photo-guide img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+.photo-guide figcaption { display: flex; gap: 6px; flex-direction: column; padding: 16px 20px 18px; color: var(--muted); }
+.photo-guide figcaption strong { color: var(--ink); font-size: 1rem; }
+.photo-guide figcaption span { font-size: 0.9rem; line-height: 1.45; }

@@ -581,6 +581,13 @@ export default function Home() {
             <p className="kicker">Book workshop</p>
             <h1>Add the first three spreads.</h1>
             <p className="lead">We’ll use them to find a Slovenian voice that feels right before working through the whole book.</p>
+            <figure className="photo-guide">
+              <img src="/photo-guide.png" alt="A phone photographing an entire open picture book, with both facing pages fully visible." />
+              <figcaption>
+                <strong>Photograph the whole open book</strong>
+                <span>Keep both pages flat, fully in frame, and easy to read.</span>
+              </figcaption>
+            </figure>
             {mockMode && spreads.length === 0 && (
               <button className="secondary mock-load" type="button" onClick={loadMockBook}>Load a mock book</button>
             )}
