@@ -1,11 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
 
-export default function TranslateLink({ className = "" }: { className?: string }) {
+export default function TranslateLink({
+  className = "",
+  children = "Translate your book"
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   const [href, setHref] = useState("/translate");
 
   useEffect(() => {
@@ -31,5 +38,5 @@ export default function TranslateLink({ className = "" }: { className?: string }
     setHref(params.size ? `/translate?${params}` : "/translate");
   }, []);
 
-  return <Link className={className} href={href}>Translate a book</Link>;
+  return <Link className={className} href={href}>{children}</Link>;
 }

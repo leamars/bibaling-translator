@@ -30,12 +30,12 @@ test("shared header and footer link only to live internal routes", async () => {
   assert.match(chrome, /TranslateLink/);
 });
 
-test("all calls to action use the single Translate a book label", async () => {
+test("all calls to action use the single Translate your book label", async () => {
   const link = await readFile(new URL("../app/components/TranslateLink.tsx", import.meta.url), "utf8");
   const siteFiles = await Promise.all(routes
     .filter((route) => route !== "/translate")
     .map((route) => readFile(routeFile(route), "utf8")));
-  assert.match(link, />Translate a book</);
+  assert.match(link, /Translate your book/);
   for (const source of siteFiles) {
     assert.doesNotMatch(source, />\s*(Sign up|Get started|Try now)\s*</i);
   }
@@ -58,12 +58,29 @@ test("sitewide analytics consent is shared with the email gate", async () => {
   assert.match(translator, /bibaling:analytics-consent/);
 });
 
-test("the illustrated homepage has an intentional mobile layout", async () => {
+test("the approved playful homepage has human family imagery and an intentional mobile layout", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
-  const styles = await readFile(new URL("../app/styles.css", import.meta.url), "utf8");
-  await access(new URL("../public/bibaling-family-reading.png", import.meta.url));
-  assert.match(page, /bibaling-family-reading\.png/);
-  assert.match(page, /className="hero-visual"/);
-  assert.match(styles, /@media \(max-width: 760px\)/);
+  const styles = await readFile(new URL("../app/homepage.css", import.meta.url), "utf8");
+  await access(new URL("../public/images/hero-family.webp", import.meta.url));
+  await access(new URL("../public/images/bedtime-reading.webp", import.meta.url));
+  assert.match(page, /Read their[\s\S]*favourite books[\s\S]*in your language/);
+  assert.match(page, /hero-family\.webp/);
+  assert.match(page, /bedtime-reading\.webp/);
+  assert.match(page, /We handle the translation/);
+  assert.match(page, /You handle bedtime/);
+  assert.doesNotMatch(page, /We do the translating|You do the voices|What happens after the first page/);
+  assert.match(styles, /@media \(max-width: 780px\)/);
   assert.match(styles, /\.hero\s*\{[\s\S]*?grid-template-columns:\s*1fr/);
+});
+
+test("homepage book demo pages through balanced Spanish, Slovenian, and German rhymes", async () => {
+  const demo = await readFile(new URL("../app/HomeBookDemo.tsx", import.meta.url), "utf8");
+  for (const language of ["Español", "Slovenščina", "Deutsch"]) {
+    assert.match(demo, new RegExp(language));
+  }
+  assert.match(demo, /englishLines\.map/);
+  assert.match(demo, /translation\.lines\.map/);
+  assert.match(demo, /aria-live="polite"/);
+  assert.match(demo, /Show previous language/);
+  assert.match(demo, /Show next language/);
 });
