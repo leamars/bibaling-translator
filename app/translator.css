@@ -29,11 +29,7 @@
 
 body:has(.translator-shell) { overflow-x: hidden; }
 body:has(.translator-shell) .consent-banner {
-  width: min(660px, calc(100% - 32px));
-  border: 1.5px solid var(--ink);
-  border-radius: 20px;
-  background: var(--paper);
-  box-shadow: 5px 6px 0 var(--ink);
+  width: min(530px, calc(100% - 32px));
 }
 body:has(.translator-shell) .consent-banner strong {
   color: var(--ink);
@@ -41,10 +37,6 @@ body:has(.translator-shell) .consent-banner strong {
 }
 body:has(.translator-shell) .consent-banner p { color: var(--muted); }
 body:has(.translator-shell) .consent-actions { flex-wrap: wrap; }
-body:has(.translator-shell) .consent-actions .primary {
-  color: var(--ink);
-  background: var(--sun);
-}
 
 .translator-shell::before,
 .translator-shell::after {
