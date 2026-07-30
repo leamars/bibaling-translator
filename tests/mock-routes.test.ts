@@ -112,9 +112,9 @@ test("all long-running client states use non-repeating rotating copy", async () 
   assert.match(page, /5000 \+ Math\.floor\(Math\.random\(\) \* 3001\)/);
   assert.match(page, /shuffledMessages\(messages\)/);
   assert.match(page, /readingLoadingMessages/);
-  assert.match(page, /translationLoadingMessages/);
+  assert.match(page, /translationLoadingMessagesFor/);
   assert.match(page, /patternLoadingMessages/);
-  assert.match(page, /fullBookLoadingMessages/);
+  assert.match(page, /fullBookLoadingMessagesFor/);
   assert.match(page, /classificationLoadingMessages/);
   assert.doesNotMatch(page, /<div className="generation-state"/);
 });

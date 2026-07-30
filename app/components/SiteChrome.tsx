@@ -19,7 +19,7 @@ const legalLinks = [
 
 export function SiteHeader() {
   const pathname = usePathname();
-  if (pathname === "/") return null;
+  if (pathname === "/" || pathname === "/translate") return null;
 
   return (
     <header className="site-header">
@@ -36,7 +36,7 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   const pathname = usePathname();
-  if (pathname === "/") return null;
+  if (pathname === "/" || pathname === "/translate") return null;
 
   return (
     <footer className="site-footer">

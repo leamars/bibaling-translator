@@ -175,8 +175,7 @@ export default function Translator() {
   const classifierAbort = useRef<AbortController | null>(null);
 
   const progress = useMemo(() => {
-    const position = workshopProgress(bookForm, step);
-    return `${position.current} of ${position.total}`;
+    return workshopProgress(bookForm, step);
   }, [bookForm, step]);
 
   useEffect(() => {
@@ -893,18 +892,30 @@ export default function Translator() {
   );
 
   return (
-    <main className="translator-shell">
+    <main className={`translator-shell translator-step-${step}`}>
       <div className="workshop-header">
-        <button className="brand workshop-reset" type="button" onClick={() => setStep(1)}>bibaling workshop</button>
+        <button className="brand workshop-reset" type="button" onClick={() => setStep(1)} aria-label="Return to the start of the Bibaling translator">
+          <span className="brand-mark" aria-hidden="true"><span /><span /></span>
+          <span>Bibaling</span>
+        </button>
         <div className="header-tools">
           <button className={mockMode ? "mock-toggle active" : "mock-toggle"} type="button" onClick={toggleMockMode}>
             Mock mode {mockMode ? "on" : "off"}
           </button>
-          <div className="progress"><span>{progress}</span><i><b style={{ width: `${step / 10 * 100}%` }} /></i></div>
+          <div className="progress" aria-label={`Step ${progress.current} of ${progress.total}`}>
+            <span>{progress.current} of {progress.total}</span>
+            <i role="progressbar" aria-valuemin={1} aria-valuemax={progress.total} aria-valuenow={progress.current}>
+              <b style={{ width: `${progress.current / progress.total * 100}%` }} />
+            </i>
+          </div>
         </div>
       </div>
 
       <section className="workshop">
+        <div className="workshop-orientation" aria-hidden="true">
+          <span />
+          English to Slovenian
+        </div>
         {step === 1 && (
           <>
             <h1>Add every page from your book.</h1>
@@ -1164,7 +1175,7 @@ export default function Translator() {
             <p className="lead">Choose and edit the strongest Slovenian version.</p>
             <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} />
             <Source spread={spreads[0]} number={1} onExpand={setExpandedImage} />
-            {request.loading && <ProgressLog messages={translationLoadingMessages} />}
+            {request.loading && <ProgressLog messages={translationLoadingMessagesFor(bookForm)} />}
             {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} onNote={updateSpread1Note} />}
             {request.error && <GenerationError message={request.error} retry={retry} />}
             {!request.loading && emailGateVisible && !emailCaptured && spread1Options.length > 0 && (
@@ -1230,7 +1241,7 @@ export default function Translator() {
               <p>{approvedSpread1}</p>
               {approvedNotes[1] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[1]}</p>}
             </article>
-            {deliveryJob.status === "processing" && <ProgressLog messages={fullBookLoadingMessages} />}
+            {deliveryJob.status === "processing" && <ProgressLog messages={fullBookLoadingMessagesFor(bookForm)} />}
             {deliveryJob.error && <GenerationError message={deliveryJob.error} retry={() => setStep(7)} />}
           </>
         )}
@@ -1349,7 +1360,7 @@ export default function Translator() {
                   ))}
                 </div>
                 <ProgressLog
-                  messages={fullBookLoadingMessages}
+                  messages={fullBookLoadingMessagesFor(bookForm)}
                   activePage={activeBookPageIndex >= 0 ? {
                     number: activeBookPageIndex + 1,
                     preview: bookPages[activeBookPageIndex].preview,
@@ -1442,16 +1453,13 @@ const readingLoadingMessages = [
   "Giving the transcription one last check…"
 ];
 
-const translationLoadingMessages = [
+const sharedTranslationLoadingMessages = [
   "Trying several Slovenian versions…",
   "Listening to each version aloud…",
   "Checking the meaning against the page…",
   "Finding a more natural rhythm…",
-  "Trying another rhyme structure…",
-  "Keeping the approved refrain exact…",
   "Making the Slovenian feel effortless…",
   "Comparing the strongest drafts…",
-  "Checking every ending aloud…",
   "Keeping the picture details intact…",
   "Polishing the most promising version…",
   "Making sure the narrator sounds consistent…",
@@ -1460,10 +1468,37 @@ const translationLoadingMessages = [
   "Keeping the language clear for children…",
   "Testing the cadence one more time…",
   "Looking for the warmest natural phrasing…",
-  "Making the rhyme work in real speech…",
   "Giving the strongest choices a final read…",
   "Preparing three choices for you…"
 ];
+
+const proseTranslationLoadingMessages = [
+  "Following the story from one moment to the next…",
+  "Keeping the storytelling warm and clear…",
+  "Checking that every picture detail still belongs…",
+  ...sharedTranslationLoadingMessages
+];
+
+const continuousVerseLoadingMessages = [
+  "Listening for the poem’s natural movement…",
+  "Checking the line breaks aloud…",
+  "Preserving the source’s own sound pattern…",
+  ...sharedTranslationLoadingMessages
+];
+
+const refrainTranslationLoadingMessages = [
+  "Trying another rhyme structure…",
+  "Keeping the approved refrain exact…",
+  "Checking every ending aloud…",
+  "Making the rhyme work in real speech…",
+  ...sharedTranslationLoadingMessages
+];
+
+function translationLoadingMessagesFor(bookForm: BookForm) {
+  if (bookForm === "prose_story") return proseTranslationLoadingMessages;
+  if (bookForm === "continuous_verse") return continuousVerseLoadingMessages;
+  return refrainTranslationLoadingMessages;
+}
 
 const patternLoadingMessages = [
   "Carrying your approved voice forward…",
@@ -1472,24 +1507,34 @@ const patternLoadingMessages = [
   "Applying your edits to the next choices…",
   "Checking both pages side by side…",
   "Making sure the voice travels naturally…",
-  ...translationLoadingMessages
+  ...refrainTranslationLoadingMessages
 ];
 
-const fullBookLoadingMessages = [
+const sharedFullBookLoadingMessages = [
   "Reading the remaining pages…",
   "Following the story from beginning to end…",
   "Carrying your approved voice through the book…",
-  "Applying your rhyme feedback everywhere…",
   "Keeping repeated language consistent…",
   "Checking the full story arc…",
   "Making each page sound like the same book…",
   "Checking every page against its picture…",
-  "Listening for repeated rhyme problems…",
   "Polishing the book as one continuous read…",
   "Making sure no page was skipped…",
-  "Preparing the complete editable draft…",
-  ...translationLoadingMessages
+  "Preparing the finished translation for your email…"
 ];
+
+function fullBookLoadingMessagesFor(bookForm: BookForm) {
+  const formSpecific = bookForm === "prose_story"
+    ? proseTranslationLoadingMessages
+    : bookForm === "continuous_verse"
+      ? continuousVerseLoadingMessages
+      : [
+          "Applying your rhyme feedback everywhere…",
+          "Listening for repeated rhyme problems…",
+          ...refrainTranslationLoadingMessages
+        ];
+  return [...sharedFullBookLoadingMessages, ...formSpecific];
+}
 
 function shuffledMessages(messages: readonly string[]) {
   const shuffled = [...messages];
@@ -1567,7 +1612,7 @@ function ProgressLog({
       <RotatingThinkingLine messages={messages} />
       {showReassurance && (
         <div className="progress-log-footer">
-          <p>Good verse takes a little longer—we’re checking this carefully.</p>
+          <p>We’re checking this carefully—it can take a little longer.</p>
         </div>
       )}
     </div>

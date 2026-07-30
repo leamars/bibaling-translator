@@ -20,7 +20,7 @@ Bibaling creates no secondary database copy. Workflow inputs, step arguments, an
 
 ## GA4
 
-Configure `NEXT_PUBLIC_GA_MEASUREMENT_ID`. GA4 remains inactive until explicit analytics consent. Events never include email, book content, images, filenames, feedback, prompts, translation output, Resend identifiers, signed receipts, job tokens, or a custom session identifier.
+The approved GA4 property is `G-EK8PPEVG54` and may be overridden with `NEXT_PUBLIC_GA_MEASUREMENT_ID`. GA4 remains inactive until explicit analytics consent: Bibaling dynamically loads `gtag.js` only after consent rather than installing Google’s unconditional page snippet. Events never include email, book content, images, filenames, feedback, prompts, translation output, Resend identifiers, signed receipts, job tokens, or a custom session identifier.
 
 Register these event-scoped custom dimensions:
 
