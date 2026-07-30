@@ -15,6 +15,7 @@ import {
 } from "../app/api/translation-prompts.ts";
 import { createLeadReceipt, verifyLeadReceipt } from "../app/api/leads/receipt.ts";
 import { runMockEvaluation } from "../scripts/multilingual-evaluation.ts";
+import { MULTILINGUAL_EVALUATION_FIXTURES } from "./fixtures/multilingual-evaluation-fixtures.ts";
 
 const base = {
   priority: "rhythm" as const,
@@ -121,7 +122,11 @@ test("mock evaluation covers six languages and six literary fixtures", async () 
   const records = await runMockEvaluation();
   assert.equal(records.length, 36);
   assert.deepEqual(new Set(records.map((record) => record.targetLanguage)), new Set(["es", "de", "it", "hr", "sr", "sl"]));
-  assert.deepEqual(new Set(records.map((record) => record.category)), new Set(["prose", "dialogue", "verse", "refrain", "wordplay", "baby_language"]));
+  assert.deepEqual(new Set(records.map((record) => record.category)), new Set(["dialogue", "verse", "refrain", "wordplay", "baby_language"]));
+  assert.deepEqual(
+    new Set(MULTILINGUAL_EVALUATION_FIXTURES.map((fixture) => fixture.sourceBook)),
+    new Set(["I Love You So Mush", "Llama Llama Red Pajama"])
+  );
   assert.ok(records.every((record) => record.draftingOptions.length === 6));
   assert.ok(records.every((record) => record.editorialAssessment.length === 3));
 });

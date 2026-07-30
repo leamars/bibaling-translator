@@ -24,16 +24,20 @@ These configurations are not claims of native-speaker validation. Each pack is d
 
 ## Evaluation inputs
 
-`tests/fixtures/multilingual-evaluation-fixtures.ts` contains six non-canonical fixtures:
+`tests/fixtures/multilingual-evaluation-fixtures.ts` contains six transcribed spreads from the
+local **I Love You So Mush** and **Llama Llama Red Pajama** evaluation page sets:
 
-1. warm prose;
-2. dialogue and a joke;
-3. non-rhyming continuous verse;
-4. repeating-refrain consistency;
-5. rhyme/wordplay without a direct structural equivalent;
-6. simple baby language.
+1. affectionate mushroom refrain and MUSH wordplay;
+2. linked-hands motion, end rhyme, and refrain consistency;
+3. jelly-fungus movement and move/groove wordplay;
+4. compact Llama Llama bedtime verse;
+5. Mama’s direct speech and tizzy/busy/llama-drama wordplay;
+6. extremely simple closing language without forced rhyme.
 
 Each fixture records its English source, visual context, book form, source-rhyme treatment, parent priority, adaptation freedom, and review requirements. It intentionally does not define one correct translation.
+
+These two books do not provide an ordinary-prose sample. The controlled Spanish run therefore
+does not validate `prose_story`; a later evaluation needs a real prose picture-book source.
 
 ## Artifact format
 
@@ -68,3 +72,19 @@ CONFIRM_MULTILINGUAL_LIVE=RUN_MULTILINGUAL_EVALUATION \
 ```
 
 The live run performs drafting and independent editorial calls for every fixture/language combination. Use a narrower reviewed subset before enabling the complete matrix if cost or latency is a concern.
+
+## Controlled Spanish review
+
+The first paid review has its own stricter harness. It is locked to neutral contemporary Spanish
+from Spain (`es-ES`), performs one book-level refrain drafting/editorial setup for the mushroom
+spreads, then one drafting and one editorial call for each of the six spreads. It makes no automatic
+retries and records prompts, candidates, assessments, warnings, timing, token usage, and estimated
+cost.
+
+It must not run until the inputs have been explicitly approved:
+
+```bash
+CONFIRM_SPANISH_LIVE=RUN_SPANISH_EVALUATION \
+  node --env-file=.env.local --experimental-strip-types \
+  scripts/live-spanish-evaluation.ts --live --language=es-ES
+```
