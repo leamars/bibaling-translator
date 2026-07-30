@@ -57,3 +57,13 @@ test("sitewide analytics consent is shared with the email gate", async () => {
   assert.match(preference, /setAnalyticsConsent/);
   assert.match(translator, /bibaling:analytics-consent/);
 });
+
+test("the illustrated homepage has an intentional mobile layout", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const styles = await readFile(new URL("../app/styles.css", import.meta.url), "utf8");
+  await access(new URL("../public/bibaling-family-reading.png", import.meta.url));
+  assert.match(page, /bibaling-family-reading\.png/);
+  assert.match(page, /className="hero-visual"/);
+  assert.match(styles, /@media \(max-width: 760px\)/);
+  assert.match(styles, /\.hero\s*\{[\s\S]*?grid-template-columns:\s*1fr/);
+});

@@ -11,13 +11,20 @@ export default function LandingPage() {
   return (
     <main className="marketing-page">
       <section className="hero">
-        <p className="eyebrow">The books they love, in the language you share</p>
-        <h1>Turn the children’s books you already have into stories you can read naturally in your family’s language.</h1>
-        <p>Bibaling helps you shape a warm read-aloud adaptation—not a stiff word-for-word translation.</p>
-        <TranslateLink className="site-cta large" />
+        <div className="hero-copy">
+          <p className="eyebrow">The books they love, in the language you share</p>
+          <h1>Turn favorite books into stories that sound like home.</h1>
+          <p>Bibaling shapes the children’s books you already have into warm, natural read-aloud language—not stiff word-for-word translation.</p>
+          <TranslateLink className="site-cta large" />
+        </div>
+        <div className="hero-visual" aria-hidden="true">
+          <img src="/bibaling-family-reading.png" alt="" />
+          <span className="word-ribbon ribbon-one">once upon a time · nekoč · once upon a time</span>
+          <span className="word-ribbon ribbon-two">read · imagine · share</span>
+        </div>
       </section>
 
-      <section className="home-section">
+      <section className="home-section steps-section">
         <p className="eyebrow">Three thoughtful steps</p>
         <h2>Start with the voice. Then carry it through the book.</h2>
         <div className="steps-grid">
@@ -31,7 +38,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="home-section example-section">
+      <section className="home-section example-section story-swoop">
         <div>
           <p className="eyebrow">More than substituting words</p>
           <h2>A translation can be correct and still feel wrong aloud.</h2>
@@ -47,9 +54,9 @@ export default function LandingPage() {
         <p className="eyebrow">The book decides the approach</p>
         <h2>Not every picture book is a rhyming poem.</h2>
         <div className="forms-grid">
-          <article><h3>Stories without rhyme</h3><p>Protect the storytelling voice, events, emotional beats, and picture details without inventing verse.</p></article>
-          <article><h3>Rhyming or poetic stories</h3><p>Preserve the source’s cadence, line shape, sound play, and rhyme where it truly belongs.</p></article>
-          <article><h3>Verse with a repeating refrain</h3><p>Solve the recurring line with the parent first, then use its exact approved wording throughout.</p></article>
+          <article className="form-card prose-form"><span>Story</span><h3>Stories without rhyme</h3><p>Protect the storytelling voice, events, emotional beats, and picture details without inventing verse.</p></article>
+          <article className="form-card poetry-form"><span>Poem</span><h3>Rhyming or poetic stories</h3><p>Preserve the source’s cadence, line shape, sound play, and rhyme where it truly belongs.</p></article>
+          <article className="form-card refrain-form"><span>Refrain</span><h3>Verse with a repeating refrain</h3><p>Solve the recurring line with the parent first, then use its exact approved wording throughout.</p></article>
         </div>
       </section>
 
