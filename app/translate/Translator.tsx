@@ -164,6 +164,11 @@ export default function Translator() {
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [analyticsConsent, setAnalyticsConsentChoice] = useState(false);
   const [emailRequest, setEmailRequest] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
+  const [deliveryJob, setDeliveryJob] = useState<{
+    token: string;
+    status: "idle" | "processing" | "completed" | "failed";
+    error: string | null;
+  }>({ token: "", status: "idle", error: null });
   const directionsAbort = useRef<AbortController | null>(null);
   const translationAbort = useRef<AbortController | null>(null);
   const fullBookAbort = useRef<AbortController | null>(null);
@@ -176,6 +181,7 @@ export default function Translator() {
 
   useEffect(() => {
     setMockMode(document.cookie.split(";").some((part) => part.trim() === "bibaling_mock_mode=true"));
+    trackFunnelEventOnce("translator_opened", { languagePair: "en-sl" });
     const syncConsent = () => setAnalyticsConsentChoice(getAnalyticsConsent() === true);
     syncConsent();
     window.addEventListener("bibaling:analytics-consent", syncConsent);
@@ -190,6 +196,39 @@ export default function Translator() {
     document.addEventListener("keydown", closeOnEscape);
     return () => document.removeEventListener("keydown", closeOnEscape);
   }, [expandedImage]);
+
+  useEffect(() => {
+    if (!deliveryJob.token || deliveryJob.status !== "processing") return;
+    let stopped = false;
+    const check = async () => {
+      try {
+        const response = await fetch(`/api/delivery/status?token=${encodeURIComponent(deliveryJob.token)}`);
+        const result = await response.json() as { status?: string; error?: string };
+        if (!response.ok) throw new Error(result.error || "We couldn’t check the delivery yet.");
+        if (stopped) return;
+        if (result.status === "completed") {
+          setDeliveryJob((current) => ({ ...current, status: "completed", error: null }));
+          sessionStorage.removeItem("bibaling_delivery_job");
+          trackFunnelEventOnce("delivery_succeeded", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
+        } else if (result.status === "failed" || result.status === "cancelled") {
+          setDeliveryJob((current) => ({
+            ...current,
+            status: "failed",
+            error: "We couldn’t finish and send your translation. Please try again."
+          }));
+          trackFunnelEventOnce("delivery_failed", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
+        }
+      } catch {
+        // A temporary status-check failure must not change or cancel the durable workflow.
+      }
+    };
+    void check();
+    const interval = window.setInterval(() => void check(), 3_000);
+    return () => {
+      stopped = true;
+      window.clearInterval(interval);
+    };
+  }, [bookForm, deliveryJob.status, deliveryJob.token]);
 
   useEffect(() => {
     if (step !== 6) return;
@@ -217,7 +256,10 @@ export default function Translator() {
     const sources = [
       "A small friend watches over me. I love you all.",
       "These friends hold hands and spin around. I love you all.",
-      "My bright friend makes the whole forest glow. I love you all."
+      "My bright friend makes the whole forest glow. I love you all.",
+      "The friends wander down a mossy path.",
+      "A tiny lantern glows beside the stream.",
+      "Everyone curls up safely at home."
     ];
     setSpreads(sources.map((text, index) => ({
       id: crypto.randomUUID(),
@@ -240,8 +282,8 @@ export default function Translator() {
     setRequest({ loading: true, error: null });
     try {
       const result = await postJson<BookFormAnalysis>("/api/book-form", {
-        texts: spreads.map((spread) => spread.text),
-        visualContexts: spreads.map((spread) => spread.visualContext)
+        texts: spreads.slice(0, 3).map((spread) => spread.text),
+        visualContexts: spreads.slice(0, 3).map((spread) => spread.visualContext)
       }, controller.signal);
       setBookForm(result.bookForm);
       setRecommendedBookForm(result.bookForm);
@@ -302,7 +344,7 @@ export default function Translator() {
   }
 
   async function addFile(file?: File, replaceId?: string) {
-    if (!file || !file.type.startsWith("image/") || (!replaceId && spreads.length >= 3)) return;
+    if (!file || !file.type.startsWith("image/") || (!replaceId && spreads.length >= 40)) return;
     const preview = await fileToDataUrl(file);
     const id = replaceId ?? crypto.randomUUID();
     const nextSpread: Spread = {
@@ -317,7 +359,7 @@ export default function Translator() {
 
   async function addFiles(files?: FileList | File[]) {
     if (!files) return;
-    const available = Math.max(0, 3 - spreads.length);
+    const available = Math.max(0, 40 - spreads.length);
     const images = Array.from(files)
       .filter((file) => file.type.startsWith("image/"))
       .slice(0, available);
@@ -333,7 +375,7 @@ export default function Translator() {
       error: null,
       status: "waiting" as const
     })));
-    setSpreads((current) => [...current, ...additions].slice(0, 3));
+    setSpreads((current) => [...current, ...additions].slice(0, 40));
     additions.forEach((spread) => void readSpread(spread.id, spread.preview));
   }
 
@@ -362,8 +404,8 @@ export default function Translator() {
         headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
         signal: controller.signal,
         body: JSON.stringify({
-          visualContexts: spreads.map((spread) => spread.visualContext),
-          texts: spreads.map((spread) => spread.text),
+          visualContexts: spreads.slice(0, 3).map((spread) => spread.visualContext),
+          texts: spreads.slice(0, 3).map((spread) => spread.text),
           priority,
           freedom,
           parentFeedback: directionFeedback.trim() || undefined,
@@ -479,6 +521,7 @@ export default function Translator() {
 
   async function writeSpread1(direction?: Direction) {
     if (!bookForm || (bookForm === "refrain_verse" && !direction)) return;
+    trackFunnelEventOnce("first_page_generation_started", { bookForm, languagePair: "en-sl" });
     const controller = new AbortController();
     translationAbort.current = controller;
     setLockedDirection(direction ?? null);
@@ -504,9 +547,9 @@ export default function Translator() {
           editNote: ""
         }))
       ));
-      trackFunnelEventOnce("first_translation_seen", { bookForm, languagePair: "en-sl" });
+      trackFunnelEventOnce("first_page_translation_displayed", { bookForm, languagePair: "en-sl" });
       setEmailGateVisible(true);
-      trackFunnelEventOnce("email_gate_viewed", { bookForm, languagePair: "en-sl" });
+      trackFunnelEventOnce("email_gate_displayed", { bookForm, languagePair: "en-sl" });
       setSpread1Selection(null);
       setRequest({ loading: false, error: null });
     } catch (error) {
@@ -613,10 +656,6 @@ export default function Translator() {
       3: patternOptions[3][patternSelections[3] as number].editNote.trim()
     }));
     setStep(9);
-    trackFunnelEventOnce("three_page_preview_seen", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
-    if (emailCaptured) {
-      trackFunnelEventOnce("qualified_lead", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
-    }
   }
 
   function startRestOfBook() {
@@ -681,9 +720,24 @@ export default function Translator() {
       });
       setLeadReceipt(result.receipt);
       setEmailCaptured(true);
+      trackFunnelEventOnce("generate_lead", { bookForm, languagePair: "en-sl" });
+      const delivery = await postJson<{ jobToken: string; status: "processing" }>("/api/delivery", {
+        leadReceipt: result.receipt,
+        recipientEmail: email,
+        pages: spreads.map((spread, index) => ({ page: index + 1, sourceText: spread.text.trim() })),
+        bookForm,
+        sourceRhyme,
+        priority,
+        freedom,
+        ...(lockedDirection ? { direction: lockedDirection } : {}),
+        approvedPage1: approved,
+        approvedPage1Note: approvedNote || undefined
+      });
+      sessionStorage.setItem("bibaling_delivery_job", delivery.jobToken);
+      setDeliveryJob({ token: delivery.jobToken, status: "processing", error: null });
       setEmailRequest({ loading: false, error: null });
-      trackFunnelEventOnce("email_captured", { bookForm, languagePair: "en-sl" });
-      window.setTimeout(() => void startPatternTest(approved, approvedNote, result.receipt), 0);
+      setStep(8);
+      trackFunnelEventOnce("remaining_translation_started", { bookForm, languagePair: "en-sl" });
     } catch (error) {
       setEmailRequest({
         loading: false,
@@ -724,7 +778,6 @@ export default function Translator() {
 
   async function generateRestOfBook() {
     if (!emailCaptured || !leadReceipt || !bookForm || (bookForm === "refrain_verse" && !lockedDirection) || fullBookAbort.current) return;
-    trackFunnelEventOnce("full_book_started", { bookForm, languagePair: "en-sl" });
     const controller = new AbortController();
     fullBookAbort.current = controller;
     setStep(11);
@@ -854,8 +907,8 @@ export default function Translator() {
       <section className="workshop">
         {step === 1 && (
           <>
-            <h1>Add three photos from your book.</h1>
-            <p className="lead">Choose three clear photos that show both open pages.</p>
+            <h1>Add every page from your book.</h1>
+            <p className="lead">Photograph the whole book in reading order. We’ll use the first three pages to find its voice.</p>
             <div className="upload-onboarding">
               <figure className="photo-guide">
                 <img src="/photo-guide.png" alt="A phone photographing an entire open picture book, with both facing pages fully visible." />
@@ -872,18 +925,26 @@ export default function Translator() {
                     <span>Replace</span>
                   </label>
                 ))}
-                {spreads.length < 3 && (
+                {spreads.length < 40 && (
                   <label className="drop" onDrop={drop} onDragOver={(event) => event.preventDefault()}>
                     <input type="file" accept="image/*" multiple onChange={(event) => chooseFile(event)} />
                     <strong>+</strong>
-                    <span>{spreads.length ? "Add the remaining photos" : "Add three sample photos."}</span>
-                    {spreads.length > 0 && <small>Drop photos or click to choose multiple images</small>}
+                    <span>{spreads.length ? "Add more book photos" : "Add all book photos"}</span>
                   </label>
                 )}
               </div>
             </div>
             <nav className="forward-only">
-              <button className="primary" disabled={spreads.length !== 3} onClick={() => setStep(2)}>Continue</button>
+              <button
+                className="primary"
+                disabled={spreads.length < 3}
+                onClick={() => {
+                  trackFunnelEventOnce("all_photos_uploaded", { languagePair: "en-sl" });
+                  setStep(2);
+                }}
+              >
+                Continue
+              </button>
             </nav>
           </>
         )}
@@ -1108,8 +1169,8 @@ export default function Translator() {
             {request.error && <GenerationError message={request.error} retry={retry} />}
             {!request.loading && emailGateVisible && !emailCaptured && spread1Options.length > 0 && (
               <form className="email-gate" onSubmit={captureEmail}>
-                <h2>Want to translate the rest of the book and keep your work?</h2>
-                <p>We’ve found a voice that works naturally on your first page. Enter your email to continue with the rest of the book.</p>
+                <h2>Like your first page? Let’s finish the book.</h2>
+                <p>Enter the email address where you’d like us to send the completed translation.</p>
                 <label>
                   <span>Email</span>
                   <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" />
@@ -1140,59 +1201,37 @@ export default function Translator() {
                     !spread1Options[spread1Selection]?.text.trim()
                   }
                 >
-                  {emailRequest.loading ? "Saving…" : "Continue with the rest of the book"}
+                  {emailRequest.loading ? "Starting your book…" : "Email me the finished translation"}
                 </button>
               </form>
             )}
             <nav>
               <button className="secondary" disabled={request.loading} onClick={() => setStep(page1BackStep(bookForm))}>Back</button>
-              {emailCaptured && leadReceipt && (
-                <button
-                  className="primary"
-                  disabled={spread1Selection === null || !spread1Options[spread1Selection]?.text.trim()}
-                  onClick={() => {
-                    if (spread1Selection === null) return;
-                    void startPatternTest(
-                      spread1Options[spread1Selection].text.trim(),
-                      spread1Options[spread1Selection].editNote.trim()
-                    );
-                  }}
-                >
-                  Continue
-                </button>
-              )}
             </nav>
           </>
         )}
 
         {step === 8 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
-            <h1>Does this voice work on every page?</h1>
-            <p className="lead">Choose one version for each page. Use Page 1 as your guide.</p>
+            <h1>{deliveryJob.status === "completed" ? "Your translation is on its way." : deliveryJob.status === "failed" ? "We couldn’t finish your book." : "We’re finishing your book."}</h1>
+            <p className="lead">
+              {deliveryJob.status === "completed"
+                ? `We sent the completed translation to ${email.trim()}.`
+                : deliveryJob.status === "failed"
+                ? "Your photos and Page 1 choice are still here. Try starting the delivery again."
+                : `We’re translating each remaining page, checking the whole book, and will email it to ${email.trim()}. You can safely close this page.`}
+            </p>
             <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} />
             <article className="approved-card voice-reference">
               <button className="zoomable-image-button" type="button" aria-label="Open approved Page 1 photo at full size" onClick={() => setExpandedImage({ src: spreads[0].preview, alt: "Approved Page 1" })}>
                 <img src={spreads[0].preview} alt="" />
               </button>
-              <label>Approved Page 1 · voice reference</label>
+              <label>Approved Page 1</label>
               <p>{approvedSpread1}</p>
               {approvedNotes[1] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[1]}</p>}
             </article>
-            {request.loading && <ProgressLog messages={patternLoadingMessages} />}
-            {!request.loading && [2, 3].map((number) => (
-              <section className="pattern-section" key={number}>
-                <Source spread={spreads[number - 1]} number={number} onExpand={setExpandedImage} />
-                <OptionList
-                  options={patternOptions[number] || []}
-                  selection={patternSelections[number]}
-                  onSelect={(index) => setPatternSelections((current) => ({ ...current, [number]: index }))}
-                  onEdit={(index, text) => updatePatternOption(number, index, text)}
-                  onNote={(index, note) => updatePatternNote(number, index, note)}
-                />
-              </section>
-            ))}
-            {request.error && <GenerationError message={request.error} retry={retry} />}
-            <nav><button className="secondary" disabled={request.loading} onClick={() => setStep(7)}>Back</button><button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button></nav>
+            {deliveryJob.status === "processing" && <ProgressLog messages={fullBookLoadingMessages} />}
+            {deliveryJob.error && <GenerationError message={deliveryJob.error} retry={() => setStep(7)} />}
           </>
         )}
 

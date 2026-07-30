@@ -14,7 +14,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [{ "name": "next" }],
+    "plugins": [{ "name": "next" }, { "name": "workflow" }],
     "paths": { "@/*": ["./*"] }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", ".next-build/types/**/*.ts", "**/*.ts", "**/*.tsx"],
