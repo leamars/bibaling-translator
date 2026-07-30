@@ -56,6 +56,25 @@ function Spark({ className = "" }: { className?: string }) {
   );
 }
 
+function StepConnector({ variant }: { variant: "one" | "two" }) {
+  const path =
+    variant === "one"
+      ? "M2 45C18 16 36 67 57 42C75 21 91 26 118 50"
+      : "M2 42C20 62 34 12 59 35C77 53 93 58 118 25";
+
+  return (
+    <div
+      className={`step-connector step-connector-${variant}`}
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 120 76" preserveAspectRatio="none">
+        <path d={path} />
+      </svg>
+      <span>hop</span>
+    </div>
+  );
+}
+
 function Brand() {
   return (
     <>
@@ -230,9 +249,7 @@ export default function LandingPage() {
               <p>Clear phone photos are all you need.</p>
             </article>
 
-            <div className="step-connector" aria-hidden="true">
-              <span>hop</span>
-            </div>
+            <StepConnector variant="one" />
 
             <article className="step step-blue">
               <span className="step-number">2</span>
@@ -246,12 +263,7 @@ export default function LandingPage() {
               </p>
             </article>
 
-            <div
-              className="step-connector step-connector-two"
-              aria-hidden="true"
-            >
-              <span>hop</span>
-            </div>
+            <StepConnector variant="two" />
 
             <article className="step step-green">
               <span className="step-number">3</span>

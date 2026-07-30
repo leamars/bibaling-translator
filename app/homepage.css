@@ -11,6 +11,7 @@
   --lilac: #ad8cff;
   --pink: #ff9fc9;
   --line: rgba(23, 37, 68, 0.16);
+  --font-title: Georgia, "Times New Roman", serif;
   margin: 0;
   background: var(--cream);
   color: var(--ink);
@@ -224,8 +225,8 @@ p {
 h1,
 h2,
 h3 {
-  font-family: ui-rounded, "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
-  font-weight: 850;
+  font-family: var(--font-title);
+  font-weight: 700;
   text-wrap: balance;
 }
 
@@ -997,36 +998,49 @@ h1 {
 }
 
 .step-connector {
-  height: 75px;
+  height: 92px;
   position: relative;
   overflow: visible;
 }
 
-.step-connector::before {
-  content: "";
-  width: 108%;
+.step-connector svg {
+  width: calc(100% + 34px);
+  height: 100%;
   position: absolute;
-  left: -4%;
-  top: 47%;
-  border-top: 4px dashed var(--ink);
-  transform: rotate(6deg);
+  left: -17px;
+  top: 0;
+  overflow: visible;
+}
+
+.step-connector path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 7 8;
+  vector-effect: non-scaling-stroke;
 }
 
 .step-connector span {
   position: absolute;
-  left: 35%;
-  top: 0;
   padding: 4px 8px;
   border: 2px solid var(--ink);
   border-radius: 99px;
   background: var(--sun);
   font-size: 11px;
   font-weight: 900;
-  transform: rotate(-9deg);
 }
 
-.step-connector-two::before {
-  transform: rotate(-5deg);
+.step-connector-one span {
+  left: 13%;
+  top: 4px;
+  transform: rotate(-11deg);
+}
+
+.step-connector-two span {
+  right: 8%;
+  bottom: 2px;
+  transform: rotate(8deg);
 }
 
 .books-section {
@@ -1437,9 +1451,9 @@ h1 {
   position: relative;
   cursor: pointer;
   list-style: none;
-  font-family: ui-rounded, "Arial Rounded MT Bold", sans-serif;
+  font-family: var(--font-title);
   font-size: 22px;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: -0.025em;
 }
 

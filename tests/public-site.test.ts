@@ -73,6 +73,19 @@ test("the approved playful homepage has human family imagery and an intentional 
   assert.match(styles, /\.hero\s*\{[\s\S]*?grid-template-columns:\s*1fr/);
 });
 
+test("homepage uses the editorial title face and two distinct hand-drawn step paths", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const styles = await readFile(new URL("../app/homepage.css", import.meta.url), "utf8");
+  assert.match(styles, /--font-title:\s*Georgia/);
+  assert.match(styles, /h1,[\s\S]*h2,[\s\S]*h3\s*\{[\s\S]*font-family:\s*var\(--font-title\)/);
+  assert.match(styles, /\.faq-list summary\s*\{[\s\S]*font-family:\s*var\(--font-title\)/);
+  assert.match(page, /variant="one"/);
+  assert.match(page, /variant="two"/);
+  assert.match(page, /M2 45C18 16 36 67 57 42C75 21 91 26 118 50/);
+  assert.match(page, /M2 42C20 62 34 12 59 35C77 53 93 58 118 25/);
+  assert.match(styles, /stroke-dasharray:\s*7 8/);
+});
+
 test("homepage book demo pages through balanced Spanish, Slovenian, and German rhymes", async () => {
   const demo = await readFile(new URL("../app/HomeBookDemo.tsx", import.meta.url), "utf8");
   for (const language of ["Español", "Slovenščina", "Deutsch"]) {
