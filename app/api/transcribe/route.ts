@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     const client = openAIClient();
     if (!client) {
       return NextResponse.json(
-        { error: "Image reading isn’t connected yet. Add a valid OPENAI_API_KEY to .env.local, restart the app, then try again." },
+        { error: "Image reading isn’t connected right now. Please try again later or type the English text directly." },
         { status: 503 }
       );
     }

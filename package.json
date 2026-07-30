@@ -17,6 +17,7 @@
     "openai": "5.10.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "workflow": "5.0.0-beta.37",
     "zod": "3.25.76"
   },
   "devDependencies": {

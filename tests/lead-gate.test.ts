@@ -91,38 +91,88 @@ test("existing Resend contacts update properties and memberships through the doc
   }
 });
 
-test("email gate follows the complete three-page preview and guards paid continuation", async () => {
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
-  const route = await readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8");
-  const previewEvent = page.indexOf('trackFunnelEventOnce("three_page_preview_seen"');
-  const gateEvent = page.indexOf('trackFunnelEventOnce("email_gate_viewed"');
-  const captureEvent = page.indexOf('trackFunnelEventOnce("email_captured"');
-  const fullBookEvent = page.indexOf('trackFunnelEventOnce("full_book_started"');
-  assert.ok(previewEvent >= 0 && gateEvent > previewEvent && captureEvent > gateEvent && fullBookEvent > captureEvent);
-  assert.match(page, /if \(!emailCaptured && !captureConfirmed\)/);
-  assert.match(page, /if \(!emailCaptured \|\| !leadReceipt \|\| !bookForm/);
-  assert.match(page, /leadReceipt/);
-  assert.match(page, /step === 10 && emailCaptured/);
-  assert.match(page, /Pages 2 and 3|Does this voice work on every page/);
+test("all photos precede the Page 1 gate and capture starts durable delivery", async () => {
+  const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
+  const route = await readFile(new URL("../app/api/delivery/route.ts", import.meta.url), "utf8");
+  const contract = await readFile(new URL("../app/api/delivery/contract.ts", import.meta.url), "utf8");
+  const workflow = await readFile(new URL("../app/workflows/book-delivery.ts", import.meta.url), "utf8");
+  const writeSpread1 = page.slice(
+    page.indexOf("async function writeSpread1"),
+    page.indexOf("async function lockDirectionAndWriteSpread1")
+  );
+  const captureEmail = page.slice(
+    page.indexOf("async function captureEmail"),
+    page.indexOf("async function addRemainingFiles")
+  );
+  const pageOneScreen = page.slice(page.indexOf("{step === 7"), page.indexOf("{step === 8"));
+  const deliveryScreen = page.slice(page.indexOf("{step === 8"), page.indexOf("{step === 9"));
+
+  assert.match(page, /spreads\.length < 3/);
+  assert.match(page, /Add every page from your book/);
+  assert.match(page, /all_photos_uploaded/);
+  assert.ok(
+    writeSpread1.indexOf('trackFunnelEventOnce("first_page_translation_displayed"') <
+    writeSpread1.indexOf('trackFunnelEventOnce("email_gate_displayed"')
+  );
+  assert.match(pageOneScreen, /spread1Options\.length > 0/);
+  assert.match(pageOneScreen, /Like your first page\? Let’s finish the book\./);
+  assert.match(pageOneScreen, /Email me the finished translation/);
+  assert.match(captureEmail, /spread1Selection === null/);
+  assert.match(captureEmail, /spread1Options\[spread1Selection\]\?\.text\.trim\(\)/);
+  assert.match(captureEmail, /setLeadReceipt\(result\.receipt\)/);
+  assert.match(captureEmail, /postJson<\{ jobToken: string; status: "processing" \}>\("\/api\/delivery"/);
+  assert.match(captureEmail, /pages: spreads\.map/);
+  assert.doesNotMatch(captureEmail, /preview|file\.name|startPatternTest/);
+  const captureFailure = captureEmail.slice(captureEmail.indexOf("} catch (error)"));
+  assert.doesNotMatch(
+    captureFailure,
+    /setSpreads|setSpread1Options|setSpread1Selection|setApprovedSpread1|setApprovedNotes/
+  );
+  assert.ok(captureEmail.indexOf('trackFunnelEventOnce("generate_lead"') < captureEmail.indexOf('trackFunnelEventOnce("remaining_translation_started"'));
+  assert.match(deliveryScreen, /You can safely close this page/);
+  assert.doesNotMatch(deliveryScreen, /OptionList|patternOptions|Save finished draft|Add the rest of the book/);
   assert.match(page, /emailRequest\.loading/);
   assert.match(page, /emailRequest\.error/);
-  assert.ok(route.indexOf("verifyLeadReceipt(input.leadReceipt") < route.indexOf("generateFullBook({ client"));
+  assert.match(route, /verifyLeadReceipt\(input\.leadReceipt, input\.bookForm\)/);
+  assert.match(route, /start\(deliverBookWorkflow/);
+  assert.doesNotMatch(contract, /photo|preview|filename|visualContext/i);
+  assert.match(workflow, /"use workflow"/);
+  assert.match(workflow, /"use step"/);
+  assert.match(workflow, /sendTranslationEmailStep\.maxRetries = 3/);
+});
+
+test("email-gate consent is separate, unchecked, and non-blocking", async () => {
+  const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
+  const pageOneScreen = page.slice(page.indexOf("{step === 7"), page.indexOf("{step === 8"));
+  assert.match(page, /const \[marketingConsent, setMarketingConsent\] = useState\(false\)/);
+  assert.match(page, /const \[analyticsConsent, setAnalyticsConsentChoice\] = useState\(false\)/);
+  assert.match(pageOneScreen, /Send me occasional Bibaling news and product updates\./);
+  assert.match(pageOneScreen, /Allow anonymous usage analytics to help improve Bibaling\./);
+  assert.doesNotMatch(pageOneScreen, />Optional</);
+  assert.match(pageOneScreen, /disabled=\{\s*emailRequest\.loading \|\|[\s\S]*spread1Options\[spread1Selection\]\?\.text\.trim\(\)\s*\}/);
+  assert.doesNotMatch(
+    pageOneScreen.match(/disabled=\{\s*emailRequest\.loading[\s\S]*?\n\s*\}/)?.[0] || "",
+    /marketingConsent|analyticsConsent/
+  );
 });
 
 test("GA adapter is consent-gated, anonymous, typed, and once-only", async () => {
   const analytics = await readFile(new URL("../app/analytics.ts", import.meta.url), "utf8");
   assert.match(analytics, /analytics_storage/);
   assert.match(analytics, /consented\(\)/);
-  assert.match(analytics, /crypto\.randomUUID\(\)/);
   assert.match(analytics, /sent\.has\(name\)/);
-  assert.match(analytics, /params:\s*\{\s*book_form\?[\s\S]*language_pair[\s\S]*session_id/);
+  assert.match(analytics, /params:\s*\{\s*book_form\?[\s\S]*language_pair/);
+  assert.doesNotMatch(analytics, /session_id|email_address|filename|translation_text|jobToken/);
   for (const event of [
-    "first_translation_seen",
-    "three_page_preview_seen",
-    "email_gate_viewed",
-    "email_captured",
-    "qualified_lead",
-    "full_book_started"
+    "translator_opened",
+    "all_photos_uploaded",
+    "first_page_generation_started",
+    "first_page_translation_displayed",
+    "email_gate_displayed",
+    "generate_lead",
+    "remaining_translation_started",
+    "delivery_succeeded",
+    "delivery_failed"
   ]) assert.match(analytics, new RegExp(event));
 });
 

@@ -79,15 +79,6 @@ for (const [bookForm, texts] of Object.entries(fixtures)) {
   });
   assert.equal(JSON.parse(spread1.text).runs[0].options.length, 3);
 
-  const pattern = await post("/api/translations", {
-    mode: "pattern",
-    visualContexts: ["Mock visual context.", "Mock visual context."],
-    sources: [texts[1], texts[2]],
-    approvedSpread1: "[MOCK — NOT QUALITY EVALUATED] Approved Page 1.",
-    ...context
-  });
-  assert.equal(JSON.parse(pattern.text).runs[0].spreads.length, 2);
-
   const lead = await post("/api/leads", {
     email: `${bookForm}@example.com`,
     marketingConsent: false,
@@ -106,17 +97,22 @@ for (const [bookForm, texts] of Object.entries(fixtures)) {
   const capturedLead = JSON.parse(lead.text);
   assert.equal(capturedLead.captured, true);
 
-  const fullBook = await post("/api/translations", {
-    mode: "fullbook",
+  const delivery = await post("/api/delivery", {
     leadReceipt: capturedLead.receipt,
-    spreads: [{ spread: 4, visualContext: "Mock visual context.", source: "The story continues." }],
-    approvedVoice: [1, 2, 3].map((spread) => ({
-      spread,
-      text: `[MOCK — NOT QUALITY EVALUATED] Approved Page ${spread}.`
-    })),
+    recipientEmail: `${bookForm}@example.com`,
+    pages: texts.map((sourceText, index) => ({ page: index + 1, sourceText })),
+    approvedPage1: "[MOCK — NOT QUALITY EVALUATED] Approved Page 1.",
     ...context
   });
-  assert.equal(JSON.parse(fullBook.text).spreads.length, 1);
+  const started = JSON.parse(delivery.text);
+  assert.equal(started.status, "processing");
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  const status = await fetch(`${baseUrl}/api/delivery/status?token=${encodeURIComponent(started.jobToken)}`, {
+    headers: { Cookie: "bibaling_mock_mode=true" }
+  });
+  const statusBody = await status.text();
+  assert.equal(status.ok, true, statusBody);
+  assert.equal(JSON.parse(statusBody).status, "completed");
 
   process.stdout.write(`✓ ${bookForm}\n`);
 }

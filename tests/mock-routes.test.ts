@@ -70,7 +70,7 @@ test("translation routes allow an unavailable optional visual summary", async ()
 });
 
 test("full-book reading preserves successful OCR when another page fails", async () => {
-  const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const source = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
   assert.match(source, /workStatus = "reading"/);
   assert.match(source, /workStatus = "translating"/);
   assert.match(source, /workStatus = "ready"/);
@@ -95,7 +95,7 @@ test("direction generation streams genuine progress and propagates cancellation"
 
 test("full-book generation is mocked, bounded, and preserves parent feedback", async () => {
   const route = await readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8");
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
   assert.match(route, /input\.mode === "fullbook"/);
   assert.match(route, /assertActionBudget\(\{/);
   assert.match(route, /fullbook\.generate/);
@@ -108,7 +108,7 @@ test("full-book generation is mocked, bounded, and preserves parent feedback", a
 });
 
 test("all long-running client states use non-repeating rotating copy", async () => {
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
   assert.match(page, /5000 \+ Math\.floor\(Math\.random\(\) \* 3001\)/);
   assert.match(page, /shuffledMessages\(messages\)/);
   assert.match(page, /readingLoadingMessages/);
@@ -121,7 +121,7 @@ test("all long-running client states use non-repeating rotating copy", async () 
 
 test("mock mode can be toggled in the UI without restarting the server", async () => {
   const generation = await readFile(new URL("../app/api/generation.ts", import.meta.url), "utf8");
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
   assert.match(generation, /bibaling_mock_mode=true/);
   assert.match(page, /Mock mode/);
   assert.match(page, /loadMockBook/);

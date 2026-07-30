@@ -1,19 +1,21 @@
 "use client";
 
 export type FunnelEventName =
-  | "first_translation_seen"
-  | "three_page_preview_seen"
-  | "email_gate_viewed"
-  | "email_captured"
-  | "qualified_lead"
-  | "full_book_started";
+  | "translator_opened"
+  | "all_photos_uploaded"
+  | "first_page_generation_started"
+  | "first_page_translation_displayed"
+  | "email_gate_displayed"
+  | "generate_lead"
+  | "remaining_translation_started"
+  | "delivery_succeeded"
+  | "delivery_failed";
 
 export type FunnelEvent = {
   name: FunnelEventName;
   params: {
     book_form?: "prose_story" | "continuous_verse" | "refrain_verse";
     language_pair: string;
-    session_id: string;
   };
 };
 
@@ -26,17 +28,7 @@ declare global {
 
 const QUEUE_KEY = "bibaling_analytics_queue";
 const SENT_KEY = "bibaling_analytics_sent";
-const SESSION_KEY = "bibaling_session_id";
 const CONSENT_KEY = "bibaling_analytics_consent";
-
-function sessionId() {
-  let id = sessionStorage.getItem(SESSION_KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    sessionStorage.setItem(SESSION_KEY, id);
-  }
-  return id;
-}
 
 function readList<T>(key: string): T[] {
   try { return JSON.parse(sessionStorage.getItem(key) || "[]") as T[]; } catch { return []; }
@@ -48,6 +40,12 @@ function configured() {
 
 function consented() {
   return localStorage.getItem(CONSENT_KEY) === "granted";
+}
+
+export function getAnalyticsConsent(): boolean | null {
+  if (typeof window === "undefined") return null;
+  const value = localStorage.getItem(CONSENT_KEY);
+  return value === "granted" ? true : value === "denied" ? false : null;
 }
 
 function send(event: FunnelEvent) {
@@ -78,6 +76,7 @@ function ensureTag() {
 
 export function setAnalyticsConsent(granted: boolean) {
   localStorage.setItem(CONSENT_KEY, granted ? "granted" : "denied");
+  window.dispatchEvent(new Event("bibaling:analytics-consent"));
   if (!granted) {
     window.gtag?.("consent", "update", { analytics_storage: "denied" });
     return;
@@ -101,8 +100,7 @@ export function trackFunnelEventOnce(
     name,
     params: {
       book_form: context.bookForm,
-      language_pair: context.languagePair,
-      session_id: sessionId()
+      language_pair: context.languagePair
     }
   };
   if (configured() && consented()) {

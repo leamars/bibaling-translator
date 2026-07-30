@@ -405,7 +405,7 @@ test("empty, malformed, identical, placeholder, and grossly overlong final outpu
 });
 
 test("Step 5 UI distinguishes a completed but invalid final set from unfinished drafting", async () => {
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
   assert.match(page, /FINAL_SET_INVALID/);
   assert.match(page, /We couldn’t prepare these options\./);
 });
