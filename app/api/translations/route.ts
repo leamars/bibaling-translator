@@ -8,7 +8,13 @@ import {
   deduplicate,
   requestKey
 } from "../openai-control";
-import { BOOK_FORMS, SOURCE_RHYME, type BookForm, type SourceRhyme } from "../book-form-contract.ts";
+import {
+  BOOK_FORMS,
+  SOURCE_RHYME,
+  requiresRhyme,
+  type BookForm,
+  type SourceRhyme
+} from "../book-form-contract.ts";
 import {
   fullBookEditorialPrompt,
   fullBookGenerationPrompt,
@@ -21,6 +27,14 @@ import {
 import {
   deterministicViolations
 } from "../translation-quality";
+import {
+  comparativeFinalistFields,
+  comparativeJsonProperties,
+  comparativeJsonRequired,
+  selectRecommendedFinalist,
+  winnerComparisonsJsonSchema,
+  winnerComparisonsSchema
+} from "../editorial-contract.ts";
 import { verifyLeadReceipt } from "../leads/receipt";
 import {
   resolveLanguageSelection,
@@ -114,14 +128,19 @@ const candidateSchema = z.object({
 const CANDIDATE_COUNT = 6;
 const candidatePoolSchema = z.object({ candidates: z.array(candidateSchema).length(CANDIDATE_COUNT) });
 const finalistSchema = z.object({
-    sourceCandidateId: z.string().min(1),
-    strategy: z.string().min(1),
-    text: z.string().min(1),
-    fidelityPass: z.literal(true),
-    grammarPass: z.literal(true),
-    readAloudPass: z.literal(true),
-    directionPass: z.literal(true),
-    rhymePass: z.literal(true)
+  sourceCandidateId: z.string().min(1),
+  strategy: z.string().min(1),
+  text: z.string().min(1),
+  fidelityPass: z.boolean(),
+  grammarPass: z.boolean(),
+  readAloudPass: z.boolean(),
+  directionPass: z.boolean(),
+  rhymePass: z.boolean(),
+  ...comparativeFinalistFields
+});
+const editorialResultSchema = z.object({
+  finalists: z.array(finalistSchema).length(3),
+  winnerComparisons: winnerComparisonsSchema
 });
 
 const candidateJsonSchema = {
@@ -167,7 +186,8 @@ function editorialJsonSchema() {
           grammarPass: { type: "boolean" },
           readAloudPass: { type: "boolean" },
           directionPass: { type: "boolean" },
-          rhymePass: { type: "boolean" }
+          rhymePass: { type: "boolean" },
+          ...comparativeJsonProperties
         },
         required: [
           "sourceCandidateId",
@@ -177,12 +197,14 @@ function editorialJsonSchema() {
           "grammarPass",
           "readAloudPass",
           "directionPass",
-          "rhymePass"
+          "rhymePass",
+          ...comparativeJsonRequired
         ]
       }
-    }
+    },
+    winnerComparisons: winnerComparisonsJsonSchema
   },
-  required: ["finalists"]
+  required: ["finalists", "winnerComparisons"]
   } as const;
 }
 
@@ -326,20 +348,39 @@ async function generatePassingOptions(args: PipelineArgs) {
         text: { format: { type: "json_schema", name: "translation_editorial_finalists", strict: true, schema: editorialJsonSchema() } }
       }
     });
-    const edited = z.object({
-      finalists: z.array(finalistSchema).length(3)
-    }).parse(JSON.parse(evaluationResponse.output_text));
-    const passing = edited.finalists
-      .filter((candidate) => deterministicViolations(candidate.text, { targetLanguage: args.targetLanguage }).length === 0)
-      .filter((candidate, index, all) =>
-        all.findIndex((other) => other.text.trim().toLocaleLowerCase(args.targetLanguage) === candidate.text.trim().toLocaleLowerCase(args.targetLanguage)) === index
-      )
-      .map(({ strategy, text }) => ({ strategy, text }));
-
-    if (passing.length !== 3) {
-      throw new Error(`Only ${passing.length} editorial finalists passed deterministic quality checks`);
+    const edited = editorialResultSchema.parse(JSON.parse(evaluationResponse.output_text));
+    const textEligible = edited.finalists.filter((candidate) =>
+      deterministicViolations(candidate.text, { targetLanguage: args.targetLanguage }).length === 0
+    );
+    if (textEligible.length !== 3 || new Set(
+      textEligible.map((candidate) => candidate.text.trim().toLocaleLowerCase(args.targetLanguage))
+    ).size !== 3) {
+      throw Object.assign(
+        new Error("The editorial comparison contained malformed or duplicate finalist text."),
+        { code: "COMPARATIVE_CONTRACT_INVALID" }
+      );
     }
-    return passing;
+    const rhymeRequired = requiresRhyme({
+      bookForm: args.bookForm,
+      sourceRhyme: args.sourceRhyme,
+      priority: args.priority
+    });
+    const selection = selectRecommendedFinalist({
+      finalists: edited.finalists,
+      winnerComparisons: edited.winnerComparisons,
+      rhymeRequired
+    });
+    if (!selection.ok) {
+      throw Object.assign(new Error(selection.error.message), selection.error);
+    }
+    return [...edited.finalists]
+      .sort((first, second) => first.rank - second.rank)
+      .map(({ strategy, text, rank, recommendedFinalist }) => ({
+        strategy,
+        text,
+        rank,
+        recommendedFinalist
+      }));
 }
 
 async function generateFullBook(args: {

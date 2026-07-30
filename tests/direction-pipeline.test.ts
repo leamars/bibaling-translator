@@ -106,9 +106,55 @@ function editorialFixture(sourceCandidateIndex: number) {
     description: "Concise structural description.",
     genderDependency: "Feminine narrator.",
     construction: form.construction,
-    rhymePairs: form.rhymePairs
+    rhymePairs: form.rhymePairs,
+    fidelityPass: true,
+    grammarPass: true,
+    readAloudPass: true,
+    directionPass: true,
+    rhymePass: true,
+    rank: sourceCandidateIndex + 1,
+    recommendedFinalist: sourceCandidateIndex === 0,
+    strengths: ["Preserves the source meaning in a distinct compact structure."],
+    weaknesses: ["The closing phrase is less vivid than another finalist."],
+    comparativeAssessment: {
+      naturalness: "Uses contemporary phrasing that is comfortable to read aloud.",
+      fidelity: "Preserves the source declaration without adding a new event.",
+      tone: "Maintains the affectionate tone without increasing its intensity.",
+      readAloudRhythm: "Uses balanced spoken phrases with a clear child-friendly cadence.",
+      rhyme: "Uses a declared spoken rhyme without distorting natural word order.",
+      unsupportedInvention: "Adds no unsupported image, action, or emotional claim."
+    },
+    rhymeAssessment: {
+      required: true,
+      evidence: [{
+        anchorA: form.rhymePairs[0].endingA,
+        anchorB: form.rhymePairs[0].endingB,
+        lineA: form.refrain.split("\n")[0] || form.refrain,
+        lineB: form.refrain.split("\n")[1] || form.refrain,
+        soundFromFinalStressedVowelA: form.rhymePairs[0].endingA,
+        soundFromFinalStressedVowelB: form.rhymePairs[0].endingB,
+        classification: "full_rhyme" as const,
+        spokenAssessment: "The two phrase endings create an audible rhyme in context.",
+        grammaticalEndingOnly: false,
+        repeatedWord: false,
+        sameRootEcho: false,
+        countsAsRhyme: true
+      }],
+      overallAssessment: "The refrain contains a meaningful spoken rhyme."
+    }
   };
 }
+
+const winnerComparisons = [
+  {
+    alternativeRank: 2 as const,
+    whyWinnerIsBetter: "Rank 1 preserves the source tone more naturally than rank 2."
+  },
+  {
+    alternativeRank: 3 as const,
+    whyWinnerIsBetter: "Rank 1 has clearer cadence and less invention than rank 3."
+  }
+];
 
 function memoryCache(): DirectionDraftCache {
   const values = new Map<string, CachedDirectionDraft>();
@@ -125,7 +171,11 @@ test("completed drafting and completed editing parse only after completed status
   );
   const options = candidates.slice(0, 3).map((_, sourceCandidateIndex) => editorialFixture(sourceCandidateIndex));
   assert.equal(
-    parseCompletedOutput(completedResponse({ options }), "editor", editorialOptionsSchema).options.length,
+    parseCompletedOutput(
+      completedResponse({ options, winnerComparisons }),
+      "editor",
+      editorialOptionsSchema
+    ).options.length,
     3
   );
 });
@@ -311,7 +361,8 @@ test("Step 5 SSE exposes stable stages and error codes", async () => {
 test("parent-facing result has three concise options and no unused editorial metadata", () => {
   assert.equal(DIRECTION_PIPELINE_CONFIG.editorial.optionCount, 3);
   const pipeline = editorialOptionsSchema.parse({
-    options: candidates.slice(0, 3).map((_, sourceCandidateIndex) => editorialFixture(sourceCandidateIndex))
+    options: candidates.slice(0, 3).map((_, sourceCandidateIndex) => editorialFixture(sourceCandidateIndex)),
+    winnerComparisons
   });
   assert.equal(pipeline.options.length, 3);
   assert.equal("keeps" in pipeline.options[0], false);

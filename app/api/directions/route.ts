@@ -14,10 +14,15 @@ import {
   parseCompletedOutput,
   privateCandidatesSchema,
   resolveDirectionDraft,
-  validateFinalEditorialSet,
+  validateDirectionEditorialResult,
   validatePrivateCandidates,
   type CachedDirectionDraft
 } from "../direction-pipeline";
+import {
+  comparativeJsonProperties,
+  comparativeJsonRequired,
+  winnerComparisonsJsonSchema
+} from "../editorial-contract.ts";
 import {
   MAX_ACTION_COST_USD,
   assertActionBudget,
@@ -121,16 +126,24 @@ function editorialJsonSchema(maximumRefrainCharacters: number) {
               },
               required: ["endingA", "endingB"]
             }
-          }
+          },
+          fidelityPass: { type: "boolean" },
+          grammarPass: { type: "boolean" },
+          readAloudPass: { type: "boolean" },
+          directionPass: { type: "boolean" },
+          rhymePass: { type: "boolean" },
+          ...comparativeJsonProperties
         },
         required: [
           "sourceCandidateIndex", "label", "refrain", "description", "genderDependency",
-          "construction", "rhymePairs"
+          "construction", "rhymePairs", "fidelityPass", "grammarPass", "readAloudPass",
+          "directionPass", "rhymePass", ...comparativeJsonRequired
         ]
       }
-    }
+    },
+    winnerComparisons: winnerComparisonsJsonSchema
   },
-  required: ["options"]
+  required: ["options", "winnerComparisons"]
   } as const;
 }
 
@@ -275,8 +288,8 @@ async function editCandidates(args: {
       }
     });
     const parsed = parseCompletedOutput(response, "editor", editorialOptionsSchema);
-    const validation = validateFinalEditorialSet(
-      parsed.options,
+    const validation = validateDirectionEditorialResult(
+      parsed,
       refrainBudget,
       args.input.priority === "rhythm",
       args.candidates.length,
@@ -300,14 +313,16 @@ async function editCandidates(args: {
       }));
     }
     args.progress("editing_completed", { usage });
+    const rankedOptions = [...parsed.options].sort((first, second) => first.rank - second.rank);
     return {
-      directions: parsed.options.map((option) => ({
+      directions: rankedOptions.map((option) => ({
         name: option.label,
         refrain: option.refrain,
         approach: option.description,
         genderDependency: option.genderDependency
       })),
-      editorialOptions: parsed.options,
+      editorialOptions: rankedOptions,
+      recommendedDirectionIndex: rankedOptions.findIndex((option) => option.recommendedFinalist),
       validation
     };
   } catch (error) {

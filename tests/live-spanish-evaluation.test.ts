@@ -22,5 +22,8 @@ test("Spanish live evaluation is six real-book fixtures and is explicitly approv
   assert.match(harness, /estimatedModelCostUsd/);
   assert.match(harness, /draftOptions/);
   assert.match(harness, /editorialAssessment/);
+  assert.match(harness, /selectRecommendedFinalist/);
+  assert.match(harness, /winnerComparisonsJsonSchema/);
+  assert.doesNotMatch(harness, /editorialAssessment\.find\(allPasses\)/);
   assert.match(harness, /warnings/);
 });

@@ -125,6 +125,30 @@ Approach: ${direction.approach}
 Gender dependency: ${direction.genderDependency}`;
 }
 
+function comparativeEditorialContract(language: string, rhymeRequired: boolean) {
+  return `COMPARATIVE EDITORIAL CONTRACT
+- Return exactly three finalists with unique ranks 1, 2, and 3. Ties are forbidden.
+- Set recommendedFinalist=true for exactly one finalist: the unique rank-1 option. Set it false for ranks 2 and 3.
+- Boolean pass fields are minimum eligibility gates only. They do not make passing finalists equal and must not determine the winner by array order.
+- For every finalist, return at least one specific material strength and one specific material weakness. Empty, generic, purely complimentary, or "no weakness" assessments are invalid.
+- Compare every finalist explicitly on natural contemporary ${language}, source and picture fidelity, tone, child-friendly read-aloud rhythm/cadence, applicable rhyme, and unsupported invention.
+- Return winnerComparisons for alternative ranks 2 and 3. Each explanation must say specifically why rank 1 is better than that alternative.
+- Recommend rank 1 only if it passes every minimum requirement. If no option qualifies, do not disguise that failure by recommending the least weak candidate.
+- Write strengths, weaknesses, comparativeAssessment, rhymeAssessment explanations, and winnerComparisons in concise English for internal review. Reader-facing book text remains solely in ${language}.
+
+RHYME EVIDENCE
+- Set rhymeAssessment.required=${rhymeRequired ? "true" : "false"} for every finalist.
+${rhymeRequired
+    ? `- Identify every specific rhyme anchor being credited and quote both complete lines or spoken phrase units.
+- For each anchor, record the sound sequence from the final stressed vowel onward and classify it as full_rhyme, assonance, consonance, internal_rhyme, or no_meaningful_rhyme.
+- Judge how the complete lines sound in continuous speech, not merely their spelling.
+- Grammatical endings, repeated words, and same-root echoes are not sufficient rhyme evidence; mark those facts explicitly and set countsAsRhyme=false unless an independent spoken rhyme remains.
+- Natural child-friendly wording, fidelity, and tone outrank a technically exact but forced rhyme.`
+    : `- Rhyme is not required for this approved form/source treatment. Do not penalize a finalist for having no rhyme and do not invent rhyme to improve its rank.
+- Return an empty evidence array unless genuine source-grounded sound play needs description.`}
+- Return only the structured editorial schema. Do not expose private deliberation beyond the concise comparative fields required for review.`;
+}
+
 export function directionsGenerationPrompt(args: {
   texts: string[];
   visualContexts?: string[];
@@ -267,6 +291,8 @@ Editorial process (perform privately; do not return analysis or scores):
 - preserve source fidelity and the parent's locked priority; never weaken either to fill a slot;
 - output only the required three options, including sourceCandidateIndex, construction, and all exact rhymePairs used for private server validation.
 
+${comparativeEditorialContract("Slovenian", args.priority === "rhythm")}
+
 EDITORIAL REGRESSION GUIDANCE
 The following rejected phrases are quality examples for private editorial judgment, not deterministic string bans:
 - "Čuvate me vi" is unnatural inversion; "čuvati" is inappropriate or regionally marked here when neutral Slovenian is available.
@@ -365,6 +391,15 @@ Editorial process:
 - set every pass field to true only after the returned text itself satisfies that gate;
 - preserve the exact locked refrain whenever it is used;
 - output only the three finalists in the required schema, with a short English strategy label and the source candidate id each finalist developed from.
+
+${comparativeEditorialContract(
+  "Slovenian",
+  requiresRhyme({
+    bookForm: args.bookForm ?? "refrain_verse",
+    sourceRhyme: args.sourceRhyme ?? "sustained",
+    priority: args.priority
+  })
+)}
 
 Never output "čisto do gobic", invented love-growing-like-mushrooms meaning, "rad/a", incomplete grammar, awkward or unnatural Slovenian, forced rhyme, or an unrhymed finalist under rhythm priority. If a submitted candidate has one of these failures, repair it fully or use another approach.`;
 }
@@ -535,7 +570,11 @@ HARD LIMITS
 - Maximum characters: ${args.refrainBudget?.maximumCharacterCount ?? 120}
 - Maximum sentences: ${args.refrainBudget?.maximumSentenceCount ?? 1}
 
-Privately verify fidelity, native grammar, natural read-aloud flow, concise repeatability, and spoken rhyme when required. Return exactly one finalist with construction "couplet", exactly one with construction "playful_hook", and exactly one with construction "lyrical_refrain". The three options must differ visibly in opening, syntax, rhythm, and rhyme pair. Return only the required options schema; labels/descriptions may be English, refrain text must be ${language}.`;
+Privately verify fidelity, native grammar, natural read-aloud flow, concise repeatability, and spoken rhyme when required. Return exactly one finalist with construction "couplet", exactly one with construction "playful_hook", and exactly one with construction "lyrical_refrain". The three options must differ visibly in opening, syntax, rhythm, and rhyme pair.
+
+${comparativeEditorialContract(language, args.priority === "rhythm")}
+
+Labels/descriptions may be English; refrain text must be ${language}.`;
 }
 
 type TranslationGenerationArgs = Parameters<typeof translationGenerationPrompt>[0];
@@ -578,7 +617,16 @@ ${args.approvedSpread1Note ? `\nPARENT EDIT NOTE\n${args.approvedSpread1Note}` :
 PRIVATE CANDIDATES
 ${args.candidatesJson}
 
-For each returned text, set every schema pass field true only after the text itself passes fidelity, native ${language} grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement. Return only the required schema.`;
+For each returned text, set every schema pass field true only after the text itself passes fidelity, native ${language} grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement.
+
+${comparativeEditorialContract(
+  language,
+  requiresRhyme({
+    bookForm: args.bookForm ?? "refrain_verse",
+    sourceRhyme: args.sourceRhyme ?? "sustained",
+    priority: args.priority
+  })
+)}`;
 }
 
 type FullBookGenerationArgs = Parameters<typeof fullBookGenerationPrompt>[0];

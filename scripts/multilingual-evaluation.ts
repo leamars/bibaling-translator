@@ -11,6 +11,15 @@ import {
   type TargetLanguage
 } from "../app/languages/language-config.ts";
 import { MULTILINGUAL_EVALUATION_FIXTURES } from "../tests/fixtures/multilingual-evaluation-fixtures.ts";
+import {
+  comparativeFinalistFields,
+  comparativeJsonProperties,
+  comparativeJsonRequired,
+  selectRecommendedFinalist,
+  winnerComparisonsJsonSchema,
+  winnerComparisonsSchema
+} from "../app/api/editorial-contract.ts";
+import { requiresRhyme } from "../app/api/book-form-contract.ts";
 
 export const EVALUATION_LANGUAGES: Array<{ targetLanguage: TargetLanguage; regionalVariant?: string }> = [
   { targetLanguage: "es", regionalVariant: "es-ES" },
@@ -43,6 +52,12 @@ export type MultilingualEvaluationRecord = {
     readAloudPass: boolean;
     directionPass: boolean;
     rhymePass: boolean;
+    rank: number;
+    recommendedFinalist: boolean;
+    strengths: string[];
+    weaknesses: string[];
+    comparativeAssessment: z.infer<typeof comparativeFinalistFields.comparativeAssessment>;
+    rhymeAssessment: z.infer<typeof comparativeFinalistFields.rhymeAssessment>;
   }>;
   selectedFinalOutput: string;
   mode: "mock" | "live";
@@ -64,9 +79,61 @@ const editorialSchema = z.object({
     grammarPass: z.boolean(),
     readAloudPass: z.boolean(),
     directionPass: z.boolean(),
-    rhymePass: z.boolean()
-  })).length(3)
+    rhymePass: z.boolean(),
+    ...comparativeFinalistFields
+  })).length(3),
+  winnerComparisons: winnerComparisonsSchema
 });
+
+function mockComparativeFields(rank: number, rhymeRequired: boolean) {
+  return {
+    rank,
+    recommendedFinalist: rank === 1,
+    strengths: ["Preserves the fixture meaning with a distinct readable structure."],
+    weaknesses: ["The phrasing still needs comparative native-speaker review."],
+    comparativeAssessment: {
+      naturalness: "The mock fixture represents a naturalness assessment.",
+      fidelity: "The mock fixture represents a source-fidelity assessment.",
+      tone: "The mock fixture represents a child-appropriate tone assessment.",
+      readAloudRhythm: "The mock fixture represents a spoken-cadence assessment.",
+      rhyme: rhymeRequired
+        ? "The mock fixture records source-required rhyme evidence."
+        : "Rhyme is not required for this approved source treatment.",
+      unsupportedInvention: "The mock fixture records an unsupported-invention check."
+    },
+    rhymeAssessment: {
+      required: rhymeRequired,
+      evidence: rhymeRequired ? [{
+        anchorA: "mock one",
+        anchorB: "mock two",
+        lineA: "Mock rhyme line one.",
+        lineB: "Mock rhyme line two.",
+        soundFromFinalStressedVowelA: "one",
+        soundFromFinalStressedVowelB: "two",
+        classification: "assonance" as const,
+        spokenAssessment: "The mock anchors form a source-required spoken assonance.",
+        grammaticalEndingOnly: false,
+        repeatedWord: false,
+        sameRootEcho: false,
+        countsAsRhyme: true
+      }] : [],
+      overallAssessment: rhymeRequired
+        ? "The mock result includes meaningful source-required rhyme."
+        : "The approved form does not require rhyme."
+    }
+  };
+}
+
+const mockWinnerComparisons = winnerComparisonsSchema.parse([
+  {
+    alternativeRank: 2,
+    whyWinnerIsBetter: "Rank 1 better preserves the fixture meaning and spoken flow than rank 2."
+  },
+  {
+    alternativeRank: 3,
+    whyWinnerIsBetter: "Rank 1 is more natural and introduces less unsupported material than rank 3."
+  }
+]);
 
 function directionFor(fixture: (typeof MULTILINGUAL_EVALUATION_FIXTURES)[number]): DirectionBrief | undefined {
   if (fixture.bookForm !== "refrain_verse") return undefined;
@@ -114,12 +181,17 @@ export function buildEvaluationPlan() {
 }
 
 export async function runMockEvaluation(): Promise<MultilingualEvaluationRecord[]> {
-  return buildEvaluationPlan().map(({ fixture, selection, languageLabel, base, draftingPrompt, mockCandidates }) => {
+  return buildEvaluationPlan().map(({ fixture, selection: languageSelection, languageLabel, base, draftingPrompt, mockCandidates }) => {
     const editorialPrompt = translationEvaluationPrompt({
       ...base,
       candidatesJson: JSON.stringify(mockCandidates)
     });
-    const editorialAssessment = mockCandidates.slice(0, 3).map((candidate) => ({
+    const rhymeRequired = requiresRhyme({
+      bookForm: fixture.bookForm,
+      sourceRhyme: fixture.sourceRhyme,
+      priority: fixture.priority
+    });
+    const editorialAssessment = mockCandidates.slice(0, 3).map((candidate, index) => ({
       sourceCandidateId: candidate.id,
       strategy: candidate.strategy,
       text: candidate.text,
@@ -127,23 +199,30 @@ export async function runMockEvaluation(): Promise<MultilingualEvaluationRecord[
       grammarPass: true,
       readAloudPass: true,
       directionPass: true,
-      rhymePass: true
+      rhymePass: true,
+      ...mockComparativeFields(index + 1, rhymeRequired)
     }));
+    const selectedResult = selectRecommendedFinalist({
+      finalists: editorialAssessment,
+      winnerComparisons: mockWinnerComparisons,
+      rhymeRequired
+    });
+    if (!selectedResult.ok) throw Object.assign(new Error(selectedResult.error.message), selectedResult.error);
     return {
       fixtureId: fixture.id,
       category: fixture.category,
       source: fixture.source,
       visualContext: fixture.visualContext,
       requirements: fixture.requirements,
-      targetLanguage: selection.targetLanguage,
-      regionalVariant: selection.regionalVariant,
+      targetLanguage: languageSelection.targetLanguage,
+      regionalVariant: languageSelection.regionalVariant,
       languageLabel,
       bookForm: fixture.bookForm,
       draftingPrompt,
       draftingOptions: mockCandidates,
       editorialPrompt,
       editorialAssessment,
-      selectedFinalOutput: editorialAssessment[0].text,
+      selectedFinalOutput: selectedResult.finalist.text,
       mode: "mock"
     };
   });
@@ -201,20 +280,33 @@ async function runLiveEvaluation(): Promise<MultilingualEvaluationRecord[]> {
                 sourceCandidateId: { type: "string" }, strategy: { type: "string" }, text: { type: "string" },
                 fidelityPass: { type: "boolean" }, grammarPass: { type: "boolean" }, readAloudPass: { type: "boolean" },
                 directionPass: { type: "boolean" }, rhymePass: { type: "boolean" }
+                , ...comparativeJsonProperties
               },
-              required: ["sourceCandidateId", "strategy", "text", "fidelityPass", "grammarPass", "readAloudPass", "directionPass", "rhymePass"] }
-          } }, required: ["finalists"]
+              required: ["sourceCandidateId", "strategy", "text", "fidelityPass", "grammarPass", "readAloudPass", "directionPass", "rhymePass", ...comparativeJsonRequired] }
+          }, winnerComparisons: winnerComparisonsJsonSchema }, required: ["finalists", "winnerComparisons"]
         } } }
       }
     });
-    const assessment = editorialSchema.parse(JSON.parse(editorial.response.output_text)).finalists;
+    const parsedEditorial = editorialSchema.parse(JSON.parse(editorial.response.output_text));
+    const assessment = parsedEditorial.finalists;
+    const rhymeRequired = requiresRhyme({
+      bookForm: plan.fixture.bookForm,
+      sourceRhyme: plan.fixture.sourceRhyme,
+      priority: plan.fixture.priority
+    });
+    const selection = selectRecommendedFinalist({
+      finalists: assessment,
+      winnerComparisons: parsedEditorial.winnerComparisons,
+      rhymeRequired
+    });
+    if (!selection.ok) throw Object.assign(new Error(selection.error.message), selection.error);
     records.push({
       fixtureId: plan.fixture.id, category: plan.fixture.category, source: plan.fixture.source,
       visualContext: plan.fixture.visualContext, requirements: plan.fixture.requirements,
       targetLanguage: plan.selection.targetLanguage, regionalVariant: plan.selection.regionalVariant,
       languageLabel: plan.languageLabel, bookForm: plan.fixture.bookForm,
       draftingPrompt: plan.draftingPrompt, draftingOptions: candidates, editorialPrompt,
-      editorialAssessment: assessment, selectedFinalOutput: assessment[0].text, mode: "live"
+      editorialAssessment: assessment, selectedFinalOutput: selection.finalist.text, mode: "live"
     });
   }
   return records;

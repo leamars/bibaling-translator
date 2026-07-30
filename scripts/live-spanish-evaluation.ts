@@ -6,7 +6,7 @@ import {
   deriveRefrainBudget,
   editorialOptionsSchema,
   privateCandidatesSchema,
-  validateFinalEditorialSet,
+  validateDirectionEditorialResult,
   validatePrivateCandidates
 } from "../app/api/direction-pipeline.ts";
 import {
@@ -17,6 +17,15 @@ import {
   type DirectionBrief
 } from "../app/api/translation-prompts.ts";
 import { deterministicViolations } from "../app/api/translation-quality.ts";
+import {
+  comparativeFinalistFields,
+  comparativeJsonProperties,
+  comparativeJsonRequired,
+  selectRecommendedFinalist,
+  winnerComparisonsJsonSchema,
+  winnerComparisonsSchema
+} from "../app/api/editorial-contract.ts";
+import { requiresRhyme } from "../app/api/book-form-contract.ts";
 import {
   calculateCost,
   pricingFor,
@@ -68,8 +77,10 @@ const editorialSchema = z.object({
     grammarPass: z.boolean(),
     readAloudPass: z.boolean(),
     directionPass: z.boolean(),
-    rhymePass: z.boolean()
-  })).length(3)
+    rhymePass: z.boolean(),
+    ...comparativeFinalistFields
+  })).length(3),
+  winnerComparisons: winnerComparisonsSchema
 });
 
 const directionDraftJsonSchema = {
@@ -126,16 +137,25 @@ const directionEditorialJsonSchema = {
               },
               required: ["endingA", "endingB"]
             }
-          }
+          },
+          fidelityPass: { type: "boolean" },
+          grammarPass: { type: "boolean" },
+          readAloudPass: { type: "boolean" },
+          directionPass: { type: "boolean" },
+          rhymePass: { type: "boolean" },
+          ...comparativeJsonProperties
         },
         required: [
           "sourceCandidateIndex", "label", "refrain", "description",
-          "genderDependency", "construction", "rhymePairs"
+          "genderDependency", "construction", "rhymePairs", "fidelityPass",
+          "grammarPass", "readAloudPass", "directionPass", "rhymePass",
+          ...comparativeJsonRequired
         ]
       }
-    }
+    },
+    winnerComparisons: winnerComparisonsJsonSchema
   },
-  required: ["options"]
+  required: ["options", "winnerComparisons"]
 } as const;
 
 const translationDraftJsonSchema = {
@@ -180,16 +200,19 @@ const translationEditorialJsonSchema = {
           grammarPass: { type: "boolean" },
           readAloudPass: { type: "boolean" },
           directionPass: { type: "boolean" },
-          rhymePass: { type: "boolean" }
+          rhymePass: { type: "boolean" },
+          ...comparativeJsonProperties
         },
         required: [
           "sourceCandidateId", "strategy", "text", "fidelityPass",
-          "grammarPass", "readAloudPass", "directionPass", "rhymePass"
+          "grammarPass", "readAloudPass", "directionPass", "rhymePass",
+          ...comparativeJsonRequired
         ]
       }
-    }
+    },
+    winnerComparisons: winnerComparisonsJsonSchema
   },
-  required: ["finalists"]
+  required: ["finalists", "winnerComparisons"]
 } as const;
 
 function completedJson(response: {
@@ -302,11 +325,12 @@ async function main() {
     }
   });
   usage.push(directionEditorialResult.usage);
-  const directionOptions = editorialOptionsSchema.parse(
+  const parsedDirectionEditorial = editorialOptionsSchema.parse(
     completedJson(directionEditorialResult.response, "Spanish refrain editorial")
-  ).options;
-  const directionDiagnostics = validateFinalEditorialSet(
-    directionOptions,
+  );
+  const directionOptions = parsedDirectionEditorial.options;
+  const directionDiagnostics = validateDirectionEditorialResult(
+    parsedDirectionEditorial,
     refrainBudget,
     true,
     directionDraftValidation.survivors.length,
@@ -315,7 +339,15 @@ async function main() {
   if (directionDiagnostics.hardFailures.length) {
     throw new Error(`Spanish refrain editorial produced hard failures: ${JSON.stringify(directionDiagnostics.hardFailures)}`);
   }
-  const selectedDirectionOption = directionOptions[0];
+  const directionSelection = selectRecommendedFinalist({
+    finalists: directionOptions,
+    winnerComparisons: parsedDirectionEditorial.winnerComparisons,
+    rhymeRequired: true
+  });
+  if (!directionSelection.ok) {
+    throw Object.assign(new Error(directionSelection.error.message), directionSelection.error);
+  }
+  const selectedDirectionOption = directionSelection.finalist;
   const selectedDirection: DirectionBrief = {
     name: selectedDirectionOption.label,
     refrain: selectedDirectionOption.refrain,
@@ -401,9 +433,10 @@ async function main() {
       }
     });
     usage.push(editorResult.usage);
-    const editorialAssessment = editorialSchema.parse(
+    const parsedEditorial = editorialSchema.parse(
       completedJson(editorResult.response, `${fixture.id} editorial`)
-    ).finalists;
+    );
+    const editorialAssessment = parsedEditorial.finalists;
     const editorialWarnings = editorialAssessment.flatMap((finalist) => {
       const warnings = deterministicViolations(finalist.text, { targetLanguage: TARGET_LANGUAGE })
         .map((warning) => ({ candidateId: finalist.sourceCandidateId, warning }));
@@ -415,7 +448,20 @@ async function main() {
       }
       return warnings;
     });
-    const finalSelected = editorialAssessment.find(allPasses)?.text || null;
+    const rhymeRequired = requiresRhyme({
+      bookForm: fixture.bookForm,
+      sourceRhyme: fixture.sourceRhyme,
+      priority: fixture.priority
+    });
+    const finalSelection = selectRecommendedFinalist({
+      finalists: editorialAssessment,
+      winnerComparisons: parsedEditorial.winnerComparisons,
+      rhymeRequired
+    });
+    if (!finalSelection.ok) {
+      throw Object.assign(new Error(finalSelection.error.message), finalSelection.error);
+    }
+    const finalSelected = finalSelection.finalist.text;
     fixtureResults.push({
       fixtureId: fixture.id,
       category: fixture.category,
