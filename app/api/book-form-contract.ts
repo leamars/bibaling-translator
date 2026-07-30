@@ -57,7 +57,7 @@ export function page1BackStep(bookForm: BookForm) {
 
 export function workshopProgress(bookForm: BookForm | null, internalStep: number) {
   const refrainRoute = bookForm === "refrain_verse";
-  const total = refrainRoute ? 11 : 10;
+  const total = refrainRoute ? 8 : 7;
   const current = !refrainRoute && internalStep >= 7 ? internalStep - 1 : internalStep;
   return { current: Math.min(current, total), total };
 }

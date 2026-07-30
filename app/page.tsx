@@ -1,84 +1,437 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import AnalyticsPreference from "./components/AnalyticsPreference";
 import TranslateLink from "./components/TranslateLink";
+import HomeBookDemo from "./HomeBookDemo";
 
 export const metadata: Metadata = {
-  title: "Read favorite books in your family’s language",
-  description: "Turn children’s books you already have into natural read-aloud stories for bilingual family life.",
+  title: "Read their favourite books in your language",
+  description:
+    "Bibaling translates the children’s books you already have, keeping the rhythm, rhyme and playfulness that make them fun to read aloud.",
   alternates: { canonical: "/" }
 };
 
+const storyWords = [
+  "once upon a time",
+  "érase una vez",
+  "es war einmal",
+  "c’era una volta",
+  "il était une fois",
+  "der var engang",
+  "era uma vez",
+  "er was eens",
+  "pewnego razu",
+  "det var en gång",
+  "a fost odată",
+  "nekoč",
+  "ROAR!",
+  "¡GRRR!",
+  "hoppla!",
+  "pluf!"
+];
+
+function Arrow() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
+      <path
+        d="M5 12h13M13 6l6 6-6 6"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2.2"
+      />
+    </svg>
+  );
+}
+
+function Spark({ className = "" }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" className={className} viewBox="0 0 62 62">
+      <path
+        d="M31 2c2 19 10 27 29 29-19 2-27 10-29 29-2-19-10-27-29-29C21 29 29 21 31 2Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function StepConnector({ variant }: { variant: "one" | "two" }) {
+  const path =
+    variant === "one"
+      ? "M2 45C18 16 36 67 57 42C75 21 91 26 118 50"
+      : "M2 42C20 62 34 12 59 35C77 53 93 58 118 25";
+
+  return (
+    <div
+      className={`step-connector step-connector-${variant}`}
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 120 76" preserveAspectRatio="none">
+        <path d={path} />
+      </svg>
+      <span>hop</span>
+    </div>
+  );
+}
+
+function Brand() {
+  return (
+    <>
+      <span className="brand-mark" aria-hidden="true">
+        <span />
+        <span />
+      </span>
+      <span>Bibaling</span>
+    </>
+  );
+}
+
 export default function LandingPage() {
   return (
-    <main className="marketing-page">
-      <section className="hero">
+    <main className="bibaling-home">
+      <header className="site-header">
+        <a className="brand" href="#top" aria-label="Bibaling home">
+          <Brand />
+        </a>
+
+        <nav className="desktop-nav" aria-label="Main navigation">
+          <a href="#why">Why Bibaling</a>
+          <a href="#translation">See it</a>
+          <a href="#how">How it works</a>
+          <a href="#questions">Questions</a>
+        </nav>
+
+        <TranslateLink className="button button-small">
+          Translate your book
+          <Arrow />
+        </TranslateLink>
+      </header>
+
+      <section className="hero section-shell" id="top">
         <div className="hero-copy">
-          <p className="eyebrow">The books they love, in the language you share</p>
-          <h1>Turn favorite books into stories that sound like home.</h1>
-          <p>Bibaling shapes the children’s books you already have into warm, natural read-aloud language—not stiff word-for-word translation.</p>
-          <TranslateLink className="site-cta large" />
+          <span className="eyebrow">
+            <span className="eyebrow-dot" />
+            Made for bilingual families
+          </span>
+          <h1>
+            Read their
+            <br />
+            favourite books
+            <br />
+            in your language.
+          </h1>
+          <p className="hero-description">
+            Bibaling translates the children&apos;s books you already have,
+            keeping the rhythm, rhyme and playfulness that make them fun to
+            read aloud.
+          </p>
+          <TranslateLink className="button button-primary">
+            Translate your book
+            <Arrow />
+          </TranslateLink>
+          <p className="language-note">
+            <span aria-hidden="true">●</span> Across European languages
+          </p>
         </div>
-        <div className="hero-visual" aria-hidden="true">
-          <img src="/bibaling-family-reading.png" alt="" />
-          <span className="word-ribbon ribbon-one">once upon a time · nekoč · once upon a time</span>
-          <span className="word-ribbon ribbon-two">read · imagine · share</span>
+
+        <div className="hero-art">
+          <span className="orbit-word orbit-word-one">hop!</span>
+          <span className="orbit-word orbit-word-two">ššš...</span>
+          <Spark className="hero-spark hero-spark-one" />
+          <Spark className="hero-spark hero-spark-two" />
+          <div className="hero-image-wrap">
+            <Image
+              alt="A happy mother and young child discovering a story together"
+              src="/images/hero-family.webp"
+              width={1536}
+              height={1024}
+              priority
+            />
+          </div>
+          <div className="floating-page floating-page-left" aria-hidden="true">
+            <span>Once upon</span>
+            <i />
+            <i />
+          </div>
+          <div className="floating-page floating-page-right" aria-hidden="true">
+            <span>Érase una vez</span>
+            <i />
+            <i />
+          </div>
         </div>
       </section>
 
-      <section className="home-section steps-section">
-        <p className="eyebrow">Three thoughtful steps</p>
-        <h2>Start with the voice. Then carry it through the book.</h2>
-        <div className="steps-grid">
-          {[
-            ["01", "Photograph the whole book.", "Add every page in reading order. We read the words, and you correct anything we missed."],
-            ["02", "Choose the voice that feels right.", "Compare real Slovenian options, edit the strongest one, and tell us what felt off."],
-            ["03", "Finish the whole book.", "After you approve Page 1 and provide an email, we translate, review, and send the complete book."]
-          ].map(([number, title, text]) => (
-            <article className="feature-card" key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p></article>
-          ))}
+      <section className="bedtime-band" id="why">
+        <div className="section-shell bedtime-inner">
+          <div>
+            <span className="eyebrow eyebrow-light">The real magic trick</span>
+            <h2>
+              We handle the translation.
+              <br />
+              You handle bedtime.
+            </h2>
+          </div>
+          <div className="pain-points" aria-label="What Bibaling helps with">
+            <span>No searching for words.</span>
+            <span>No losing the rhyme.</span>
+            <span>No inventing a different version every night.</span>
+          </div>
+        </div>
+        <div className="marquee" aria-hidden="true">
+          <div className="marquee-track">
+            {[0, 1].map((loop) => (
+              <span className="marquee-set" key={loop}>
+                {storyWords.map((word, index) => (
+                  <span className="marquee-word" key={`${loop}-${word}`}>
+                    {word}
+                    {index < storyWords.length - 1 && <i>•</i>}
+                  </span>
+                ))}
+                <i>•</i>
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="home-section example-section story-swoop">
-        <div>
-          <p className="eyebrow">More than substituting words</p>
-          <h2>A translation can be correct and still feel wrong aloud.</h2>
-          <p>Picture books depend on timing: a rhyme lands with a page turn, a joke matches the illustration, or a phrase returns until a child can join in. Bibaling lets the parent choose which qualities matter, then review the language that will actually be read.</p>
+      <section
+        className="translation-section section-shell"
+        id="translation"
+      >
+        <div className="section-heading centered">
+          <span className="eyebrow">See the difference</span>
+          <h2>Finding the right words is hard.</h2>
+          <p>
+            A literal translation can lose the rhyme, rhythm and fun. Bibaling
+            finds words that work when you read them aloud.
+          </p>
         </div>
-        <div className="comparison">
-          <article><span>Word for word</span><p>Meaning arrives, but English syntax, flat rhythm, or a lost joke can make the sentence feel translated.</p></article>
-          <article className="preferred"><span>Shaped for reading aloud</span><p>The same story beat is expressed in natural Slovenian, with rhythm, wordplay, and repetition handled according to the book.</p></article>
+
+        <div className="book-stage">
+          <Spark className="book-spark book-spark-one" />
+          <Spark className="book-spark book-spark-two" />
+          <span className="book-doodle book-doodle-one" aria-hidden="true">
+            A
+          </span>
+          <span className="book-doodle book-doodle-two" aria-hidden="true">
+            Ñ
+          </span>
+          <HomeBookDemo />
         </div>
       </section>
 
-      <section className="home-section">
-        <p className="eyebrow">The book decides the approach</p>
-        <h2>Not every picture book is a rhyming poem.</h2>
-        <div className="forms-grid">
-          <article className="form-card prose-form"><span>Story</span><h3>Stories without rhyme</h3><p>Protect the storytelling voice, events, emotional beats, and picture details without inventing verse.</p></article>
-          <article className="form-card poetry-form"><span>Poem</span><h3>Rhyming or poetic stories</h3><p>Preserve the source’s cadence, line shape, sound play, and rhyme where it truly belongs.</p></article>
-          <article className="form-card refrain-form"><span>Refrain</span><h3>Verse with a repeating refrain</h3><p>Solve the recurring line with the parent first, then use its exact approved wording throughout.</p></article>
+      <section className="how-section" id="how">
+        <div className="section-shell">
+          <div className="section-heading split-heading">
+            <div>
+              <span className="eyebrow">How it works</span>
+              <h2>
+                From your bookshelf
+                <br />
+                to your language.
+              </h2>
+            </div>
+            <p>
+              No blank page. No translation project. Start with a book your
+              child already reaches for.
+            </p>
+          </div>
+
+          <div className="steps">
+            <article className="step step-coral">
+              <span className="step-number">1</span>
+              <div className="step-icon camera-icon" aria-hidden="true">
+                <span />
+                <i />
+              </div>
+              <h3>Photograph the pages.</h3>
+              <p>Clear phone photos are all you need.</p>
+            </article>
+
+            <StepConnector variant="one" />
+
+            <article className="step step-blue">
+              <span className="step-number">2</span>
+              <div className="step-icon page-icon" aria-hidden="true">
+                <span>Mm</span>
+                <i />
+              </div>
+              <h3>Make the first page yours.</h3>
+              <p>
+                Read it aloud. Tweak the words until they sound right to you.
+              </p>
+            </article>
+
+            <StepConnector variant="two" />
+
+            <article className="step step-green">
+              <span className="step-number">3</span>
+              <div className="step-icon book-icon" aria-hidden="true">
+                <span />
+                <i />
+              </div>
+              <h3>Your whole book. In your language.</h3>
+              <p>
+                We carry that voice, rhythm and playfulness through every page.
+              </p>
+            </article>
+          </div>
         </div>
       </section>
 
-      <section className="home-section privacy-callout">
-        <p className="eyebrow">Your family’s reading project</p>
-        <h2>Made for bilingual families, not publishers.</h2>
-        <p>Book photos are used to read the source pages, but only corrected text—not photos—is placed in the durable translation job. After Page 1 is visible, your email is sent separately to Resend so we can send the finished book. Marketing and GA4 analytics are optional, and analytics never receives your email or book content.</p>
+      <section className="family-section section-shell">
+        <div className="family-statement">
+          <span className="eyebrow">That&apos;s the whole point</span>
+          <h2>
+            For bilingual families.
+            <br />
+            <em>Not publishers.</em>
+          </h2>
+          <p>
+            For the book already beside the bed. For the language you want your
+            child to hear. For reading together—not making a perfect commercial
+            edition.
+          </p>
+        </div>
+
+        <aside className="privacy-note">
+          <span className="tape" aria-hidden="true" />
+          <span className="privacy-icon" aria-hidden="true">
+            ♥
+          </span>
+          <h3>Your family&apos;s bookshelf stays yours.</h3>
+          <p>
+            Your photos and book pages are used only to create your
+            family&apos;s translation.
+          </p>
+          <a href="/privacy">
+            Read about privacy <Arrow />
+          </a>
+        </aside>
       </section>
 
-      <section className="home-section faq">
-        <p className="eyebrow">A few useful answers</p>
-        <h2>Before you photograph the first page</h2>
-        <details><summary>Which languages work today?</summary><p>The current translator supports English to Slovenian. Other language pairs are future possibilities, not available features.</p></details>
-        <details><summary>Can I correct the translation?</summary><p>Yes. You correct the extracted English, then choose and edit the Page 1 Slovenian voice before the rest of the book is translated.</p></details>
-        <details><summary>When do you ask for email?</summary><p>Only after you upload the whole book, shape its voice, and see the completed Page 1 translation options. We use the address to send the finished translation.</p></details>
-        <details><summary>Is the output guaranteed to be perfect?</summary><p>No. Machine-assisted translations can contain errors. A parent should review every page before using it.</p></details>
+      <section className="faq-section" id="questions">
+        <div className="section-shell faq-grid">
+          <div className="faq-heading">
+            <span className="eyebrow">Good questions</span>
+            <h2>
+              Before you
+              <br />
+              grab a book.
+            </h2>
+            <p>The useful things to know before you get started.</p>
+          </div>
+
+          <div className="faq-list">
+            <details>
+              <summary>What kinds of books work well?</summary>
+              <p>
+                Picture-book stories, rhyming books, poems and books with a
+                repeating refrain. Bibaling first works out what makes the book
+                work, then translates it in the right way.
+              </p>
+            </details>
+            <details>
+              <summary>Which languages can I use?</summary>
+              <p>
+                All European languages. Choose the language on the page and the
+                language your family reads in—from Spanish, Italian and German
+                to Danish, Polish, Greek, Slovenian and more.
+              </p>
+            </details>
+            <details>
+              <summary>Is it a word-for-word translation?</summary>
+              <p>
+                No. A literal translation can flatten the rhyme, rhythm, jokes
+                and nonsense. Bibaling keeps the meaning, but reshapes the words
+                when it needs to so the page works aloud.
+              </p>
+            </details>
+            <details>
+              <summary>What happens to my book photos?</summary>
+              <p>
+                They&apos;re only used to read the pages and create your
+                translation.
+              </p>
+            </details>
+            <details>
+              <summary>Can I translate any book I own?</summary>
+              <p>
+                Bibaling is for private family reading. You should only upload
+                material you have the right to use; a translation does not give
+                you permission to publish, sell or distribute the book.
+              </p>
+            </details>
+          </div>
+        </div>
       </section>
 
-      <section className="final-cta">
-        <h2>Find a voice that feels like your family.</h2>
-        <TranslateLink className="site-cta large" />
+      <section className="final-cta section-shell">
+        <div className="final-copy">
+          <span className="eyebrow eyebrow-light">Ready when you are</span>
+          <h2>
+            Their favourite.
+            <br />
+            In your language.
+          </h2>
+          <p>Pick the book they always ask for.</p>
+          <TranslateLink className="button button-light">
+            Translate your book
+            <Arrow />
+          </TranslateLink>
+        </div>
+        <div className="final-image">
+          <Image
+            alt="A father and a different child happily reading together at bedtime"
+            src="/images/bedtime-reading.webp"
+            width={1536}
+            height={1024}
+          />
+        </div>
       </section>
+
+      <footer>
+        <div className="section-shell footer-inner">
+          <div className="footer-brand">
+            <a className="brand brand-footer" href="#top">
+              <Brand />
+            </a>
+            <p>
+              More stories. More of your language.
+              <br />
+              More reading together.
+            </p>
+          </div>
+          <div className="footer-links">
+            <div>
+              <span>Explore</span>
+              <a href="#why">Why Bibaling</a>
+              <a href="#translation">See it</a>
+              <a href="#how">How it works</a>
+              <a href="#questions">Questions</a>
+            </div>
+            <div>
+              <span>More</span>
+              <a href="/privacy">Privacy</a>
+              <a href="/terms">Terms</a>
+              <a href="/copyright">Copyright</a>
+              <a href="mailto:hello@bibaling.com">Contact</a>
+              <AnalyticsPreference />
+            </div>
+          </div>
+        </div>
+        <div className="section-shell footer-bottom">
+          <span>© 2026 Bibaling</span>
+          <span>
+            Made with love{" "}
+            <span className="footer-heart" aria-hidden="true">
+              ♥
+            </span>{" "}
+            for bilingual families.
+          </span>
+        </div>
+      </footer>
     </main>
   );
 }

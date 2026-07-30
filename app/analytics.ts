@@ -29,13 +29,14 @@ declare global {
 const QUEUE_KEY = "bibaling_analytics_queue";
 const SENT_KEY = "bibaling_analytics_sent";
 const CONSENT_KEY = "bibaling_analytics_consent";
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-EK8PPEVG54";
 
 function readList<T>(key: string): T[] {
   try { return JSON.parse(sessionStorage.getItem(key) || "[]") as T[]; } catch { return []; }
 }
 
 function configured() {
-  return Boolean(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
+  return Boolean(GA_MEASUREMENT_ID);
 }
 
 function consented() {
@@ -54,7 +55,7 @@ function send(event: FunnelEvent) {
 }
 
 function ensureTag() {
-  const id = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  const id = GA_MEASUREMENT_ID;
   if (!id || document.querySelector(`script[data-bibaling-ga="${id}"]`)) return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = (...args: unknown[]) => window.dataLayer?.push(args);

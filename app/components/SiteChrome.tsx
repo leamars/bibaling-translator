@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import AnalyticsPreference from "./AnalyticsPreference";
 import TranslateLink from "./TranslateLink";
 
@@ -15,6 +18,9 @@ const legalLinks = [
 ] as const;
 
 export function SiteHeader() {
+  const pathname = usePathname();
+  if (pathname === "/" || pathname === "/translate") return null;
+
   return (
     <header className="site-header">
       <div className="site-header-inner">
@@ -29,6 +35,9 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
+  const pathname = usePathname();
+  if (pathname === "/" || pathname === "/translate") return null;
+
   return (
     <footer className="site-footer">
       <div className="site-footer-grid">

@@ -89,8 +89,10 @@ test("parent-selected routes skip or enter Refrain Lab deterministically", () =>
   assert.equal(nextAfterFreedom("refrain_verse"), "refrain_lab");
   assert.equal(page1BackStep("prose_story"), 5);
   assert.equal(page1BackStep("refrain_verse"), 6);
-  assert.deepEqual(workshopProgress("prose_story", 7), { current: 6, total: 10 });
-  assert.deepEqual(workshopProgress("refrain_verse", 7), { current: 7, total: 11 });
+  assert.deepEqual(workshopProgress("prose_story", 7), { current: 6, total: 7 });
+  assert.deepEqual(workshopProgress("prose_story", 8), { current: 7, total: 7 });
+  assert.deepEqual(workshopProgress("refrain_verse", 7), { current: 7, total: 8 });
+  assert.deepEqual(workshopProgress("refrain_verse", 8), { current: 8, total: 8 });
 });
 
 test("non-refrain prompts and payload contracts contain no fabricated refrain", async () => {
