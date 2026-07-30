@@ -29,6 +29,15 @@ button:focus-visible, [role="button"]:focus-visible, .drop:focus-within, .rest-d
 .workshop { width: min(900px, calc(100% - 40px)); margin: 0 auto; padding: var(--space-page-top) 0 124px; }
 h1 { max-width: 760px; margin: 0; font: 650 clamp(27.9px, 4.5vw, 45px)/1 Georgia, serif; letter-spacing: -.045em; }
 .lead { max-width: 650px; margin: 18px 0 36px; color: var(--muted); font-size: 17.1px; line-height: 1.5; }
+.language-choice { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, .55fr); gap: 14px 18px; margin: 0 0 24px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--paper); }
+.language-choice > div { display: grid; gap: 7px; }
+.language-choice label { color: var(--forest); font-size: 10.8px; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
+.language-choice select { width: 100%; min-height: 48px; padding: 10px 38px 10px 13px; border: 1px solid var(--line); border-radius: var(--radius-control); color: var(--ink); background: white; font-weight: 700; }
+.language-choice p { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 12.6px; line-height: 1.45; }
+.language-feedback { display: grid; gap: 10px; margin-top: 18px; padding: 18px; border-left: 4px solid #d9ad49; border-radius: 0 var(--radius-panel) var(--radius-panel) 0; background: #fff8df; }
+.language-feedback label { color: var(--ink); font-weight: 750; }
+.language-feedback textarea { min-height: 76px; background: white; }
+.language-feedback button { justify-self: start; }
 .uploads { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; min-height: 232px; margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--line); }
 .uploads.empty { grid-template-columns: minmax(280px, 390px); justify-content: center; }
 .drop, .photo { min-height: 232px; border-radius: 20px; overflow: hidden; position: relative; cursor: pointer; }
@@ -206,6 +215,8 @@ textarea:disabled { color: var(--muted); background: #f5f6f3; cursor: wait; }
 .email-gate-error { color: var(--error); font-weight: 700; }
 .full-book-draft .parent-edit-note { grid-column: 3; }
 @media (max-width: 700px) {
+  .language-choice { grid-template-columns: 1fr; }
+  .language-choice p { grid-column: auto; }
   .header-tools { gap: 8px; }
   .mock-toggle { padding: 6px 8px; }
   .workshop { padding-top: 44px; }

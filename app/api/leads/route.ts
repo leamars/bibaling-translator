@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       captured: true,
       created: result.created,
-      receipt: createLeadReceipt(input.bookForm)
+      receipt: createLeadReceipt(input.bookForm, input.targetLanguage, input.regionalVariant)
     });
   } catch (error) {
     console.error("Lead capture failed", error instanceof Error ? error.message : error);

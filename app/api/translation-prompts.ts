@@ -1,4 +1,10 @@
 import { requiresRhyme, type BookForm, type SourceRhyme } from "./book-form-contract.ts";
+import {
+  isReviewedSlovenian,
+  languagePromptGuidance,
+  targetLanguageName,
+  type LanguageSelection
+} from "../languages/prompt-guidance.ts";
 
 export type Priority = "rhythm" | "meaning" | "simple";
 export type Freedom = "close" | "natural" | "playful";
@@ -136,7 +142,8 @@ export function directionsGenerationPrompt(args: {
     maximumSentenceCount: number;
     maximumClauseCount: number;
   };
-}) {
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualDirectionsGenerationPrompt(args);
   return `ROLE
 Draft five concise Slovenian refrain possibilities for a children's picture book. This is a breadth pass, not the final editorial review. Return structured JSON only and never explain your reasoning.
 
@@ -204,7 +211,8 @@ export function directionsEvaluationPrompt(args: {
     maximumSentenceCount: number;
     maximumClauseCount: number;
   };
-}) {
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualDirectionsEvaluationPrompt(args);
   return `${AUTHORITATIVE_STANDARD}
 
 ROLE: Independent Slovenian literary editor and quality gate. Return exactly three parent-ready literary directions. Start from the strongest submitted approaches, but repair an approach when necessary before selecting it. Never pass a flaw through merely to fill three slots.
@@ -281,7 +289,8 @@ export function translationGenerationPrompt(args: {
   approvedSpread1?: string;
   approvedSpread1Note?: string;
   rejectionFeedback?: string;
-}) {
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualTranslationGenerationPrompt(args);
   return `${AUTHORITATIVE_STANDARD}
 
 GOAL
@@ -322,7 +331,8 @@ export function translationEvaluationPrompt(args: {
   approvedSpread1?: string;
   approvedSpread1Note?: string;
   candidatesJson: string;
-}) {
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualTranslationEvaluationPrompt(args);
   return `${AUTHORITATIVE_STANDARD}
 
 ROLE: Independent Slovenian literary editor and quality gate. Return exactly three publication-ready finalists. Start from the strongest submitted candidates, but repair a candidate when necessary before selecting it. Never pass a flaw through merely to fill three slots.
@@ -367,7 +377,8 @@ export function fullBookGenerationPrompt(args: {
   sourceRhyme?: SourceRhyme;
   direction?: DirectionBrief;
   approvedVoice: Array<{ spread: number; text: string; parentNote?: string }>;
-}) {
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualFullBookGenerationPrompt(args);
   return `${AUTHORITATIVE_STANDARD}
 
 GOAL
@@ -403,7 +414,8 @@ export function fullBookEditorialPrompt(args: {
   direction?: DirectionBrief;
   approvedVoice: Array<{ spread: number; text: string; parentNote?: string }>;
   draftsJson: string;
-}) {
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualFullBookEditorialPrompt(args);
   return `${AUTHORITATIVE_STANDARD}
 
 ROLE
@@ -423,4 +435,191 @@ DRAFTS TO EDIT
 ${args.draftsJson}
 
 For every returned spread, verify fidelity, natural grammatical Slovenian, child-friendly read-aloud flow, locked-form compliance, and ${requiresRhyme({ bookForm: args.bookForm ?? "refrain_verse", sourceRhyme: args.sourceRhyme ?? "sustained", priority: args.priority }) ? "genuine phonetic rhyme" : "the absence of invented rhyme or refrain"}. Repair rather than merely report failures. Preserve exact recurring wording only for refrain_verse and make the whole sequence sound like one book. Return only the required structured JSON.`;
+}
+
+type MultilingualPromptBase = LanguageSelection & {
+  priority: Priority;
+  freedom: Freedom;
+  bookForm?: BookForm;
+  sourceRhyme?: SourceRhyme;
+  direction?: DirectionBrief;
+};
+
+function multilingualFormContract(args: MultilingualPromptBase) {
+  const language = targetLanguageName(args);
+  const bookForm = args.bookForm ?? "refrain_verse";
+  const sourceRhyme = args.sourceRhyme ?? "sustained";
+  if (bookForm === "prose_story") {
+    return `LOCKED BOOK FORM: PROSE STORY
+Write warm, fluent ${language} prose. Do not add rhyme, meter, verse lineation, a chant, or a refrain.`;
+  }
+  if (bookForm === "continuous_verse") {
+    return `LOCKED BOOK FORM: CONTINUOUS VERSE
+Preserve cadence, line structure, repetition, sound play, and ${sourceRhyme === "sustained" ? "the source's sustained rhyme" : sourceRhyme === "occasional" ? "only the source's occasional rhyme" : "its non-rhyming poetic flow"}. Never invent a fixed recurring refrain.`;
+  }
+  if (!args.direction?.refrain) throw new Error("refrain_verse requires a parent-approved refrain");
+  return `LOCKED BOOK FORM: VERSE WITH A REPEATING REFRAIN
+Use this exact parent-approved ${language} refrain wherever the source refrain appears: ${args.direction.refrain}`;
+}
+
+function multilingualPreferenceContract(args: MultilingualPromptBase) {
+  const language = targetLanguageName(args);
+  const rhymeRequired = requiresRhyme({
+    bookForm: args.bookForm ?? "refrain_verse",
+    sourceRhyme: args.sourceRhyme ?? "sustained",
+    priority: args.priority
+  });
+  const priority = args.priority === "meaning"
+    ? "Preserve meaning, picture details, jokes, emotional beats, and page turns above ornamental wording."
+    : args.priority === "simple"
+      ? `Use especially clear, child-appropriate ${language} without flattening the story.`
+      : rhymeRequired
+        ? `Use convincing spoken rhyme and read-aloud rhythm in ${language}, without distorting meaning or syntax.`
+        : `Protect natural read-aloud cadence; do not invent rhyme that the source does not sustain.`;
+  const freedom = args.freedom === "close"
+    ? `Stay close to the source while changing what idiomatic ${language} requires.`
+    : args.freedom === "natural"
+      ? `Freely repair English-shaped wording so the result sounds naturally written in ${language}.`
+      : `Reimagine wordplay and sound where useful while preserving events, picture truth, and emotional scope.`;
+  return `LOCKED PARENT PRIORITY\n${priority}\n\nCREATIVE FREEDOM\n${freedom}`;
+}
+
+type DirectionGenerationArgs = Parameters<typeof directionsGenerationPrompt>[0];
+function multilingualDirectionsGenerationPrompt(args: DirectionGenerationArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+TASK
+Draft exactly five compact, genuinely different ${language} refrain candidates from the corrected English and visual context. This is a private breadth pass. Variation must come from rhythm, syntax, concise wordplay, and rhyme strategy—not invented content or extra length.
+
+${multilingualPreferenceContract({ ...args, bookForm: "refrain_verse", sourceRhyme: "sustained" })}
+
+CORRECTED ENGLISH
+${args.texts.map((text, index) => `${index + 1}. ${text}`).join("\n")}
+
+VISUAL CONTEXT
+${(args.visualContexts || []).map((text, index) => `${index + 1}. ${text}`).join("\n")}
+
+LIMITS
+- Maximum words: ${args.refrainBudget?.maximumWordCount ?? 12}
+- Maximum characters: ${args.refrainBudget?.maximumCharacterCount ?? 120}
+- Maximum sentences: ${args.refrainBudget?.maximumSentenceCount ?? 1}
+- At most two short semantic lines
+${args.parentFeedback ? `\nPARENT FEEDBACK\n${args.parentFeedback}` : ""}
+${args.previousRefrains?.length ? `\nDO NOT REPEAT\n${args.previousRefrains.map((item) => `- ${item}`).join("\n")}` : ""}
+
+Return only the required candidates schema. Keep English names and approach labels short; every refrain must be solely in ${language}.`;
+}
+
+type DirectionEvaluationArgs = Parameters<typeof directionsEvaluationPrompt>[0];
+function multilingualDirectionsEvaluationPrompt(args: DirectionEvaluationArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+ROLE
+Act as an independent native ${language} children's-book editor. Repair or replace weak drafts and return exactly three compact, parent-ready refrain options. Never retain awkward language merely to fill three slots.
+
+${multilingualPreferenceContract({ ...args, bookForm: "refrain_verse", sourceRhyme: "sustained" })}
+
+CORRECTED ENGLISH
+${args.texts.map((text, index) => `${index + 1}. ${text}`).join("\n")}
+
+VISUAL CONTEXT
+${(args.visualContexts || []).map((text, index) => `${index + 1}. ${text}`).join("\n")}
+
+PRIVATE DRAFTS
+${args.directionsJson}
+
+HARD LIMITS
+- Maximum words: ${args.refrainBudget?.maximumWordCount ?? 12}
+- Maximum characters: ${args.refrainBudget?.maximumCharacterCount ?? 120}
+- Maximum sentences: ${args.refrainBudget?.maximumSentenceCount ?? 1}
+
+Privately verify fidelity, native grammar, natural read-aloud flow, concise repeatability, and spoken rhyme when required. The three options must differ visibly in opening, syntax, rhythm, and rhyme pair. Return only the required options schema; labels/descriptions may be English, refrain text must be ${language}.`;
+}
+
+type TranslationGenerationArgs = Parameters<typeof translationGenerationPrompt>[0];
+function multilingualTranslationGenerationPrompt(args: TranslationGenerationArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+GOAL
+Create exactly six private, genuinely different ${language} adaptations for Page ${args.spreadNumber}.
+
+${multilingualFormContract(args)}
+${multilingualPreferenceContract(args)}
+
+CORRECTED ENGLISH
+${args.source}
+${args.visualContext ? `\nVISUAL CONTEXT\n${args.visualContext}` : ""}
+${args.approvedSpread1 ? `\nAPPROVED PAGE 1 VOICE — imitate, never rewrite\n${args.approvedSpread1}` : ""}
+${args.approvedSpread1Note ? `\nPARENT EDIT NOTE — apply as binding editorial evidence\n${args.approvedSpread1Note}` : ""}
+
+Return complete reader-facing ${language} text, never notes or fragments. Preserve exact approved refrain wording only for refrain_verse. Give candidates ids c01–c06 and short English strategy labels. Return only the required schema.`;
+}
+
+type TranslationEvaluationArgs = Parameters<typeof translationEvaluationPrompt>[0];
+function multilingualTranslationEvaluationPrompt(args: TranslationEvaluationArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+ROLE
+Act as an independent native ${language} children's-book editor. Repair the strongest private drafts and return exactly three publication-ready finalists.
+
+${multilingualFormContract(args)}
+${multilingualPreferenceContract(args)}
+
+CORRECTED ENGLISH — PAGE ${args.spreadNumber}
+${args.source}
+${args.visualContext ? `\nVISUAL CONTEXT\n${args.visualContext}` : ""}
+${args.approvedSpread1 ? `\nAPPROVED PAGE 1 VOICE\n${args.approvedSpread1}` : ""}
+${args.approvedSpread1Note ? `\nPARENT EDIT NOTE\n${args.approvedSpread1Note}` : ""}
+
+PRIVATE CANDIDATES
+${args.candidatesJson}
+
+For each returned text, set every schema pass field true only after the text itself passes fidelity, native ${language} grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement. Return only the required schema.`;
+}
+
+type FullBookGenerationArgs = Parameters<typeof fullBookGenerationPrompt>[0];
+function multilingualFullBookGenerationPrompt(args: FullBookGenerationArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+GOAL
+Translate every requested page into one coherent ${language} book voice.
+
+${multilingualFormContract(args)}
+${multilingualPreferenceContract(args)}
+
+APPROVED VOICE REFERENCES
+${args.approvedVoice.map((item) => `PAGE ${item.spread}\n${item.text}${item.parentNote ? `\nPARENT NOTE: ${item.parentNote}` : ""}`).join("\n\n")}
+
+CORRECTED ENGLISH PAGES
+${args.spreads.map((item) => `PAGE ${item.spread}\n${item.source}\nVISUAL CONTEXT: ${item.visualContext}`).join("\n\n")}
+
+Return exactly one complete ${language} text for every requested page. Keep repeated wording exact, preserve sequence and picture truth, and return only the required schema.`;
+}
+
+type FullBookEditorialArgs = Parameters<typeof fullBookEditorialPrompt>[0];
+function multilingualFullBookEditorialPrompt(args: FullBookEditorialArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+ROLE
+Act as the final native ${language} children's-book editor. Repair every submitted page and return exactly one publication-ready text for every requested page.
+
+${multilingualFormContract(args)}
+${multilingualPreferenceContract(args)}
+
+APPROVED VOICE REFERENCES
+${args.approvedVoice.map((item) => `PAGE ${item.spread}\n${item.text}${item.parentNote ? `\nPARENT NOTE: ${item.parentNote}` : ""}`).join("\n\n")}
+
+AUTHORITATIVE ENGLISH
+${args.spreads.map((item) => `PAGE ${item.spread}\n${item.source}`).join("\n\n")}
+
+DRAFTS
+${args.draftsJson}
+
+Privately verify fidelity, native ${language} grammar, child-friendly read-aloud flow, locked-form compliance, repeated wording, selected regional/script variant, and applicable spoken rhyme. Return only the required schema.`;
 }

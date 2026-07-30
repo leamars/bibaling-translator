@@ -19,6 +19,7 @@ const lead: LeadCapture = {
     landingPage: "https://bibaling.example/"
   },
   languagePair: "en-sl",
+  targetLanguage: "sl",
   bookForm: "continuous_verse"
 };
 
@@ -133,7 +134,7 @@ test("all photos precede the Page 1 gate and capture starts durable delivery", a
   assert.doesNotMatch(deliveryScreen, /OptionList|patternOptions|Save finished draft|Add the rest of the book/);
   assert.match(page, /emailRequest\.loading/);
   assert.match(page, /emailRequest\.error/);
-  assert.match(route, /verifyLeadReceipt\(input\.leadReceipt, input\.bookForm\)/);
+  assert.match(route, /verifyLeadReceipt\(input\.leadReceipt, input\.bookForm, input\.targetLanguage, input\.regionalVariant\)/);
   assert.match(route, /start\(deliverBookWorkflow/);
   assert.doesNotMatch(contract, /photo|preview|filename|visualContext/i);
   assert.match(workflow, /"use workflow"/);

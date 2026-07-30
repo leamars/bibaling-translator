@@ -15,6 +15,8 @@ function contactPayload(input: LeadCapture) {
     term: input.attribution.term,
     original_landing_page: input.attribution.landingPage,
     language_pair: input.languagePair,
+    target_language: input.targetLanguage,
+    regional_variant: input.regionalVariant || "",
     confirmed_book_form: input.bookForm
   };
   const leadsSegmentId = process.env.RESEND_LEADS_SEGMENT_ID?.trim();

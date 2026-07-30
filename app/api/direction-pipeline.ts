@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { z } from "zod";
 import type { Response } from "openai/resources/responses/responses";
 import { deterministicViolations } from "./translation-quality.ts";
+import type { TargetLanguage } from "../languages/language-config.ts";
 
 export const DIRECTION_PROMPT_VERSION = "step5-v8-assigned-observable-constructions";
 export const DIRECTION_VALIDATION_VERSION = "step5-validation-v8-hard-boundary-advisory-quality";
@@ -387,8 +388,8 @@ function validationIssue(code: string, message: string, candidateIndex?: number)
   return { code, message, ...(candidateIndex === undefined ? {} : { candidateIndex }) };
 }
 
-function unmistakableTextFailures(text: string, candidateIndex: number) {
-  const failures = deterministicViolations(text, { requireCompleteSentence: false })
+function unmistakableTextFailures(text: string, candidateIndex: number, targetLanguage: TargetLanguage = "sl") {
+  const failures = deterministicViolations(text, { requireCompleteSentence: false, targetLanguage })
     .map((message) => validationIssue("PROHIBITED_NON_FINAL_TEXT", message, candidateIndex));
   if (!normalizeRefrain(text) || !/\p{L}/u.test(text)) {
     failures.push(validationIssue("MALFORMED_REFRAIN", "refrain is empty or malformed", candidateIndex));
@@ -407,7 +408,8 @@ export function validateFinalEditorialSet(
   options: z.infer<typeof editorialOptionsSchema>["options"],
   budget: RefrainBudget,
   requireRhyme: boolean,
-  availableSeedCount: number
+  availableSeedCount: number,
+  targetLanguage: TargetLanguage = "sl"
 ): ValidationDiagnostics {
   const hardFailures: ValidationIssue[] = [];
   const qualityWarnings: ValidationIssue[] = [];
@@ -426,7 +428,7 @@ export function validateFinalEditorialSet(
   }
   const seen = new Set<string>();
   for (const [candidateIndex, option] of options.entries()) {
-    hardFailures.push(...unmistakableTextFailures(option.refrain, candidateIndex));
+    hardFailures.push(...unmistakableTextFailures(option.refrain, candidateIndex, targetLanguage));
     const normalized = normalizeRefrain(option.refrain);
     if (seen.has(normalized)) {
       hardFailures.push(validationIssue("EXACT_DUPLICATE", "refrain exactly duplicates another option", candidateIndex));
@@ -450,7 +452,8 @@ export function validatePrivateCandidates(
     maximumCharacterCount: 120,
     maximumSentenceCount: 2,
     maximumClauseCount: 2
-  }
+  },
+  targetLanguage: TargetLanguage = "sl"
 ) {
   if (candidates.length !== DIRECTION_PIPELINE_CONFIG.drafting.candidateCount) {
     throw new DirectionPipelineError("DRAFT_QUALITY_REJECTION", "The draft returned the wrong candidate count.");
@@ -460,7 +463,7 @@ export function validatePrivateCandidates(
   const qualityWarnings: ValidationIssue[] = [];
   const seen = new Set<string>();
   for (const [directionIndex, candidate] of candidates.entries()) {
-    const reasons = unmistakableTextFailures(candidate.refrain, directionIndex).map((failure) => failure.message);
+    const reasons = unmistakableTextFailures(candidate.refrain, directionIndex, targetLanguage).map((failure) => failure.message);
     const normalized = normalizeRefrain(candidate.refrain);
     if (seen.has(normalized)) reasons.push("exactly duplicates an earlier candidate");
     if (survivors.some((other) => nearDuplicate(normalized, normalizeRefrain(other.refrain)))) {

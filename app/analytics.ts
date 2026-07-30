@@ -1,4 +1,5 @@
 "use client";
+import type { TargetLanguage } from "./languages/language-config.ts";
 
 export type FunnelEventName =
   | "translator_opened"
@@ -16,6 +17,8 @@ export type FunnelEvent = {
   params: {
     book_form?: "prose_story" | "continuous_verse" | "refrain_verse";
     language_pair: string;
+    target_language?: TargetLanguage;
+    regional_variant?: string;
   };
 };
 
@@ -90,7 +93,12 @@ export function setAnalyticsConsent(granted: boolean) {
 
 export function trackFunnelEventOnce(
   name: FunnelEventName,
-  context: { bookForm?: FunnelEvent["params"]["book_form"]; languagePair: string }
+  context: {
+    bookForm?: FunnelEvent["params"]["book_form"];
+    languagePair: string;
+    targetLanguage?: TargetLanguage;
+    regionalVariant?: string;
+  }
 ) {
   const sent = new Set(readList<FunnelEventName>(SENT_KEY));
   if (sent.has(name)) return;
@@ -100,7 +108,9 @@ export function trackFunnelEventOnce(
     name,
     params: {
       book_form: context.bookForm,
-      language_pair: context.languagePair
+      language_pair: context.languagePair,
+      target_language: context.targetLanguage,
+      regional_variant: context.regionalVariant
     }
   };
   if (configured() && consented()) {

@@ -1,27 +1,33 @@
-export const MOCK_DIRECTIONS = [
+export function mockDirections(language: string) {
+  return [
   {
     name: "Mock direction one",
-    refrain: "[MOCK] Rada te imam!",
-    approach: "Interface-only fixture; not a Slovenian-quality example.",
-    genderDependency: "Feminine mushroom narrator."
+    refrain: `[MOCK ${language}] Refrain one.`,
+    approach: "Interface-only fixture; not a language-quality example.",
+    genderDependency: "None."
   },
   {
     name: "Mock direction two",
-    refrain: "[MOCK] Drugi refren.",
-    approach: "Interface-only fixture; not a Slovenian-quality example.",
+    refrain: `[MOCK ${language}] Refrain two.`,
+    approach: "Interface-only fixture; not a language-quality example.",
     genderDependency: "None."
   },
   {
     name: "Mock direction three",
-    refrain: "[MOCK] Tretji refren.",
-    approach: "Interface-only fixture; not a Slovenian-quality example.",
+    refrain: `[MOCK ${language}] Refrain three.`,
+    approach: "Interface-only fixture; not a language-quality example.",
     genderDependency: "None."
   }
-];
+  ];
+}
 
-export function mockOptions(spread: number) {
+export const MOCK_DIRECTIONS = mockDirections("Slovenian");
+
+export function mockOptions(spread: number, language = "Slovenian") {
   return [1, 2, 3].map((option) => ({
     strategy: `Mock option ${option}`,
-    text: `[MOCK — NOT QUALITY EVALUATED] Spread ${spread}, option ${option}.`
+    text: language === "Slovenian"
+      ? `[MOCK — NOT QUALITY EVALUATED] Spread ${spread}, option ${option}.`
+      : `[MOCK ${language} — NOT QUALITY EVALUATED] Spread ${spread}, option ${option}.`
   }));
 }

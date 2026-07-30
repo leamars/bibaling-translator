@@ -6,7 +6,11 @@ Parents upload and correct the complete book, confirm its form and voice setting
 
 Configure `RESEND_API_KEY`, `RESEND_LEADS_SEGMENT_ID`, `RESEND_MARKETING_TOPIC_ID`, `RESEND_FROM_EMAIL`, and `RESEND_REPLY_TO_EMAIL` server-side. In Resend, create string contact properties named:
 
-`capture_timestamp`, `marketing_consent`, `marketing_consent_timestamp`, `source`, `medium`, `campaign`, `content`, `term`, `original_landing_page`, `language_pair`, and `confirmed_book_form`.
+`capture_timestamp`, `marketing_consent`, `marketing_consent_timestamp`, `source`, `medium`, `campaign`, `content`, `term`, `original_landing_page`, `language_pair`, `target_language`, `regional_variant`, and `confirmed_book_form`.
+
+All properties are strings. `target_language` is Bibaling’s stable language code, while
+`regional_variant` is empty unless the parent selected a material variant such as `es-419`
+or `sr-Latn`.
 
 The adapter updates contacts by normalized email and creates them only when no contact exists. Every captured contact is placed in the leads segment. The marketing topic is attached only for explicit opt-in. Transactional delivery happens regardless of marketing consent. Its stable `book-delivery/{jobId}` idempotency key prevents retrying the same job from sending duplicate emails.
 
@@ -26,6 +30,8 @@ Register these event-scoped custom dimensions:
 
 - `book_form`
 - `language_pair`
+- `target_language`
+- `regional_variant`
 
 Event order:
 

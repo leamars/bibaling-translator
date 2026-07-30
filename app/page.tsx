@@ -30,7 +30,7 @@ export default function LandingPage() {
         <div className="steps-grid">
           {[
             ["01", "Photograph the whole book.", "Add every page in reading order. We read the words, and you correct anything we missed."],
-            ["02", "Choose the voice that feels right.", "Compare real Slovenian options, edit the strongest one, and tell us what felt off."],
+            ["02", "Choose the voice that feels right.", "Compare options in your family’s language, edit the strongest one, and tell us what felt off."],
             ["03", "Finish the whole book.", "After you approve Page 1 and provide an email, we translate, review, and send the complete book."]
           ].map(([number, title, text]) => (
             <article className="feature-card" key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p></article>
@@ -46,7 +46,7 @@ export default function LandingPage() {
         </div>
         <div className="comparison">
           <article><span>Word for word</span><p>Meaning arrives, but English syntax, flat rhythm, or a lost joke can make the sentence feel translated.</p></article>
-          <article className="preferred"><span>Shaped for reading aloud</span><p>The same story beat is expressed in natural Slovenian, with rhythm, wordplay, and repetition handled according to the book.</p></article>
+          <article className="preferred"><span>Shaped for reading aloud</span><p>The same story beat is expressed naturally in your chosen language, with rhythm, wordplay, and repetition handled according to the book.</p></article>
         </div>
       </section>
 
@@ -69,8 +69,8 @@ export default function LandingPage() {
       <section className="home-section faq">
         <p className="eyebrow">A few useful answers</p>
         <h2>Before you photograph the first page</h2>
-        <details><summary>Which languages work today?</summary><p>The current translator supports English to Slovenian. Other language pairs are future possibilities, not available features.</p></details>
-        <details><summary>Can I correct the translation?</summary><p>Yes. You correct the extracted English, then choose and edit the Page 1 Slovenian voice before the rest of the book is translated.</p></details>
+        <details><summary>Which languages work today?</summary><p>Slovenian is the reviewed reference language. Spanish, German, Italian, Croatian, and Serbian are prioritized for evaluation, with more European languages available experimentally.</p></details>
+        <details><summary>Can I correct the translation?</summary><p>Yes. You correct the extracted English, then choose and edit the Page 1 voice in your selected language before the rest of the book is translated.</p></details>
         <details><summary>When do you ask for email?</summary><p>Only after you upload the whole book, shape its voice, and see the completed Page 1 translation options. We use the address to send the finished translation.</p></details>
         <details><summary>Is the output guaranteed to be perfect?</summary><p>No. Machine-assisted translations can contain errors. A parent should review every page before using it.</p></details>
       </section>

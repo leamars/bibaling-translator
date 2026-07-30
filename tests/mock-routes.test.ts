@@ -76,7 +76,7 @@ test("full-book reading preserves successful OCR when another page fails", async
   assert.match(source, /workStatus = "ready"/);
   assert.match(source, /Everything before it is saved/);
   assert.match(source, /activePage=\{activeBookPageIndex/);
-  assert.match(source, /Writing the Slovenian translation/);
+  assert.match(source, /Writing the \$\{language\.config\.name\} translation/);
 });
 
 test("direction generation streams genuine progress and propagates cancellation", async () => {

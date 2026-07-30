@@ -22,6 +22,12 @@ import {
   deterministicViolations
 } from "../translation-quality";
 import { verifyLeadReceipt } from "../leads/receipt";
+import {
+  resolveLanguageSelection,
+  languageConfig,
+  targetLanguageSchema,
+  type TargetLanguage
+} from "../../languages/language-config.ts";
 
 export const runtime = "nodejs";
 
@@ -35,6 +41,10 @@ const directionSchema = z.object({
 // OCR can safely recover the complete source text even when optional image
 // analysis is interrupted. Translation must remain available in that case.
 const visualContextSchema = z.string().max(4_000);
+const languageFields = {
+  targetLanguage: targetLanguageSchema.default("sl"),
+  regionalVariant: z.string().max(20).optional()
+};
 
 const bodySchema = z.discriminatedUnion("mode", [
   z.object({
@@ -45,7 +55,8 @@ const bodySchema = z.discriminatedUnion("mode", [
     freedom: z.enum(["close", "natural", "playful"]),
     bookForm: z.enum(BOOK_FORMS),
     sourceRhyme: z.enum(SOURCE_RHYME),
-    direction: directionSchema.optional()
+    direction: directionSchema.optional(),
+    ...languageFields
   }),
   z.object({
     mode: z.literal("pattern"),
@@ -58,7 +69,8 @@ const bodySchema = z.discriminatedUnion("mode", [
     sourceRhyme: z.enum(SOURCE_RHYME),
     direction: directionSchema.optional(),
     approvedSpread1: z.string().min(1),
-    approvedSpread1Note: z.string().max(1200).optional()
+    approvedSpread1Note: z.string().max(1200).optional(),
+    ...languageFields
   }),
   z.object({
     mode: z.literal("fullbook"),
@@ -77,7 +89,8 @@ const bodySchema = z.discriminatedUnion("mode", [
       spread: z.number().int().positive(),
       text: z.string().min(1),
       parentNote: z.string().max(1200).optional()
-    })).length(3)
+    })).length(3),
+    ...languageFields
   })
 ]).superRefine((input, context) => {
   if (input.bookForm === "refrain_verse" && !input.direction) {
@@ -85,6 +98,11 @@ const bodySchema = z.discriminatedUnion("mode", [
   }
   if (input.bookForm !== "refrain_verse" && input.direction) {
     context.addIssue({ code: "custom", message: "non-refrain workflows must not send a direction", path: ["direction"] });
+  }
+  try {
+    resolveLanguageSelection(input.targetLanguage, input.regionalVariant);
+  } catch (error) {
+    context.addIssue({ code: "custom", message: error instanceof Error ? error.message : "Invalid language variant", path: ["regionalVariant"] });
   }
 });
 
@@ -222,6 +240,8 @@ type PipelineArgs = {
   direction?: DirectionBrief;
   approvedSpread1?: string;
   approvedSpread1Note?: string;
+  targetLanguage: TargetLanguage;
+  regionalVariant?: string;
   requestSignal: AbortSignal;
 };
 
@@ -252,7 +272,9 @@ async function generatePassingOptions(args: PipelineArgs) {
                 sourceRhyme: args.sourceRhyme,
                 direction: args.direction,
                 approvedSpread1: args.approvedSpread1,
-                approvedSpread1Note: args.approvedSpread1Note
+                approvedSpread1Note: args.approvedSpread1Note,
+                targetLanguage: args.targetLanguage,
+                regionalVariant: args.regionalVariant
               })
             }
           ]
@@ -262,7 +284,7 @@ async function generatePassingOptions(args: PipelineArgs) {
     });
     const pool = candidatePoolSchema.parse(JSON.parse(generationResponse.output_text));
     const survivors = pool.candidates.filter((candidate) =>
-      deterministicViolations(candidate.text).length === 0
+      deterministicViolations(candidate.text, { targetLanguage: args.targetLanguage }).length === 0
     );
     if (survivors.length < 3) {
       throw new Error(`Only ${survivors.length} translations survived deterministic quality checks.`);
@@ -294,7 +316,9 @@ async function generatePassingOptions(args: PipelineArgs) {
                 direction: args.direction,
                 approvedSpread1: args.approvedSpread1,
                 approvedSpread1Note: args.approvedSpread1Note,
-                candidatesJson: JSON.stringify(survivors)
+                candidatesJson: JSON.stringify(survivors),
+                targetLanguage: args.targetLanguage,
+                regionalVariant: args.regionalVariant
               })
             }
           ]
@@ -306,9 +330,9 @@ async function generatePassingOptions(args: PipelineArgs) {
       finalists: z.array(finalistSchema).length(3)
     }).parse(JSON.parse(evaluationResponse.output_text));
     const passing = edited.finalists
-      .filter((candidate) => deterministicViolations(candidate.text).length === 0)
+      .filter((candidate) => deterministicViolations(candidate.text, { targetLanguage: args.targetLanguage }).length === 0)
       .filter((candidate, index, all) =>
-        all.findIndex((other) => other.text.trim().toLocaleLowerCase("sl") === candidate.text.trim().toLocaleLowerCase("sl")) === index
+        all.findIndex((other) => other.text.trim().toLocaleLowerCase(args.targetLanguage) === candidate.text.trim().toLocaleLowerCase(args.targetLanguage)) === index
       )
       .map(({ strategy, text }) => ({ strategy, text }));
 
@@ -337,7 +361,9 @@ async function generateFullBook(args: {
     bookForm: input.bookForm,
     sourceRhyme: input.sourceRhyme,
     direction: input.direction,
-    approvedVoice: input.approvedVoice
+    approvedVoice: input.approvedVoice,
+    targetLanguage: input.targetLanguage,
+    regionalVariant: input.regionalVariant
   };
   const { response: draftResponse } = await controlledResponse({
     client: args.client,
@@ -396,7 +422,7 @@ async function generateFullBook(args: {
   const expected = new Set(input.spreads.map((spread) => spread.spread));
   const unique = new Set(final.spreads.map((spread) => spread.spread));
   if (unique.size !== expected.size || final.spreads.some((spread) =>
-    !expected.has(spread.spread) || deterministicViolations(spread.text).length > 0
+    !expected.has(spread.spread) || deterministicViolations(spread.text, { targetLanguage: input.targetLanguage }).length > 0
   )) {
     throw new Error("The full-book editorial response did not contain one valid translation for every spread.");
   }
@@ -411,19 +437,19 @@ export async function POST(request: Request) {
         return NextResponse.json({
           spreads: input.spreads.map(({ spread }) => ({
             spread,
-            text: `[MOCK — NOT QUALITY EVALUATED] Full-book spread ${spread}.`
+            text: `[MOCK ${languageConfig(input.targetLanguage).name} — NOT QUALITY EVALUATED] Full-book spread ${spread}.`
           })),
           mock: true
         });
       }
       const spreads = input.mode === "spread1"
         ? undefined
-        : [2, 3].map((spread) => ({ spread, options: mockOptions(spread) }));
+        : [2, 3].map((spread) => ({ spread, options: mockOptions(spread, languageConfig(input.targetLanguage).name) }));
       return NextResponse.json({
         runs: [{
           model: "mock",
           label: "Mock fixture",
-          ...(input.mode === "spread1" ? { options: mockOptions(1) } : { spreads })
+          ...(input.mode === "spread1" ? { options: mockOptions(1, languageConfig(input.targetLanguage).name) } : { spreads })
         }],
         rejectedRuns: [],
         mock: true
@@ -432,7 +458,7 @@ export async function POST(request: Request) {
     const client = openAIClient();
     if (!client) return NextResponse.json({ error: "Translation generation isn’t connected right now. Please try again later." }, { status: 503 });
     if (input.mode === "fullbook") {
-      if (!verifyLeadReceipt(input.leadReceipt, input.bookForm)) {
+      if (!verifyLeadReceipt(input.leadReceipt, input.bookForm, input.targetLanguage, input.regionalVariant)) {
         return NextResponse.json({ error: "Email capture is required before full-book generation." }, { status: 403 });
       }
       const spreads = await deduplicate(requestKey("fullbook", input), () =>
@@ -440,7 +466,7 @@ export async function POST(request: Request) {
       );
       return NextResponse.json({ spreads });
     }
-    if (input.mode === "pattern" && !verifyLeadReceipt(input.leadReceipt, input.bookForm)) {
+    if (input.mode === "pattern" && !verifyLeadReceipt(input.leadReceipt, input.bookForm, input.targetLanguage, input.regionalVariant)) {
       return NextResponse.json({ error: "Email capture is required before generating Pages 2 and 3." }, { status: 403 });
     }
     for (const { model } of COMPARISON_MODELS) {
@@ -468,6 +494,8 @@ export async function POST(request: Request) {
           bookForm: input.bookForm,
           sourceRhyme: input.sourceRhyme,
           direction: input.direction,
+          targetLanguage: input.targetLanguage,
+          regionalVariant: input.regionalVariant,
           requestSignal: request.signal
         })
       }))));
@@ -499,6 +527,8 @@ export async function POST(request: Request) {
           direction: input.direction,
           approvedSpread1: input.approvedSpread1,
           approvedSpread1Note: input.approvedSpread1Note,
+          targetLanguage: input.targetLanguage,
+          regionalVariant: input.regionalVariant,
           requestSignal: request.signal
         })
       })));

@@ -3,12 +3,25 @@ import { z } from "zod";
 import { bookFormClassifierPrompt, BOOK_FORMS, mockBookFormAnalysis, SOURCE_RHYME } from "../book-form-contract.ts";
 import { generationError, isMockRequest, openAIClient } from "../generation";
 import { assertActionBudget, controlledResponse, deduplicate, requestKey } from "../openai-control";
+import { resolveLanguageSelection, targetLanguageSchema } from "../../languages/language-config.ts";
 
 export const runtime = "nodejs";
 
 const inputSchema = z.object({
   texts: z.array(z.string().min(1)).length(3),
-  visualContexts: z.array(z.string()).length(3)
+  visualContexts: z.array(z.string()).length(3),
+  targetLanguage: targetLanguageSchema.default("sl"),
+  regionalVariant: z.string().max(20).optional()
+}).superRefine((input, context) => {
+  try {
+    resolveLanguageSelection(input.targetLanguage, input.regionalVariant);
+  } catch (error) {
+    context.addIssue({
+      code: "custom",
+      path: ["regionalVariant"],
+      message: error instanceof Error ? error.message : "Invalid language variant"
+    });
+  }
 });
 
 const resultSchema = z.object({

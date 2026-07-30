@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   try {
     const input = deliveryInputSchema.parse(await request.json());
     const mock = isMockRequest(request);
-    if (!mock && !verifyLeadReceipt(input.leadReceipt, input.bookForm)) {
+    if (!mock && !verifyLeadReceipt(input.leadReceipt, input.bookForm, input.targetLanguage, input.regionalVariant)) {
       return NextResponse.json({ error: "Email capture is required before delivery." }, { status: 403 });
     }
     const jobId = createJobId(input);
