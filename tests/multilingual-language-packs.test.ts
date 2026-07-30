@@ -16,6 +16,10 @@ import {
 import { createLeadReceipt, verifyLeadReceipt } from "../app/api/leads/receipt.ts";
 import { runMockEvaluation } from "../scripts/multilingual-evaluation.ts";
 import { MULTILINGUAL_EVALUATION_FIXTURES } from "./fixtures/multilingual-evaluation-fixtures.ts";
+import {
+  deriveRefrainBudget,
+  validateFinalEditorialSet
+} from "../app/api/direction-pipeline.ts";
 
 const base = {
   priority: "rhythm" as const,
@@ -136,4 +140,57 @@ test("experimental feedback is associated with language, variant, and page", asy
   assert.match(translator, /bibaling_experimental_language_feedback/);
   assert.match(translator, /targetLanguage,\s*regionalVariant: regionalVariant \|\| null,\s*page: 1/);
   assert.doesNotMatch(translator, /words your family already uses/i);
+});
+
+test("multilingual Refrain Lab prompt and validator share the three-construction contract", () => {
+  const texts = MULTILINGUAL_EVALUATION_FIXTURES
+    .filter((fixture) => fixture.sourceBook === "I Love You So Mush")
+    .map((fixture) => fixture.source);
+  const prompt = directionsEvaluationPrompt({
+    texts,
+    visualContexts: ["tree friend", "spinning friends", "jelly fungi"],
+    priority: "rhythm",
+    freedom: "natural",
+    targetLanguage: "es",
+    regionalVariant: "es-ES",
+    directionsJson: "{\"candidates\":[]}",
+    refrainBudget: deriveRefrainBudget(texts)
+  });
+  assert.match(
+    prompt,
+    /exactly one finalist with construction "couplet", exactly one with construction "playful_hook", and exactly one with construction "lyrical_refrain"/
+  );
+
+  const option = (construction: "couplet" | "playful_hook" | "lyrical_refrain", index: number) => ({
+    sourceCandidateIndex: index,
+    label: `Option ${index + 1}`,
+    refrain: [
+      "Con cariño y emoción, te lo dice este champiñón.",
+      "¡Seta, seta, qué ilusión; te queremos un montón!",
+      "Qué alegría tu compañía; llenas de luz cada día."
+    ][index],
+    description: "Mock editorial fixture.",
+    genderDependency: "None.",
+    construction,
+    rhymePairs: [{ endingA: "emoción", endingB: "champiñón" }]
+  });
+  const valid = [
+    option("couplet", 0),
+    option("playful_hook", 1),
+    option("lyrical_refrain", 2)
+  ];
+  const duplicateAndMissing = [
+    option("playful_hook", 0),
+    option("lyrical_refrain", 1),
+    option("lyrical_refrain", 2)
+  ];
+  const budget = deriveRefrainBudget(texts);
+  assert.equal(
+    validateFinalEditorialSet(valid, budget, true, 5, "es").hardFailures.length,
+    0
+  );
+  assert.ok(
+    validateFinalEditorialSet(duplicateAndMissing, budget, true, 5, "es")
+      .hardFailures.some((issue) => issue.code === "CONSTRUCTION_SCHEMA_INVARIANT")
+  );
 });

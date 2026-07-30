@@ -1,5 +1,6 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import OpenAI from "openai";
 import { z } from "zod";
 import {
   deriveRefrainBudget,
@@ -30,6 +31,13 @@ const REASONING_EFFORT = "low";
 const DRAFT_TIMEOUT_MS = 120_000;
 const EDITOR_TIMEOUT_MS = 120_000;
 const MAX_ESTIMATED_COST_USD = 1.80;
+
+function requiredArgument(prefix: string) {
+  const value = process.argv.find((argument) => argument.startsWith(`${prefix}=`))
+    ?.slice(prefix.length + 1);
+  if (!value) throw new Error(`Missing required ${prefix}=... argument.`);
+  return resolve(value);
+}
 
 function maximumEstimatedCostUsd() {
   const pricing = pricingFor(MODEL);
@@ -231,13 +239,17 @@ async function main() {
     );
   }
 
-  const [{ controlledResponse }, { openAIClient }] = await Promise.all([
-    import("../app/api/openai-control.ts"),
-    import("../app/api/generation.ts")
-  ]);
-  const client = openAIClient();
-  if (!client) throw new Error("OPENAI_API_KEY is required.");
+  const { controlledResponse } = await import("../app/api/openai-control.ts");
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey || apiKey === "your_actual_key_here") throw new Error("OPENAI_API_KEY is required.");
+  const client = new OpenAI({ apiKey, maxRetries: 0 });
   const usage: UsageRecord[] = [];
+  const resumedDraftResponsePath = requiredArgument("--resume-draft-response");
+  const priorAttemptSummaryPath = requiredArgument("--prior-attempt-summary");
+  const [resumedDraftResponse, priorAttemptSummary] = await Promise.all([
+    readFile(resumedDraftResponsePath, "utf8").then(JSON.parse),
+    readFile(priorAttemptSummaryPath, "utf8").then(JSON.parse)
+  ]);
   const mushroomFixtures = MULTILINGUAL_EVALUATION_FIXTURES.filter((fixture) =>
     fixture.sourceBook === "I Love You So Mush"
   );
@@ -252,30 +264,8 @@ async function main() {
     refrainBudget
   };
   const directionDraftingPrompt = directionsGenerationPrompt(directionBase);
-  const directionDraftResult = await controlledResponse({
-    client,
-    requestSignal: AbortSignal.timeout(150_000),
-    action: "spanish-eval.refrain.draft",
-    model: MODEL,
-    maxOutputTokens: 5_000,
-    timeoutMs: 150_000,
-    body: {
-      model: MODEL,
-      reasoning: { effort: REASONING_EFFORT },
-      input: directionDraftingPrompt,
-      text: {
-        format: {
-          type: "json_schema",
-          name: "spanish_refrain_drafts",
-          strict: true,
-          schema: directionDraftJsonSchema
-        }
-      }
-    }
-  });
-  usage.push(directionDraftResult.usage);
   const rawDirectionDrafts = privateCandidatesSchema.parse(
-    completedJson(directionDraftResult.response, "Spanish refrain drafting")
+    completedJson(resumedDraftResponse, "Saved Spanish refrain drafting")
   ).candidates;
   const directionDraftValidation = validatePrivateCandidates(
     rawDirectionDrafts,
@@ -466,10 +456,17 @@ async function main() {
       rawDraftOptions: rawDirectionDrafts,
       survivingDrafts: directionDraftValidation.survivors,
       draftRejections: directionDraftValidation.rejections,
-      draftingUsage: directionDraftResult.usage,
+      draftingUsage: priorAttemptSummary.drafting,
+      resumedFromCompletedDraft: true,
+      failedEditorialAttempt: priorAttemptSummary.failedEditorial,
       editorialPrompt: directionEditorialPrompt,
       editorialOptions: directionOptions,
       editorialUsage: directionEditorialResult.usage,
+      successfulEditorialRetry: {
+        responseId: directionEditorialResult.usage.responseId,
+        responseStatus: directionEditorialResult.usage.responseStatus,
+        usage: directionEditorialResult.usage
+      },
       selectedDirection,
       warnings: [
         ...directionDraftValidation.qualityWarnings,
@@ -477,7 +474,19 @@ async function main() {
       ]
     },
     fixtures: fixtureResults,
-    totals: totalUsage(usage)
+    additionalRunTotals: totalUsage(usage),
+    priorInterruptedAttemptTotals: priorAttemptSummary.totals,
+    combinedTotals: {
+      latencyMs: priorAttemptSummary.totals.latencyMs + totalUsage(usage).latencyMs,
+      inputTokens: priorAttemptSummary.totals.inputTokens + totalUsage(usage).inputTokens,
+      cachedInputTokens:
+        priorAttemptSummary.totals.cachedInputTokens + totalUsage(usage).cachedInputTokens,
+      outputTokens: priorAttemptSummary.totals.outputTokens + totalUsage(usage).outputTokens,
+      reasoningTokens:
+        priorAttemptSummary.totals.reasoningTokens + totalUsage(usage).reasoningTokens,
+      estimatedCostUsd:
+        priorAttemptSummary.totals.estimatedCostUsd + totalUsage(usage).estimatedCostUsd
+    }
   };
   const artifactDirectory = resolve("artifacts", `spanish-evaluation-${Date.now()}`);
   await mkdir(artifactDirectory, { recursive: true });
@@ -485,7 +494,11 @@ async function main() {
     resolve(artifactDirectory, "review-bundle.json"),
     `${JSON.stringify(bundle, null, 2)}\n`
   );
-  console.log(JSON.stringify({ artifactDirectory, totals: bundle.totals }, null, 2));
+  console.log(JSON.stringify({
+    artifactDirectory,
+    additionalRunTotals: bundle.additionalRunTotals,
+    combinedTotals: bundle.combinedTotals
+  }, null, 2));
 }
 
 void main();

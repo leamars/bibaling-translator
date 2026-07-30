@@ -535,7 +535,7 @@ HARD LIMITS
 - Maximum characters: ${args.refrainBudget?.maximumCharacterCount ?? 120}
 - Maximum sentences: ${args.refrainBudget?.maximumSentenceCount ?? 1}
 
-Privately verify fidelity, native grammar, natural read-aloud flow, concise repeatability, and spoken rhyme when required. The three options must differ visibly in opening, syntax, rhythm, and rhyme pair. Return only the required options schema; labels/descriptions may be English, refrain text must be ${language}.`;
+Privately verify fidelity, native grammar, natural read-aloud flow, concise repeatability, and spoken rhyme when required. Return exactly one finalist with construction "couplet", exactly one with construction "playful_hook", and exactly one with construction "lyrical_refrain". The three options must differ visibly in opening, syntax, rhythm, and rhyme pair. Return only the required options schema; labels/descriptions may be English, refrain text must be ${language}.`;
 }
 
 type TranslationGenerationArgs = Parameters<typeof translationGenerationPrompt>[0];
