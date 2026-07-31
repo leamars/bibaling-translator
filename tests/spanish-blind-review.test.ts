@@ -59,7 +59,8 @@ test("line-specific comments preserve exact reader-facing text and order", () =>
   assert.match(source, /Comment on a specific line/);
   assert.match(source, /exactLine:candidate\.text\.split/);
   assert.match(source, /Move this page-specific line before the repeated refrain/);
-  assert.match(source, /candidateText"\)\.textContent = candidate\.text/);
+  assert.match(source, /renderPagedText\(byId\("candidateText"\),candidate\.text\)/);
+  assert.match(source, /copy\.textContent = page/);
   assert.match(source, /font:400 clamp/);
 });
 

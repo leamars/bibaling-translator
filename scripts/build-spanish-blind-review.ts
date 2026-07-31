@@ -35,6 +35,7 @@ type ReviewBundle = {
     bookForm: string;
     sourceRhyme: string;
     requirements: string[];
+    blindCandidates?: Array<{ id: string; strategy: string; text: string }>;
     draftOptions: Array<{ id: string; strategy: string; text: string }>;
     editorialAssessment: Array<{
       sourceCandidateId: string;
@@ -234,7 +235,21 @@ async function buildDataset(bundle: ReviewBundle, humanFindings: HumanFindings) 
   }
 
   bundle.fixtures.forEach((fixture, fixtureIndex) => {
-    const candidates = fixture.editorialAssessment.map((candidate, index) => ({
+    const candidates = fixture.blindCandidates?.map((candidate, index) => ({
+      id: candidate.id,
+      text: candidate.text,
+      originalOrder: index + 1,
+      identity: candidate.strategy,
+      construction: null,
+      previousModelSelected: false,
+      currentModelSelected: false,
+      rank: null,
+      strengths: [],
+      weaknesses: [],
+      comparativeAssessment: null,
+      rhymeAssessment: null,
+      eligibility: null
+    })) ?? fixture.editorialAssessment.map((candidate, index) => ({
       id: candidate.sourceCandidateId,
       text: candidate.text,
       originalOrder: index + 1,
@@ -404,6 +419,11 @@ function page(dataset: unknown) {
     .candidate-card { padding:clamp(22px,4vw,38px); min-height:310px; display:flex; flex-direction:column; }
     .candidate-text { flex:1; display:flex; align-items:center; margin:12px 0 24px; white-space:pre-wrap;
       overflow-wrap:anywhere; color:var(--green); font:400 clamp(24px,3vw,37px)/1.35 Georgia,serif; }
+    .paged-text { width:100%; display:grid; gap:18px; }
+    .paged-text section + section { border-top:1px solid var(--line); padding-top:18px; }
+    .page-label { display:block; margin-bottom:8px; color:var(--muted); font:800 11px/1.2 system-ui,sans-serif;
+      letter-spacing:.12em; text-transform:uppercase; }
+    .paged-text pre { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; color:inherit; font:inherit; }
     .candidate-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
     .candidate-pager { display:flex; gap:8px; }
     .dots { display:flex; gap:7px; align-items:center; }
@@ -879,11 +899,11 @@ function page(dataset: unknown) {
       panel.hidden = false;
       panel.innerHTML = \`<h2>Give this item a final conclusion</h2>
         <p>Ratings describe individual options. They never choose the winner for you.
-          \${allRated(item) ? "All three finalists have ratings." : "Some finalist ratings are still blank; the conclusion remains a separate decision."}</p>
+          \${allRated(item) ? "All candidates have ratings." : "Some candidate ratings are still blank; the conclusion remains a separate decision."}</p>
         <div class="winner-options">
           <label class="winner-option"><input type="radio" name="conclusionType" value="preferred"
             \${conclusionType==="preferred" ? "checked" : ""}>
-            <span><strong>One preferred candidate</strong><br><small>Choose exactly one finalist or private draft.</small></span>
+            <span><strong>One preferred candidate</strong><br><small>Choose exactly one candidate or private draft.</small></span>
           </label>
           <label class="winner-option"><input type="radio" name="conclusionType" value="equivalent"
             \${conclusionType==="equivalent" ? "checked" : ""}>
@@ -987,7 +1007,7 @@ function page(dataset: unknown) {
           \${item.candidates.slice().sort((a,b)=>a.originalOrder-b.originalOrder).map(candidate => {
             const presented = review.presentationOrder.indexOf(candidate.id);
             return \`<article class="identity-card">
-              <div class="identity-head"><strong>Original finalist \${candidate.originalOrder}</strong>
+              <div class="identity-head"><strong>Original candidate \${candidate.originalOrder}</strong>
                 <span class="tag">Shown blind as Candidate \${String.fromCharCode(65+presented)}</span>
                 \${candidate.rank ? \`<span class="tag">Model rank \${candidate.rank}</span>\` : ""}
                 \${candidate.previousModelSelected ? '<span class="tag">Previous selection</span>' : ""}
@@ -1017,6 +1037,27 @@ function page(dataset: unknown) {
         \`<div class="private-draft"><strong>Draft \${index+1}: \${escapeHtml(draft.strategy || draft.name || "")}</strong>
           <pre>\${escapeHtml(draft.text || draft.refrain)}</pre></div>\`).join("");
     }
+    function renderPagedText(element,text) {
+      const pages = String(text || "").split("\f").map(value=>value.trim());
+      element.replaceChildren();
+      if (pages.length === 1) {
+        element.textContent = pages[0];
+        return;
+      }
+      const wrapper = document.createElement("div");
+      wrapper.className = "paged-text";
+      pages.forEach((page,index) => {
+        const section = document.createElement("section");
+        const label = document.createElement("span");
+        label.className = "page-label";
+        label.textContent = "Page " + (index + 1);
+        const copy = document.createElement("pre");
+        copy.textContent = page;
+        section.append(label,copy);
+        wrapper.append(section);
+      });
+      element.append(wrapper);
+    }
     function render() {
       if (summaryVisible) { renderSummary(); return; }
       const item = currentItem();
@@ -1026,12 +1067,12 @@ function page(dataset: unknown) {
       byId("itemEyebrow").textContent = item.sourceBook + " · " + item.bookForm.replaceAll("_"," ");
       byId("itemTitle").textContent = item.title;
       byId("itemContext").textContent = "Review each " + DATASET.language + " version independently before choosing a winner.";
-      byId("englishSource").textContent = item.englishSource;
+      renderPagedText(byId("englishSource"),item.englishSource);
       byId("visualContext").textContent = item.visualContext;
       byId("testingContext").innerHTML = item.testingContext.map(value=>"<li>"+escapeHtml(value)+"</li>").join("");
       renderImages(item);
-      byId("blindLabel").textContent = "Candidate " + String.fromCharCode(65+candidateIndex) + " of 3";
-      byId("candidateText").textContent = candidate.text;
+      byId("blindLabel").textContent = "Candidate " + String.fromCharCode(65+candidateIndex) + " of " + candidates.length;
+      renderPagedText(byId("candidateText"),candidate.text);
       byId("candidateDots").innerHTML = candidates.map((_,index) =>
         '<button class="dot '+(index===candidateIndex?"active":"")+'" data-index="'+index+
         '" aria-label="Show candidate '+String.fromCharCode(65+index)+'"></button>').join("");
@@ -1066,7 +1107,7 @@ function page(dataset: unknown) {
         ["Would read as written",rated.length ? Math.round(readAsWritten/rated.length*100)+"%" : "—"],
         ["Human/editor agreement",comparable.length ? Math.round(agreements/comparable.length*100)+"%" : "Not available"],
         ["Unresolved items",unresolved],
-        ["Candidates rated",rated.length+"/"+(DATASET.items.length*3)]
+        ["Candidates rated",rated.length+"/"+DATASET.items.reduce((sum,item)=>sum+item.candidates.length,0)]
       ].map(([label,value])=>'<article class="summary-card"><div class="metric">'+value+'</div><div>'+label+'</div></article>').join("");
       const reasonCounts = {};
       rated.flatMap(review=>review.reasonTags).forEach(reason=>reasonCounts[reason]=(reasonCounts[reason]||0)+1);

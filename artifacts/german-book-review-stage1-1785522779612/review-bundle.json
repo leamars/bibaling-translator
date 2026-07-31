@@ -1,0 +1,174 @@
+{
+  "generatedAt": "2026-07-31T18:33:52.446Z",
+  "targetLanguage": "de",
+  "regionalVariant": "de-DE",
+  "fixtures": [
+    {
+      "fixtureId": "mush-refrain-consistency-pair",
+      "category": "Book-level refrain and voice across the first two Mushroom spreads",
+      "sourceBook": "I Love You So Mush",
+      "sourceAsset": "CleanShot 2026-07-18 at 20.28.05@2x.png",
+      "sourceAssets": [
+        "CleanShot 2026-07-18 at 20.28.05@2x.png",
+        "CleanShot 2026-07-18 at 20.28.13@2x.png"
+      ],
+      "englishSource": "I love my happy, hairy friend\nwho's nestled on a tree.\n\nI really love you oh-so-MUSH\nfor watching over me.\n\n\f\n\nThese mushroom friends have many hands\nto hold and spin around.\n\nI really love you oh-so-MUSH!\nYou lift me off the ground!",
+      "visualContext": "A small mushroom looks up affectionately at a shaggy white forest friend resting in a tree, with a squirrel nearby.\n\nA ring of orange mushrooms hold one another's many arms and spin the smiling narrator mushroom off the ground.",
+      "bookForm": "refrain_verse",
+      "sourceRhyme": "sustained",
+      "requirements": [
+        "Use one exact compact German refrain in both pages",
+        "Preserve the affectionate declaration and mushroom wordplay function",
+        "Keep singular and collective scene relationships accurate",
+        "Preserve page-specific action before or around the refrain in a natural order",
+        "Use natural spoken German rhyme without inversion or filler"
+      ],
+      "blindCandidates": [
+        {
+          "id": "c01",
+          "strategy": "Warm natural rhyme with a compact mushroom pun",
+          "text": "Mein froher, zotteliger Freund\nsitzt kuschelig im Geäst.\nIch bin so pilzverliebt!\nWeil du mich nie aus den Augen lässt.\fDie Pilzfreunde fassen sich\nmit vielen Händen an.\nIch bin so pilzverliebt!\nIhr dreht mich hoch, so gut ihr könnt!",
+          "refrain": "Ich bin so pilzverliebt!"
+        },
+        {
+          "id": "c02",
+          "strategy": "Playful spoken rhythm and clear group address",
+          "text": "Mein lieber Freund mit Zottelfell\nruht oben auf dem Baum.\nIch hab euch pilzgern lieb!\nDu passt auf mich auf – man glaubt es kaum.\fDie Pilzfreunde halten sich\nmit vielen Händen fest.\nIch hab euch pilzgern lieb!\nIhr dreht mich hoch und gebt nicht nach!",
+          "refrain": "Ich hab euch pilzgern lieb!"
+        },
+        {
+          "id": "c03",
+          "strategy": "Gentle lyrical cadence with simple end rhyme",
+          "text": "Mein fröhlicher, haariger Freund\nhat es sich im Baum bequem gemacht.\nMeine Liebe ist pilzgroß!\nWeil du dort oben über mich wachst.\fDie Pilzfreunde reichen sich\nall ihre Hände im Kreis.\nMeine Liebe ist pilzgroß!\nIhr wirbelt mich vom Boden hoch!",
+          "refrain": "Meine Liebe ist pilzgroß!"
+        },
+        {
+          "id": "c04",
+          "strategy": "Bouncy read-aloud phrasing with mushroom wordplay",
+          "text": "Mein munterer Freund mit struppigem Fell\nkuschelt sich oben ins Geäst.\nIch hab dich pilzinnig lieb!\nWeil du mich nicht aus den Augen lässt.\fDie Pilzfreunde halten sich\nmit all ihren Händen fest.\nIch hab dich pilzinnig lieb!\nIhr dreht mich hoch mit Schwung und Kraft!",
+          "refrain": "Ich hab dich pilzinnig lieb!"
+        },
+        {
+          "id": "c05",
+          "strategy": "Tender direct style with light internal rhyme",
+          "text": "Mein glücklicher, zotteliger Freund\nruht gemütlich in einem Baum.\nIch bin ganz pilzvoll Liebe!\nDu passt auf mich auf – man glaubt es kaum.\fDie Pilzfreunde fassen sich\nmit ihren vielen Händen an.\nIch bin ganz pilzvoll Liebe!\nIhr dreht mich, bis ich schweben kann!",
+          "refrain": "Ich bin ganz pilzvoll Liebe!"
+        },
+        {
+          "id": "c06",
+          "strategy": "Energetic child-friendly rhythm with concise phrasing",
+          "text": "Mein fröhlicher Freund mit wuscheligem Fell\nliegt geborgen im Geäst.\nSo pilzsehr hab ich lieb!\nWeil du mich nie allein dort lässt.\fDie Pilzfreunde nehmen sich\nan ihren vielen Händen.\nSo pilzsehr hab ich lieb!\nIhr dreht mich hoch vom Boden weg!",
+          "refrain": "So pilzsehr hab ich lieb!"
+        }
+      ],
+      "draftOptions": [],
+      "editorialAssessment": [],
+      "finalSelectedOutput": ""
+    },
+    {
+      "fixtureId": "llama-bedtime-story",
+      "category": "Book-level poetic voice on Llama Page 1",
+      "sourceBook": "Llama Llama Red Pajama",
+      "sourceAsset": "1.png",
+      "englishSource": "Llama llama\nred pajama\nreads a story\nwith his mama.",
+      "visualContext": "Mama Llama and Baby Llama sit close together in bed and read a bedtime story.",
+      "bookForm": "continuous_verse",
+      "sourceRhyme": "sustained",
+      "requirements": [
+        "Preserve the compact four-line bedtime cadence",
+        "Find a natural Spanish sound pattern without inventing a refrain",
+        "Keep the affectionate action and clear mother-child relationship"
+      ],
+      "blindCandidates": [
+        {
+          "id": "c01",
+          "strategy": "Classic triple rhyme",
+          "text": "Das kleine Lama\nim roten Pyjama\nliest eine Geschichte\nzusammen mit Mama."
+        },
+        {
+          "id": "c02",
+          "strategy": "Front-loaded color image",
+          "text": "Im roten Pyjama\nliest das kleine Lama\neine Geschichte\nmit seiner Mama."
+        },
+        {
+          "id": "c03",
+          "strategy": "Cozy bed setting",
+          "text": "Im Bett bei Mama\nsitzt das kleine Lama.\nIm roten Pyjama\nliest es eine Geschichte."
+        },
+        {
+          "id": "c04",
+          "strategy": "Bedtime cadence",
+          "text": "Vor dem Schlafengehen\nliest das kleine Lama\nim roten Pyjama\nmit Mama eine Geschichte."
+        },
+        {
+          "id": "c05",
+          "strategy": "Story-first phrasing",
+          "text": "Eine Geschichte\nliest das kleine Lama\nim roten Pyjama\nganz nah bei Mama."
+        },
+        {
+          "id": "c06",
+          "strategy": "Evening read-aloud flow",
+          "text": "Am Abend liest das Lama\nim roten Pyjama\neine Geschichte\ngemeinsam mit Mama."
+        }
+      ],
+      "draftOptions": [],
+      "editorialAssessment": [],
+      "finalSelectedOutput": ""
+    }
+  ],
+  "provenance": {
+    "mushroom": {
+      "sourceResponse": "../german-evaluation-1785517477747/1-mush-refrain-consistency-pair-draft-raw-response.json",
+      "reusedWithoutModelCall": true,
+      "candidateCount": 6
+    },
+    "llama": {
+      "sourceResponse": "llama-page1-draft-raw-response.json",
+      "deterministicFindings": [
+        {
+          "candidateId": "c01",
+          "hardFailures": [],
+          "qualityWarnings": []
+        },
+        {
+          "candidateId": "c02",
+          "hardFailures": [],
+          "qualityWarnings": []
+        },
+        {
+          "candidateId": "c03",
+          "hardFailures": [],
+          "qualityWarnings": []
+        },
+        {
+          "candidateId": "c04",
+          "hardFailures": [],
+          "qualityWarnings": []
+        },
+        {
+          "candidateId": "c05",
+          "hardFailures": [],
+          "qualityWarnings": []
+        },
+        {
+          "candidateId": "c06",
+          "hardFailures": [],
+          "qualityWarnings": []
+        }
+      ],
+      "usage": {
+        "action": "german-book-review.llama-page1.draft",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_01098752475895a1006a6cea5c9d508192b7049d8b6b41537a",
+        "responseStatus": "completed",
+        "latencyMs": 52828,
+        "inputTokens": 805,
+        "cachedInputTokens": 0,
+        "outputTokens": 1593,
+        "reasoningTokens": 1360,
+        "estimatedCostUsd": 0.051815
+      }
+    }
+  }
+}
