@@ -1,0 +1,11 @@
+{
+  "failedAt": "2026-07-31T17:38:28.090Z",
+  "stoppedWithoutRetry": true,
+  "error": {
+    "code": "OPENAI_RESPONSE_INCOMPLETE",
+    "status": "incomplete",
+    "incompleteReason": "max_output_tokens",
+    "name": "Error",
+    "message": "German refrain editorial retry did not complete."
+  }
+}

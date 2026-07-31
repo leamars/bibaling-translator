@@ -37,7 +37,7 @@ const DRAFT_MAX_INPUT_TOKENS = 8_000;
 const EDITOR_MAX_INPUT_TOKENS = 13_000;
 const APPROVED_MAXIMUM_COST_USD = 0.855;
 const EXPECTED_CALL_COUNT = 6;
-const PAGE_SEPARATOR = "\f";
+export const PAGE_SEPARATOR = "\f";
 
 const standardDraftSchema = z.object({
   candidates: z.array(z.object({
@@ -47,7 +47,7 @@ const standardDraftSchema = z.object({
   })).length(6)
 });
 
-const pairedDraftSchema = z.object({
+export const pairedDraftSchema = z.object({
   candidates: z.array(z.object({
     id: z.string().trim().min(1).max(20),
     strategy: z.string().trim().min(1).max(80),
@@ -105,7 +105,7 @@ const pairedDraftJsonSchema = {
   required: ["candidates"]
 } as const;
 
-type NormalizedCandidate = {
+export type NormalizedCandidate = {
   id: string;
   strategy: string;
   text: string;
@@ -155,7 +155,7 @@ ${second.visualContext}
 Return exactly candidates c01–c06 in the required schema. English is permitted only in the short strategy field. refrain, page1Text, and page2Text must contain solely reader-facing German. Do not include page labels, explanations, or alternatives inside those fields.`;
 }
 
-function pairedEditorPrompt(
+export function pairedEditorPrompt(
   fixture: GermanEvaluationFixture,
   candidates: NormalizedCandidate[]
 ) {
@@ -245,7 +245,7 @@ function draftFindings(candidates: NormalizedCandidate[], fixture: GermanEvaluat
   });
 }
 
-function meaningfulSharedLines(text: string) {
+export function meaningfulSharedLines(text: string) {
   const pages = text.split(PAGE_SEPARATOR);
   if (pages.length !== 2) return [];
   const lines = pages.map((page) => new Set(
@@ -481,4 +481,6 @@ async function main() {
   }
 }
 
-void main();
+if (process.argv[1]?.endsWith("live-german-evaluation.ts")) {
+  void main();
+}
