@@ -554,13 +554,39 @@ function page(dataset: unknown) {
       }
       const review = state.items[item.id];
       if (review.conclusion === undefined) {
-        review.conclusion = review.noneGoodEnough
+        const conflictingRefrainConclusion =
+          item.id === "refrain-lab" &&
+          review.humanWinner &&
+          item.suggestedCandidateId &&
+          review.humanWinner !== item.suggestedCandidateId;
+        if (conflictingRefrainConclusion) {
+          review.conflictingLegacyConclusion = {
+            legacyCandidateId: review.humanWinner,
+            recordedCandidateId: item.suggestedCandidateId
+          };
+        }
+        review.conclusion = conflictingRefrainConclusion
+          ? null
+          : review.noneGoodEnough
           ? {type:"none",candidateIds:[]}
           : review.humanWinner
             ? {type:"preferred",candidateIds:[review.humanWinner],importedFrom:"legacy-local-review"}
             : item.importedConclusion || null;
         delete review.humanWinner;
         delete review.noneGoodEnough;
+      }
+      if (
+        item.id === "refrain-lab" &&
+        review.conclusion?.importedFrom === "legacy-local-review" &&
+        item.suggestedCandidateId &&
+        review.conclusion.candidateIds?.[0] !== item.suggestedCandidateId
+      ) {
+        review.conflictingLegacyConclusion = {
+          legacyCandidateId: review.conclusion.candidateIds[0],
+          recordedCandidateId: item.suggestedCandidateId
+        };
+        review.conclusion = null;
+        review.completedAt = null;
       }
       review.equivalentPairs ||= [];
       review.candidates ||= {};
@@ -799,7 +825,9 @@ function page(dataset: unknown) {
               <pre>\${escapeHtml(candidate.text)}</pre></span></label>\`).join("")}
           </div>\` : ""}
         </div>
-        \${item.suggestedCandidateId && !review.conclusion ? \`<p class="context"><strong>Prior note:</strong>
+        \${review.conflictingLegacyConclusion ? \`<p class="context"><strong>Unresolved record conflict:</strong>
+          The earlier interface winner and the recorded human finding point to different refrains. Choose the intended conclusion here.</p>\`
+          : item.suggestedCandidateId && !review.conclusion ? \`<p class="context"><strong>Prior note:</strong>
           A previous provisional record pointed to one candidate, but no final conclusion was imported.</p>\` : ""}
         <button class="primary" id="finishItem" \${validConclusion(review.conclusion) ? "" : "disabled"}>
           Finish this item
@@ -1029,11 +1057,26 @@ function page(dataset: unknown) {
               candidates:Object.fromEntries((importedItem.candidates||[]).map(candidate=>[candidate.candidateId,candidate])),
               equivalentPairs:importedItem.equivalentPairs||[],
               conclusion:importedItem.humanConclusion ||
-                (importedItem.noneGoodEnough
+                (importedItem.fixtureId==="refrain-lab" &&
+                  importedItem.humanWinner &&
+                  item.suggestedCandidateId &&
+                  importedItem.humanWinner!==item.suggestedCandidateId
+                  ? null
+                  : importedItem.noneGoodEnough
                   ? {type:"none",candidateIds:[]}
                   : importedItem.humanWinner
                     ? {type:"preferred",candidateIds:[importedItem.humanWinner]}
                     : null),
+              conflictingLegacyConclusion:
+                importedItem.fixtureId==="refrain-lab" &&
+                importedItem.humanWinner &&
+                item.suggestedCandidateId &&
+                importedItem.humanWinner!==item.suggestedCandidateId
+                  ? {
+                      legacyCandidateId:importedItem.humanWinner,
+                      recordedCandidateId:item.suggestedCandidateId
+                    }
+                  : null,
               completedAt:importedItem.timestamp||null
             };
           }
