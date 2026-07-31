@@ -143,6 +143,7 @@ export default function Translator() {
   const [regionalVariant, setRegionalVariant] = useState<string | undefined>();
   const [languageFeedback, setLanguageFeedback] = useState("");
   const [languageFeedbackSaved, setLanguageFeedbackSaved] = useState(false);
+  const [languageConfirmed, setLanguageConfirmed] = useState(false);
   const [spreads, setSpreads] = useState<Spread[]>([]);
   const [priority, setPriority] = useState("");
   const [freedom, setFreedom] = useState("");
@@ -945,7 +946,7 @@ export default function Translator() {
   return (
     <main className="translator-shell">
       <div className="workshop-header">
-        <button className="brand workshop-reset" type="button" onClick={() => setStep(1)}>bibaling workshop</button>
+        <button className="brand workshop-reset" type="button" onClick={() => { setLanguageConfirmed(false); setStep(1); }}>bibaling workshop</button>
         <div className="header-tools">
           <button className={mockMode ? "mock-toggle active" : "mock-toggle"} type="button" onClick={toggleMockMode}>
             Mock mode {mockMode ? "on" : "off"}
@@ -958,56 +959,7 @@ export default function Translator() {
         {step === 1 && (
           <>
             <h1>Add every page from your book.</h1>
-            <p className="lead">Choose your family’s language, then photograph the English book in reading order.</p>
-            <section className="language-choice" aria-labelledby="target-language-label">
-              <div>
-                <label id="target-language-label" htmlFor="target-language">Translate into</label>
-                <select
-                  id="target-language"
-                  value={targetLanguage}
-                  onChange={(event) => {
-                    const next = event.target.value as TargetLanguage;
-                    const config = languageConfig(next);
-                    setTargetLanguage(next);
-                    setRegionalVariant(config.defaultVariant);
-                    setLanguageFeedback("");
-                    setLanguageFeedbackSaved(false);
-                  }}
-                >
-                  <optgroup label="Reviewed and evaluation languages">
-                    {featuredLanguages.map((option) => (
-                      <option key={option.code} value={option.code}>{option.name} · {option.autonym}</option>
-                    ))}
-                  </optgroup>
-                  <optgroup label="Experimental languages">
-                    {experimentalLanguages.map((option) => (
-                      <option key={option.code} value={option.code}>{option.name} · {option.autonym}</option>
-                    ))}
-                  </optgroup>
-                </select>
-              </div>
-              {language.config.variants?.length ? (
-                <div>
-                  <label htmlFor="regional-variant">Regional version</label>
-                  <select
-                    id="regional-variant"
-                    value={regionalVariant || language.config.defaultVariant}
-                    onChange={(event) => setRegionalVariant(event.target.value)}
-                  >
-                    {language.config.variants.map((variant) => (
-                      <option value={variant.code} key={variant.code}>{variant.label}</option>
-                    ))}
-                  </select>
-                </div>
-              ) : null}
-              <p>
-                {experimentalLanguage
-                  ? `${language.config.name} is experimental. You’ll have an easy way to tell us what needs improvement.`
-                  : language.config.status === "reviewed"
-                    ? "Slovenian is Bibaling’s reviewed reference language."
-                    : `${language.config.name} is ready for hands-on evaluation.`}
-              </p>
-            </section>
+            <p className="lead">Photograph the English book in reading order.</p>
             <div className="upload-onboarding">
               <figure className="photo-guide">
                 <img src="/photo-guide.png" alt="A phone photographing an entire open picture book, with both facing pages fully visible." />
@@ -1135,12 +1087,77 @@ export default function Translator() {
             {request.error && <GenerationError title="We couldn’t recommend a path." message={request.error} retry={retry} />}
             <nav>
               <button className="secondary" onClick={backFromBookForm}>Back</button>
-              <button className="primary" disabled={request.loading || !bookForm || !bookFormConfirmed} onClick={() => { setRequest({ loading: false, error: null }); setStep(4); }}>Continue</button>
+              <button className="primary" disabled={request.loading || !bookForm || !bookFormConfirmed} onClick={() => { setRequest({ loading: false, error: null }); setLanguageConfirmed(false); setStep(4); }}>Continue</button>
             </nav>
           </>
         )}
 
-        {step === 4 && (
+        {step === 4 && !languageConfirmed && (
+          <>
+            <h1>What language should we translate this book into?</h1>
+            <p className="lead">Choose the language you want to read together.</p>
+            <section className="language-choice" aria-labelledby="target-language-label">
+              <div>
+                <label id="target-language-label" htmlFor="target-language">Translate into</label>
+                <select
+                  id="target-language"
+                  value={targetLanguage}
+                  onChange={(event) => {
+                    const next = event.target.value as TargetLanguage;
+                    const config = languageConfig(next);
+                    setTargetLanguage(next);
+                    setRegionalVariant(config.defaultVariant);
+                    setLanguageFeedback("");
+                    setLanguageFeedbackSaved(false);
+                    setPriority("");
+                    setFreedom("");
+                    setDirections([]);
+                    setSelectedDirection(null);
+                    setLockedDirection(null);
+                  }}
+                >
+                  <optgroup label="Reviewed and evaluation languages">
+                    {featuredLanguages.map((option) => (
+                      <option key={option.code} value={option.code}>{option.name} · {option.autonym}</option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Experimental languages">
+                    {experimentalLanguages.map((option) => (
+                      <option key={option.code} value={option.code}>{option.name} · {option.autonym}</option>
+                    ))}
+                  </optgroup>
+                </select>
+              </div>
+              {language.config.variants?.length ? (
+                <div>
+                  <label htmlFor="regional-variant">Regional version</label>
+                  <select
+                    id="regional-variant"
+                    value={regionalVariant || language.config.defaultVariant}
+                    onChange={(event) => setRegionalVariant(event.target.value)}
+                  >
+                    {language.config.variants.map((variant) => (
+                      <option value={variant.code} key={variant.code}>{variant.label}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
+              <p>
+                {experimentalLanguage
+                  ? `${language.config.name} is experimental. You’ll have an easy way to tell us what needs improvement.`
+                  : language.config.status === "reviewed"
+                    ? "Slovenian is Bibaling’s reviewed reference language."
+                    : `${language.config.name} is ready for hands-on evaluation.`}
+              </p>
+            </section>
+            <nav>
+              <button className="secondary" onClick={() => setStep(3)}>Back</button>
+              <button className="primary" onClick={() => setLanguageConfirmed(true)}>Continue</button>
+            </nav>
+          </>
+        )}
+
+        {step === 4 && languageConfirmed && (
           <>
             <h1>What matters most for this book?</h1>
             <p className="lead">Choose the quality we must protect.</p>
@@ -1151,7 +1168,7 @@ export default function Translator() {
                 </button>
               ))}
             </div>
-            <nav><button className="secondary" onClick={() => setStep(3)}>Back</button><button className="primary" disabled={!priority} onClick={() => setStep(5)}>Continue</button></nav>
+            <nav><button className="secondary" onClick={() => setLanguageConfirmed(false)}>Back</button><button className="primary" disabled={!priority} onClick={() => setStep(5)}>Continue</button></nav>
           </>
         )}
 
