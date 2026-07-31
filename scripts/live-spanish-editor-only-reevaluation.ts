@@ -13,13 +13,17 @@ import {
   type DirectionBrief
 } from "../app/api/translation-prompts.ts";
 import {
-  comparativeFinalistFields,
   comparativeJsonProperties,
   comparativeJsonRequired,
   selectRecommendedFinalist,
   winnerComparisonsJsonSchema,
   winnerComparisonsSchema
 } from "../app/api/editorial-contract.ts";
+import {
+  leanPageEditorialJsonSchema,
+  leanPageEditorialResultSchema,
+  resolveLeanPageDecision
+} from "../app/api/page-editorial-contract.ts";
 import { requiresRhyme } from "../app/api/book-form-contract.ts";
 import {
   calculateCost,
@@ -32,78 +36,19 @@ const SOURCE_DIRECTORY = resolve("artifacts/spanish-evaluation-1785444427987");
 const REVIEW_BUNDLE_PATH = resolve(SOURCE_DIRECTORY, "review-bundle.json");
 const HUMAN_REVIEW_PATH = resolve(SOURCE_DIRECTORY, "finalized-human-review.json");
 const PRIOR_RUN_DIRECTORY = resolve(
-  "artifacts/spanish-editor-only-reevaluation-1785465843780"
+  "artifacts/spanish-editor-only-reevaluation-1785466884205"
 );
 const PRIOR_REFRAIN_RESPONSE_PATH = resolve(
-  PRIOR_RUN_DIRECTORY,
+  "artifacts/spanish-editor-only-reevaluation-1785465843780",
   "01-refrain-raw-response.json"
 );
 const MODEL = "gpt-5.6-sol";
 const REASONING_EFFORT = "low";
 const TARGET_LANGUAGE = "es" as const;
 const REGIONAL_VARIANT = "es-ES";
-const CALL_COUNT = 6;
-const PAGE_EDITOR_OUTPUT_TOKENS = 3_500;
-const PRIOR_SPEND_USD = 0.183065;
-const MAX_REMAINING_ESTIMATED_COST_USD = 1.02;
-const MAX_TOTAL_ESTIMATED_COST_USD =
-  PRIOR_SPEND_USD + MAX_REMAINING_ESTIMATED_COST_USD;
-const APPROVED_TOTAL_COST_CEILING_USD = 1.25;
-
-const comparativeEditorialSchema = z.object({
-  finalists: z.array(z.object({
-    sourceCandidateId: z.string(),
-    strategy: z.string(),
-    text: z.string(),
-    fidelityPass: z.boolean(),
-    grammarPass: z.boolean(),
-    readAloudPass: z.boolean(),
-    directionPass: z.boolean(),
-    rhymePass: z.boolean(),
-    ...comparativeFinalistFields
-  })).length(3),
-  winnerComparisons: winnerComparisonsSchema
-});
-
-const translationEditorialJsonSchema = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    finalists: {
-      type: "array",
-      minItems: 3,
-      maxItems: 3,
-      items: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          sourceCandidateId: { type: "string" },
-          strategy: { type: "string" },
-          text: { type: "string" },
-          fidelityPass: { type: "boolean" },
-          grammarPass: { type: "boolean" },
-          readAloudPass: { type: "boolean" },
-          directionPass: { type: "boolean" },
-          rhymePass: { type: "boolean" },
-          ...comparativeJsonProperties
-        },
-        required: [
-          "sourceCandidateId",
-          "strategy",
-          "text",
-          "fidelityPass",
-          "grammarPass",
-          "readAloudPass",
-          "directionPass",
-          "rhymePass",
-          ...comparativeJsonRequired
-        ]
-      }
-    },
-    winnerComparisons: winnerComparisonsJsonSchema
-  },
-  required: ["finalists", "winnerComparisons"]
-} as const;
+const CALL_COUNT = 1;
+const PAGE_EDITOR_OUTPUT_TOKENS = 2_500;
+const MAX_VERIFICATION_COST_USD = 0.14;
 
 const directionEditorialJsonSchema = {
   type: "object",
@@ -332,18 +277,14 @@ function selectionLevelAgreement(args: {
 async function main() {
   if (
     !process.argv.includes("--live") ||
-    process.env.CONFIRM_SPANISH_EDITOR_ONLY !== "RESUME_SIX_PAGE_EDITORIAL_CALLS"
+    process.env.CONFIRM_SPANISH_EDITOR_ONLY !== "VERIFY_LEAN_JIGGLY_EDITOR"
   ) {
     throw new Error(
-      "This controlled resume requires --live and CONFIRM_SPANISH_EDITOR_ONLY=RESUME_SIX_PAGE_EDITORIAL_CALLS."
+      "This verification requires --live and CONFIRM_SPANISH_EDITOR_ONLY=VERIFY_LEAN_JIGGLY_EDITOR."
     );
-  }
-  if (MAX_TOTAL_ESTIMATED_COST_USD > APPROVED_TOTAL_COST_CEILING_USD) {
-    throw new Error("Maximum total estimated cost exceeds the explicitly approved $1.25 ceiling.");
   }
   const pricing = pricingFor(MODEL);
   const calculatedRemainingMaximum =
-    6 *
     calculateCost(
       {
         inputTokens: 13_000,
@@ -353,12 +294,10 @@ async function main() {
       pricing
     );
   if (
-    Math.abs(
-      calculatedRemainingMaximum - MAX_REMAINING_ESTIMATED_COST_USD
-    ) > 0.000001
+    calculatedRemainingMaximum > MAX_VERIFICATION_COST_USD
   ) {
     throw new Error(
-      `Cost preflight changed unexpectedly: $${calculatedRemainingMaximum.toFixed(6)}.`
+      `Verification cost $${calculatedRemainingMaximum.toFixed(6)} exceeds the approved $${MAX_VERIFICATION_COST_USD.toFixed(2)} ceiling.`
     );
   }
 
@@ -391,7 +330,7 @@ async function main() {
     resolve(outputDirectory, "run-manifest.json"),
     `${JSON.stringify(
       {
-        runType: "spanish_editor_only_reevaluation_resume",
+        runType: "spanish_lean_editor_contract_verification",
         startedAt: new Date().toISOString(),
         sourceDirectory: SOURCE_DIRECTORY,
         priorRunDirectory: PRIOR_RUN_DIRECTORY,
@@ -402,11 +341,8 @@ async function main() {
         automaticRetries: 0,
         plannedCallCount: CALL_COUNT,
         pageEditorOutputTokens: PAGE_EDITOR_OUTPUT_TOKENS,
-        priorSpendUsd: PRIOR_SPEND_USD,
-        maximumRemainingEstimatedCostUsd: calculatedRemainingMaximum,
-        maximumTotalEstimatedCostUsd:
-          PRIOR_SPEND_USD + calculatedRemainingMaximum,
-        approvedTotalCostCeilingUsd: APPROVED_TOTAL_COST_CEILING_USD
+        maximumEstimatedCostUsd: calculatedRemainingMaximum,
+        approvedCostCeilingUsd: MAX_VERIFICATION_COST_USD
       },
       null,
       2
@@ -479,7 +415,13 @@ async function main() {
       }
     });
 
-    for (const [index, fixture] of savedBundle.fixtures.entries()) {
+    const verificationFixtures = savedBundle.fixtures.filter(
+      (fixture) => fixture.fixtureId === "mush-jiggly-orange"
+    );
+    if (verificationFixtures.length !== 1) {
+      throw new Error("The saved mush-jiggly-orange fixture is missing or duplicated.");
+    }
+    for (const [index, fixture] of verificationFixtures.entries()) {
       const approvedFixture = MULTILINGUAL_EVALUATION_FIXTURES.find(
         (candidate) => candidate.id === fixture.fixtureId
       );
@@ -504,7 +446,17 @@ async function main() {
       };
       const editorialPrompt = translationEvaluationPrompt({
         ...promptBase,
-        candidatesJson: JSON.stringify(fixture.draftOptions)
+        candidatesJson: JSON.stringify(fixture.draftOptions),
+        evaluationConcerns: [
+          {
+            id: "move-c06-forest-line-before-refrain",
+            text: "For c06, move “¡Hacéis bailar al bosque entero!” before the repeated refrain."
+          },
+          {
+            id: "move-c02-forest-line-before-refrain",
+            text: "For c02, move “¡Le dais ritmo al bosque entero!” before the repeated refrain."
+          }
+        ]
       });
       const editorResult = await controlledResponse({
         client,
@@ -522,7 +474,7 @@ async function main() {
               type: "json_schema",
               name: "spanish_page_comparative_reevaluation",
               strict: true,
-              schema: translationEditorialJsonSchema
+              schema: leanPageEditorialJsonSchema
             }
           }
         }
@@ -535,7 +487,7 @@ async function main() {
         ),
         `${JSON.stringify(editorResult.response, null, 2)}\n`
       );
-      const parsed = comparativeEditorialSchema.parse(
+      const parsed = leanPageEditorialResultSchema.parse(
         completedJson(editorResult.response, `${fixture.fixtureId} editorial reevaluation`)
       );
       const rhymeRequired = requiresRhyme({
@@ -543,14 +495,25 @@ async function main() {
         sourceRhyme: fixture.sourceRhyme,
         priority: promptBase.priority
       });
-      const selection = selectRecommendedFinalist({
-        finalists: parsed.finalists,
-        winnerComparisons: parsed.winnerComparisons,
-        rhymeRequired
+      const selection = resolveLeanPageDecision({
+        result: parsed,
+        rhymeRequired,
+        sourceCandidates: fixture.draftOptions,
+        expectedConcernIds: [
+          "move-c06-forest-line-before-refrain",
+          "move-c02-forest-line-before-refrain"
+        ]
       });
-      const winner = selection.ok ? selection.finalist : null;
       const human = humanByFixture.get(fixture.fixtureId);
       if (!human) throw new Error(`Finalized human review is missing ${fixture.fixtureId}.`);
+      const selectedIds = selection.ok
+        ? selection.finalists.map((finalist) => finalist.sourceCandidateId)
+        : [];
+      const humanIds = new Set(human.humanConclusion.candidateIds);
+      const agreesWithHuman =
+        human.humanConclusion.type === "none"
+          ? selection.ok && selection.outcome === "no_qualifying_finalist"
+          : selectedIds.some((id) => humanIds.has(id));
       results.push({
         fixtureId: fixture.fixtureId,
         category: fixture.category,
@@ -566,19 +529,19 @@ async function main() {
         savedDrafts: fixture.draftOptions,
         prompt: editorialPrompt,
         finalists: parsed.finalists,
-        winnerComparisons: parsed.winnerComparisons,
+        decision: parsed.decision,
+        concernFindings: parsed.concernFindings,
         selection,
-        hardFailures: selection.ok ? [] : selection.error.issues,
-        advisoryWarnings: [],
         humanConclusion: human.humanConclusion,
         humanConclusionTexts: humanTexts(human),
         humanCandidateReviews: human.candidates,
-        selectionLevelAgreement: selectionLevelAgreement({
-          human,
-          selection
-        }),
-        concernRecognition:
-          "Assess separately from selection-level agreement using candidate ratings, required edits, written explanations, and line comments.",
+        selectionLevelAgreement: agreesWithHuman,
+        recommendedUnrepairedSubstantiveEdit:
+          selection.ok &&
+          selection.outcome !== "no_qualifying_finalist" &&
+          selection.finalists.some((finalist) =>
+            finalist.requiredEdits.some((edit) => !edit.resolved)
+          ),
         usage: editorResult.usage
       });
     }
@@ -588,7 +551,7 @@ async function main() {
     }
     const completedAt = new Date().toISOString();
     const bundle = {
-      runType: "spanish_editor_only_reevaluation_resume",
+      runType: "spanish_lean_editor_contract_verification",
       completedAt,
       sourceDirectory: SOURCE_DIRECTORY,
       preservedHumanReview: {
@@ -605,16 +568,9 @@ async function main() {
       plannedCallCount: CALL_COUNT,
       actualCallCount: usage.length,
       pageEditorOutputTokens: PAGE_EDITOR_OUTPUT_TOKENS,
-      priorSpendUsd: PRIOR_SPEND_USD,
-      maximumRemainingEstimatedCostUsd: calculatedRemainingMaximum,
-      maximumTotalEstimatedCostUsd:
-        PRIOR_SPEND_USD + calculatedRemainingMaximum,
-      approvedTotalCostCeilingUsd: APPROVED_TOTAL_COST_CEILING_USD,
-      resumeTotals: sumUsage(usage),
-      combinedActualTotals: {
-        ...sumUsage(usage),
-        estimatedCostUsd: PRIOR_SPEND_USD + sumUsage(usage).estimatedCostUsd
-      },
+      maximumEstimatedCostUsd: calculatedRemainingMaximum,
+      approvedCostCeilingUsd: MAX_VERIFICATION_COST_USD,
+      totals: sumUsage(usage),
       results
     };
     await writeFile(
@@ -639,13 +595,9 @@ async function main() {
           plannedCallCount: CALL_COUNT,
           actualCallCount: usage.length,
           pageEditorOutputTokens: PAGE_EDITOR_OUTPUT_TOKENS,
-          priorSpendUsd: PRIOR_SPEND_USD,
-          maximumRemainingEstimatedCostUsd: calculatedRemainingMaximum,
-          maximumTotalEstimatedCostUsd:
-            PRIOR_SPEND_USD + calculatedRemainingMaximum,
-          approvedTotalCostCeilingUsd: APPROVED_TOTAL_COST_CEILING_USD,
-          resumeTotals: bundle.resumeTotals,
-          combinedActualTotals: bundle.combinedActualTotals
+          maximumEstimatedCostUsd: calculatedRemainingMaximum,
+          approvedCostCeilingUsd: MAX_VERIFICATION_COST_USD,
+          totals: bundle.totals
         },
         null,
         2
@@ -656,8 +608,7 @@ async function main() {
         {
           outputDirectory,
           status: "completed",
-          resumeTotals: bundle.resumeTotals,
-          combinedActualTotals: bundle.combinedActualTotals
+          totals: bundle.totals
         },
         null,
         2

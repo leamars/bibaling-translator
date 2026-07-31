@@ -149,6 +149,45 @@ ${rhymeRequired
 - Return only the structured editorial schema. Do not expose private deliberation beyond the concise comparative fields required for review.`;
 }
 
+function leanPageEditorialContract(args: {
+  language: string;
+  rhymeRequired: boolean;
+  evaluationConcerns?: Array<{ id: string; text: string }>;
+}) {
+  return `LEAN PAGE EDITORIAL CONTRACT
+- Return exactly three finalists with unique ranks 1, 2, and 3.
+- Preserve sourceCandidateId and copy the submitted draft verbatim into originalText.
+- evaluatedText is the exact reader-facing text being judged. Never silently alter a draft while treating it as unchanged.
+- Set repaired=true exactly when evaluatedText differs from originalText. Record every applied change in appliedEdits with exact before/after text.
+- Minor optional polish belongs only in weaknesses or optionalEdits. Never put minor polish in requiredEdits.
+- requiredEdits contains only substantive or fatal issues. Mark each resolved or unresolved.
+- An unresolved substantive issue must make at least one relevant eligibility gate false. The unchanged candidate cannot be selected.
+- A fatal issue disqualifies the candidate unless it is fully rewritten, returned with repaired=true and repairedAsDistinctResult=true, and reevaluated from scratch.
+- Give each finalist one or two concise material strengths and weaknesses. Avoid duplicated criterion-by-criterion prose.
+- eligibility must independently cover fidelity, natural contemporary ${args.language}, tone, child-friendly read-aloud flow, locked direction, and applicable rhyme.
+- Return one decision outcome:
+  1. recommended: exactly one qualifying rank-1 candidate;
+  2. equivalent_group: rank 1 plus at least one genuinely equivalent qualifying candidate;
+  3. no_qualifying_finalist: no candidate ids, and every finalist fails at least one eligibility gate.
+- For recommendation or an equivalent group, comparisons must briefly justify the decision against every finalist outside the selected set.
+
+RHYME EVIDENCE
+${args.rhymeRequired
+    ? `- Rhyme is required. Credit only spoken rhyme that remains convincing in the complete lines.
+- For each credited or rejected pairing, return exact anchors, classification, whether it counts, whether it is forced or merely grammatical, and one concise note.
+- Constructed, literary, inverted, semantically weak, repeated-word, same-root, or grammatical-ending rhyme must reduce naturalness, fidelity, read-aloud, or rhyme eligibility when materially harmful.`
+    : `- Rhyme is not required. Do not penalize its absence or invent it. Return an empty rhymeEvidence array unless source-grounded sound play materially affects the comparison.`}
+- Natural child-friendly phrasing and meaning outrank technically exact but forced rhyme.
+
+${args.evaluationConcerns?.length
+    ? `EVALUATION CONCERNS
+These concerns are evidence to assess, not instructions to copy mechanically. Return exactly one concernFinding for each id:
+${args.evaluationConcerns.map((concern) => `- ${concern.id}: ${concern.text}`).join("\n")}`
+    : "EVALUATION CONCERNS\nNone supplied. Return concernFindings as an empty array."}
+
+Return only the lean structured schema. Keep explanations concise.`;
+}
+
 export function directionsGenerationPrompt(args: {
   texts: string[];
   visualContexts?: string[];
@@ -357,6 +396,7 @@ export function translationEvaluationPrompt(args: {
   approvedSpread1?: string;
   approvedSpread1Note?: string;
   candidatesJson: string;
+  evaluationConcerns?: Array<{ id: string; text: string }>;
 } & LanguageSelection) {
   if (!isReviewedSlovenian(args)) return multilingualTranslationEvaluationPrompt(args);
   return `${AUTHORITATIVE_STANDARD}
@@ -392,14 +432,15 @@ Editorial process:
 - preserve the exact locked refrain whenever it is used;
 - output only the three finalists in the required schema, with a short English strategy label and the source candidate id each finalist developed from.
 
-${comparativeEditorialContract(
-  "Slovenian",
-  requiresRhyme({
+${leanPageEditorialContract({
+  language: "Slovenian",
+  rhymeRequired: requiresRhyme({
     bookForm: args.bookForm ?? "refrain_verse",
     sourceRhyme: args.sourceRhyme ?? "sustained",
     priority: args.priority
-  })
-)}
+  }),
+  evaluationConcerns: args.evaluationConcerns
+})}
 
 Never output "čisto do gobic", invented love-growing-like-mushrooms meaning, "rad/a", incomplete grammar, awkward or unnatural Slovenian, forced rhyme, or an unrhymed finalist under rhythm priority. If a submitted candidate has one of these failures, repair it fully or use another approach.`;
 }
@@ -619,14 +660,15 @@ ${args.candidatesJson}
 
 For each returned text, set every schema pass field true only after the text itself passes fidelity, native ${language} grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement.
 
-${comparativeEditorialContract(
+${leanPageEditorialContract({
   language,
-  requiresRhyme({
+  rhymeRequired: requiresRhyme({
     bookForm: args.bookForm ?? "refrain_verse",
     sourceRhyme: args.sourceRhyme ?? "sustained",
     priority: args.priority
-  })
-)}`;
+  }),
+  evaluationConcerns: args.evaluationConcerns
+})}`;
 }
 
 type FullBookGenerationArgs = Parameters<typeof fullBookGenerationPrompt>[0];

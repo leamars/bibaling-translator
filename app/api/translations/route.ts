@@ -28,13 +28,10 @@ import {
   deterministicViolations
 } from "../translation-quality";
 import {
-  comparativeFinalistFields,
-  comparativeJsonProperties,
-  comparativeJsonRequired,
-  selectRecommendedFinalist,
-  winnerComparisonsJsonSchema,
-  winnerComparisonsSchema
-} from "../editorial-contract.ts";
+  leanPageEditorialJsonSchema,
+  leanPageEditorialResultSchema,
+  resolveLeanPageDecision
+} from "../page-editorial-contract.ts";
 import { verifyLeadReceipt } from "../leads/receipt";
 import {
   resolveLanguageSelection,
@@ -127,22 +124,6 @@ const candidateSchema = z.object({
 });
 const CANDIDATE_COUNT = 6;
 const candidatePoolSchema = z.object({ candidates: z.array(candidateSchema).length(CANDIDATE_COUNT) });
-const finalistSchema = z.object({
-  sourceCandidateId: z.string().min(1),
-  strategy: z.string().min(1),
-  text: z.string().min(1),
-  fidelityPass: z.boolean(),
-  grammarPass: z.boolean(),
-  readAloudPass: z.boolean(),
-  directionPass: z.boolean(),
-  rhymePass: z.boolean(),
-  ...comparativeFinalistFields
-});
-const editorialResultSchema = z.object({
-  finalists: z.array(finalistSchema).length(3),
-  winnerComparisons: winnerComparisonsSchema
-});
-
 const candidateJsonSchema = {
   type: "object",
   additionalProperties: false,
@@ -167,45 +148,7 @@ const candidateJsonSchema = {
 } as const;
 
 function editorialJsonSchema() {
-  return {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    finalists: {
-      type: "array",
-      minItems: 3,
-      maxItems: 3,
-      items: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          sourceCandidateId: { type: "string" },
-          strategy: { type: "string" },
-          text: { type: "string" },
-          fidelityPass: { type: "boolean" },
-          grammarPass: { type: "boolean" },
-          readAloudPass: { type: "boolean" },
-          directionPass: { type: "boolean" },
-          rhymePass: { type: "boolean" },
-          ...comparativeJsonProperties
-        },
-        required: [
-          "sourceCandidateId",
-          "strategy",
-          "text",
-          "fidelityPass",
-          "grammarPass",
-          "readAloudPass",
-          "directionPass",
-          "rhymePass",
-          ...comparativeJsonRequired
-        ]
-      }
-    },
-    winnerComparisons: winnerComparisonsJsonSchema
-  },
-  required: ["finalists", "winnerComparisons"]
-  } as const;
+  return leanPageEditorialJsonSchema;
 }
 
 const fullBookItemSchema = z.object({
@@ -348,12 +291,12 @@ async function generatePassingOptions(args: PipelineArgs) {
         text: { format: { type: "json_schema", name: "translation_editorial_finalists", strict: true, schema: editorialJsonSchema() } }
       }
     });
-    const edited = editorialResultSchema.parse(JSON.parse(evaluationResponse.output_text));
+    const edited = leanPageEditorialResultSchema.parse(JSON.parse(evaluationResponse.output_text));
     const textEligible = edited.finalists.filter((candidate) =>
-      deterministicViolations(candidate.text, { targetLanguage: args.targetLanguage }).length === 0
+      deterministicViolations(candidate.evaluatedText, { targetLanguage: args.targetLanguage }).length === 0
     );
     if (textEligible.length !== 3 || new Set(
-      textEligible.map((candidate) => candidate.text.trim().toLocaleLowerCase(args.targetLanguage))
+      textEligible.map((candidate) => candidate.evaluatedText.trim().toLocaleLowerCase(args.targetLanguage))
     ).size !== 3) {
       throw Object.assign(
         new Error("The editorial comparison contained malformed or duplicate finalist text."),
@@ -365,21 +308,28 @@ async function generatePassingOptions(args: PipelineArgs) {
       sourceRhyme: args.sourceRhyme,
       priority: args.priority
     });
-    const selection = selectRecommendedFinalist({
-      finalists: edited.finalists,
-      winnerComparisons: edited.winnerComparisons,
-      rhymeRequired
+    const selection = resolveLeanPageDecision({
+      result: edited,
+      rhymeRequired,
+      sourceCandidates: survivors
     });
     if (!selection.ok) {
       throw Object.assign(new Error(selection.error.message), selection.error);
     }
+    if (selection.outcome === "no_qualifying_finalist") {
+      throw Object.assign(
+        new Error("No finalist met every minimum eligibility requirement."),
+        { code: "NO_QUALIFYING_FINALIST" }
+      );
+    }
+    const selectedIds = new Set(selection.finalists.map((finalist) => finalist.sourceCandidateId));
     return [...edited.finalists]
       .sort((first, second) => first.rank - second.rank)
-      .map(({ strategy, text, rank, recommendedFinalist }) => ({
-        strategy,
-        text,
-        rank,
-        recommendedFinalist
+      .map((finalist) => ({
+        strategy: survivors.find((candidate) => candidate.id === finalist.sourceCandidateId)?.strategy || "Editorial finalist",
+        text: finalist.evaluatedText,
+        rank: finalist.rank,
+        recommendedFinalist: selectedIds.has(finalist.sourceCandidateId),
       }));
 }
 

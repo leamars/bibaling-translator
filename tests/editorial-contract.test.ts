@@ -204,7 +204,7 @@ test("non-rhyming fixtures are not penalized for lacking rhyme", () => {
   if (selection.ok) assert.equal(selection.finalist.rank, 1);
 });
 
-test("Refrain Lab and page editorial prompts require comparative ranking and direct winner comparisons", () => {
+test("Refrain Lab retains the detailed contract while page editing uses the lean contract", () => {
   const refrainPrompt = directionsEvaluationPrompt({
     texts: ["We love you so much."],
     visualContexts: ["A mushroom with friends."],
@@ -225,28 +225,27 @@ test("Refrain Lab and page editorial prompts require comparative ranking and dir
     targetLanguage: "es",
     regionalVariant: "es-ES"
   });
-  for (const prompt of [refrainPrompt, pagePrompt]) {
-    assert.match(prompt, /unique ranks 1, 2, and 3/);
-    assert.match(prompt, /recommendedFinalist=true for exactly one finalist/);
-    assert.match(prompt, /specific material strength and one specific material weakness/);
-    assert.match(prompt, /natural contemporary Spanish/);
-    assert.match(prompt, /winnerComparisons for alternative ranks 2 and 3/);
-    assert.match(prompt, /sound sequence from the final stressed vowel onward|Rhyme is not required/);
-  }
-  assert.match(pagePrompt, /rhymeAssessment\.required=false/);
-  assert.match(pagePrompt, /Do not penalize a finalist for having no rhyme/);
+  assert.match(refrainPrompt, /unique ranks 1, 2, and 3/);
+  assert.match(refrainPrompt, /recommendedFinalist=true for exactly one finalist/);
+  assert.match(refrainPrompt, /winnerComparisons for alternative ranks 2 and 3/);
+  assert.match(pagePrompt, /LEAN PAGE EDITORIAL CONTRACT/);
+  assert.match(pagePrompt, /unique ranks 1, 2, and 3/);
+  assert.match(pagePrompt, /equivalent_group/);
+  assert.match(pagePrompt, /no_qualifying_finalist/);
+  assert.match(pagePrompt, /natural contemporary Spanish/);
+  assert.match(pagePrompt, /Rhyme is not required/);
+  assert.match(pagePrompt, /Do not penalize its absence/);
 });
 
-test("production Refrain Lab and page schemas carry the shared comparative fields", async () => {
+test("production Refrain Lab and page routes use their reviewed editorial contracts", async () => {
   const [directionsRoute, translationsRoute] = await Promise.all([
     readFile(new URL("../app/api/directions/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8")
   ]);
-  for (const route of [directionsRoute, translationsRoute]) {
-    assert.match(route, /comparativeJsonProperties/);
-    assert.match(route, /winnerComparisonsJsonSchema/);
-  }
+  assert.match(directionsRoute, /comparativeJsonProperties/);
+  assert.match(directionsRoute, /winnerComparisonsJsonSchema/);
   assert.match(directionsRoute, /validateDirectionEditorialResult/);
-  assert.match(translationsRoute, /selectRecommendedFinalist/);
+  assert.match(translationsRoute, /leanPageEditorialJsonSchema/);
+  assert.match(translationsRoute, /resolveLeanPageDecision/);
   assert.doesNotMatch(translationsRoute, /\.find\(allPasses\)|finalists\[0\]/);
 });

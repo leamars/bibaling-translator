@@ -1,0 +1,71 @@
+{
+  "fixtureId": "mush-jiggly-orange",
+  "responseStatus": "completed",
+  "completedWithinAllowance": true,
+  "outputAllowanceTokens": 2500,
+  "inputTokens": 2054,
+  "cachedInputTokens": 0,
+  "outputTokensIncludingReasoning": 2238,
+  "reasoningTokens": 877,
+  "visibleOutputTokens": 1361,
+  "unusedOutputTokens": 262,
+  "unusedOutputPercentage": 10.48,
+  "latencyMs": 35770,
+  "estimatedCostUsd": 0.07741,
+  "decision": {
+    "outcome": "recommended",
+    "candidateIds": [
+      "c02"
+    ]
+  },
+  "completeRanking": [
+    {
+      "rank": 1,
+      "sourceCandidateId": "c02",
+      "allEligibilityGatesPassed": true,
+      "repaired": false,
+      "unresolvedEditorDeclaredRequiredEdits": 0
+    },
+    {
+      "rank": 2,
+      "sourceCandidateId": "c01",
+      "allEligibilityGatesPassed": true,
+      "repaired": false,
+      "unresolvedEditorDeclaredRequiredEdits": 0
+    },
+    {
+      "rank": 3,
+      "sourceCandidateId": "c04",
+      "allEligibilityGatesPassed": true,
+      "repaired": false,
+      "unresolvedEditorDeclaredRequiredEdits": 0
+    }
+  ],
+  "humanConclusion": {
+    "type": "equivalent",
+    "candidateIds": [
+      "c06",
+      "c02"
+    ],
+    "bothRequirePlacementEdit": true
+  },
+  "selectionLevelAgreement": true,
+  "placementConcerns": [
+    {
+      "concernId": "move-c06-forest-line-before-refrain",
+      "recognized": true,
+      "editorDisposition": "disagreed",
+      "humanConcernSatisfied": false
+    },
+    {
+      "concernId": "move-c02-forest-line-before-refrain",
+      "recognized": true,
+      "editorDisposition": "disagreed",
+      "humanConcernSatisfied": false
+    }
+  ],
+  "recommendedOriginalHasHumanRequiredUnrepairedSubstantiveEdit": true,
+  "auditEvidenceSufficient": true,
+  "policyVerified": false,
+  "policyVerdictReason": "The editor recommended unchanged c02 after explicitly disagreeing with Lea's substantive line-order correction."
+}

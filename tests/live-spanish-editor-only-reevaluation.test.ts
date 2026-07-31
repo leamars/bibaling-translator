@@ -7,24 +7,26 @@ const harnessPath = new URL(
   import.meta.url
 );
 
-test("Spanish reevaluation resume is editor-only, six-call, bounded, and retry-free", async () => {
+test("lean jiggly verification is one editor-only call, bounded, and retry-free", async () => {
   const source = await readFile(harnessPath, "utf8");
 
-  assert.match(source, /const CALL_COUNT = 6/);
-  assert.match(source, /const PAGE_EDITOR_OUTPUT_TOKENS = 3_500/);
-  assert.match(source, /const PRIOR_SPEND_USD = 0\.183065/);
-  assert.match(source, /const APPROVED_TOTAL_COST_CEILING_USD = 1\.25/);
+  assert.match(source, /const CALL_COUNT = 1/);
+  assert.match(source, /const PAGE_EDITOR_OUTPUT_TOKENS = 2_500/);
+  assert.match(source, /const MAX_VERIFICATION_COST_USD = 0\.14/);
+  assert.match(source, /VERIFY_LEAN_JIGGLY_EDITOR/);
   assert.match(source, /maxRetries: 0/);
-  assert.match(source, /directionsEvaluationPrompt/);
   assert.match(source, /translationEvaluationPrompt/);
   assert.doesNotMatch(source, /directionsGenerationPrompt/);
   assert.doesNotMatch(source, /translationGenerationPrompt/);
   assert.match(source, /finalized-human-review\.json/);
-  assert.match(source, /savedBundle\.refrainSetup\.survivingDrafts/);
   assert.match(source, /fixture\.draftOptions/);
   assert.match(source, /PRIOR_REFRAIN_RESPONSE_PATH/);
+  assert.match(source, /fixtureId === "mush-jiggly-orange"/);
+  assert.match(source, /leanPageEditorialJsonSchema/);
+  assert.match(source, /resolveLeanPageDecision/);
   assert.match(source, /selectionLevelAgreement/);
   assert.match(source, /NO_QUALIFYING_FINALIST/);
-  assert.match(source, /equivalent group/);
   assert.match(source, /concernRecognition/);
+  assert.match(source, /move-c06-forest-line-before-refrain/);
+  assert.match(source, /move-c02-forest-line-before-refrain/);
 });
