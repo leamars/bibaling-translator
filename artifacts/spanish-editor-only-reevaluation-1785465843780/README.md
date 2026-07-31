@@ -8,6 +8,12 @@ This controlled reevaluation used the saved drafts in
 It did not regenerate drafts or alter prompts, fixtures, language guidance, or
 human conclusions.
 
+Every finalized rating, reason tag, written explanation, preferred rewrite, and
+line-order request is accounted for separately in
+[`human-feedback-inventory.md`](./human-feedback-inventory.md). That inventory
+distinguishes preserved feedback from feedback that the interrupted
+reevaluation actually had an opportunity to recognize.
+
 ## Run accounting
 
 - Planned editorial calls: 7
