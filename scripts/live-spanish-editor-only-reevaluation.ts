@@ -271,16 +271,51 @@ function humanTexts(item: HumanItem) {
   }));
 }
 
-function conclusionAgreement(
+function selectedCandidateMatchesHumanConclusion(
   human: HumanItem,
   recommendedText: string,
   recommendedSourceCandidateId?: string
 ) {
-  if (human.humanConclusion.type === "none") return false;
   return humanTexts(human).some((candidate) =>
     candidate.exactText === recommendedText ||
     candidate.candidateId === recommendedSourceCandidateId
   );
+}
+
+function selectionLevelAgreement(args: {
+  human: HumanItem;
+  selection:
+    | { ok: true; finalist: { text?: string; refrain?: string; sourceCandidateId?: string } }
+    | { ok: false; error: { code: string } };
+}) {
+  if (args.human.humanConclusion.type === "none") {
+    return {
+      agrees: !args.selection.ok &&
+        args.selection.error.code === "NO_QUALIFYING_FINALIST",
+      basis: args.selection.ok
+        ? "Human rejected the entire set, but the editor recommended a finalist."
+        : "Human rejected the entire set; agreement requires the editor to return NO_QUALIFYING_FINALIST."
+    };
+  }
+  if (!args.selection.ok) {
+    return {
+      agrees: false,
+      basis: "Human supplied an accepted candidate or equivalent group, but the editor rejected the set."
+    };
+  }
+  const recommendedText =
+    args.selection.finalist.text || args.selection.finalist.refrain || "";
+  const agrees = selectedCandidateMatchesHumanConclusion(
+    args.human,
+    recommendedText,
+    args.selection.finalist.sourceCandidateId
+  );
+  return {
+    agrees,
+    basis: args.human.humanConclusion.type === "equivalent"
+      ? "Agreement means the editor recommendation falls anywhere within the completed human equivalent group."
+      : "Agreement means the editor recommendation matches the completed human preferred candidate."
+  };
 }
 
 async function main() {
@@ -434,9 +469,12 @@ async function main() {
       humanConclusion: directionHuman.humanConclusion,
       humanConclusionTexts: humanTexts(directionHuman),
       humanCandidateReviews: directionHuman.candidates,
-      agreesWithHuman: directionWinner
-        ? conclusionAgreement(directionHuman, directionWinner.refrain)
-        : false,
+      selectionLevelAgreement: selectionLevelAgreement({
+        human: directionHuman,
+        selection: directionSelection
+      }),
+      concernRecognition:
+        "Assess separately from selection-level agreement using candidate ratings, required edits, written explanations, and line comments.",
       usage: directionResult.usage
     });
 
@@ -534,9 +572,12 @@ async function main() {
         humanConclusion: human.humanConclusion,
         humanConclusionTexts: humanTexts(human),
         humanCandidateReviews: human.candidates,
-        agreesWithHuman: winner
-          ? conclusionAgreement(human, winner.text, winner.sourceCandidateId)
-          : false,
+        selectionLevelAgreement: selectionLevelAgreement({
+          human,
+          selection
+        }),
+        concernRecognition:
+          "Assess separately from selection-level agreement using candidate ratings, required edits, written explanations, and line comments.",
         usage: editorResult.usage
       });
     }

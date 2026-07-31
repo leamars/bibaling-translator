@@ -86,10 +86,17 @@ earlier provisional findings for purposes of this comparison.
    Rhyme evidence: `amigo / contigo`, classified as a full rhyme from stressed
    `i` onward (`igo / igo`).
 
-### Human/editor comparison
+### Human/editor selection comparison
 
 **Disagreement.** The finalized human conclusion is that none are good enough,
 while the editor recommends the first option.
+
+`None are good enough` is a complete human conclusion, not an unresolved
+selection. The comparative contract is technically capable of rejecting an
+entire set: it can mark every finalist below the minimum eligibility threshold,
+which produces the structured `NO_QUALIFYING_FINALIST` result. In this call it
+did not exercise that ability. It marked and recommended a rank-1 finalist, so
+it disagrees with Lea at the selection level.
 
 The revised editor did recognize that the earlier
 `champiñón compañero` wording should not be preferred: it did not return that
@@ -98,6 +105,18 @@ forced phrase as a finalist. It retained
 identified the slight sign-off quality of `de parte de`. However, because the
 human conclusion is now `none`, ranking that phrase second does not constitute
 agreement.
+
+### Candidate-quality and concern recognition
+
+This is separate from selection-level agreement:
+
+- The editor recognized the forced quality of the previous
+  `champiñón compañero` wording indirectly by excluding it from the final set.
+- It recognized a material issue in Lea's earlier preferred wording,
+  describing `de parte de` as message-like or sign-off-like and less
+  emotionally immediate.
+- It did **not** reach Lea's overall conclusion that none of the three new
+  finalists was good enough.
 
 ## Page fixtures
 
@@ -109,8 +128,13 @@ preserved in `02-mush-watch-over-raw-response.json`; it was not parsed or used
 as an editorial recommendation.
 
 The editor therefore did not produce a valid ranking with which to assess the
-human equivalent-group conclusion (`c04`, `c05`) or the recorded concern about
-the somewhat constructed `contento / atento` phrasing.
+completed human equivalent-group conclusion (`c04`, `c05`) or the recorded
+concern about the somewhat constructed `contento / atento` phrasing.
+
+For any completed equivalent group, selection-level agreement requires only
+that the editor's recommendation fall within that group; it does not require a
+unique human winner. Recognition of ratings, required edits, written feedback,
+and line-level feedback must still be reported separately.
 
 ### Remaining five fixtures
 
@@ -132,4 +156,3 @@ the page-editor output allowance enough to fit the already-required structured
 assessment, or reducing nonessential response verbosity while preserving the
 same comparative fields. This run does **not** justify changing Spanish
 language guidance, selection semantics, validators, or drafting.
-

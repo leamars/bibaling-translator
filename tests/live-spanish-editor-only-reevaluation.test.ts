@@ -21,4 +21,8 @@ test("Spanish reevaluation is editor-only, seven-call, bounded, and retry-free",
   assert.match(source, /finalized-human-review\.json/);
   assert.match(source, /savedBundle\.refrainSetup\.survivingDrafts/);
   assert.match(source, /fixture\.draftOptions/);
+  assert.match(source, /selectionLevelAgreement/);
+  assert.match(source, /NO_QUALIFYING_FINALIST/);
+  assert.match(source, /equivalent group/);
+  assert.match(source, /concernRecognition/);
 });
