@@ -1,0 +1,20 @@
+{
+  "failedAt": "2026-07-31T17:06:25.122Z",
+  "error": {
+    "code": "OPENAI_RESPONSE_INCOMPLETE",
+    "status": "incomplete",
+    "incompleteReason": "max_output_tokens",
+    "name": "Error",
+    "message": "mush-refrain-consistency-pair editorial did not complete."
+  },
+  "completedResults": [],
+  "usage": {
+    "callCount": 2,
+    "latencyMs": 107365,
+    "inputTokens": 3356,
+    "cachedInputTokens": 0,
+    "outputTokens": 4015,
+    "reasoningTokens": 2560,
+    "estimatedCostUsd": 0.13723000000000002
+  }
+}

@@ -149,7 +149,7 @@ ${rhymeRequired
 - Return only the structured editorial schema. Do not expose private deliberation beyond the concise comparative fields required for review.`;
 }
 
-function leanPageEditorialContract(args: {
+export function leanPageEditorialContract(args: {
   language: string;
   rhymeRequired: boolean;
   evaluationConcerns?: Array<{ id: string; text: string }>;

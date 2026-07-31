@@ -51,8 +51,16 @@ export const LANGUAGE_CONFIGS: Record<TargetLanguage, LanguageConfig> = {
   },
   de: {
     code: "de", name: "German", autonym: "Deutsch", languageTag: "de-DE", status: "priority_evaluation",
-    ...neutral("German"),
-    editorialGuidance: "Edit as a native German children's-book editor. Prefer natural spoken clause order, readable compounds, and child-appropriate vocabulary; never force end rhyme through marked inversion."
+    draftingGuidance: `Write neutral contemporary Standard German that is easy to understand across German-speaking regions. Avoid narrow regional colloquialisms. Preserve meaning and picture truth; reshape English syntax naturally.
+Prefer natural spoken German clause order. Do not move verbs, objects, particles, or adverbials into marked positions merely to obtain rhyme.
+Handle separable verbs as complete semantic units and place their particles naturally for the sentence type. Do not omit or strand a particle for meter.
+Prefer transparent, child-friendly compounds. If a grammatically valid compound feels dense or bookish aloud, use a natural short phrase instead.
+Preserve who is acting, who is addressed, and whether the source refers to one friend or a group. Avoid pronoun changes introduced only for rhyme.
+For prose, do not introduce line-broken verse, meter, rhyme, chants, or a repeated line.`,
+    editorialGuidance: `Edit as a native German children's-book editor. Prefer natural spoken clause order, readable compounds, and child-appropriate vocabulary.
+For verse, judge rhyme in spoken German from the stressed vowel onward. Infinitive, plural, case, adjective, or other grammatical endings are not sufficient evidence by themselves.
+A near rhyme with natural wording is better than exact rhyme created through inversion, filler, semantic weakening, or an unusually literary construction.
+Reject marked word order used only for rhyme, mishandled separable verbs, dense or bookish compounds, unsupported pronoun changes, and constructions that are grammatical but unnatural aloud.`
   },
   it: {
     code: "it", name: "Italian", autonym: "italiano", languageTag: "it-IT", status: "priority_evaluation",

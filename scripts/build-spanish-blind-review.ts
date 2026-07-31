@@ -5,7 +5,7 @@ type ReviewBundle = {
   generatedAt: string;
   targetLanguage: string;
   regionalVariant: string;
-  refrainSetup: {
+  refrainSetup?: {
     englishSources: string[];
     rawDraftOptions: Array<{ name: string; refrain: string; approach: string }>;
     editorialOptions: Array<{
@@ -29,6 +29,7 @@ type ReviewBundle = {
     category: string;
     sourceBook: string;
     sourceAsset: string;
+    sourceAssets?: string[];
     englishSource: string;
     visualContext: string;
     bookForm: string;
@@ -55,13 +56,50 @@ type ReviewBundle = {
   }>;
 };
 
+type GermanLeanBundle = {
+  generatedAt: string;
+  targetLanguage: "de";
+  regionalVariant: "de-DE";
+  results: Array<{
+    fixture: {
+      id: string;
+      label: string;
+      sourceBook: "I Love You So Mush" | "Llama Llama Red Pajama";
+      bookForm: string;
+      sourceRhyme: string;
+      routeContractProxy: boolean;
+      proxyLimitation?: string;
+      requirements: string[];
+      pages: Array<{
+        sourceAsset: string;
+        source: string;
+        visualContext: string;
+      }>;
+    };
+    privateDrafts: Array<{ id: string; strategy: string; text: string }>;
+    editorial: {
+      finalists: Array<{
+        sourceCandidateId: string;
+        evaluatedText: string;
+        rank: number;
+        strengths: string[];
+        weaknesses: string[];
+        eligibility: Record<string, boolean>;
+        rhymeEvidence: unknown;
+      }>;
+      decision: { outcome: string; candidateIds: string[] };
+    };
+    decision: { outcome: string; candidateIds: string[] };
+  }>;
+};
+
 type HumanFindings = Record<string, unknown>;
 
 const artifactDirectory = resolve(
   process.argv[2] || "artifacts/spanish-evaluation-1785444427987"
 );
 const outputPath = resolve(
-  process.argv[3] || `${artifactDirectory}/spanish-blind-review.html`
+  process.argv[3] || `${artifactDirectory}/blind-review.html`
 );
 
 function mimeType(path: string) {
@@ -132,18 +170,23 @@ function recordedFinding(args: {
 async function buildDataset(bundle: ReviewBundle, humanFindings: HumanFindings) {
   const fixtureImages = await Promise.all(
     bundle.fixtures.map((fixture) =>
-      resolveSourceImage(fixture.sourceBook, fixture.sourceAsset)
+      Promise.all((fixture.sourceAssets || [fixture.sourceAsset]).map((asset) =>
+        resolveSourceImage(fixture.sourceBook, asset)
+      )).then((images) => images.filter(Boolean))
     )
   );
-  const refrainImages = fixtureImages.slice(0, 3).filter(Boolean);
-  const refrainCandidates = bundle.refrainSetup.editorialOptions.map((option, index) => ({
+  const refrainImages = fixtureImages.slice(0, 3).flat().filter(Boolean);
+  const items: Array<Record<string, any>> = [];
+  if (bundle.refrainSetup) {
+  const refrainSetup = bundle.refrainSetup;
+  const refrainCandidates = refrainSetup.editorialOptions.map((option, index) => ({
     id: `refrain-finalist-${index + 1}`,
     text: option.refrain,
     originalOrder: index + 1,
     identity: option.label,
     construction: option.construction,
     previousModelSelected:
-      option.refrain === bundle.refrainSetup.selectedDirection.refrain,
+      option.refrain === refrainSetup.selectedDirection.refrain,
     currentModelSelected: option.recommendedFinalist === true,
     rank: option.rank ?? null,
     strengths: option.strengths ?? [],
@@ -163,11 +206,11 @@ async function buildDataset(bundle: ReviewBundle, humanFindings: HumanFindings) 
     finding: humanFindings["refrain-lab"],
     candidates: refrainCandidates
   });
-  const items: Array<Record<string, any>> = [{
+  items.push({
     id: "refrain-lab",
     title: "Recurring refrain",
     sourceBook: "I Love You So Mush",
-    englishSource: bundle.refrainSetup.englishSources.join("\n\n—\n\n"),
+    englishSource: refrainSetup.englishSources.join("\n\n—\n\n"),
     visualContext: "Three source spreads establish the recurring declaration and mushroom wordplay.",
     bookForm: "refrain_verse",
     testingContext: [
@@ -177,17 +220,18 @@ async function buildDataset(bundle: ReviewBundle, humanFindings: HumanFindings) 
     ],
     images: refrainImages,
     candidates: refrainCandidates,
-    privateDrafts: bundle.refrainSetup.rawDraftOptions.map((draft, index) => ({
+    privateDrafts: refrainSetup.rawDraftOptions.map((draft, index) => ({
       id: `draft:refrain-${index + 1}`,
       strategy: `${draft.name} — ${draft.approach}`,
       text: draft.refrain
     })),
-    previousModelSelection: bundle.refrainSetup.selectedDirection.refrain,
+    previousModelSelection: refrainSetup.selectedDirection.refrain,
     currentModelSelection: refrainCandidates.find((candidate) => candidate.currentModelSelected)?.text ?? null,
     priorHumanFinding: refrainFinding.finding,
     importedConclusion: refrainFinding.importedConclusion,
     suggestedCandidateId: refrainFinding.suggestedCandidateId
-  }];
+  });
+  }
 
   bundle.fixtures.forEach((fixture, fixtureIndex) => {
     const candidates = fixture.editorialAssessment.map((candidate, index) => ({
@@ -224,7 +268,7 @@ async function buildDataset(bundle: ReviewBundle, humanFindings: HumanFindings) 
       visualContext: fixture.visualContext,
       bookForm: fixture.bookForm,
       testingContext: fixture.requirements,
-      images: fixtureImages[fixtureIndex] ? [fixtureImages[fixtureIndex]] : [],
+      images: fixtureImages[fixtureIndex],
       candidates,
       privateDrafts: fixture.draftOptions.map((draft) => ({
         ...draft,
@@ -240,7 +284,7 @@ async function buildDataset(bundle: ReviewBundle, humanFindings: HumanFindings) 
   });
 
   return {
-    evaluationId: `spanish-human-review-${bundle.generatedAt}`,
+    evaluationId: `${bundle.targetLanguage}-human-review-${bundle.generatedAt}`,
     sourceRunId: bundle.generatedAt,
     language: bundle.targetLanguage,
     regionalVariant: bundle.regionalVariant,
@@ -253,6 +297,51 @@ async function buildDataset(bundle: ReviewBundle, humanFindings: HumanFindings) 
   };
 }
 
+function normalizeGermanBundle(bundle: GermanLeanBundle): ReviewBundle {
+  return {
+    generatedAt: bundle.generatedAt,
+    targetLanguage: bundle.targetLanguage,
+    regionalVariant: bundle.regionalVariant,
+    fixtures: bundle.results.map((result) => {
+      const selectedIds = new Set(result.decision.candidateIds);
+      return {
+        fixtureId: result.fixture.id,
+        category: result.fixture.routeContractProxy
+          ? `${result.fixture.label} — route-contract proxy, not genuine prose-book proof`
+          : result.fixture.label,
+        sourceBook: result.fixture.sourceBook,
+        sourceAsset: result.fixture.pages[0].sourceAsset,
+        sourceAssets: result.fixture.pages.map((page) => page.sourceAsset),
+        englishSource: result.fixture.pages.map((page) => page.source).join("\n\n\f\n\n"),
+        visualContext: [
+          ...result.fixture.pages.map((page) => page.visualContext),
+          ...(result.fixture.proxyLimitation ? [result.fixture.proxyLimitation] : [])
+        ].join("\n\n"),
+        bookForm: result.fixture.bookForm,
+        sourceRhyme: result.fixture.sourceRhyme,
+        requirements: result.fixture.requirements,
+        draftOptions: result.privateDrafts,
+        editorialAssessment: result.editorial.finalists.map((finalist) => ({
+          sourceCandidateId: finalist.sourceCandidateId,
+          strategy: result.privateDrafts.find((draft) => draft.id === finalist.sourceCandidateId)?.strategy || "Editorial finalist",
+          text: finalist.evaluatedText,
+          fidelityPass: finalist.eligibility.fidelity,
+          grammarPass: finalist.eligibility.naturalness,
+          readAloudPass: finalist.eligibility.readAloud,
+          directionPass: finalist.eligibility.direction,
+          rhymePass: finalist.eligibility.rhyme,
+          rank: finalist.rank,
+          recommendedFinalist: selectedIds.has(finalist.sourceCandidateId),
+          strengths: finalist.strengths,
+          weaknesses: finalist.weaknesses,
+          rhymeAssessment: finalist.rhymeEvidence
+        })),
+        finalSelectedOutput: ""
+      };
+    })
+  };
+}
+
 function page(dataset: unknown) {
   return `<!doctype html>
 <html lang="en">
@@ -260,7 +349,7 @@ function page(dataset: unknown) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>Bibaling blind Spanish review</title>
+  <title>Bibaling blind language review</title>
   <style>
     :root {
       --paper:#f6f0e5; --card:#fffdf8; --ink:#17213b; --green:#22594b;
@@ -936,7 +1025,7 @@ function page(dataset: unknown) {
       const candidate = candidates[candidateIndex];
       byId("itemEyebrow").textContent = item.sourceBook + " · " + item.bookForm.replaceAll("_"," ");
       byId("itemTitle").textContent = item.title;
-      byId("itemContext").textContent = "Review each Spanish version independently before choosing a winner.";
+      byId("itemContext").textContent = "Review each " + DATASET.language + " version independently before choosing a winner.";
       byId("englishSource").textContent = item.englishSource;
       byId("visualContext").textContent = item.visualContext;
       byId("testingContext").innerHTML = item.testingContext.map(value=>"<li>"+escapeHtml(value)+"</li>").join("");
@@ -1036,7 +1125,7 @@ function page(dataset: unknown) {
       const blob=new Blob([JSON.stringify(exportPayload(),null,2)+"\\n"],{type:"application/json"});
       const url=URL.createObjectURL(blob);
       const link=document.createElement("a");
-      link.href=url; link.download="bibaling-spanish-human-review-"+state.runId+".json"; link.click();
+      link.href=url; link.download="bibaling-"+state.language+"-human-review-"+state.runId+".json"; link.click();
       URL.revokeObjectURL(url); showToast("Review exported");
     }
     function importJson(file) {
@@ -1097,7 +1186,7 @@ function page(dataset: unknown) {
       if(!("speechSynthesis" in window)){showToast("Read aloud is not supported in this browser");return;}
       speechSynthesis.cancel();
       const utterance=new SpeechSynthesisUtterance(orderedCandidates(currentItem())[currentCandidateIndex(currentItem())].text);
-      utterance.lang="es-ES"; speechSynthesis.speak(utterance);
+      utterance.lang=DATASET.regionalVariant || DATASET.language; speechSynthesis.speak(utterance);
     });
     byId("summaryButton").addEventListener("click",()=>{summaryVisible=true;renderSummary();scrollTo(0,0)});
     byId("backToReview").addEventListener("click",()=>{summaryVisible=false;byId("summaryScreen").classList.remove("active");byId("reviewScreen").classList.remove("hidden");render();scrollTo(0,0)});
@@ -1122,12 +1211,15 @@ function page(dataset: unknown) {
 }
 
 async function main() {
-  const [bundle, humanFindings] = await Promise.all([
+  const [rawBundle, humanFindings] = await Promise.all([
     readFile(resolve(artifactDirectory, "review-bundle.json"), "utf8")
-      .then((contents) => JSON.parse(contents) as ReviewBundle),
+      .then((contents) => JSON.parse(contents) as ReviewBundle | GermanLeanBundle),
     readFile(resolve(artifactDirectory, "human-findings.json"), "utf8")
       .then((contents) => JSON.parse(contents) as HumanFindings)
   ]);
+  const bundle = "results" in rawBundle
+    ? normalizeGermanBundle(rawBundle)
+    : rawBundle;
   const dataset = await buildDataset(bundle, humanFindings);
   await writeFile(outputPath, page(dataset));
   console.log(JSON.stringify({
