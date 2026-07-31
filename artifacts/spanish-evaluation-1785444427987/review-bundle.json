@@ -1,0 +1,901 @@
+{
+  "promptVersion": "multilingual-language-packs-v1",
+  "runType": "controlled_spanish_evaluation",
+  "generatedAt": "2026-07-30T20:47:07.982Z",
+  "targetLanguage": "es",
+  "regionalVariant": "es-ES",
+  "model": "gpt-5.6-sol",
+  "reasoningEffort": "low",
+  "automaticRetries": 0,
+  "maximumEstimatedCostUsd": 1.785,
+  "refrainSetup": {
+    "englishSources": [
+      "I love my happy, hairy friend\nwho's nestled on a tree.\n\nI really love you oh-so-MUSH\nfor watching over me.",
+      "These mushroom friends have many hands\nto hold and spin around.\n\nI really love you oh-so-MUSH!\nYou lift me off the ground!",
+      "I spy my jiggly orange friends.\nIt's fun the way you move.\n\nI really love you oh-so-MUSH!\nYou make the forest groove!"
+    ],
+    "draftingPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nTASK\nDraft exactly five compact, genuinely different Spanish refrain candidates from the corrected English and visual context. This is a private breadth pass. Variation must come from rhythm, syntax, concise wordplay, and rhyme strategy—not invented content or extra length.\n\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nFreely repair English-shaped wording so the result sounds naturally written in Spanish.\n\nCORRECTED ENGLISH\n1. I love my happy, hairy friend\nwho's nestled on a tree.\n\nI really love you oh-so-MUSH\nfor watching over me.\n2. These mushroom friends have many hands\nto hold and spin around.\n\nI really love you oh-so-MUSH!\nYou lift me off the ground!\n3. I spy my jiggly orange friends.\nIt's fun the way you move.\n\nI really love you oh-so-MUSH!\nYou make the forest groove!\n\nVISUAL CONTEXT\n1. A small mushroom looks up affectionately at a shaggy white forest friend resting in a tree, with a squirrel nearby.\n2. A ring of orange mushrooms hold one another's many arms and spin the smiling narrator mushroom off the ground.\n3. Bright yellow-orange jelly fungi wiggle on a tree while the narrator mushroom watches them dance.\n\nLIMITS\n- Maximum words: 12\n- Maximum characters: 65\n- Maximum sentences: 1\n- At most two short semantic lines\n\n\n\nReturn only the required candidates schema. Keep English names and approach labels short; every refrain must be solely in Spanish.",
+    "rawDraftOptions": [
+      {
+        "name": "Mogollón",
+        "refrain": "¡Cariño a mogollón, de parte de este champiñón!",
+        "approach": "Playful internal rhyme"
+      },
+      {
+        "name": "Montón",
+        "refrain": "¡Amor a montones, palabra de champiñón!",
+        "approach": "Punchy spoken rhyme"
+      },
+      {
+        "name": "Corazón",
+        "refrain": "¡Mi corazón os quiere un montón!",
+        "approach": "Warm direct address"
+      },
+      {
+        "name": "Muchísimo",
+        "refrain": "¡Con corazón de seta, os quiero muchísimo!",
+        "approach": "Gentle mushroom wordplay"
+      },
+      {
+        "name": "Locura",
+        "refrain": "¡Cuánto os quiero, criaturas de altura!",
+        "approach": "Bouncy end rhyme"
+      }
+    ],
+    "survivingDrafts": [
+      {
+        "name": "Mogollón",
+        "refrain": "¡Cariño a mogollón, de parte de este champiñón!",
+        "approach": "Playful internal rhyme",
+        "directionIndex": 0
+      },
+      {
+        "name": "Montón",
+        "refrain": "¡Amor a montones, palabra de champiñón!",
+        "approach": "Punchy spoken rhyme",
+        "directionIndex": 1
+      },
+      {
+        "name": "Corazón",
+        "refrain": "¡Mi corazón os quiere un montón!",
+        "approach": "Warm direct address",
+        "directionIndex": 2
+      },
+      {
+        "name": "Muchísimo",
+        "refrain": "¡Con corazón de seta, os quiero muchísimo!",
+        "approach": "Gentle mushroom wordplay",
+        "directionIndex": 3
+      },
+      {
+        "name": "Locura",
+        "refrain": "¡Cuánto os quiero, criaturas de altura!",
+        "approach": "Bouncy end rhyme",
+        "directionIndex": 4
+      }
+    ],
+    "draftRejections": [],
+    "draftingUsage": {
+      "responseId": "resp_0f1a8fd9b7ff33aa006a6bac9214c081a293b50aba59bb0675",
+      "responseStatus": "completed",
+      "latencyMs": 15808,
+      "inputTokens": 730,
+      "cachedInputTokens": 0,
+      "outputTokens": 579,
+      "reasoningTokens": 409,
+      "estimatedCostUsd": 0.02102,
+      "artifact": "resp_0f1a8fd9b7ff33aa006a6bac9214c081a293b50aba59bb0675.json"
+    },
+    "resumedFromCompletedDraft": true,
+    "failedEditorialAttempt": {
+      "responseId": "resp_07c22cde91693476006a6baca00dd081a1af7bd157b30a4ea0",
+      "responseStatus": "completed",
+      "latencyMs": 37516,
+      "inputTokens": 1005,
+      "cachedInputTokens": 0,
+      "outputTokens": 1523,
+      "reasoningTokens": 1281,
+      "estimatedCostUsd": 0.050715,
+      "artifact": "resp_07c22cde91693476006a6baca00dd081a1af7bd157b30a4ea0.json",
+      "hardFailures": [
+        {
+          "code": "CONSTRUCTION_SCHEMA_INVARIANT",
+          "message": "response must contain exactly one couplet, one playful_hook, and one lyrical_refrain"
+        }
+      ]
+    },
+    "editorialPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nROLE\nAct as an independent native Spanish children's-book editor. Repair or replace weak drafts and return exactly three compact, parent-ready refrain options. Never retain awkward language merely to fill three slots.\n\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nFreely repair English-shaped wording so the result sounds naturally written in Spanish.\n\nCORRECTED ENGLISH\n1. I love my happy, hairy friend\nwho's nestled on a tree.\n\nI really love you oh-so-MUSH\nfor watching over me.\n2. These mushroom friends have many hands\nto hold and spin around.\n\nI really love you oh-so-MUSH!\nYou lift me off the ground!\n3. I spy my jiggly orange friends.\nIt's fun the way you move.\n\nI really love you oh-so-MUSH!\nYou make the forest groove!\n\nVISUAL CONTEXT\n1. A small mushroom looks up affectionately at a shaggy white forest friend resting in a tree, with a squirrel nearby.\n2. A ring of orange mushrooms hold one another's many arms and spin the smiling narrator mushroom off the ground.\n3. Bright yellow-orange jelly fungi wiggle on a tree while the narrator mushroom watches them dance.\n\nPRIVATE DRAFTS\n[{\"name\":\"Mogollón\",\"refrain\":\"¡Cariño a mogollón, de parte de este champiñón!\",\"approach\":\"Playful internal rhyme\",\"directionIndex\":0},{\"name\":\"Montón\",\"refrain\":\"¡Amor a montones, palabra de champiñón!\",\"approach\":\"Punchy spoken rhyme\",\"directionIndex\":1},{\"name\":\"Corazón\",\"refrain\":\"¡Mi corazón os quiere un montón!\",\"approach\":\"Warm direct address\",\"directionIndex\":2},{\"name\":\"Muchísimo\",\"refrain\":\"¡Con corazón de seta, os quiero muchísimo!\",\"approach\":\"Gentle mushroom wordplay\",\"directionIndex\":3},{\"name\":\"Locura\",\"refrain\":\"¡Cuánto os quiero, criaturas de altura!\",\"approach\":\"Bouncy end rhyme\",\"directionIndex\":4}]\n\nHARD LIMITS\n- Maximum words: 12\n- Maximum characters: 65\n- Maximum sentences: 1\n\nPrivately verify fidelity, native grammar, natural read-aloud flow, concise repeatability, and spoken rhyme when required. Return exactly one finalist with construction \"couplet\", exactly one with construction \"playful_hook\", and exactly one with construction \"lyrical_refrain\". The three options must differ visibly in opening, syntax, rhythm, and rhyme pair. Return only the required options schema; labels/descriptions may be English, refrain text must be Spanish.",
+    "editorialOptions": [
+      {
+        "sourceCandidateIndex": 1,
+        "label": "Signed with love",
+        "refrain": "¡Amor sincero; lo firma este champiñón compañero!",
+        "description": "A warm two-part refrain with a clear spoken cadence.",
+        "genderDependency": "Ninguna",
+        "construction": "couplet",
+        "rhymePairs": [
+          {
+            "endingA": "sincero",
+            "endingB": "compañero"
+          }
+        ]
+      },
+      {
+        "sourceCandidateIndex": 0,
+        "label": "Mushroom rhyme",
+        "refrain": "¡Cariño a mogollón, de parte de este champiñón!",
+        "description": "A lively, memorable hook built around natural mushroom wordplay.",
+        "genderDependency": "Ninguna",
+        "construction": "playful_hook",
+        "rhymePairs": [
+          {
+            "endingA": "mogollón",
+            "endingB": "champiñón"
+          }
+        ]
+      },
+      {
+        "sourceCandidateIndex": 2,
+        "label": "From within",
+        "refrain": "¡Todo mi cariño nace aquí, dentro de mí!",
+        "description": "A tender, flowing refrain with an intimate closing rhyme.",
+        "genderDependency": "Ninguna",
+        "construction": "lyrical_refrain",
+        "rhymePairs": [
+          {
+            "endingA": "aquí",
+            "endingB": "mí"
+          }
+        ]
+      }
+    ],
+    "editorialUsage": {
+      "action": "spanish-eval.refrain.editor",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_013d04f3d462ff7e006a6bb7254de0819caeec6903be2d1999",
+      "responseStatus": "completed",
+      "latencyMs": 33467,
+      "inputTokens": 1036,
+      "cachedInputTokens": 0,
+      "outputTokens": 1289,
+      "reasoningTokens": 1034,
+      "estimatedCostUsd": 0.04385
+    },
+    "successfulEditorialRetry": {
+      "responseId": "resp_013d04f3d462ff7e006a6bb7254de0819caeec6903be2d1999",
+      "responseStatus": "completed",
+      "usage": {
+        "action": "spanish-eval.refrain.editor",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_013d04f3d462ff7e006a6bb7254de0819caeec6903be2d1999",
+        "responseStatus": "completed",
+        "latencyMs": 33467,
+        "inputTokens": 1036,
+        "cachedInputTokens": 0,
+        "outputTokens": 1289,
+        "reasoningTokens": 1034,
+        "estimatedCostUsd": 0.04385
+      }
+    },
+    "selectedDirection": {
+      "name": "Signed with love",
+      "refrain": "¡Amor sincero; lo firma este champiñón compañero!",
+      "approach": "A warm two-part refrain with a clear spoken cadence.",
+      "genderDependency": "Ninguna"
+    },
+    "warnings": [
+      {
+        "code": "EDITORIAL_HEURISTIC",
+        "message": "option 1: couplet is not written as exactly two short lines"
+      },
+      {
+        "code": "EDITORIAL_HEURISTIC",
+        "message": "option 2: playful_hook has no observable repetition or echo"
+      },
+      {
+        "code": "EDITORIAL_HEURISTIC",
+        "message": "option 3: rhyme pair 1 has no plausible shared spoken ending"
+      }
+    ]
+  },
+  "fixtures": [
+    {
+      "fixtureId": "mush-watch-over",
+      "category": "refrain",
+      "sourceBook": "I Love You So Mush",
+      "sourceAsset": "CleanShot 2026-07-18 at 20.28.05@2x.png",
+      "englishSource": "I love my happy, hairy friend\nwho's nestled on a tree.\n\nI really love you oh-so-MUSH\nfor watching over me.",
+      "visualContext": "A small mushroom looks up affectionately at a shaggy white forest friend resting in a tree, with a squirrel nearby.",
+      "bookForm": "refrain_verse",
+      "sourceRhyme": "sustained",
+      "spanishVariant": "es-ES",
+      "requirements": [
+        "Create a natural Spanish recurring line that preserves the affectionate declaration",
+        "Keep the watching-over-me relationship and the pictured tree friend",
+        "Recreate or replace the English MUSH pun without forcing unnatural Spanish"
+      ],
+      "draftingPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nGOAL\nCreate exactly six private, genuinely different Spanish adaptations for Page 1.\n\nLOCKED BOOK FORM: VERSE WITH A REPEATING REFRAIN\nUse this exact parent-approved Spanish refrain wherever the source refrain appears: ¡Amor sincero; lo firma este champiñón compañero!\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nFreely repair English-shaped wording so the result sounds naturally written in Spanish.\n\nCORRECTED ENGLISH\nI love my happy, hairy friend\nwho's nestled on a tree.\n\nI really love you oh-so-MUSH\nfor watching over me.\n\nVISUAL CONTEXT\nA small mushroom looks up affectionately at a shaggy white forest friend resting in a tree, with a squirrel nearby.\n\n\n\nReturn complete reader-facing Spanish text, never notes or fragments. Preserve exact approved refrain wording only for refrain_verse. Give candidates ids c01–c06 and short English strategy labels. Return only the required schema.",
+      "draftOptions": [
+        {
+          "id": "c01",
+          "strategy": "Warm lyrical rhyme",
+          "text": "Mi amigo peludo, alegre y risueño,\ndesde el árbol vela por mi sueño.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "id": "c02",
+          "strategy": "Playful spoken rhythm",
+          "text": "En el árbol descansa mi amigo peludo,\nfeliz y pendiente de mí a cada minuto.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "id": "c03",
+          "strategy": "Tender forest cadence",
+          "text": "Mi amigo feliz, de pelo alborotado,\ndesde el árbol me cuida con mimo y cuidado.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "id": "c04",
+          "strategy": "Simple child-friendly rhyme",
+          "text": "Quiero a mi amigo, tan feliz y peludo,\nque me cuida en el árbol, atento y seguro.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "id": "c05",
+          "strategy": "Bouncy affectionate verse",
+          "text": "Mi alegre amigo de pelo esponjoso\ndesde el árbol me cuida, atento y cariñoso.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "id": "c06",
+          "strategy": "Gentle read-aloud flow",
+          "text": "Acurrucado en el árbol está\nmi amigo peludo, que siempre me cuidará.\n¡Amor sincero; lo firma este champiñón compañero!"
+        }
+      ],
+      "draftUsage": {
+        "action": "spanish-eval.mush-watch-over.draft",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_0fcf55c2826fc9dd006a6bb745b41881a29fdc5d8bea260031",
+        "responseStatus": "completed",
+        "latencyMs": 14010,
+        "inputTokens": 612,
+        "cachedInputTokens": 0,
+        "outputTokens": 485,
+        "reasoningTokens": 150,
+        "estimatedCostUsd": 0.01761
+      },
+      "editorialPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nROLE\nAct as an independent native Spanish children's-book editor. Repair the strongest private drafts and return exactly three publication-ready finalists.\n\nLOCKED BOOK FORM: VERSE WITH A REPEATING REFRAIN\nUse this exact parent-approved Spanish refrain wherever the source refrain appears: ¡Amor sincero; lo firma este champiñón compañero!\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nFreely repair English-shaped wording so the result sounds naturally written in Spanish.\n\nCORRECTED ENGLISH — PAGE 1\nI love my happy, hairy friend\nwho's nestled on a tree.\n\nI really love you oh-so-MUSH\nfor watching over me.\n\nVISUAL CONTEXT\nA small mushroom looks up affectionately at a shaggy white forest friend resting in a tree, with a squirrel nearby.\n\n\n\nPRIVATE CANDIDATES\n[{\"id\":\"c01\",\"strategy\":\"Warm lyrical rhyme\",\"text\":\"Mi amigo peludo, alegre y risueño,\\ndesde el árbol vela por mi sueño.\\n¡Amor sincero; lo firma este champiñón compañero!\"},{\"id\":\"c02\",\"strategy\":\"Playful spoken rhythm\",\"text\":\"En el árbol descansa mi amigo peludo,\\nfeliz y pendiente de mí a cada minuto.\\n¡Amor sincero; lo firma este champiñón compañero!\"},{\"id\":\"c03\",\"strategy\":\"Tender forest cadence\",\"text\":\"Mi amigo feliz, de pelo alborotado,\\ndesde el árbol me cuida con mimo y cuidado.\\n¡Amor sincero; lo firma este champiñón compañero!\"},{\"id\":\"c04\",\"strategy\":\"Simple child-friendly rhyme\",\"text\":\"Quiero a mi amigo, tan feliz y peludo,\\nque me cuida en el árbol, atento y seguro.\\n¡Amor sincero; lo firma este champiñón compañero!\"},{\"id\":\"c05\",\"strategy\":\"Bouncy affectionate verse\",\"text\":\"Mi alegre amigo de pelo esponjoso\\ndesde el árbol me cuida, atento y cariñoso.\\n¡Amor sincero; lo firma este champiñón compañero!\"},{\"id\":\"c06\",\"strategy\":\"Gentle read-aloud flow\",\"text\":\"Acurrucado en el árbol está\\nmi amigo peludo, que siempre me cuidará.\\n¡Amor sincero; lo firma este champiñón compañero!\"}]\n\nFor each returned text, set every schema pass field true only after the text itself passes fidelity, native Spanish grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement. Return only the required schema.",
+      "editorialAssessment": [
+        {
+          "sourceCandidateId": "c03",
+          "strategy": "Tender natural rhyme",
+          "text": "Quiero mucho a mi amigo, peludo y contento;\nen un árbol se acurruca y me cuida, atento.\n¡Amor sincero; lo firma este champiñón compañero!",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c04",
+          "strategy": "Simple child-friendly rhyme",
+          "text": "A mi amigo feliz y peludo lo quiero un montón;\nse acurruca en un árbol y me cuida con atención.\n¡Amor sincero; lo firma este champiñón compañero!",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c05",
+          "strategy": "Bouncy affectionate verse",
+          "text": "¡Cuánto quiero a mi amigo, tan feliz y peludo!\nEn un árbol se acurruca y me cuida a menudo.\n¡Amor sincero; lo firma este champiñón compañero!",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        }
+      ],
+      "editorialUsage": {
+        "action": "spanish-eval.mush-watch-over.editor",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_018c9b4e218f9c48006a6bb753b4c081a0a2dd89c48cc08ffc",
+        "responseStatus": "completed",
+        "latencyMs": 38063,
+        "inputTokens": 1002,
+        "cachedInputTokens": 0,
+        "outputTokens": 1105,
+        "reasoningTokens": 818,
+        "estimatedCostUsd": 0.03816
+      },
+      "finalSelectedOutput": "Quiero mucho a mi amigo, peludo y contento;\nen un árbol se acurruca y me cuida, atento.\n¡Amor sincero; lo firma este champiñón compañero!",
+      "warnings": [],
+      "timingMs": 52073,
+      "estimatedModelCostUsd": 0.05577
+    },
+    {
+      "fixtureId": "mush-many-hands",
+      "category": "verse",
+      "sourceBook": "I Love You So Mush",
+      "sourceAsset": "CleanShot 2026-07-18 at 20.28.13@2x.png",
+      "englishSource": "These mushroom friends have many hands\nto hold and spin around.\n\nI really love you oh-so-MUSH!\nYou lift me off the ground!",
+      "visualContext": "A ring of orange mushrooms hold one another's many arms and spin the smiling narrator mushroom off the ground.",
+      "bookForm": "refrain_verse",
+      "sourceRhyme": "sustained",
+      "spanishVariant": "es-ES",
+      "requirements": [
+        "Preserve the collective group, linked hands, spinning motion, and lift",
+        "Produce convincing spoken rhyme without distorted Spanish word order",
+        "Keep the same chosen recurring declaration used across this book"
+      ],
+      "draftingPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nGOAL\nCreate exactly six private, genuinely different Spanish adaptations for Page 1.\n\nLOCKED BOOK FORM: VERSE WITH A REPEATING REFRAIN\nUse this exact parent-approved Spanish refrain wherever the source refrain appears: ¡Amor sincero; lo firma este champiñón compañero!\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nFreely repair English-shaped wording so the result sounds naturally written in Spanish.\n\nCORRECTED ENGLISH\nThese mushroom friends have many hands\nto hold and spin around.\n\nI really love you oh-so-MUSH!\nYou lift me off the ground!\n\nVISUAL CONTEXT\nA ring of orange mushrooms hold one another's many arms and spin the smiling narrator mushroom off the ground.\n\n\n\nReturn complete reader-facing Spanish text, never notes or fragments. Preserve exact approved refrain wording only for refrain_verse. Give candidates ids c01–c06 and short English strategy labels. Return only the required schema.",
+      "draftOptions": [
+        {
+          "id": "c01",
+          "strategy": "Bouncy circle rhyme",
+          "text": "Estos amigos tienen manos a montones;\nse agarran y giran formando un gran corro.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me alzáis por los aires y vuelo!"
+        },
+        {
+          "id": "c02",
+          "strategy": "Warm rhythmic verse",
+          "text": "Manos y más manos tiene esta pandilla;\ntodos se agarran, dan vueltas y giran.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me levantáis del suelo hasta que vuelo!"
+        },
+        {
+          "id": "c03",
+          "strategy": "Playful spinning cadence",
+          "text": "Con tantas manos, mis amigos se agarran\ny vuelta tras vuelta, girando, me alzan.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me hacéis despegar del suelo!"
+        },
+        {
+          "id": "c04",
+          "strategy": "Simple read-aloud rhyme",
+          "text": "Mis amigos tienen muchas manos;\nse agarran y giran, todos bien juntados.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me alzáis del suelo y vuelo!"
+        },
+        {
+          "id": "c05",
+          "strategy": "Lively circular motion",
+          "text": "Cuántas manos tienen estos champiñones:\nse agarran y giran, dando vueltas y más vueltas.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me levantáis del suelo mientras dais la vuelta!"
+        },
+        {
+          "id": "c06",
+          "strategy": "Compact musical verse",
+          "text": "Muchas manos, muchos amigos;\nse agarran y giran todos unidos.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me alzáis del suelo y por el aire vuelo!"
+        }
+      ],
+      "draftUsage": {
+        "action": "spanish-eval.mush-many-hands.draft",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_0652c89d45f0bb6b006a6bb779e6a8819197ae608da1914262",
+        "responseStatus": "completed",
+        "latencyMs": 23053,
+        "inputTokens": 609,
+        "cachedInputTokens": 0,
+        "outputTokens": 868,
+        "reasoningTokens": 471,
+        "estimatedCostUsd": 0.029085
+      },
+      "editorialPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nROLE\nAct as an independent native Spanish children's-book editor. Repair the strongest private drafts and return exactly three publication-ready finalists.\n\nLOCKED BOOK FORM: VERSE WITH A REPEATING REFRAIN\nUse this exact parent-approved Spanish refrain wherever the source refrain appears: ¡Amor sincero; lo firma este champiñón compañero!\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nFreely repair English-shaped wording so the result sounds naturally written in Spanish.\n\nCORRECTED ENGLISH — PAGE 1\nThese mushroom friends have many hands\nto hold and spin around.\n\nI really love you oh-so-MUSH!\nYou lift me off the ground!\n\nVISUAL CONTEXT\nA ring of orange mushrooms hold one another's many arms and spin the smiling narrator mushroom off the ground.\n\n\n\nPRIVATE CANDIDATES\n[{\"id\":\"c01\",\"strategy\":\"Bouncy circle rhyme\",\"text\":\"Estos amigos tienen manos a montones;\\nse agarran y giran formando un gran corro.\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Me alzáis por los aires y vuelo!\"},{\"id\":\"c02\",\"strategy\":\"Warm rhythmic verse\",\"text\":\"Manos y más manos tiene esta pandilla;\\ntodos se agarran, dan vueltas y giran.\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Me levantáis del suelo hasta que vuelo!\"},{\"id\":\"c03\",\"strategy\":\"Playful spinning cadence\",\"text\":\"Con tantas manos, mis amigos se agarran\\ny vuelta tras vuelta, girando, me alzan.\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Me hacéis despegar del suelo!\"},{\"id\":\"c04\",\"strategy\":\"Simple read-aloud rhyme\",\"text\":\"Mis amigos tienen muchas manos;\\nse agarran y giran, todos bien juntados.\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Me alzáis del suelo y vuelo!\"},{\"id\":\"c05\",\"strategy\":\"Lively circular motion\",\"text\":\"Cuántas manos tienen estos champiñones:\\nse agarran y giran, dando vueltas y más vueltas.\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Me levantáis del suelo mientras dais la vuelta!\"},{\"id\":\"c06\",\"strategy\":\"Compact musical verse\",\"text\":\"Muchas manos, muchos amigos;\\nse agarran y giran todos unidos.\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Me alzáis del suelo y por el aire vuelo!\"}]\n\nFor each returned text, set every schema pass field true only after the text itself passes fidelity, native Spanish grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement. Return only the required schema.",
+      "editorialAssessment": [
+        {
+          "sourceCandidateId": "c04",
+          "strategy": "Simple read-aloud rhyme",
+          "text": "Mis amigos tienen muchísimas manos;\nse agarran y giran, todos bien agarrados.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Con vuestras vueltas, me alzáis del suelo!",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c06",
+          "strategy": "Compact musical verse",
+          "text": "Muchas manos tienen mis amigos;\nse agarran y giran, todos bien unidos.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Dando vueltas, me alzáis del suelo!",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c02",
+          "strategy": "Warm rhythmic verse",
+          "text": "Manos y más manos tiene esta pandilla;\nse agarran y giran, todos en cuadrilla.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Y al dar tantas vueltas, me alzáis del suelo!",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        }
+      ],
+      "editorialUsage": {
+        "action": "spanish-eval.mush-many-hands.editor",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_05667295d9fb6f0c006a6bb790d1a8819cb67254b6c25d763a",
+        "responseStatus": "completed",
+        "latencyMs": 21479,
+        "inputTokens": 1056,
+        "cachedInputTokens": 0,
+        "outputTokens": 694,
+        "reasoningTokens": 387,
+        "estimatedCostUsd": 0.0261
+      },
+      "finalSelectedOutput": "Mis amigos tienen muchísimas manos;\nse agarran y giran, todos bien agarrados.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Con vuestras vueltas, me alzáis del suelo!",
+      "warnings": [],
+      "timingMs": 44532,
+      "estimatedModelCostUsd": 0.055185
+    },
+    {
+      "fixtureId": "mush-jiggly-orange",
+      "category": "wordplay",
+      "sourceBook": "I Love You So Mush",
+      "sourceAsset": "Screenshot 2026-07-18 at 20.28.23.png",
+      "englishSource": "I spy my jiggly orange friends.\nIt's fun the way you move.\n\nI really love you oh-so-MUSH!\nYou make the forest groove!",
+      "visualContext": "Bright yellow-orange jelly fungi wiggle on a tree while the narrator mushroom watches them dance.",
+      "bookForm": "refrain_verse",
+      "sourceRhyme": "sustained",
+      "spanishVariant": "es-ES",
+      "requirements": [
+        "Preserve the jelly-like movement, orange friends, and dancing forest image",
+        "Recreate the playful move/groove effect naturally rather than literally",
+        "Use the exact same approved recurring declaration"
+      ],
+      "draftingPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nGOAL\nCreate exactly six private, genuinely different Spanish adaptations for Page 1.\n\nLOCKED BOOK FORM: VERSE WITH A REPEATING REFRAIN\nUse this exact parent-approved Spanish refrain wherever the source refrain appears: ¡Amor sincero; lo firma este champiñón compañero!\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nReimagine wordplay and sound where useful while preserving events, picture truth, and emotional scope.\n\nCORRECTED ENGLISH\nI spy my jiggly orange friends.\nIt's fun the way you move.\n\nI really love you oh-so-MUSH!\nYou make the forest groove!\n\nVISUAL CONTEXT\nBright yellow-orange jelly fungi wiggle on a tree while the narrator mushroom watches them dance.\n\n\n\nReturn complete reader-facing Spanish text, never notes or fragments. Preserve exact approved refrain wording only for refrain_verse. Give candidates ids c01–c06 and short English strategy labels. Return only the required schema.",
+      "draftOptions": [
+        {
+          "id": "c01",
+          "strategy": "Bouncy and direct",
+          "text": "Veo a mis amigos naranjas bailar.\n¡Qué divertido es verlos menear!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!"
+        },
+        {
+          "id": "c02",
+          "strategy": "Playful wiggle rhyme",
+          "text": "Mis amigos naranjas se agitan sin parar.\n¡Cómo me divierte verlos bailar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Le dais ritmo al bosque entero!"
+        },
+        {
+          "id": "c03",
+          "strategy": "Warm and musical",
+          "text": "Ahí están mis amigos, naranjas y saltarines.\n¡Qué gracia tienen al moverse así!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Ponéis a bailar al bosque entero!"
+        },
+        {
+          "id": "c04",
+          "strategy": "Lively spoken rhythm",
+          "text": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Con vosotros baila el bosque entero!"
+        },
+        {
+          "id": "c05",
+          "strategy": "Compact and rhythmic",
+          "text": "Mis amigos naranjas se mueven con salero.\n¡Me encanta ver su baile gelatinoso y ligero!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!"
+        },
+        {
+          "id": "c06",
+          "strategy": "Cheerful forest dance",
+          "text": "Veo a mis amigos naranjas temblar y bailar.\n¡Qué bien me lo paso al verlos danzar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Todo el bosque se pone a bailar!"
+        }
+      ],
+      "draftUsage": {
+        "action": "spanish-eval.mush-jiggly-orange.draft",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_0016c71df9c553cd006a6bb7a6529481928a32e5e22a5eef64",
+        "responseStatus": "completed",
+        "latencyMs": 12941,
+        "inputTokens": 613,
+        "cachedInputTokens": 0,
+        "outputTokens": 575,
+        "reasoningTokens": 170,
+        "estimatedCostUsd": 0.020315
+      },
+      "editorialPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nROLE\nAct as an independent native Spanish children's-book editor. Repair the strongest private drafts and return exactly three publication-ready finalists.\n\nLOCKED BOOK FORM: VERSE WITH A REPEATING REFRAIN\nUse this exact parent-approved Spanish refrain wherever the source refrain appears: ¡Amor sincero; lo firma este champiñón compañero!\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nReimagine wordplay and sound where useful while preserving events, picture truth, and emotional scope.\n\nCORRECTED ENGLISH — PAGE 1\nI spy my jiggly orange friends.\nIt's fun the way you move.\n\nI really love you oh-so-MUSH!\nYou make the forest groove!\n\nVISUAL CONTEXT\nBright yellow-orange jelly fungi wiggle on a tree while the narrator mushroom watches them dance.\n\n\n\nPRIVATE CANDIDATES\n[{\"id\":\"c01\",\"strategy\":\"Bouncy and direct\",\"text\":\"Veo a mis amigos naranjas bailar.\\n¡Qué divertido es verlos menear!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Hacéis bailar al bosque entero!\"},{\"id\":\"c02\",\"strategy\":\"Playful wiggle rhyme\",\"text\":\"Mis amigos naranjas se agitan sin parar.\\n¡Cómo me divierte verlos bailar!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Le dais ritmo al bosque entero!\"},{\"id\":\"c03\",\"strategy\":\"Warm and musical\",\"text\":\"Ahí están mis amigos, naranjas y saltarines.\\n¡Qué gracia tienen al moverse así!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Ponéis a bailar al bosque entero!\"},{\"id\":\"c04\",\"strategy\":\"Lively spoken rhythm\",\"text\":\"Veo a mis amigos naranjas balancearse.\\n¡Qué divertido es verlos contonearse!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Con vosotros baila el bosque entero!\"},{\"id\":\"c05\",\"strategy\":\"Compact and rhythmic\",\"text\":\"Mis amigos naranjas se mueven con salero.\\n¡Me encanta ver su baile gelatinoso y ligero!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Hacéis bailar al bosque entero!\"},{\"id\":\"c06\",\"strategy\":\"Cheerful forest dance\",\"text\":\"Veo a mis amigos naranjas temblar y bailar.\\n¡Qué bien me lo paso al verlos danzar!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Todo el bosque se pone a bailar!\"}]\n\nFor each returned text, set every schema pass field true only after the text itself passes fidelity, native Spanish grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement. Return only the required schema.",
+      "editorialAssessment": [
+        {
+          "sourceCandidateId": "c04",
+          "strategy": "Natural movement rhyme",
+          "text": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c02",
+          "strategy": "Playful dancing rhyme",
+          "text": "Mis amigos naranjas se agitan sin parar.\n¡Cómo me divierte verlos bailar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Le dais ritmo al bosque entero!",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c06",
+          "strategy": "Cheerful forest rhythm",
+          "text": "Veo a mis amigos naranjas temblar y bailar.\n¡Qué bien me lo paso al verlos danzar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        }
+      ],
+      "editorialUsage": {
+        "action": "spanish-eval.mush-jiggly-orange.editor",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_01d9f88d6c74abce006a6bb7b35550819189e377f45f601f2f",
+        "responseStatus": "completed",
+        "latencyMs": 15901,
+        "inputTokens": 1073,
+        "cachedInputTokens": 0,
+        "outputTokens": 584,
+        "reasoningTokens": 277,
+        "estimatedCostUsd": 0.022885
+      },
+      "finalSelectedOutput": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!",
+      "warnings": [],
+      "timingMs": 28842,
+      "estimatedModelCostUsd": 0.0432
+    },
+    {
+      "fixtureId": "llama-bedtime-story",
+      "category": "verse",
+      "sourceBook": "Llama Llama Red Pajama",
+      "sourceAsset": "1.png",
+      "englishSource": "Llama llama\nred pajama\nreads a story\nwith his mama.",
+      "visualContext": "Mama Llama and Baby Llama sit close together in bed and read a bedtime story.",
+      "bookForm": "continuous_verse",
+      "sourceRhyme": "sustained",
+      "spanishVariant": "es-ES",
+      "requirements": [
+        "Preserve the compact four-line bedtime cadence",
+        "Find a natural Spanish sound pattern without inventing a refrain",
+        "Keep the affectionate action and clear mother-child relationship"
+      ],
+      "draftingPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nGOAL\nCreate exactly six private, genuinely different Spanish adaptations for Page 1.\n\nLOCKED BOOK FORM: CONTINUOUS VERSE\nPreserve cadence, line structure, repetition, sound play, and the source's sustained rhyme. Never invent a fixed recurring refrain.\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nFreely repair English-shaped wording so the result sounds naturally written in Spanish.\n\nCORRECTED ENGLISH\nLlama llama\nred pajama\nreads a story\nwith his mama.\n\nVISUAL CONTEXT\nMama Llama and Baby Llama sit close together in bed and read a bedtime story.\n\n\n\nReturn complete reader-facing Spanish text, never notes or fragments. Preserve exact approved refrain wording only for refrain_verse. Give candidates ids c01–c06 and short English strategy labels. Return only the required schema.",
+      "draftOptions": [
+        {
+          "id": "c01",
+          "strategy": "Natural triple rhyme",
+          "text": "Llama, llama,\ncon rojo pijama,\nlee un cuento\njunto a su mamá."
+        },
+        {
+          "id": "c02",
+          "strategy": "Playful diminutive",
+          "text": "Llamita, llamita,\ncon pijama rojo,\nlee con mamá,\nmuy juntitos los dos."
+        },
+        {
+          "id": "c03",
+          "strategy": "Close visual warmth",
+          "text": "Llama, llama,\npijama colorado,\nlee con su mamá,\nsentadita a su lado."
+        },
+        {
+          "id": "c04",
+          "strategy": "Smooth narrative cadence",
+          "text": "Con su pijama\nrojo de verdad,\nla llama lee un cuento\njunto a su mamá."
+        },
+        {
+          "id": "c05",
+          "strategy": "Compact musical phrasing",
+          "text": "La llama en pijama,\nvestida de rojo,\nlee con su mamá\nun cuento entre los dos."
+        },
+        {
+          "id": "c06",
+          "strategy": "Strong opening sound play",
+          "text": "Llama, llamita,\nde rojo va;\nlee un cuento en la cama\ncon su mamá."
+        }
+      ],
+      "draftUsage": {
+        "action": "spanish-eval.llama-bedtime-story.draft",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_054088fb6fd5acbf006a6bb7c3310481a3853cd315cde21c93",
+        "responseStatus": "completed",
+        "latencyMs": 25599,
+        "inputTokens": 588,
+        "cachedInputTokens": 0,
+        "outputTokens": 1044,
+        "reasoningTokens": 801,
+        "estimatedCostUsd": 0.03426
+      },
+      "editorialPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nROLE\nAct as an independent native Spanish children's-book editor. Repair the strongest private drafts and return exactly three publication-ready finalists.\n\nLOCKED BOOK FORM: CONTINUOUS VERSE\nPreserve cadence, line structure, repetition, sound play, and the source's sustained rhyme. Never invent a fixed recurring refrain.\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nFreely repair English-shaped wording so the result sounds naturally written in Spanish.\n\nCORRECTED ENGLISH — PAGE 1\nLlama llama\nred pajama\nreads a story\nwith his mama.\n\nVISUAL CONTEXT\nMama Llama and Baby Llama sit close together in bed and read a bedtime story.\n\n\n\nPRIVATE CANDIDATES\n[{\"id\":\"c01\",\"strategy\":\"Natural triple rhyme\",\"text\":\"Llama, llama,\\ncon rojo pijama,\\nlee un cuento\\njunto a su mamá.\"},{\"id\":\"c02\",\"strategy\":\"Playful diminutive\",\"text\":\"Llamita, llamita,\\ncon pijama rojo,\\nlee con mamá,\\nmuy juntitos los dos.\"},{\"id\":\"c03\",\"strategy\":\"Close visual warmth\",\"text\":\"Llama, llama,\\npijama colorado,\\nlee con su mamá,\\nsentadita a su lado.\"},{\"id\":\"c04\",\"strategy\":\"Smooth narrative cadence\",\"text\":\"Con su pijama\\nrojo de verdad,\\nla llama lee un cuento\\njunto a su mamá.\"},{\"id\":\"c05\",\"strategy\":\"Compact musical phrasing\",\"text\":\"La llama en pijama,\\nvestida de rojo,\\nlee con su mamá\\nun cuento entre los dos.\"},{\"id\":\"c06\",\"strategy\":\"Strong opening sound play\",\"text\":\"Llama, llamita,\\nde rojo va;\\nlee un cuento en la cama\\ncon su mamá.\"}]\n\nFor each returned text, set every schema pass field true only after the text itself passes fidelity, native Spanish grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement. Return only the required schema.",
+      "editorialAssessment": [
+        {
+          "sourceCandidateId": "c01",
+          "strategy": "Natural triple rhyme",
+          "text": "Llama, llama,\nlleva rojo el pijama;\nlee un cuento\ncon su mamá.",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c04",
+          "strategy": "Smooth narrative cadence",
+          "text": "Llama, llama, en la cama,\ncon su rojo pijama,\nlee un cuento\njunto a su mamá.",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c06",
+          "strategy": "Strong opening sound play",
+          "text": "Llama, llama,\nrojo es su pijama;\nlee un cuento\njunto a su mamá.",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        }
+      ],
+      "editorialUsage": {
+        "action": "spanish-eval.llama-bedtime-story.editor",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_0dcf4165e37ce04e006a6bb7dcbfc481a0bc9074ede2d2a5d2",
+        "responseStatus": "completed",
+        "latencyMs": 34905,
+        "inputTokens": 886,
+        "cachedInputTokens": 0,
+        "outputTokens": 1033,
+        "reasoningTokens": 807,
+        "estimatedCostUsd": 0.03542
+      },
+      "finalSelectedOutput": "Llama, llama,\nlleva rojo el pijama;\nlee un cuento\ncon su mamá.",
+      "warnings": [],
+      "timingMs": 60504,
+      "estimatedModelCostUsd": 0.06967999999999999
+    },
+    {
+      "fixtureId": "llama-drama",
+      "category": "dialogue",
+      "sourceBook": "Llama Llama Red Pajama",
+      "sourceAsset": "11.png",
+      "englishSource": "Baby Llama,\nwhat a tizzy!\nSometimes Mama's\nvery busy.\n\nPlease stop all this\nllama drama\nand be patient\nfor your mama.",
+      "visualContext": "Mama Llama speaks firmly but calmly beside the bed while Baby Llama listens and holds a stuffed llama.",
+      "bookForm": "continuous_verse",
+      "sourceRhyme": "sustained",
+      "spanishVariant": "es-ES",
+      "requirements": [
+        "Preserve Mama's direct, firm-but-loving speech",
+        "Recreate the tizzy/busy and llama-drama sound play without awkward syntax",
+        "Keep the verse easy and natural for a Spanish parent to read aloud"
+      ],
+      "draftingPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nGOAL\nCreate exactly six private, genuinely different Spanish adaptations for Page 1.\n\nLOCKED BOOK FORM: CONTINUOUS VERSE\nPreserve cadence, line structure, repetition, sound play, and the source's sustained rhyme. Never invent a fixed recurring refrain.\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nReimagine wordplay and sound where useful while preserving events, picture truth, and emotional scope.\n\nCORRECTED ENGLISH\nBaby Llama,\nwhat a tizzy!\nSometimes Mama's\nvery busy.\n\nPlease stop all this\nllama drama\nand be patient\nfor your mama.\n\nVISUAL CONTEXT\nMama Llama speaks firmly but calmly beside the bed while Baby Llama listens and holds a stuffed llama.\n\n\n\nReturn complete reader-facing Spanish text, never notes or fragments. Preserve exact approved refrain wording only for refrain_verse. Give candidates ids c01–c06 and short English strategy labels. Return only the required schema.",
+      "draftOptions": [
+        {
+          "id": "c01",
+          "strategy": "Clear playful rhyme",
+          "text": "Bebé Llama,\n¡qué alboroto!\nA veces mamá\nno puede con todo.\n\nBasta ya\nde tanto drama.\nTen paciencia\ny espera a mamá."
+        },
+        {
+          "id": "c02",
+          "strategy": "Energetic spoken cadence",
+          "text": "Llamita, llamita,\n¡vaya jaleo!\nA veces mamá\ntiene mucho ajetreo.\n\nNo armes ahora\nun drama de llama.\nEspera un poquito\ny ten paciencia con mamá."
+        },
+        {
+          "id": "c03",
+          "strategy": "Firm gentle address",
+          "text": "Pequeña Llama,\n¡qué alborotada!\nHay veces que mamá\nestá muy atareada.\n\nTermina ya\ncon este drama.\nEspera paciente\na tu mamá."
+        },
+        {
+          "id": "c04",
+          "strategy": "Compact comic wordplay",
+          "text": "Llama bebé,\n¡menuda función!\nA veces mamá\ntiene otra ocupación.\n\nNo montes ahora\nun drama de llama.\nTen un poco de paciencia\ncon tu mamá."
+        },
+        {
+          "id": "c05",
+          "strategy": "Warm rhythmic simplicity",
+          "text": "Ay, Bebé Llama,\n¡cuánto revuelo!\nA veces mamá\nno puede hacerlo todo.\n\nDeja ya\ntodo este drama.\nSé paciente\ny espera a mamá."
+        },
+        {
+          "id": "c06",
+          "strategy": "Strong end-rhyme flow",
+          "text": "Llama pequeña,\n¡vaya jornada!\nA veces mamá\nestá muy ocupada.\n\nNo sigas ya\ncon el drama, Llama.\nEspera con paciencia\na tu mamá."
+        }
+      ],
+      "draftUsage": {
+        "action": "spanish-eval.llama-drama.draft",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_0d5045b627b212a3006a6bb7ffa6d081a29038b313308f7cc9",
+        "responseStatus": "completed",
+        "latencyMs": 30944,
+        "inputTokens": 613,
+        "cachedInputTokens": 0,
+        "outputTokens": 1232,
+        "reasoningTokens": 853,
+        "estimatedCostUsd": 0.040025
+      },
+      "editorialPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nROLE\nAct as an independent native Spanish children's-book editor. Repair the strongest private drafts and return exactly three publication-ready finalists.\n\nLOCKED BOOK FORM: CONTINUOUS VERSE\nPreserve cadence, line structure, repetition, sound play, and the source's sustained rhyme. Never invent a fixed recurring refrain.\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nReimagine wordplay and sound where useful while preserving events, picture truth, and emotional scope.\n\nCORRECTED ENGLISH — PAGE 1\nBaby Llama,\nwhat a tizzy!\nSometimes Mama's\nvery busy.\n\nPlease stop all this\nllama drama\nand be patient\nfor your mama.\n\nVISUAL CONTEXT\nMama Llama speaks firmly but calmly beside the bed while Baby Llama listens and holds a stuffed llama.\n\n\n\nPRIVATE CANDIDATES\n[{\"id\":\"c01\",\"strategy\":\"Clear playful rhyme\",\"text\":\"Bebé Llama,\\n¡qué alboroto!\\nA veces mamá\\nno puede con todo.\\n\\nBasta ya\\nde tanto drama.\\nTen paciencia\\ny espera a mamá.\"},{\"id\":\"c02\",\"strategy\":\"Energetic spoken cadence\",\"text\":\"Llamita, llamita,\\n¡vaya jaleo!\\nA veces mamá\\ntiene mucho ajetreo.\\n\\nNo armes ahora\\nun drama de llama.\\nEspera un poquito\\ny ten paciencia con mamá.\"},{\"id\":\"c03\",\"strategy\":\"Firm gentle address\",\"text\":\"Pequeña Llama,\\n¡qué alborotada!\\nHay veces que mamá\\nestá muy atareada.\\n\\nTermina ya\\ncon este drama.\\nEspera paciente\\na tu mamá.\"},{\"id\":\"c04\",\"strategy\":\"Compact comic wordplay\",\"text\":\"Llama bebé,\\n¡menuda función!\\nA veces mamá\\ntiene otra ocupación.\\n\\nNo montes ahora\\nun drama de llama.\\nTen un poco de paciencia\\ncon tu mamá.\"},{\"id\":\"c05\",\"strategy\":\"Warm rhythmic simplicity\",\"text\":\"Ay, Bebé Llama,\\n¡cuánto revuelo!\\nA veces mamá\\nno puede hacerlo todo.\\n\\nDeja ya\\ntodo este drama.\\nSé paciente\\ny espera a mamá.\"},{\"id\":\"c06\",\"strategy\":\"Strong end-rhyme flow\",\"text\":\"Llama pequeña,\\n¡vaya jornada!\\nA veces mamá\\nestá muy ocupada.\\n\\nNo sigas ya\\ncon el drama, Llama.\\nEspera con paciencia\\na tu mamá.\"}]\n\nFor each returned text, set every schema pass field true only after the text itself passes fidelity, native Spanish grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement. Return only the required schema.",
+      "editorialAssessment": [
+        {
+          "sourceCandidateId": "c03",
+          "strategy": "Firm gentle address",
+          "text": "Pequeña Llama,\n¡qué alborotada!\nA veces mamá\nestá muy ocupada.\n\nYa basta, Llama,\nde tanto drama.\nTen paciencia\ny espera a mamá.",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c02",
+          "strategy": "Energetic spoken cadence",
+          "text": "Llamita, llamita,\n¡vaya jaleo!\nA veces mamá\ntiene mucho ajetreo.\n\nNo armes, Llama,\nsemejante drama.\nTen paciencia\ny espera a mamá.",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c06",
+          "strategy": "Strong end-rhyme flow",
+          "text": "Llama bebé,\n¡un lío sin fin!\nA veces mamá\ntiene mucho trajín.\n\nNo sigas, Llama,\ncon este drama.\nTen paciencia\ny espera a mamá.",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        }
+      ],
+      "editorialUsage": {
+        "action": "spanish-eval.llama-drama.editor",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_03e9c3e4bff1a10c006a6bb81e9a14819d94c833cae5ff0c2f",
+        "responseStatus": "completed",
+        "latencyMs": 32628,
+        "inputTokens": 1047,
+        "cachedInputTokens": 0,
+        "outputTokens": 1169,
+        "reasoningTokens": 868,
+        "estimatedCostUsd": 0.040305
+      },
+      "finalSelectedOutput": "Pequeña Llama,\n¡qué alborotada!\nA veces mamá\nestá muy ocupada.\n\nYa basta, Llama,\nde tanto drama.\nTen paciencia\ny espera a mamá.",
+      "warnings": [],
+      "timingMs": 63572,
+      "estimatedModelCostUsd": 0.08033
+    },
+    {
+      "fixtureId": "llama-goes-to-sleep",
+      "category": "baby_language",
+      "sourceBook": "Llama Llama Red Pajama",
+      "sourceAsset": "14.png",
+      "englishSource": "Baby Llama\ngoes to sleep.",
+      "visualContext": "Baby Llama sleeps peacefully in bed while cuddling the small stuffed llama.",
+      "bookForm": "continuous_verse",
+      "sourceRhyme": "none",
+      "spanishVariant": "es-ES",
+      "requirements": [
+        "Use extremely simple, natural Spanish for a young child",
+        "Preserve the quiet final action without adding story content",
+        "Do not force rhyme or a repeated refrain into this closing line"
+      ],
+      "draftingPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nGOAL\nCreate exactly six private, genuinely different Spanish adaptations for Page 1.\n\nLOCKED BOOK FORM: CONTINUOUS VERSE\nPreserve cadence, line structure, repetition, sound play, and its non-rhyming poetic flow. Never invent a fixed recurring refrain.\nLOCKED PARENT PRIORITY\nUse especially clear, child-appropriate Spanish without flattening the story.\n\nCREATIVE FREEDOM\nStay close to the source while changing what idiomatic Spanish requires.\n\nCORRECTED ENGLISH\nBaby Llama\ngoes to sleep.\n\nVISUAL CONTEXT\nBaby Llama sleeps peacefully in bed while cuddling the small stuffed llama.\n\n\n\nReturn complete reader-facing Spanish text, never notes or fragments. Preserve exact approved refrain wording only for refrain_verse. Give candidates ids c01–c06 and short English strategy labels. Return only the required schema.",
+      "draftOptions": [
+        {
+          "id": "c01",
+          "strategy": "Simple and tender",
+          "text": "La llamita\nse queda dormida."
+        },
+        {
+          "id": "c02",
+          "strategy": "Soft bedtime cadence",
+          "text": "La pequeña llama\nse duerme."
+        },
+        {
+          "id": "c03",
+          "strategy": "Gentle personification",
+          "text": "La bebé llama\nse va a dormir."
+        },
+        {
+          "id": "c04",
+          "strategy": "Compact and musical",
+          "text": "Llama pequeña,\nya duerme."
+        },
+        {
+          "id": "c05",
+          "strategy": "Natural read-aloud flow",
+          "text": "La llamita bebé\nse duerme ya."
+        },
+        {
+          "id": "c06",
+          "strategy": "Calm poetic close",
+          "text": "La pequeña llama\nse queda dormidita."
+        }
+      ],
+      "draftUsage": {
+        "action": "spanish-eval.llama-goes-to-sleep.draft",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_0e0f85224c700529006a6bb83f5ef4819fa800a2eb472c608d",
+        "responseStatus": "completed",
+        "latencyMs": 5529,
+        "inputTokens": 574,
+        "cachedInputTokens": 0,
+        "outputTokens": 226,
+        "reasoningTokens": 65,
+        "estimatedCostUsd": 0.00965
+      },
+      "editorialPrompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nROLE\nAct as an independent native Spanish children's-book editor. Repair the strongest private drafts and return exactly three publication-ready finalists.\n\nLOCKED BOOK FORM: CONTINUOUS VERSE\nPreserve cadence, line structure, repetition, sound play, and its non-rhyming poetic flow. Never invent a fixed recurring refrain.\nLOCKED PARENT PRIORITY\nUse especially clear, child-appropriate Spanish without flattening the story.\n\nCREATIVE FREEDOM\nStay close to the source while changing what idiomatic Spanish requires.\n\nCORRECTED ENGLISH — PAGE 1\nBaby Llama\ngoes to sleep.\n\nVISUAL CONTEXT\nBaby Llama sleeps peacefully in bed while cuddling the small stuffed llama.\n\n\n\nPRIVATE CANDIDATES\n[{\"id\":\"c01\",\"strategy\":\"Simple and tender\",\"text\":\"La llamita\\nse queda dormida.\"},{\"id\":\"c02\",\"strategy\":\"Soft bedtime cadence\",\"text\":\"La pequeña llama\\nse duerme.\"},{\"id\":\"c03\",\"strategy\":\"Gentle personification\",\"text\":\"La bebé llama\\nse va a dormir.\"},{\"id\":\"c04\",\"strategy\":\"Compact and musical\",\"text\":\"Llama pequeña,\\nya duerme.\"},{\"id\":\"c05\",\"strategy\":\"Natural read-aloud flow\",\"text\":\"La llamita bebé\\nse duerme ya.\"},{\"id\":\"c06\",\"strategy\":\"Calm poetic close\",\"text\":\"La pequeña llama\\nse queda dormidita.\"}]\n\nFor each returned text, set every schema pass field true only after the text itself passes fidelity, native Spanish grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement. Return only the required schema.",
+      "editorialAssessment": [
+        {
+          "sourceCandidateId": "c01",
+          "strategy": "Simple and tender",
+          "text": "La llamita\nse queda dormida.",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c02",
+          "strategy": "Soft bedtime cadence",
+          "text": "La pequeña llama\nse duerme.",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        },
+        {
+          "sourceCandidateId": "c05",
+          "strategy": "Natural read-aloud flow",
+          "text": "La llamita bebé\nse duerme ya.",
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true
+        }
+      ],
+      "editorialUsage": {
+        "action": "spanish-eval.llama-goes-to-sleep.editor",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_050bfd6986504be2006a6bb844c8e8819e88bb50f2efcffc5e",
+        "responseStatus": "completed",
+        "latencyMs": 7378,
+        "inputTokens": 790,
+        "cachedInputTokens": 0,
+        "outputTokens": 364,
+        "reasoningTokens": 181,
+        "estimatedCostUsd": 0.01487
+      },
+      "finalSelectedOutput": "La llamita\nse queda dormida.",
+      "warnings": [],
+      "timingMs": 12907,
+      "estimatedModelCostUsd": 0.02452
+    }
+  ],
+  "additionalRunTotals": {
+    "latencyMs": 295897,
+    "inputTokens": 10499,
+    "cachedInputTokens": 0,
+    "outputTokens": 10668,
+    "reasoningTokens": 6882,
+    "estimatedCostUsd": 0.37253499999999995
+  },
+  "priorInterruptedAttemptTotals": {
+    "latencyMs": 53324,
+    "inputTokens": 1735,
+    "cachedInputTokens": 0,
+    "outputTokens": 2102,
+    "reasoningTokens": 1690,
+    "estimatedCostUsd": 0.071735
+  },
+  "combinedTotals": {
+    "latencyMs": 349221,
+    "inputTokens": 12234,
+    "cachedInputTokens": 0,
+    "outputTokens": 12770,
+    "reasoningTokens": 8572,
+    "estimatedCostUsd": 0.44426999999999994
+  }
+}

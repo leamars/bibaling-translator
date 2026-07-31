@@ -1,0 +1,135 @@
+# Spanish editor-only reevaluation — interrupted run
+
+Status: **stopped without retry**
+
+This controlled reevaluation used the saved drafts in
+`artifacts/spanish-evaluation-1785444427987` and the finalized human review in
+`artifacts/spanish-evaluation-1785444427987/finalized-human-review.json`.
+It did not regenerate drafts or alter prompts, fixtures, language guidance, or
+human conclusions.
+
+## Run accounting
+
+- Planned editorial calls: 7
+- Calls made: 2
+- Automatic retries: 0
+- Calls not made after the failure: 5
+- Total latency: 102,769 ms
+- Input tokens: 3,577
+- Cached input tokens: 0
+- Output tokens: 5,506
+- Reasoning tokens: 2,827
+- Estimated cost: **$0.183065**
+- Approved maximum estimated cost: $1.01
+
+The refrain call completed. The first page-fixture call
+(`mush-watch-over`) reached OpenAI but returned `incomplete` with reason
+`max_output_tokens`. Per the instruction not to retry failed calls
+automatically, the harness stopped immediately.
+
+## Completed comparison: Refrain Lab
+
+### Finalized human conclusion
+
+**None are good enough.**
+
+This conclusion is preserved exactly from the finalized export. It supersedes
+earlier provisional findings for purposes of this comparison.
+
+### Previous automatic selection
+
+> ¡Amor sincero; lo firma este champiñón compañero!
+
+### New comparative-editor ranking
+
+1. **Recommended**
+
+   > ¡Amigos, cuánto os quiero; mi cariño es verdadero!
+
+   Strengths reported by the editor:
+
+   - Direct, idiomatic affection suitable for repeated read-aloud use.
+   - Compact cadence with a clear `quiero / verdadero` spoken rhyme.
+
+   Material weaknesses reported by the editor:
+
+   - Loses the source's mushroom-specific wordplay.
+   - The plural opening is broader than the first scene's single-friend focus.
+
+   Rhyme evidence: `quiero / verdadero`, classified as a full rhyme from
+   stressed `e` onward (`ero / ero`), not a repeated word, same-root echo, or
+   grammatical-ending-only match.
+
+2. 
+
+   > ¡Cariño a mogollón, de parte de este champiñón!
+
+   Material weaknesses reported by the editor:
+
+   - `De parte de` can sound like a message or sign-off rather than direct
+     affection.
+   - `Este champiñón` is less emotionally immediate than the rank-1 wording.
+
+   Rhyme evidence: `mogollón / champiñón`, classified as a full rhyme from
+   stressed `ó` onward (`ón / ón`).
+
+3.
+
+   > ¡Cuánto quiero a cada amigo, qué alegría estar contigo!
+
+   Material weaknesses reported by the editor:
+
+   - Adds a general emotional statement not explicitly repeated in every
+     source stanza.
+   - Singular `contigo` is less precise for scenes with plural friends.
+
+   Rhyme evidence: `amigo / contigo`, classified as a full rhyme from stressed
+   `i` onward (`igo / igo`).
+
+### Human/editor comparison
+
+**Disagreement.** The finalized human conclusion is that none are good enough,
+while the editor recommends the first option.
+
+The revised editor did recognize that the earlier
+`champiñón compañero` wording should not be preferred: it did not return that
+forced phrase as a finalist. It retained
+`¡Cariño a mogollón, de parte de este champiñón!` as rank 2 and explicitly
+identified the slight sign-off quality of `de parte de`. However, because the
+human conclusion is now `none`, ranking that phrase second does not constitute
+agreement.
+
+## Page fixtures
+
+### `mush-watch-over`
+
+No valid comparative result was produced. The request reached OpenAI but
+stopped at the 2,500-token output allowance. Its incomplete raw response is
+preserved in `02-mush-watch-over-raw-response.json`; it was not parsed or used
+as an editorial recommendation.
+
+The editor therefore did not produce a valid ranking with which to assess the
+human equivalent-group conclusion (`c04`, `c05`) or the recorded concern about
+the somewhat constructed `contento / atento` phrasing.
+
+### Remaining five fixtures
+
+No calls were made, so there are no new editor rankings and no honest basis for
+claiming agreement or concern recognition:
+
+- `mush-many-hands`
+- `mush-jiggly-orange`
+- `llama-bedtime-story`
+- `llama-drama`
+- `llama-goes-to-sleep`
+
+## Minimum reusable observation
+
+The current comparative response contract can consume most or all of a
+2,500-token allowance for a three-finalist page evaluation. Before evaluating
+German, the smallest broadly reusable change to consider is increasing only
+the page-editor output allowance enough to fit the already-required structured
+assessment, or reducing nonessential response verbosity while preserving the
+same comparative fields. This run does **not** justify changing Spanish
+language guidance, selection semantics, validators, or drafting.
+
