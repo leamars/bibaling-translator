@@ -1,0 +1,17 @@
+{
+  "runType": "spanish_editor_only_reevaluation_resume",
+  "startedAt": "2026-07-31T03:01:24.206Z",
+  "sourceDirectory": "/Users/leamarolt/Bibaling/bibaling-translator/artifacts/spanish-evaluation-1785444427987",
+  "priorRunDirectory": "/Users/leamarolt/Bibaling/bibaling-translator/artifacts/spanish-editor-only-reevaluation-1785465843780",
+  "preservedSuccessfulRefrainResponse": "/Users/leamarolt/Bibaling/bibaling-translator/artifacts/spanish-editor-only-reevaluation-1785465843780/01-refrain-raw-response.json",
+  "humanReviewPath": "/Users/leamarolt/Bibaling/bibaling-translator/artifacts/spanish-evaluation-1785444427987/finalized-human-review.json",
+  "model": "gpt-5.6-sol",
+  "reasoningEffort": "low",
+  "automaticRetries": 0,
+  "plannedCallCount": 6,
+  "pageEditorOutputTokens": 3500,
+  "priorSpendUsd": 0.183065,
+  "maximumRemainingEstimatedCostUsd": 1.02,
+  "maximumTotalEstimatedCostUsd": 1.203065,
+  "approvedTotalCostCeilingUsd": 1.25
+}

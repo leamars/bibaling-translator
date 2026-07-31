@@ -31,13 +31,24 @@ import { MULTILINGUAL_EVALUATION_FIXTURES } from "../tests/fixtures/multilingual
 const SOURCE_DIRECTORY = resolve("artifacts/spanish-evaluation-1785444427987");
 const REVIEW_BUNDLE_PATH = resolve(SOURCE_DIRECTORY, "review-bundle.json");
 const HUMAN_REVIEW_PATH = resolve(SOURCE_DIRECTORY, "finalized-human-review.json");
+const PRIOR_RUN_DIRECTORY = resolve(
+  "artifacts/spanish-editor-only-reevaluation-1785465843780"
+);
+const PRIOR_REFRAIN_RESPONSE_PATH = resolve(
+  PRIOR_RUN_DIRECTORY,
+  "01-refrain-raw-response.json"
+);
 const MODEL = "gpt-5.6-sol";
 const REASONING_EFFORT = "low";
 const TARGET_LANGUAGE = "es" as const;
 const REGIONAL_VARIANT = "es-ES";
-const CALL_COUNT = 7;
-const MAX_ESTIMATED_COST_USD = 1.005;
-const APPROVED_COST_CEILING_USD = 1.01;
+const CALL_COUNT = 6;
+const PAGE_EDITOR_OUTPUT_TOKENS = 3_500;
+const PRIOR_SPEND_USD = 0.183065;
+const MAX_REMAINING_ESTIMATED_COST_USD = 1.02;
+const MAX_TOTAL_ESTIMATED_COST_USD =
+  PRIOR_SPEND_USD + MAX_REMAINING_ESTIMATED_COST_USD;
+const APPROVED_TOTAL_COST_CEILING_USD = 1.25;
 
 const comparativeEditorialSchema = z.object({
   finalists: z.array(z.object({
@@ -321,37 +332,44 @@ function selectionLevelAgreement(args: {
 async function main() {
   if (
     !process.argv.includes("--live") ||
-    process.env.CONFIRM_SPANISH_EDITOR_ONLY !== "RUN_SEVEN_EDITORIAL_CALLS"
+    process.env.CONFIRM_SPANISH_EDITOR_ONLY !== "RESUME_SIX_PAGE_EDITORIAL_CALLS"
   ) {
     throw new Error(
-      "This controlled run requires --live and CONFIRM_SPANISH_EDITOR_ONLY=RUN_SEVEN_EDITORIAL_CALLS."
+      "This controlled resume requires --live and CONFIRM_SPANISH_EDITOR_ONLY=RESUME_SIX_PAGE_EDITORIAL_CALLS."
     );
   }
-  if (MAX_ESTIMATED_COST_USD > APPROVED_COST_CEILING_USD) {
-    throw new Error("Maximum estimated cost exceeds the explicitly approved $1.01 ceiling.");
+  if (MAX_TOTAL_ESTIMATED_COST_USD > APPROVED_TOTAL_COST_CEILING_USD) {
+    throw new Error("Maximum total estimated cost exceeds the explicitly approved $1.25 ceiling.");
   }
   const pricing = pricingFor(MODEL);
-  const calculatedMaximum =
-    calculateCost(
-      { inputTokens: 12_000, cachedInputTokens: 0, outputTokens: 3_500 },
-      pricing
-    ) +
+  const calculatedRemainingMaximum =
     6 *
-      calculateCost(
-        { inputTokens: 13_000, cachedInputTokens: 0, outputTokens: 2_500 },
-        pricing
-      );
-  if (Math.abs(calculatedMaximum - MAX_ESTIMATED_COST_USD) > 0.000001) {
-    throw new Error(`Cost preflight changed unexpectedly: $${calculatedMaximum.toFixed(6)}.`);
+    calculateCost(
+      {
+        inputTokens: 13_000,
+        cachedInputTokens: 0,
+        outputTokens: PAGE_EDITOR_OUTPUT_TOKENS
+      },
+      pricing
+    );
+  if (
+    Math.abs(
+      calculatedRemainingMaximum - MAX_REMAINING_ESTIMATED_COST_USD
+    ) > 0.000001
+  ) {
+    throw new Error(
+      `Cost preflight changed unexpectedly: $${calculatedRemainingMaximum.toFixed(6)}.`
+    );
   }
 
-  const [savedBundle, humanReview] = await Promise.all([
+  const [savedBundle, humanReview, priorRefrainResponse] = await Promise.all([
     readFile(REVIEW_BUNDLE_PATH, "utf8").then(
       (value) => JSON.parse(value) as SavedBundle
     ),
     readFile(HUMAN_REVIEW_PATH, "utf8").then(
       (value) => JSON.parse(value) as HumanReview
-    )
+    ),
+    readFile(PRIOR_REFRAIN_RESPONSE_PATH, "utf8").then(JSON.parse)
   ]);
   validateHumanReview(humanReview);
   if (savedBundle.fixtures.length !== 6) {
@@ -373,16 +391,22 @@ async function main() {
     resolve(outputDirectory, "run-manifest.json"),
     `${JSON.stringify(
       {
-        runType: "spanish_editor_only_reevaluation",
+        runType: "spanish_editor_only_reevaluation_resume",
         startedAt: new Date().toISOString(),
         sourceDirectory: SOURCE_DIRECTORY,
+        priorRunDirectory: PRIOR_RUN_DIRECTORY,
+        preservedSuccessfulRefrainResponse: PRIOR_REFRAIN_RESPONSE_PATH,
         humanReviewPath: HUMAN_REVIEW_PATH,
         model: MODEL,
         reasoningEffort: REASONING_EFFORT,
         automaticRetries: 0,
         plannedCallCount: CALL_COUNT,
-        maximumEstimatedCostUsd: calculatedMaximum,
-        approvedCostCeilingUsd: APPROVED_COST_CEILING_USD
+        pageEditorOutputTokens: PAGE_EDITOR_OUTPUT_TOKENS,
+        priorSpendUsd: PRIOR_SPEND_USD,
+        maximumRemainingEstimatedCostUsd: calculatedRemainingMaximum,
+        maximumTotalEstimatedCostUsd:
+          PRIOR_SPEND_USD + calculatedRemainingMaximum,
+        approvedTotalCostCeilingUsd: APPROVED_TOTAL_COST_CEILING_USD
       },
       null,
       2
@@ -410,34 +434,8 @@ async function main() {
       refrainBudget,
       directionsJson: JSON.stringify(savedBundle.refrainSetup.survivingDrafts)
     });
-    const directionResult = await controlledResponse({
-      client,
-      requestSignal: AbortSignal.timeout(90_000),
-      action: "spanish-reevaluation.refrain.editor",
-      model: MODEL,
-      maxOutputTokens: 3_500,
-      timeoutMs: 90_000,
-      body: {
-        model: MODEL,
-        reasoning: { effort: REASONING_EFFORT },
-        input: directionPrompt,
-        text: {
-          format: {
-            type: "json_schema",
-            name: "spanish_refrain_comparative_reevaluation",
-            strict: true,
-            schema: directionEditorialJsonSchema
-          }
-        }
-      }
-    });
-    usage.push(directionResult.usage);
-    await writeFile(
-      resolve(outputDirectory, "01-refrain-raw-response.json"),
-      `${JSON.stringify(directionResult.response, null, 2)}\n`
-    );
     const parsedDirection = editorialOptionsSchema.parse(
-      completedJson(directionResult.response, "Refrain editorial reevaluation")
+      completedJson(priorRefrainResponse, "Preserved refrain editorial reevaluation")
     );
     const directionDiagnostics = validateDirectionEditorialResult(
       parsedDirection,
@@ -475,7 +473,10 @@ async function main() {
       }),
       concernRecognition:
         "Assess separately from selection-level agreement using candidate ratings, required edits, written explanations, and line comments.",
-      usage: directionResult.usage
+      usage: {
+        preservedFrom: PRIOR_RUN_DIRECTORY,
+        includedInPriorSpendUsd: true
+      }
     });
 
     for (const [index, fixture] of savedBundle.fixtures.entries()) {
@@ -510,7 +511,7 @@ async function main() {
         requestSignal: AbortSignal.timeout(120_000),
         action: `spanish-reevaluation.${fixture.fixtureId}.editor`,
         model: MODEL,
-        maxOutputTokens: 2_500,
+        maxOutputTokens: PAGE_EDITOR_OUTPUT_TOKENS,
         timeoutMs: 120_000,
         body: {
           model: MODEL,
@@ -530,7 +531,7 @@ async function main() {
       await writeFile(
         resolve(
           outputDirectory,
-          `${String(index + 2).padStart(2, "0")}-${fixture.fixtureId}-raw-response.json`
+          `${String(index + 1).padStart(2, "0")}-${fixture.fixtureId}-raw-response.json`
         ),
         `${JSON.stringify(editorResult.response, null, 2)}\n`
       );
@@ -587,7 +588,7 @@ async function main() {
     }
     const completedAt = new Date().toISOString();
     const bundle = {
-      runType: "spanish_editor_only_reevaluation",
+      runType: "spanish_editor_only_reevaluation_resume",
       completedAt,
       sourceDirectory: SOURCE_DIRECTORY,
       preservedHumanReview: {
@@ -603,9 +604,17 @@ async function main() {
       automaticRetries: 0,
       plannedCallCount: CALL_COUNT,
       actualCallCount: usage.length,
-      maximumEstimatedCostUsd: calculatedMaximum,
-      approvedCostCeilingUsd: APPROVED_COST_CEILING_USD,
-      totals: sumUsage(usage),
+      pageEditorOutputTokens: PAGE_EDITOR_OUTPUT_TOKENS,
+      priorSpendUsd: PRIOR_SPEND_USD,
+      maximumRemainingEstimatedCostUsd: calculatedRemainingMaximum,
+      maximumTotalEstimatedCostUsd:
+        PRIOR_SPEND_USD + calculatedRemainingMaximum,
+      approvedTotalCostCeilingUsd: APPROVED_TOTAL_COST_CEILING_USD,
+      resumeTotals: sumUsage(usage),
+      combinedActualTotals: {
+        ...sumUsage(usage),
+        estimatedCostUsd: PRIOR_SPEND_USD + sumUsage(usage).estimatedCostUsd
+      },
       results
     };
     await writeFile(
@@ -629,9 +638,14 @@ async function main() {
           automaticRetries: 0,
           plannedCallCount: CALL_COUNT,
           actualCallCount: usage.length,
-          maximumEstimatedCostUsd: calculatedMaximum,
-          approvedCostCeilingUsd: APPROVED_COST_CEILING_USD,
-          totals: bundle.totals
+          pageEditorOutputTokens: PAGE_EDITOR_OUTPUT_TOKENS,
+          priorSpendUsd: PRIOR_SPEND_USD,
+          maximumRemainingEstimatedCostUsd: calculatedRemainingMaximum,
+          maximumTotalEstimatedCostUsd:
+            PRIOR_SPEND_USD + calculatedRemainingMaximum,
+          approvedTotalCostCeilingUsd: APPROVED_TOTAL_COST_CEILING_USD,
+          resumeTotals: bundle.resumeTotals,
+          combinedActualTotals: bundle.combinedActualTotals
         },
         null,
         2
@@ -639,7 +653,12 @@ async function main() {
     );
     console.log(
       JSON.stringify(
-        { outputDirectory, status: "completed", totals: bundle.totals },
+        {
+          outputDirectory,
+          status: "completed",
+          resumeTotals: bundle.resumeTotals,
+          combinedActualTotals: bundle.combinedActualTotals
+        },
         null,
         2
       )

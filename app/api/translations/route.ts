@@ -317,7 +317,7 @@ async function generatePassingOptions(args: PipelineArgs) {
       requestSignal: args.requestSignal,
       action: `spread${args.spreadNumber}.evaluate`,
       model: "gpt-5.6-sol",
-      maxOutputTokens: 2_500,
+      maxOutputTokens: 3_500,
       timeoutMs: requestTimeoutMs,
       body: {
         model: "gpt-5.6-sol",

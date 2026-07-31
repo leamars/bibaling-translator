@@ -416,7 +416,7 @@ async function main() {
       requestSignal: AbortSignal.timeout(EDITOR_TIMEOUT_MS),
       action: `spanish-eval.${fixture.id}.editor`,
       model: MODEL,
-      maxOutputTokens: 2_500,
+      maxOutputTokens: 3_500,
       timeoutMs: EDITOR_TIMEOUT_MS,
       body: {
         model: MODEL,

@@ -2,6 +2,9 @@
 
 Status: **stopped without retry**
 
+The controlled continuation at a 3,500-token page-editor allowance is recorded
+in the [resume report](../spanish-editor-only-reevaluation-1785466884205/README.md).
+
 This controlled reevaluation used the saved drafts in
 `artifacts/spanish-evaluation-1785444427987` and the finalized human review in
 `artifacts/spanish-evaluation-1785444427987/finalized-human-review.json`.

@@ -267,7 +267,7 @@ async function runLiveEvaluation(): Promise<MultilingualEvaluationRecord[]> {
       requestSignal: AbortSignal.timeout(120_000),
       action: `multilingual-eval.${plan.selection.targetLanguage}.${plan.fixture.id}.editor`,
       model: "gpt-5.6-sol",
-      maxOutputTokens: 2_500,
+      maxOutputTokens: 3_500,
       timeoutMs: 120_000,
       body: {
         model: "gpt-5.6-sol",
