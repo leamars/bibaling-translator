@@ -105,10 +105,13 @@ Conclusion: **`c01` and `c06` are effectively equivalent.**
     rule and put the emphasis on the first ma here? otherwise, this story is
     really hard”
 
-Reevaluation coverage: no call was made. Selection agreement and the
-`mama`/`mamá` pronunciation concern remain unassessed. The feedback is recorded
-as a language-quality concern; it must not be converted into artificial
-reader-facing stress markup.
+Resolution from Lea: this is **not an outstanding quality concern**. Use the
+correct Spanish spelling `mamá`; do not add artificial stress marks, syllable
+breaks, capitalization, bolding, or other reader-facing pronunciation
+treatment.
+
+Reevaluation coverage: no call was made, so selection agreement remains
+unassessed.
 
 ## `llama-drama`
 
@@ -120,8 +123,11 @@ Conclusion: **`c03` and `c06` are effectively equivalent.**
   - Explanation:
     “same comment about the "mama" as before, but otherwise great”
 
-Reevaluation coverage: no call was made. Selection agreement, rhythm, and the
-repeated `mama`/`mamá` pronunciation concern remain unassessed.
+Resolution from Lea: as above, use correctly spelled `mamá`; no special
+reader-facing treatment is needed.
+
+Reevaluation coverage: no call was made. Selection agreement and rhythm remain
+unassessed.
 
 ## `llama-goes-to-sleep`
 
@@ -134,4 +140,3 @@ Conclusion: **Prefer `c01`.**
 
 Reevaluation coverage: no call was made. Selection agreement and the two
 negative cadence ratings remain unassessed.
-
