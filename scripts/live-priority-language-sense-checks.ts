@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { spawnSync } from "node:child_process";
 import OpenAI from "openai";
 import { z } from "zod";
 import { calculateCost, controlledResponse, pricingFor, type UsageRecord } from "../app/api/openai-control.ts";
@@ -12,6 +13,12 @@ const MAX_INPUT_TOKENS = 8_000;
 const MAX_OUTPUT_TOKENS = 3_500;
 const MAX_CALLS = 8;
 const MAXIMUM_AUTHORIZED_COST_USD = 1.16;
+const ITALIAN_DRAFT_OUTPUT_TOKENS = 5_500;
+const ITALIAN_DRAFT_INPUT_TOKENS = 790;
+const ITALIAN_EDITOR_INPUT_CEILING = 2_300;
+const CROATIAN_MEASURED_EDITOR_INPUT_TOKENS = 2_231;
+const ITALIAN_MAXIMUM_AUTHORIZED_COST_USD = 0.28545;
+const CROATIAN_DRAFTS = resolve("artifacts/priority-language-sense-check-1785589814271/parsed/croatian-drafts.json");
 const GERMAN_DRAFTS = resolve("artifacts/german-mushroom-draft-diagnostic-1785543046304/raw-output-text.json");
 const SPANISH_BUNDLE = resolve("artifacts/spanish-evaluation-1785444427987/review-bundle.json");
 
@@ -111,6 +118,31 @@ export function maximumEstimatedCost() {
   const pricing = pricingFor(MODEL);
   const perCall = calculateCost({ inputTokens: MAX_INPUT_TOKENS, cachedInputTokens: 0, outputTokens: MAX_OUTPUT_TOKENS }, pricing);
   return { perCall, total: perCall * MAX_CALLS };
+}
+
+export function italianMaximumEstimatedCost() {
+  const pricing = pricingFor(MODEL);
+  const draft = calculateCost({ inputTokens: ITALIAN_DRAFT_INPUT_TOKENS, cachedInputTokens: 0, outputTokens: ITALIAN_DRAFT_OUTPUT_TOKENS }, pricing);
+  const editor = calculateCost({ inputTokens: ITALIAN_EDITOR_INPUT_CEILING, cachedInputTokens: 0, outputTokens: MAX_OUTPUT_TOKENS }, pricing);
+  return { draft, editor, total: draft + editor };
+}
+
+function localTokenCount(value: string) {
+  const result = spawnSync("python3", ["-c", "import sys,tiktoken; print(len(tiktoken.get_encoding('o200k_base').encode(sys.stdin.read())))"], {
+    input: value,
+    encoding: "utf8"
+  });
+  if (result.status !== 0) throw new Error(`Unable to count prompt tokens: ${result.stderr}`);
+  const count = Number(result.stdout.trim());
+  if (!Number.isFinite(count)) throw new Error("Tokenizer returned an invalid count.");
+  return count;
+}
+
+async function measuredEditorInputEstimate(italianPrompt: string) {
+  const croatianRun = LANGUAGE_RUNS.find((run) => run.key === "croatian")!;
+  const croatianCandidates = pairedDraftSchema.shape.candidates.parse(JSON.parse(await readFile(CROATIAN_DRAFTS, "utf8")));
+  const croatianPrompt = editorPrompt(croatianRun, croatianCandidates);
+  return CROATIAN_MEASURED_EDITOR_INPUT_TOKENS + localTokenCount(italianPrompt) - localTokenCount(croatianPrompt);
 }
 
 function ensurePromptBudget(prompt: string) {
@@ -307,6 +339,12 @@ async function main() {
   if (maximum.total > MAXIMUM_AUTHORIZED_COST_USD + Number.EPSILON) throw new Error("Cost ceiling exceeded.");
   if (!process.env.OPENAI_API_KEY?.trim()) throw new Error("OPENAI_API_KEY is required.");
   const requestedKey = process.argv.find((argument) => argument.startsWith("--only="))?.slice("--only=".length);
+  const italianAuthorizedRun = process.argv.includes("--italian-authorized");
+  if (italianAuthorizedRun && requestedKey !== "italian") throw new Error("The Italian authorization mode requires --only=italian.");
+  if (italianAuthorizedRun) {
+    const italianMaximum = italianMaximumEstimatedCost();
+    if (italianMaximum.total > ITALIAN_MAXIMUM_AUTHORIZED_COST_USD + Number.EPSILON) throw new Error("Italian cost ceiling exceeded.");
+  }
   const activeRuns = requestedKey ? LANGUAGE_RUNS.filter((run) => run.key === requestedKey) : LANGUAGE_RUNS;
   if (!activeRuns.length) throw new Error(`Unknown --only language: ${requestedKey}`);
   const directory = resolve(`artifacts/priority-language-sense-check-${Date.now()}`);
@@ -321,7 +359,8 @@ async function main() {
       let candidates: any[];
       if (run.draft) {
         const prompt = draftingPrompt(run); ensurePromptBudget(prompt);
-        const response = await controlledResponse({ client, requestSignal: AbortSignal.timeout(150_000), action: `priority-language.${run.key}.draft`, model: MODEL, maxOutputTokens: MAX_OUTPUT_TOKENS, timeoutMs: 150_000,
+        const draftOutputTokens = italianAuthorizedRun ? ITALIAN_DRAFT_OUTPUT_TOKENS : MAX_OUTPUT_TOKENS;
+        const response = await controlledResponse({ client, requestSignal: AbortSignal.timeout(150_000), action: `priority-language.${run.key}.draft`, model: MODEL, maxOutputTokens: draftOutputTokens, timeoutMs: 150_000,
           body: { model: MODEL, reasoning: { effort: REASONING_EFFORT }, input: prompt, text: { format: { type: "json_schema", name: "priority_language_paired_drafts", strict: true, schema: pairedDraftJsonSchema } } } });
         usage.push(response.usage);
         await writeFile(resolve(directory, "raw", `${run.key}-draft-response.json`), `${JSON.stringify(response.response, null, 2)}\n`);
@@ -332,6 +371,17 @@ async function main() {
         candidates = run.saved === "german" ? await savedGermanCandidates() : await savedSpanishCandidates();
       }
       const prompt = editorPrompt(run, candidates as any); ensurePromptBudget(prompt);
+      if (italianAuthorizedRun) {
+        const measuredInputTokens = await measuredEditorInputEstimate(prompt);
+        await writeFile(resolve(directory, "parsed", "italian-editor-preflight.json"), `${JSON.stringify({
+          method: "o200k prompt delta anchored to the completed Croatian call",
+          croatianMeasuredInputTokens: CROATIAN_MEASURED_EDITOR_INPUT_TOKENS,
+          italianMeasuredInputEstimate: measuredInputTokens,
+          ceiling: ITALIAN_EDITOR_INPUT_CEILING,
+          editorCallAllowed: measuredInputTokens <= ITALIAN_EDITOR_INPUT_CEILING
+        }, null, 2)}\n`);
+        if (measuredInputTokens > ITALIAN_EDITOR_INPUT_CEILING) throw new Error(`Italian editor estimate ${measuredInputTokens} exceeds ${ITALIAN_EDITOR_INPUT_CEILING}; editor not launched.`);
+      }
       const response = await controlledResponse({ client, requestSignal: AbortSignal.timeout(150_000), action: `priority-language.${run.key}.editor`, model: MODEL, maxOutputTokens: MAX_OUTPUT_TOKENS, timeoutMs: 150_000,
         body: { model: MODEL, reasoning: { effort: REASONING_EFFORT }, input: prompt, text: { format: { type: "json_schema", name: "priority_language_editorial", strict: true, schema: editorialJsonSchema } } } });
       usage.push(response.usage);

@@ -1,0 +1,169 @@
+{
+  "finalists": [
+    {
+      "sourceCandidateId": "c05",
+      "page1Text": "Amo il mio amico, felice e peloso,\naccoccolato sull’albero, quieto e gioioso.\nTi voglio bene fino al cappello,\nperché vegli su di me: che amico bello!",
+      "page2Text": "Questi amici funghetti hanno tante manine,\nsi tengono per mano e fanno giravoltine.\nVi voglio bene fino al cappello,\nmi alzate da terra: com’è bello!",
+      "refrainPage1": "Ti voglio bene fino al cappello,",
+      "refrainPage2": "Vi voglio bene fino al cappello,",
+      "rank": 1,
+      "recommendedFinalist": true,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "peloso",
+            "gioioso"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 1,
+          "words": [
+            "cappello",
+            "bello"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "manine",
+            "giravoltine"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "cappello",
+            "bello"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Ritornello memorabile, affettuoso e legato con naturalezza al mondo dei funghi.",
+      "weakness": "La rima finale è semplice.",
+      "qualityNote": "La soluzione più fluida e convincente per lettura, immagini e gioco di parole."
+    },
+    {
+      "sourceCandidateId": "c01",
+      "page1Text": "Il mio amico felice ha il pelo arruffato,\nsopra un albero se ne sta accoccolato.\nTi voglio bene fungosamente,\nperché vegli su di me così attentamente.",
+      "page2Text": "Questi amici funghetti hanno tante manine,\nsi tengono per mano e fanno giravoltine.\nVi voglio bene fungosamente,\nmi alzate da terra: che divertente!",
+      "refrainPage1": "Ti voglio bene fungosamente,",
+      "refrainPage2": "Vi voglio bene fungosamente,",
+      "rank": 2,
+      "recommendedFinalist": false,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "arruffato",
+            "accoccolato"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 1,
+          "words": [
+            "fungosamente",
+            "attentamente"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "manine",
+            "giravoltine"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "fungosamente",
+            "divertente"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Cadenza vivace e azioni molto chiare.",
+      "weakness": "“Fungosamente” è giocoso ma meno immediato nel parlato.",
+      "qualityNote": "Versione fedele e musicale, con un neologismo ben comprensibile."
+    },
+    {
+      "sourceCandidateId": "c04",
+      "page1Text": "Il mio amico felice ha il pelo scompigliato,\ne sull’albero riposa, ben accoccolato.\nTi voglio un bene fungoso e speciale,\ne vegli su di me: che amico eccezionale!",
+      "page2Text": "Questi amici funghetti hanno mani a volontà,\nse le stringono e girano di qua e di là.\nVi voglio un bene fungoso e speciale,\nmi alzate da terra: è fenomenale!",
+      "refrainPage1": "Ti voglio un bene fungoso e speciale,",
+      "refrainPage2": "Vi voglio un bene fungoso e speciale,",
+      "rank": 3,
+      "recommendedFinalist": false,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "scompigliato",
+            "accoccolato"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 1,
+          "words": [
+            "speciale",
+            "eccezionale"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "volontà",
+            "là"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "speciale",
+            "fenomenale"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Tono caloroso e rime nette, facili da leggere ad alta voce.",
+      "weakness": "Il ritornello è più lungo e meno incisivo degli altri.",
+      "qualityNote": "Solida alternativa, naturale e pienamente coerente con le illustrazioni."
+    }
+  ]
+}

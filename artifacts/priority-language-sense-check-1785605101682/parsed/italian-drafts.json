@@ -1,0 +1,230 @@
+[
+  {
+    "id": "c01",
+    "strategy": "Playful adverb refrain with light, fluent rhymes",
+    "page1Text": "Il mio amico felice ha il pelo arruffato,\nsopra un albero se ne sta accoccolato.\nTi voglio bene, fungosamente,\nperché vegli su me così attentamente.",
+    "page2Text": "Questi amici funghetti hanno tante manine,\nse le stringono e fanno tonde giravoltine.\nVi voglio bene, fungosamente,\nmi alzate da terra: che divertente!",
+    "refrainPage1": "Ti voglio bene, fungosamente,",
+    "refrainPage2": "Vi voglio bene, fungosamente,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "arruffato",
+          "accoccolato"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "fungosamente",
+          "attentamente"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "manine",
+          "giravoltine"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "fungosamente",
+          "divertente"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c02",
+    "strategy": "Superlative mushroom wordplay and compact rhythms",
+    "page1Text": "Il mio amico felice è bianco e villoso,\nsopra un albero riposa, tutto peloso.\nTi adoro in modo fungosissimo,\nperché vegli su me, attentissimo!",
+    "page2Text": "Tante mani hanno questi funghetti,\nsi prendono e girano, stretti stretti.\nVi adoro in modo fungosissimo,\nmi alzate da terra: spassosissimo!",
+    "refrainPage1": "Ti adoro in modo fungosissimo,",
+    "refrainPage2": "Vi adoro in modo fungosissimo,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "villoso",
+          "peloso"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "fungosissimo",
+          "attentissimo"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "funghetti",
+          "stretti"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "fungosissimo",
+          "spassosissimo"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c03",
+    "strategy": "Conversational refrain built around a child-friendly mushroom version",
+    "page1Text": "Amo il mio amico allegro e spettinato,\nche sull'albero riposa accoccolato.\nTi voglio tanto bene, in versione funghetto,\nperché vegli su me, amico perfetto!",
+    "page2Text": "Questi amici funghetti hanno mani in quantità,\nsi tengono e fanno un giro di qua e di là.\nVi voglio tanto bene, in versione funghetto,\nmi alzate da terra: che bell'effetto!",
+    "refrainPage1": "Ti voglio tanto bene, in versione funghetto,",
+    "refrainPage2": "Vi voglio tanto bene, in versione funghetto,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "spettinato",
+          "accoccolato"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "funghetto",
+          "perfetto"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "quantità",
+          "là"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "funghetto",
+          "effetto"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c04",
+    "strategy": "Warm refrain with explicit fungal wordplay and broad spoken rhymes",
+    "page1Text": "Il mio amico felice ha il pelo scompigliato,\ne sull'albero riposa, ben accoccolato.\nTi voglio un bene fungoso e speciale,\nper vegliare su me non sei niente male!",
+    "page2Text": "Questi amici funghetti hanno mani a volontà,\nse le stringono e girano di qua e di là.\nVi voglio un bene fungoso e speciale,\nmi alzate da terra: è fenomenale!",
+    "refrainPage1": "Ti voglio un bene fungoso e speciale,",
+    "refrainPage2": "Vi voglio un bene fungoso e speciale,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "scompigliato",
+          "accoccolato"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "speciale",
+          "male"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "volontà",
+          "là"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "speciale",
+          "fenomenale"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c05",
+    "strategy": "Mushroom-cap pun used as a memorable repeated refrain",
+    "page1Text": "Amo il mio amico allegro e peloso,\nche sull'albero sta, tranquillo e ripososo.\nTi voglio bene fino al cappello,\nvegli su di me: questo sì che è bello!",
+    "page2Text": "Questi amici funghetti hanno braccia a dozzine,\nsi tengono e girano facendo giravoltine.\nVi voglio bene fino al cappello,\nmi alzate da terra: che gioco bello!",
+    "refrainPage1": "Ti voglio bene fino al cappello,",
+    "refrainPage2": "Vi voglio bene fino al cappello,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "peloso",
+          "ripososo"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "cappello",
+          "bello"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "dozzine",
+          "giravoltine"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "cappello",
+          "bello"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c06",
+    "strategy": "Comic oversized-dose refrain with action-centered rhymes",
+    "page1Text": "Il mio amico felice è soffice e barbuto,\nsull'albero riposa, nel suo pelo avvolto.\nTi voglio bene: una dose da fungone,\nperché vegli su me con grande attenzione!",
+    "page2Text": "Questi amici funghetti hanno mani numerose,\nsi tengono e fanno giravolte portentose.\nVi voglio bene: una dose da fungone,\nmi alzate da terra nella rotazione!",
+    "refrainPage1": "Ti voglio bene: una dose da fungone,",
+    "refrainPage2": "Vi voglio bene: una dose da fungone,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "barbuto",
+          "avvolto"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "fungone",
+          "attenzione"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "numerose",
+          "portentose"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "fungone",
+          "rotazione"
+        ]
+      }
+    ]
+  }
+]

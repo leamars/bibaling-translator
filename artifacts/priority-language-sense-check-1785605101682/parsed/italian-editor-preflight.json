@@ -1,0 +1,7 @@
+{
+  "method": "o200k prompt delta anchored to the completed Croatian call",
+  "croatianMeasuredInputTokens": 2231,
+  "italianMeasuredInputEstimate": 2225,
+  "ceiling": 2300,
+  "editorCallAllowed": true
+}

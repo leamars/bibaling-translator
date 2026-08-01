@@ -1,0 +1,26 @@
+{
+  "status": "completed",
+  "completedAt": "2026-08-01T17:27:00.125Z",
+  "model": "gpt-5.6-sol",
+  "reasoningEffort": "low",
+  "automaticRetries": 0,
+  "maximumCalls": 8,
+  "maximumEstimatedCostUsd": 1.16,
+  "actual": {
+    "calls": 2,
+    "latencyMs": 113744,
+    "inputTokens": 3015,
+    "cachedInputTokens": 0,
+    "outputTokens": 6143,
+    "reasoningTokens": 3759,
+    "estimatedCostUsd": 0.19936500000000001
+  },
+  "results": [
+    {
+      "key": "italian",
+      "label": "Italian",
+      "status": "completed",
+      "recommendation": "c05"
+    }
+  ]
+}

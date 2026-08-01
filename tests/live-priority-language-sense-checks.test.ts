@@ -5,6 +5,7 @@ import {
   LANGUAGE_RUNS,
   draftingPrompt,
   editorialSchema,
+  italianMaximumEstimatedCost,
   maximumEstimatedCost,
   serbianCyrillicToLatin
 } from "../scripts/live-priority-language-sense-checks.ts";
@@ -20,6 +21,15 @@ test("priority-language plan is exactly eight approved calls with no retries", a
   assert.match(source, /automaticRetries: 0/);
   assert.doesNotMatch(source, /for \(let retry|while \(.*retry/);
   assert.match(source, /--only=/);
+});
+
+test("Italian rerun is capped at two calls and $0.28545", async () => {
+  const source = await readFile(harnessPath, "utf8");
+  assert.equal(italianMaximumEstimatedCost().total, 0.28545);
+  assert.match(source, /ITALIAN_DRAFT_OUTPUT_TOKENS = 5_500/);
+  assert.match(source, /ITALIAN_EDITOR_INPUT_CEILING = 2_300/);
+  assert.match(source, /--italian-authorized/);
+  assert.match(source, /editor not launched/);
 });
 
 test("first substantive languages receive their own guidance and difficult paired fixture", () => {

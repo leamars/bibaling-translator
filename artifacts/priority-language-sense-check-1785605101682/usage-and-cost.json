@@ -1,0 +1,43 @@
+{
+  "maximum": {
+    "perCall": 0.145,
+    "total": 1.16
+  },
+  "actual": {
+    "calls": 2,
+    "latencyMs": 113744,
+    "inputTokens": 3015,
+    "cachedInputTokens": 0,
+    "outputTokens": 6143,
+    "reasoningTokens": 3759,
+    "estimatedCostUsd": 0.19936500000000001
+  },
+  "calls": [
+    {
+      "action": "priority-language.italian.draft",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_0dbdb43ef38c0e4c006a6e2beec90881a1810c3d56907543e8",
+      "responseStatus": "completed",
+      "latencyMs": 72960,
+      "inputTokens": 790,
+      "cachedInputTokens": 0,
+      "outputTokens": 3709,
+      "reasoningTokens": 2367,
+      "estimatedCostUsd": 0.11522
+    },
+    {
+      "action": "priority-language.italian.editor",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_0ec00409e547524f006a6e2c3bcc4081a3bbff26f0f90748d9",
+      "responseStatus": "completed",
+      "latencyMs": 40784,
+      "inputTokens": 2225,
+      "cachedInputTokens": 0,
+      "outputTokens": 2434,
+      "reasoningTokens": 1392,
+      "estimatedCostUsd": 0.084145
+    }
+  ]
+}
