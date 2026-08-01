@@ -56,11 +56,14 @@ Prefer natural spoken German clause order. Do not move verbs, objects, particles
 Handle separable verbs as complete semantic units and place their particles naturally for the sentence type. Do not omit or strand a particle for meter.
 Prefer transparent, child-friendly compounds. If a grammatically valid compound feels dense or bookish aloud, use a natural short phrase instead.
 Preserve who is acting, who is addressed, and whether the source refers to one friend or a group. Avoid pronoun changes introduced only for rhyme.
+When a source is sustained rhyming verse, write actual German verse rather than literal prose divided into short lines. Prefer compact lines of roughly 6–10 spoken syllables, smooth cadence, and clearly audible rhyme.
+Preserve source wordplay through natural German imagery or speaker-specific language; do not mechanically translate an English pun when German needs a different device.
 For prose, do not introduce line-broken verse, meter, rhyme, chants, or a repeated line.`,
     editorialGuidance: `Edit as a native German children's-book editor. Prefer natural spoken clause order, readable compounds, and child-appropriate vocabulary.
 For verse, judge rhyme in spoken German from the stressed vowel onward. Infinitive, plural, case, adjective, or other grammatical endings are not sufficient evidence by themselves.
 A near rhyme with natural wording is better than exact rhyme created through inversion, filler, semantic weakening, or an unusually literary construction.
-Reject marked word order used only for rhyme, mishandled separable verbs, dense or bookish compounds, unsupported pronoun changes, and constructions that are grammatical but unnatural aloud.`
+For required rhyming verse, independently pronounce every claimed pair in its complete lines. Reject merely visual rhyme, weak consonance presented as rhyme, repeated words, grammatical endings, and unrhymed prose broken into lines.
+Reject marked word order used only for rhyme, mishandled separable verbs, dense or bookish compounds, unsupported pronoun changes, stiff filler such as “beglückt” or “entzückt”, and constructions that are grammatical but unnatural aloud.`
   },
   it: {
     code: "it", name: "Italian", autonym: "italiano", languageTag: "it-IT", status: "priority_evaluation",
