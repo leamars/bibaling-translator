@@ -19,11 +19,24 @@ import {
   selectorValueFor,
   type TargetLanguage
 } from "../languages/language-config.ts";
+import {
+  SNAPSHOT_VERSION,
+  clearWorkshopSnapshot,
+  normalizeRestoredStep,
+  readWorkshopSnapshot,
+  thumbnailFromDataUrl,
+  writeWorkshopSnapshot,
+  type WorkshopSnapshot
+} from "./workshop-storage.ts";
 
 type Spread = {
   id: string;
-  file: File;
+  // Absent on spreads restored from a saved workshop: the original photo is
+  // only needed at transcription time and is never persisted.
+  file?: File;
   preview: string;
+  // Small persisted preview; empty when thumbnailing failed or was dropped.
+  thumbnail: string;
   text: string;
   uncertainty: string | null;
   visualContext: string;
@@ -178,6 +191,7 @@ export default function Translator() {
   const directionsAbort = useRef<AbortController | null>(null);
   const translationAbort = useRef<AbortController | null>(null);
   const teaserAbort = useRef<AbortController | null>(null);
+  const hydrated = useRef(false);
   const classifierAbort = useRef<AbortController | null>(null);
   const language = useMemo(
     () => resolveLanguageSelection(targetLanguage, regionalVariant),
@@ -198,6 +212,121 @@ export default function Translator() {
     window.addEventListener("bibaling:analytics-consent", syncConsent);
     return () => window.removeEventListener("bibaling:analytics-consent", syncConsent);
   }, []);
+
+  // Restore a saved workshop after a refresh or accidental tab close.
+  // Runs once on mount, only into a pristine session, and never in mock mode.
+  // Photos are not persisted: restored spreads carry their small thumbnails,
+  // which is all the later steps need — transcription already happened.
+  useEffect(() => {
+    const restore = () => {
+      const mockCookie = document.cookie.split(";").some((part) => part.trim() === "bibaling_mock_mode=true");
+      const snapshot = readWorkshopSnapshot();
+      if (!snapshot || mockCookie) return;
+      setTargetLanguage(snapshot.targetLanguage);
+      setRegionalVariant(snapshot.regionalVariant);
+      setLanguageConfirmed(snapshot.languageConfirmed);
+      setPriority(snapshot.priority);
+      setFreedom(snapshot.freedom);
+      setBookForm(snapshot.bookForm);
+      setRecommendedBookForm(snapshot.recommendedBookForm);
+      setBookFormConfirmed(snapshot.bookFormConfirmed);
+      setBookFormExplanation(snapshot.bookFormExplanation);
+      setSourceRhyme(snapshot.sourceRhyme);
+      setSpreads(snapshot.spreads.map((spread) => ({
+        id: spread.id,
+        preview: spread.thumbnail,
+        thumbnail: spread.thumbnail,
+        text: spread.text,
+        uncertainty: spread.uncertainty,
+        visualContext: spread.visualContext,
+        // A page killed mid-read has no full-resolution photo anymore; ask
+        // for a replacement instead of re-reading the thumbnail.
+        error: spread.status === "done" ? spread.error : spread.status === "error" ? spread.error : "We lost this photo when the page closed. Replace it to read the text again.",
+        status: spread.status === "done" || spread.status === "error" ? spread.status : "error"
+      })));
+      setDirections(snapshot.directions);
+      setSelectedDirection(snapshot.selectedDirection);
+      setShownRefrains(snapshot.shownRefrains);
+      setLockedDirection(snapshot.lockedDirection);
+      setSpread1Options(snapshot.spread1Options);
+      setSpread1Selection(snapshot.spread1Selection);
+      setApprovedSpread1(snapshot.approvedSpread1);
+      setPatternOptions(snapshot.patternOptions as Record<number, TranslationOption[]>);
+      setPatternSelections({ 2: null, 3: null, ...(snapshot.patternSelections as Record<number, number | null>) });
+      setApprovedDrafts(snapshot.approvedDrafts as Record<number, string>);
+      setApprovedNotes(snapshot.approvedNotes as Record<number, string>);
+      setTeaser(snapshot.teaser);
+      // A refresh mid-generation restores to the furthest completed step —
+      // model calls are never restarted automatically.
+      const normalizedStep = normalizeRestoredStep(snapshot);
+      // The delivery screen only makes sense with a resumable job token; the
+      // email itself is deliberately never persisted, so otherwise land on
+      // the gate and let the parent re-enter it.
+      const jobToken = sessionStorage.getItem("bibaling_delivery_job");
+      if (normalizedStep === 11 && jobToken) {
+        setDeliveryJob({ token: jobToken, status: "processing", error: null });
+        setStep(11);
+      } else {
+        setStep(Math.min(normalizedStep, 10));
+      }
+    };
+    restore();
+    hydrated.current = true;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Save the workshop as the parent works. Text only plus thumbnails — never
+  // the email address, consent choices, or anything from mock mode.
+  useEffect(() => {
+    if (!hydrated.current || mockMode) return;
+    if (step === 1 && spreads.length === 0) return;
+    const timeout = window.setTimeout(() => {
+      const snapshot: WorkshopSnapshot = {
+        version: SNAPSHOT_VERSION,
+        savedAt: Date.now(),
+        step,
+        targetLanguage,
+        regionalVariant,
+        languageConfirmed,
+        priority,
+        freedom,
+        bookForm,
+        recommendedBookForm,
+        bookFormConfirmed,
+        bookFormExplanation,
+        sourceRhyme,
+        spreads: spreads.map((spread) => ({
+          id: spread.id,
+          thumbnail: spread.thumbnail,
+          text: spread.text,
+          uncertainty: spread.uncertainty,
+          visualContext: spread.visualContext,
+          error: spread.error,
+          status: spread.status
+        })),
+        directions,
+        selectedDirection,
+        shownRefrains,
+        lockedDirection,
+        spread1Options,
+        spread1Selection,
+        approvedSpread1,
+        patternOptions,
+        patternSelections,
+        approvedDrafts,
+        approvedNotes,
+        teaser
+      };
+      writeWorkshopSnapshot(snapshot);
+    }, 500);
+    return () => window.clearTimeout(timeout);
+  }, [
+    approvedDrafts, approvedNotes, approvedSpread1, bookForm, bookFormConfirmed,
+    bookFormExplanation, directions, freedom, languageConfirmed, lockedDirection,
+    mockMode, patternOptions, patternSelections, priority, recommendedBookForm,
+    regionalVariant, selectedDirection, shownRefrains, sourceRhyme, spread1Options,
+    spread1Selection, spreads, step, targetLanguage, teaser
+  ]);
 
   useEffect(() => {
     if (!expandedImage) return;
@@ -220,6 +349,7 @@ export default function Translator() {
         if (result.status === "completed") {
           setDeliveryJob((current) => ({ ...current, status: "completed", error: null }));
           sessionStorage.removeItem("bibaling_delivery_job");
+          clearWorkshopSnapshot();
           trackFunnelEventOnce("delivery_succeeded", { bookForm: bookForm ?? undefined, languagePair: language.languagePair, targetLanguage, regionalVariant });
         } else if (result.status === "failed" || result.status === "cancelled") {
           setDeliveryJob((current) => ({
@@ -254,6 +384,58 @@ export default function Translator() {
     return () => document.removeEventListener("pointerdown", deselectOutside);
   }, [step]);
 
+  // A real start-over: aborts anything in flight, clears the persisted
+  // workshop and the resumable delivery token, and resets every piece of
+  // workshop state to its initial value. The reset leaves the session
+  // pristine, so the save effect writes nothing until new work begins.
+  function startOver() {
+    if (!window.confirm("Start over? This clears this book’s saved work on this device.")) return;
+    for (const controller of [directionsAbort, translationAbort, teaserAbort, classifierAbort]) {
+      controller.current?.abort();
+      controller.current = null;
+    }
+    clearWorkshopSnapshot();
+    sessionStorage.removeItem("bibaling_delivery_job");
+    setStep(1);
+    setTargetLanguage("sl");
+    setRegionalVariant(undefined);
+    setLanguageFeedback("");
+    setLanguageFeedbackSaved(false);
+    setLanguageConfirmed(false);
+    setSpreads([]);
+    setPriority("");
+    setFreedom("");
+    setBookForm(null);
+    setRecommendedBookForm(null);
+    setBookFormConfirmed(false);
+    setBookFormExplanation("");
+    setSourceRhyme("uncertain");
+    setDirections([]);
+    setSelectedDirection(null);
+    setEditingDirection(null);
+    setDirectionFeedback("");
+    setCustomRefrain("");
+    setShownRefrains([]);
+    setLockedDirection(null);
+    setSpread1Options([]);
+    setSpread1Selection(null);
+    setApprovedSpread1("");
+    setPatternOptions({});
+    setPatternSelections({ 2: null, 3: null });
+    setApprovedDrafts({});
+    setApprovedNotes({});
+    setRequest({ loading: false, error: null });
+    setDirectionProgress({ active: 0, completedThrough: -1, rejectedCount: 0 });
+    setExpandedImage(null);
+    setTeaser({ status: "idle", page: null });
+    setEmailCaptured(false);
+    setLeadReceipt("");
+    setEmail("");
+    setMarketingConsent(false);
+    setEmailRequest({ loading: false, error: null });
+    setDeliveryJob({ token: "", status: "idle", error: null });
+  }
+
   function toggleMockMode() {
     setMockMode((current) => {
       const next = !current;
@@ -276,6 +458,7 @@ export default function Translator() {
       id: crypto.randomUUID(),
       file: new File(["mock"], `mock-page-${index + 1}.png`, { type: "image/png" }),
       preview: mockPreview(index + 1),
+      thumbnail: "",
       text,
       uncertainty: null,
       visualContext: "A mock picture-book page.",
@@ -359,9 +542,10 @@ export default function Translator() {
   async function addFile(file?: File, replaceId?: string) {
     if (!file || !file.type.startsWith("image/") || (!replaceId && spreads.length >= 40)) return;
     const preview = await fileToDataUrl(file);
+    const thumbnail = await thumbnailFromDataUrl(preview);
     const id = replaceId ?? crypto.randomUUID();
     const nextSpread: Spread = {
-      id, file, preview, text: "", uncertainty: null, visualContext: "", error: null, status: "waiting"
+      id, file, preview, thumbnail, text: "", uncertainty: null, visualContext: "", error: null, status: "waiting"
     };
     setSpreads((current) => replaceId
       ? current.map((spread) => spread.id === replaceId ? nextSpread : spread)
@@ -378,16 +562,20 @@ export default function Translator() {
       .slice(0, available);
     if (images.length === 0) return;
 
-    const additions = await Promise.all(images.map(async (file) => ({
+    const additions = await Promise.all(images.map(async (file) => {
+      const preview = await fileToDataUrl(file);
+      return {
       id: crypto.randomUUID(),
       file,
-      preview: await fileToDataUrl(file),
+      preview,
+      thumbnail: await thumbnailFromDataUrl(preview),
       text: "",
       uncertainty: null,
       visualContext: "",
       error: null,
       status: "waiting" as const
-    })));
+      };
+    }));
     setSpreads((current) => [...current, ...additions].slice(0, 40));
     additions.forEach((spread) => void readSpread(spread.id, spread.preview));
   }
@@ -825,6 +1013,11 @@ export default function Translator() {
       <div className="workshop-header">
         <button className="brand workshop-reset" type="button" onClick={() => { setLanguageConfirmed(false); setStep(1); }}>bibaling workshop</button>
         <div className="header-tools">
+          {(step > 1 || spreads.length > 0) && (
+            <button className="mock-toggle" type="button" onClick={startOver}>
+              Start over
+            </button>
+          )}
           <button className={mockMode ? "mock-toggle active" : "mock-toggle"} type="button" onClick={toggleMockMode}>
             Mock mode {mockMode ? "on" : "off"}
           </button>
