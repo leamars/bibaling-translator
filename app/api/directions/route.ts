@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { isMockRequest, openAIClient } from "../generation";
-import { MOCK_DIRECTIONS } from "../mock-fixtures";
+import { mockDirections } from "../mock-fixtures";
+import { languageConfig } from "../../languages/language-config.ts";
 import {
   DIRECTION_PIPELINE_CONFIG,
   HARD_MAX_REFRAIN_CHARACTERS,
@@ -13,10 +14,15 @@ import {
   parseCompletedOutput,
   privateCandidatesSchema,
   resolveDirectionDraft,
-  validateFinalEditorialSet,
+  validateDirectionEditorialResult,
   validatePrivateCandidates,
   type CachedDirectionDraft
 } from "../direction-pipeline";
+import {
+  comparativeJsonProperties,
+  comparativeJsonRequired,
+  winnerComparisonsJsonSchema
+} from "../editorial-contract.ts";
 import {
   MAX_ACTION_COST_USD,
   assertActionBudget,
@@ -30,6 +36,10 @@ import {
   type Freedom,
   type Priority
 } from "../translation-prompts";
+import {
+  resolveLanguageSelection,
+  targetLanguageSchema
+} from "../../languages/language-config.ts";
 
 export const runtime = "nodejs";
 
@@ -40,7 +50,15 @@ const bodySchema = z.object({
   freedom: z.enum(["close", "natural", "playful"]),
   parentFeedback: z.string().trim().min(1).max(1000).optional(),
   previousRefrains: z.array(z.string().min(1)).max(100).default([]),
-  freshDraft: z.boolean().default(false)
+  freshDraft: z.boolean().default(false),
+  targetLanguage: targetLanguageSchema.default("sl"),
+  regionalVariant: z.string().max(20).optional()
+}).superRefine((input, context) => {
+  try {
+    resolveLanguageSelection(input.targetLanguage, input.regionalVariant);
+  } catch (error) {
+    context.addIssue({ code: "custom", path: ["regionalVariant"], message: error instanceof Error ? error.message : "Invalid language variant" });
+  }
 });
 type DirectionInput = z.infer<typeof bodySchema>;
 
@@ -108,16 +126,24 @@ function editorialJsonSchema(maximumRefrainCharacters: number) {
               },
               required: ["endingA", "endingB"]
             }
-          }
+          },
+          fidelityPass: { type: "boolean" },
+          grammarPass: { type: "boolean" },
+          readAloudPass: { type: "boolean" },
+          directionPass: { type: "boolean" },
+          rhymePass: { type: "boolean" },
+          ...comparativeJsonProperties
         },
         required: [
           "sourceCandidateIndex", "label", "refrain", "description", "genderDependency",
-          "construction", "rhymePairs"
+          "construction", "rhymePairs", "fidelityPass", "grammarPass", "readAloudPass",
+          "directionPass", "rhymePass", ...comparativeJsonRequired
         ]
       }
-    }
+    },
+    winnerComparisons: winnerComparisonsJsonSchema
   },
-  required: ["options"]
+  required: ["options", "winnerComparisons"]
   } as const;
 }
 
@@ -171,7 +197,9 @@ async function draftCandidates(args: {
       freedom: args.input.freedom,
       parentFeedback: args.input.parentFeedback,
       previousRefrains: args.input.previousRefrains,
-      refrainBudget
+      refrainBudget,
+      targetLanguage: args.input.targetLanguage,
+      regionalVariant: args.input.regionalVariant
     });
     const { response, usage } = await controlledResponse({
       client: args.client,
@@ -197,7 +225,7 @@ async function draftCandidates(args: {
     const parsed = parseCompletedOutput(response, "draft", privateCandidatesSchema);
     args.progress("drafting_completed", { usage });
     args.progress("validating_candidates");
-    const validation = validatePrivateCandidates(parsed.candidates, refrainBudget);
+    const validation = validatePrivateCandidates(parsed.candidates, refrainBudget, args.input.targetLanguage);
     if (validation.qualityWarnings.length > 0) {
       console.warn("direction_quality_warnings", JSON.stringify({
         stage: "draft",
@@ -234,7 +262,9 @@ async function editCandidates(args: {
       priority: args.input.priority,
       freedom: args.input.freedom,
       directionsJson: JSON.stringify(args.candidates),
-      refrainBudget
+      refrainBudget,
+      targetLanguage: args.input.targetLanguage,
+      regionalVariant: args.input.regionalVariant
     });
     const { response, usage } = await controlledResponse({
       client: args.client,
@@ -258,11 +288,12 @@ async function editCandidates(args: {
       }
     });
     const parsed = parseCompletedOutput(response, "editor", editorialOptionsSchema);
-    const validation = validateFinalEditorialSet(
-      parsed.options,
+    const validation = validateDirectionEditorialResult(
+      parsed,
       refrainBudget,
       args.input.priority === "rhythm",
-      args.candidates.length
+      args.candidates.length,
+      args.input.targetLanguage
     );
     if (validation.hardFailures.length > 0) {
       throw new DirectionPipelineError(
@@ -282,14 +313,16 @@ async function editCandidates(args: {
       }));
     }
     args.progress("editing_completed", { usage });
+    const rankedOptions = [...parsed.options].sort((first, second) => first.rank - second.rank);
     return {
-      directions: parsed.options.map((option) => ({
+      directions: rankedOptions.map((option) => ({
         name: option.label,
         refrain: option.refrain,
         approach: option.description,
         genderDependency: option.genderDependency
       })),
-      editorialOptions: parsed.options,
+      editorialOptions: rankedOptions,
+      recommendedDirectionIndex: rankedOptions.findIndex((option) => option.recommendedFinalist),
       validation
     };
   } catch (error) {
@@ -361,7 +394,7 @@ export async function POST(request: Request) {
             ]) send({ type: "progress", event });
             send({
               type: "result",
-              data: { runs: [{ model: "mock", label: "Mock fixture", directions: MOCK_DIRECTIONS }], mock: true }
+              data: { runs: [{ model: "mock", label: "Mock fixture", directions: mockDirections(languageConfig(input.targetLanguage).name) }], mock: true }
             });
             finish();
             return;

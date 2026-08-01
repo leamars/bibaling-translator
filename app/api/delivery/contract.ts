@@ -1,6 +1,7 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { BOOK_FORMS, SOURCE_RHYME } from "../book-form-contract.ts";
+import { resolveLanguageSelection, targetLanguageSchema } from "../../languages/language-config.ts";
 
 const directionSchema = z.object({
   name: z.string().min(1).max(200),
@@ -20,6 +21,8 @@ export const deliveryInputSchema = z.object({
   sourceRhyme: z.enum(SOURCE_RHYME),
   priority: z.enum(["rhythm", "meaning", "simple"]),
   freedom: z.enum(["close", "natural", "playful"]),
+  targetLanguage: targetLanguageSchema.default("sl"),
+  regionalVariant: z.string().max(20).optional(),
   direction: directionSchema.optional(),
   approvedPage1: z.string().min(1).max(12_000),
   approvedPage1Note: z.string().max(1_200).optional()
@@ -29,6 +32,11 @@ export const deliveryInputSchema = z.object({
   }
   if (input.bookForm !== "refrain_verse" && input.direction) {
     context.addIssue({ code: "custom", path: ["direction"], message: "Non-refrain books must not contain a refrain direction." });
+  }
+  try {
+    resolveLanguageSelection(input.targetLanguage, input.regionalVariant);
+  } catch (error) {
+    context.addIssue({ code: "custom", path: ["regionalVariant"], message: error instanceof Error ? error.message : "Invalid language variant" });
   }
   const unique = new Set(input.pages.map((page) => page.page));
   if (unique.size !== input.pages.length || !unique.has(1)) {
@@ -52,6 +60,8 @@ export function createJobId(input: DeliveryInput) {
     sourceRhyme: input.sourceRhyme,
     priority: input.priority,
     freedom: input.freedom,
+    targetLanguage: input.targetLanguage,
+    regionalVariant: input.regionalVariant || "",
     direction: input.direction,
     approvedPage1: input.approvedPage1,
     approvedPage1Note: input.approvedPage1Note || ""

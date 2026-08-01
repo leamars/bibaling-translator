@@ -12,6 +12,13 @@ import {
   type BookFormAnalysis,
   type SourceRhyme
 } from "../api/book-form-contract.ts";
+import {
+  experimentalLanguages,
+  featuredLanguages,
+  languageConfig,
+  resolveLanguageSelection,
+  type TargetLanguage
+} from "../languages/language-config.ts";
 
 type Spread = {
   id: string;
@@ -79,11 +86,14 @@ function prioritiesFor(bookForm: BookForm | null) {
   return priorities;
 }
 
-const freedoms = [
-  ["close", "Stay close", "Preserve each page’s meaning; change only what’s necessary."],
-  ["natural", "Sound naturally Slovenian", "Keep the story and pictures, but freely repair awkward lines, jokes, and rhymes."],
-  ["playful", "Reimagine playfully", "Keep the events and feeling, while creating new Slovenian wordplay."]
-] as const;
+function freedomsFor(targetLanguage: TargetLanguage) {
+  const language = languageConfig(targetLanguage).name;
+  return [
+    ["close", "Stay close", "Preserve each page’s meaning; change only what’s necessary."],
+    ["natural", `Sound naturally ${language}`, "Keep the story and pictures, but freely repair awkward lines, jokes, and rhymes."],
+    ["playful", "Reimagine playfully", `Keep the events and feeling, while creating new ${language} wordplay.`]
+  ] as const;
+}
 
 async function fileToDataUrl(file: File) {
   return await new Promise<string>((resolve, reject) => {
@@ -129,6 +139,11 @@ function mockPreview(number: number) {
 
 export default function Translator() {
   const [step, setStep] = useState(1);
+  const [targetLanguage, setTargetLanguage] = useState<TargetLanguage>("sl");
+  const [regionalVariant, setRegionalVariant] = useState<string | undefined>();
+  const [languageFeedback, setLanguageFeedback] = useState("");
+  const [languageFeedbackSaved, setLanguageFeedbackSaved] = useState(false);
+  const [languageConfirmed, setLanguageConfirmed] = useState(false);
   const [spreads, setSpreads] = useState<Spread[]>([]);
   const [priority, setPriority] = useState("");
   const [freedom, setFreedom] = useState("");
@@ -173,6 +188,11 @@ export default function Translator() {
   const translationAbort = useRef<AbortController | null>(null);
   const fullBookAbort = useRef<AbortController | null>(null);
   const classifierAbort = useRef<AbortController | null>(null);
+  const language = useMemo(
+    () => resolveLanguageSelection(targetLanguage, regionalVariant),
+    [targetLanguage, regionalVariant]
+  );
+  const experimentalLanguage = language.config.status === "experimental";
 
   const progress = useMemo(() => {
     const position = workshopProgress(bookForm, step);
@@ -181,7 +201,7 @@ export default function Translator() {
 
   useEffect(() => {
     setMockMode(document.cookie.split(";").some((part) => part.trim() === "bibaling_mock_mode=true"));
-    trackFunnelEventOnce("translator_opened", { languagePair: "en-sl" });
+    trackFunnelEventOnce("translator_opened", { languagePair: "en-und" });
     const syncConsent = () => setAnalyticsConsentChoice(getAnalyticsConsent() === true);
     syncConsent();
     window.addEventListener("bibaling:analytics-consent", syncConsent);
@@ -209,14 +229,14 @@ export default function Translator() {
         if (result.status === "completed") {
           setDeliveryJob((current) => ({ ...current, status: "completed", error: null }));
           sessionStorage.removeItem("bibaling_delivery_job");
-          trackFunnelEventOnce("delivery_succeeded", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
+          trackFunnelEventOnce("delivery_succeeded", { bookForm: bookForm ?? undefined, languagePair: language.languagePair, targetLanguage, regionalVariant });
         } else if (result.status === "failed" || result.status === "cancelled") {
           setDeliveryJob((current) => ({
             ...current,
             status: "failed",
             error: "We couldn’t finish and send your translation. Please try again."
           }));
-          trackFunnelEventOnce("delivery_failed", { bookForm: bookForm ?? undefined, languagePair: "en-sl" });
+          trackFunnelEventOnce("delivery_failed", { bookForm: bookForm ?? undefined, languagePair: language.languagePair, targetLanguage, regionalVariant });
         }
       } catch {
         // A temporary status-check failure must not change or cancel the durable workflow.
@@ -228,7 +248,7 @@ export default function Translator() {
       stopped = true;
       window.clearInterval(interval);
     };
-  }, [bookForm, deliveryJob.status, deliveryJob.token]);
+  }, [bookForm, deliveryJob.status, deliveryJob.token, language.languagePair, regionalVariant, targetLanguage]);
 
   useEffect(() => {
     if (step !== 6) return;
@@ -283,7 +303,9 @@ export default function Translator() {
     try {
       const result = await postJson<BookFormAnalysis>("/api/book-form", {
         texts: spreads.slice(0, 3).map((spread) => spread.text),
-        visualContexts: spreads.slice(0, 3).map((spread) => spread.visualContext)
+        visualContexts: spreads.slice(0, 3).map((spread) => spread.visualContext),
+        targetLanguage,
+        regionalVariant
       }, controller.signal);
       setBookForm(result.bookForm);
       setRecommendedBookForm(result.bookForm);
@@ -410,7 +432,9 @@ export default function Translator() {
           freedom,
           parentFeedback: directionFeedback.trim() || undefined,
           previousRefrains: shownRefrains,
-          freshDraft
+          freshDraft,
+          targetLanguage,
+          regionalVariant
         })
       });
       if (!response.ok || !response.body) throw new Error("We couldn’t start the literary workshop.");
@@ -521,7 +545,7 @@ export default function Translator() {
 
   async function writeSpread1(direction?: Direction) {
     if (!bookForm || (bookForm === "refrain_verse" && !direction)) return;
-    trackFunnelEventOnce("first_page_generation_started", { bookForm, languagePair: "en-sl" });
+    trackFunnelEventOnce("first_page_generation_started", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
     const controller = new AbortController();
     translationAbort.current = controller;
     setLockedDirection(direction ?? null);
@@ -536,6 +560,8 @@ export default function Translator() {
         freedom,
         bookForm,
         sourceRhyme,
+        targetLanguage,
+        regionalVariant,
         ...(direction ? { direction } : {})
       }, controller.signal);
       setSpread1Options(result.runs.flatMap((run) =>
@@ -547,9 +573,9 @@ export default function Translator() {
           editNote: ""
         }))
       ));
-      trackFunnelEventOnce("first_page_translation_displayed", { bookForm, languagePair: "en-sl" });
+      trackFunnelEventOnce("first_page_translation_displayed", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
       setEmailGateVisible(true);
-      trackFunnelEventOnce("email_gate_displayed", { bookForm, languagePair: "en-sl" });
+      trackFunnelEventOnce("email_gate_displayed", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
       setSpread1Selection(null);
       setRequest({ loading: false, error: null });
     } catch (error) {
@@ -574,6 +600,23 @@ export default function Translator() {
     setSpread1Options((current) => current.map((option, i) => i === index ? { ...option, editNote } : option));
   }
 
+  function saveExperimentalLanguageFeedback() {
+    const feedback = languageFeedback.trim();
+    if (!feedback) return;
+    const key = "bibaling_experimental_language_feedback";
+    const previous = (() => {
+      try { return JSON.parse(sessionStorage.getItem(key) || "[]") as unknown[]; } catch { return []; }
+    })();
+    sessionStorage.setItem(key, JSON.stringify([...previous, {
+      targetLanguage,
+      regionalVariant: regionalVariant || null,
+      page: 1,
+      feedback,
+      createdAt: new Date().toISOString()
+    }]));
+    setLanguageFeedbackSaved(true);
+  }
+
   async function startPatternTest(approved: string, approvedNote: string, captureReceipt = leadReceipt) {
     if (!captureReceipt || !bookForm || (bookForm === "refrain_verse" && !lockedDirection)) return;
     const controller = new AbortController();
@@ -592,6 +635,8 @@ export default function Translator() {
         freedom,
         bookForm,
         sourceRhyme,
+        targetLanguage,
+        regionalVariant,
         ...(lockedDirection ? { direction: lockedDirection } : {}),
         approvedSpread1: approved,
         approvedSpread1Note: approvedNote || undefined
@@ -715,12 +760,14 @@ export default function Translator() {
           landingPage: sessionStorage.getItem("bibaling_original_landing_page") ||
             `${window.location.origin}${window.location.pathname}`
         },
-        languagePair: "en-sl",
+        languagePair: language.languagePair,
+        targetLanguage,
+        regionalVariant,
         bookForm
       });
       setLeadReceipt(result.receipt);
       setEmailCaptured(true);
-      trackFunnelEventOnce("generate_lead", { bookForm, languagePair: "en-sl" });
+      trackFunnelEventOnce("generate_lead", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
       const delivery = await postJson<{ jobToken: string; status: "processing" }>("/api/delivery", {
         leadReceipt: result.receipt,
         recipientEmail: email,
@@ -729,6 +776,8 @@ export default function Translator() {
         sourceRhyme,
         priority,
         freedom,
+        targetLanguage,
+        regionalVariant,
         ...(lockedDirection ? { direction: lockedDirection } : {}),
         approvedPage1: approved,
         approvedPage1Note: approvedNote || undefined
@@ -737,7 +786,7 @@ export default function Translator() {
       setDeliveryJob({ token: delivery.jobToken, status: "processing", error: null });
       setEmailRequest({ loading: false, error: null });
       setStep(8);
-      trackFunnelEventOnce("remaining_translation_started", { bookForm, languagePair: "en-sl" });
+      trackFunnelEventOnce("remaining_translation_started", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
     } catch (error) {
       setEmailRequest({
         loading: false,
@@ -822,6 +871,8 @@ export default function Translator() {
             freedom,
             bookForm,
             sourceRhyme,
+            targetLanguage,
+            regionalVariant,
             ...(lockedDirection ? { direction: lockedDirection } : {}),
             approvedVoice
           }, controller.signal);
@@ -874,7 +925,7 @@ export default function Translator() {
     const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = "bibaling-slovenian-draft.txt";
+    link.download = `bibaling-${targetLanguage}-draft.txt`;
     link.click();
     URL.revokeObjectURL(url);
   }
@@ -895,7 +946,7 @@ export default function Translator() {
   return (
     <main className="translator-shell">
       <div className="workshop-header">
-        <button className="brand workshop-reset" type="button" onClick={() => setStep(1)}>bibaling workshop</button>
+        <button className="brand workshop-reset" type="button" onClick={() => { setLanguageConfirmed(false); setStep(1); }}>bibaling workshop</button>
         <div className="header-tools">
           <button className={mockMode ? "mock-toggle active" : "mock-toggle"} type="button" onClick={toggleMockMode}>
             Mock mode {mockMode ? "on" : "off"}
@@ -908,7 +959,7 @@ export default function Translator() {
         {step === 1 && (
           <>
             <h1>Add every page from your book.</h1>
-            <p className="lead">Photograph the whole book in reading order. We’ll use the first three pages to find its voice.</p>
+            <p className="lead">Photograph the English book in reading order.</p>
             <div className="upload-onboarding">
               <figure className="photo-guide">
                 <img src="/photo-guide.png" alt="A phone photographing an entire open picture book, with both facing pages fully visible." />
@@ -939,7 +990,7 @@ export default function Translator() {
                 className="primary"
                 disabled={spreads.length < 3}
                 onClick={() => {
-                  trackFunnelEventOnce("all_photos_uploaded", { languagePair: "en-sl" });
+                  trackFunnelEventOnce("all_photos_uploaded", { languagePair: language.languagePair, targetLanguage, regionalVariant });
                   setStep(2);
                 }}
               >
@@ -1036,12 +1087,77 @@ export default function Translator() {
             {request.error && <GenerationError title="We couldn’t recommend a path." message={request.error} retry={retry} />}
             <nav>
               <button className="secondary" onClick={backFromBookForm}>Back</button>
-              <button className="primary" disabled={request.loading || !bookForm || !bookFormConfirmed} onClick={() => { setRequest({ loading: false, error: null }); setStep(4); }}>Continue</button>
+              <button className="primary" disabled={request.loading || !bookForm || !bookFormConfirmed} onClick={() => { setRequest({ loading: false, error: null }); setLanguageConfirmed(false); setStep(4); }}>Continue</button>
             </nav>
           </>
         )}
 
-        {step === 4 && (
+        {step === 4 && !languageConfirmed && (
+          <>
+            <h1>What language should we translate this book into?</h1>
+            <p className="lead">Choose the language you want to read together.</p>
+            <section className="language-choice" aria-labelledby="target-language-label">
+              <div>
+                <label id="target-language-label" htmlFor="target-language">Translate into</label>
+                <select
+                  id="target-language"
+                  value={targetLanguage}
+                  onChange={(event) => {
+                    const next = event.target.value as TargetLanguage;
+                    const config = languageConfig(next);
+                    setTargetLanguage(next);
+                    setRegionalVariant(config.defaultVariant);
+                    setLanguageFeedback("");
+                    setLanguageFeedbackSaved(false);
+                    setPriority("");
+                    setFreedom("");
+                    setDirections([]);
+                    setSelectedDirection(null);
+                    setLockedDirection(null);
+                  }}
+                >
+                  <optgroup label="Reviewed and evaluation languages">
+                    {featuredLanguages.map((option) => (
+                      <option key={option.code} value={option.code}>{option.name} · {option.autonym}</option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Experimental languages">
+                    {experimentalLanguages.map((option) => (
+                      <option key={option.code} value={option.code}>{option.name} · {option.autonym}</option>
+                    ))}
+                  </optgroup>
+                </select>
+              </div>
+              {language.config.variants?.length ? (
+                <div>
+                  <label htmlFor="regional-variant">Regional version</label>
+                  <select
+                    id="regional-variant"
+                    value={regionalVariant || language.config.defaultVariant}
+                    onChange={(event) => setRegionalVariant(event.target.value)}
+                  >
+                    {language.config.variants.map((variant) => (
+                      <option value={variant.code} key={variant.code}>{variant.label}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
+              <p>
+                {experimentalLanguage
+                  ? `${language.config.name} is experimental. You’ll have an easy way to tell us what needs improvement.`
+                  : language.config.status === "reviewed"
+                    ? "Slovenian is Bibaling’s reviewed reference language."
+                    : `${language.config.name} is ready for hands-on evaluation.`}
+              </p>
+            </section>
+            <nav>
+              <button className="secondary" onClick={() => setStep(3)}>Back</button>
+              <button className="primary" onClick={() => setLanguageConfirmed(true)}>Continue</button>
+            </nav>
+          </>
+        )}
+
+        {step === 4 && languageConfirmed && (
           <>
             <h1>What matters most for this book?</h1>
             <p className="lead">Choose the quality we must protect.</p>
@@ -1052,16 +1168,16 @@ export default function Translator() {
                 </button>
               ))}
             </div>
-            <nav><button className="secondary" onClick={() => setStep(3)}>Back</button><button className="primary" disabled={!priority} onClick={() => setStep(5)}>Continue</button></nav>
+            <nav><button className="secondary" onClick={() => setLanguageConfirmed(false)}>Back</button><button className="primary" disabled={!priority} onClick={() => setStep(5)}>Continue</button></nav>
           </>
         )}
 
         {step === 5 && (
           <>
             <h1>How freely should we adapt it?</h1>
-            <p className="lead">Choose how closely Slovenian should follow the English.</p>
+            <p className="lead">Choose how closely {language.config.name} should follow the English.</p>
             <div className="choices">
-              {freedoms.map(([value, title, description]) => (
+              {freedomsFor(targetLanguage).map(([value, title, description]) => (
                 <button className={freedom === value ? "choice selected" : "choice"} onClick={() => setFreedom(value)} key={value}>
                   <span className="radio" /><span><strong>{title}</strong><small>{description}</small></span>
                 </button>
@@ -1161,11 +1277,25 @@ export default function Translator() {
         {step === 7 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
             <h1>Let’s test the voice on one full page.</h1>
-            <p className="lead">Choose and edit the strongest Slovenian version.</p>
-            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} />
+            <p className="lead">Choose and edit the strongest {language.config.name} version.</p>
+            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
             <Source spread={spreads[0]} number={1} onExpand={setExpandedImage} />
-            {request.loading && <ProgressLog messages={translationLoadingMessages} />}
+            {request.loading && <ProgressLog messages={languageLoadingMessages(translationLoadingMessages, language.config.name)} />}
             {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} onNote={updateSpread1Note} />}
+            {!request.loading && experimentalLanguage && spread1Options.length > 0 && (
+              <aside className="language-feedback">
+                <label htmlFor="language-feedback">What should sound better in this {language.config.name} version?</label>
+                <textarea
+                  id="language-feedback"
+                  value={languageFeedback}
+                  onChange={(event) => { setLanguageFeedback(event.target.value); setLanguageFeedbackSaved(false); }}
+                  placeholder="A short note for our language evaluation"
+                />
+                <button className="secondary" type="button" disabled={!languageFeedback.trim()} onClick={saveExperimentalLanguageFeedback}>
+                  {languageFeedbackSaved ? "Feedback saved" : "Save feedback"}
+                </button>
+              </aside>
+            )}
             {request.error && <GenerationError message={request.error} retry={retry} />}
             {!request.loading && emailGateVisible && !emailCaptured && spread1Options.length > 0 && (
               <form className="email-gate" onSubmit={captureEmail}>
@@ -1221,7 +1351,7 @@ export default function Translator() {
                 ? "Your photos and Page 1 choice are still here. Try starting the delivery again."
                 : `We’re translating each remaining page, checking the whole book, and will email it to ${email.trim()}. You can safely close this page.`}
             </p>
-            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} />
+            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
             <article className="approved-card voice-reference">
               <button className="zoomable-image-button" type="button" aria-label="Open approved Page 1 photo at full size" onClick={() => setExpandedImage({ src: spreads[0].preview, alt: "Approved Page 1" })}>
                 <img src={spreads[0].preview} alt="" />
@@ -1230,7 +1360,7 @@ export default function Translator() {
               <p>{approvedSpread1}</p>
               {approvedNotes[1] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[1]}</p>}
             </article>
-            {deliveryJob.status === "processing" && <ProgressLog messages={fullBookLoadingMessages} />}
+            {deliveryJob.status === "processing" && <ProgressLog messages={languageLoadingMessages(fullBookLoadingMessages, language.config.name)} />}
             {deliveryJob.error && <GenerationError message={deliveryJob.error} retry={() => setStep(7)} />}
           </>
         )}
@@ -1239,7 +1369,7 @@ export default function Translator() {
           <>
             <h1>Do these belong in the same book?</h1>
             <p className="lead">Read them aloud and tune any line that feels off.</p>
-            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} />
+            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
             <div className="approved-grid">
               {[1, 2, 3].map((number) => (
                 <article className="approved-card" key={number}>
@@ -1318,7 +1448,7 @@ export default function Translator() {
 
         {step === 11 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
-            <h1>{request.loading ? "Writing the rest of your book." : request.error ? "Let’s finish the unread pages." : "Your full Slovenian draft."}</h1>
+            <h1>{request.loading ? "Writing the rest of your book." : request.error ? "Let’s finish the unread pages." : `Your full ${language.config.name} draft.`}</h1>
             <p className="lead">
               {request.loading
                 ? "We’re carrying your approved voice through every page."
@@ -1326,7 +1456,7 @@ export default function Translator() {
                 ? "Everything we’ve read is saved. Try again to continue."
                 : "Read each page, edit any line, then save your draft."}
             </p>
-            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} />
+            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
             {request.loading && (
               <>
                 <div className="full-book-draft approved-while-writing">
@@ -1342,19 +1472,19 @@ export default function Translator() {
                         <p className="english-reference">{page.sourceText || "Reading this page…"}</p>
                       </div>
                       <div className="slovenian-column">
-                        <label>Slovenian · ready</label>
+                        <label>{language.config.name} · ready</label>
                         <p className="approved-translation">{page.approvedText}</p>
                       </div>
                     </article>
                   ))}
                 </div>
                 <ProgressLog
-                  messages={fullBookLoadingMessages}
+                  messages={languageLoadingMessages(fullBookLoadingMessages, language.config.name)}
                   activePage={activeBookPageIndex >= 0 ? {
                     number: activeBookPageIndex + 1,
                     preview: bookPages[activeBookPageIndex].preview,
                     sourceText: bookPages[activeBookPageIndex].sourceText,
-                    phase: bookPages[activeBookPageIndex].workStatus === "reading" ? "Reading the English text" : "Writing the Slovenian translation"
+                    phase: bookPages[activeBookPageIndex].workStatus === "reading" ? "Reading the English text" : `Writing the ${language.config.name} translation`
                   } : undefined}
                 />
               </>
@@ -1371,9 +1501,9 @@ export default function Translator() {
                       <p className="english-reference">{page.sourceText}</p>
                     </div>
                     <div className="slovenian-column">
-                      <label htmlFor={`slovenian-page-${index + 1}`}>Slovenian</label>
+                      <label htmlFor={`translation-page-${index + 1}`}>{language.config.name}</label>
                       <textarea
-                        id={`slovenian-page-${index + 1}`}
+                        id={`translation-page-${index + 1}`}
                         value={page.approvedText || ""}
                         onChange={(event) => updateBookTranslation(index, event.target.value)}
                       />
@@ -1491,6 +1621,10 @@ const fullBookLoadingMessages = [
   ...translationLoadingMessages
 ];
 
+function languageLoadingMessages(messages: readonly string[], language: string) {
+  return messages.map((message) => message.replaceAll("Slovenian", language));
+}
+
 function shuffledMessages(messages: readonly string[]) {
   const shuffled = [...messages];
   for (let index = shuffled.length - 1; index > 0; index -= 1) {
@@ -1578,15 +1712,17 @@ function VoiceBrief({
   bookForm,
   direction,
   priority,
-  freedom
+  freedom,
+  targetLanguage
 }: {
   bookForm: BookForm;
   direction: Direction | null;
   priority: string;
   freedom: string;
+  targetLanguage: TargetLanguage;
 }) {
   const priorityLabel = prioritiesFor(bookForm).find(([value]) => value === priority)?.[1];
-  const freedomLabel = freedoms.find(([value]) => value === freedom)?.[1];
+  const freedomLabel = freedomsFor(targetLanguage).find(([value]) => value === freedom)?.[1];
   return (
     <aside className="locked-brief">
       <span>{direction ? "Refrain" : "Book form"}</span>

@@ -1,0 +1,19 @@
+{
+  "status": "failed",
+  "failedAt": "2026-07-31T02:45:46.560Z",
+  "completedCallCount": 2,
+  "automaticRetries": 0,
+  "totals": {
+    "callCount": 2,
+    "latencyMs": 102769,
+    "inputTokens": 3577,
+    "cachedInputTokens": 0,
+    "outputTokens": 5506,
+    "reasoningTokens": 2827,
+    "estimatedCostUsd": 0.183065
+  },
+  "error": {
+    "name": "Error",
+    "message": "mush-watch-over editorial reevaluation did not complete: max_output_tokens"
+  }
+}

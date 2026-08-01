@@ -1,4 +1,10 @@
 import { requiresRhyme, type BookForm, type SourceRhyme } from "./book-form-contract.ts";
+import {
+  isReviewedSlovenian,
+  languagePromptGuidance,
+  targetLanguageName,
+  type LanguageSelection
+} from "../languages/prompt-guidance.ts";
 
 export type Priority = "rhythm" | "meaning" | "simple";
 export type Freedom = "close" | "natural" | "playful";
@@ -119,6 +125,69 @@ Approach: ${direction.approach}
 Gender dependency: ${direction.genderDependency}`;
 }
 
+function comparativeEditorialContract(language: string, rhymeRequired: boolean) {
+  return `COMPARATIVE EDITORIAL CONTRACT
+- Return exactly three finalists with unique ranks 1, 2, and 3. Ties are forbidden.
+- Set recommendedFinalist=true for exactly one finalist: the unique rank-1 option. Set it false for ranks 2 and 3.
+- Boolean pass fields are minimum eligibility gates only. They do not make passing finalists equal and must not determine the winner by array order.
+- For every finalist, return at least one specific material strength and one specific material weakness. Empty, generic, purely complimentary, or "no weakness" assessments are invalid.
+- Compare every finalist explicitly on natural contemporary ${language}, source and picture fidelity, tone, child-friendly read-aloud rhythm/cadence, applicable rhyme, and unsupported invention.
+- Return winnerComparisons for alternative ranks 2 and 3. Each explanation must say specifically why rank 1 is better than that alternative.
+- Recommend rank 1 only if it passes every minimum requirement. If no option qualifies, do not disguise that failure by recommending the least weak candidate.
+- Write strengths, weaknesses, comparativeAssessment, rhymeAssessment explanations, and winnerComparisons in concise English for internal review. Reader-facing book text remains solely in ${language}.
+
+RHYME EVIDENCE
+- Set rhymeAssessment.required=${rhymeRequired ? "true" : "false"} for every finalist.
+${rhymeRequired
+    ? `- Identify every specific rhyme anchor being credited and quote both complete lines or spoken phrase units.
+- For each anchor, record the sound sequence from the final stressed vowel onward and classify it as full_rhyme, assonance, consonance, internal_rhyme, or no_meaningful_rhyme.
+- Judge how the complete lines sound in continuous speech, not merely their spelling.
+- Grammatical endings, repeated words, and same-root echoes are not sufficient rhyme evidence; mark those facts explicitly and set countsAsRhyme=false unless an independent spoken rhyme remains.
+- Natural child-friendly wording, fidelity, and tone outrank a technically exact but forced rhyme.`
+    : `- Rhyme is not required for this approved form/source treatment. Do not penalize a finalist for having no rhyme and do not invent rhyme to improve its rank.
+- Return an empty evidence array unless genuine source-grounded sound play needs description.`}
+- Return only the structured editorial schema. Do not expose private deliberation beyond the concise comparative fields required for review.`;
+}
+
+export function leanPageEditorialContract(args: {
+  language: string;
+  rhymeRequired: boolean;
+  evaluationConcerns?: Array<{ id: string; text: string }>;
+}) {
+  return `LEAN PAGE EDITORIAL CONTRACT
+- Return exactly three finalists with unique ranks 1, 2, and 3.
+- Preserve sourceCandidateId and copy the submitted draft verbatim into originalText.
+- evaluatedText is the exact reader-facing text being judged. Never silently alter a draft while treating it as unchanged.
+- Set repaired=true exactly when evaluatedText differs from originalText. Record every applied change in appliedEdits with exact before/after text.
+- Minor optional polish belongs only in weaknesses or optionalEdits. Never put minor polish in requiredEdits.
+- requiredEdits contains only substantive or fatal issues. Mark each resolved or unresolved.
+- An unresolved substantive issue must make at least one relevant eligibility gate false. The unchanged candidate cannot be selected.
+- A fatal issue disqualifies the candidate unless it is fully rewritten, returned with repaired=true and repairedAsDistinctResult=true, and reevaluated from scratch.
+- Give each finalist one or two concise material strengths and weaknesses. Avoid duplicated criterion-by-criterion prose.
+- eligibility must independently cover fidelity, natural contemporary ${args.language}, tone, child-friendly read-aloud flow, locked direction, and applicable rhyme.
+- Return one decision outcome:
+  1. recommended: exactly one qualifying rank-1 candidate;
+  2. equivalent_group: rank 1 plus at least one genuinely equivalent qualifying candidate;
+  3. no_qualifying_finalist: no candidate ids, and every finalist fails at least one eligibility gate.
+- For recommendation or an equivalent group, comparisons must briefly justify the decision against every finalist outside the selected set.
+
+RHYME EVIDENCE
+${args.rhymeRequired
+    ? `- Rhyme is required. Credit only spoken rhyme that remains convincing in the complete lines.
+- For each credited or rejected pairing, return exact anchors, classification, whether it counts, whether it is forced or merely grammatical, and one concise note.
+- Constructed, literary, inverted, semantically weak, repeated-word, same-root, or grammatical-ending rhyme must reduce naturalness, fidelity, read-aloud, or rhyme eligibility when materially harmful.`
+    : `- Rhyme is not required. Do not penalize its absence or invent it. Return an empty rhymeEvidence array unless source-grounded sound play materially affects the comparison.`}
+- Natural child-friendly phrasing and meaning outrank technically exact but forced rhyme.
+
+${args.evaluationConcerns?.length
+    ? `EVALUATION CONCERNS
+These concerns are evidence to assess, not instructions to copy mechanically. Return exactly one concernFinding for each id:
+${args.evaluationConcerns.map((concern) => `- ${concern.id}: ${concern.text}`).join("\n")}`
+    : "EVALUATION CONCERNS\nNone supplied. Return concernFindings as an empty array."}
+
+Return only the lean structured schema. Keep explanations concise.`;
+}
+
 export function directionsGenerationPrompt(args: {
   texts: string[];
   visualContexts?: string[];
@@ -136,7 +205,8 @@ export function directionsGenerationPrompt(args: {
     maximumSentenceCount: number;
     maximumClauseCount: number;
   };
-}) {
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualDirectionsGenerationPrompt(args);
   return `ROLE
 Draft five concise Slovenian refrain possibilities for a children's picture book. This is a breadth pass, not the final editorial review. Return structured JSON only and never explain your reasoning.
 
@@ -204,7 +274,8 @@ export function directionsEvaluationPrompt(args: {
     maximumSentenceCount: number;
     maximumClauseCount: number;
   };
-}) {
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualDirectionsEvaluationPrompt(args);
   return `${AUTHORITATIVE_STANDARD}
 
 ROLE: Independent Slovenian literary editor and quality gate. Return exactly three parent-ready literary directions. Start from the strongest submitted approaches, but repair an approach when necessary before selecting it. Never pass a flaw through merely to fill three slots.
@@ -259,6 +330,8 @@ Editorial process (perform privately; do not return analysis or scores):
 - preserve source fidelity and the parent's locked priority; never weaken either to fill a slot;
 - output only the required three options, including sourceCandidateIndex, construction, and all exact rhymePairs used for private server validation.
 
+${comparativeEditorialContract("Slovenian", args.priority === "rhythm")}
+
 EDITORIAL REGRESSION GUIDANCE
 The following rejected phrases are quality examples for private editorial judgment, not deterministic string bans:
 - "Čuvate me vi" is unnatural inversion; "čuvati" is inappropriate or regionally marked here when neutral Slovenian is available.
@@ -281,7 +354,8 @@ export function translationGenerationPrompt(args: {
   approvedSpread1?: string;
   approvedSpread1Note?: string;
   rejectionFeedback?: string;
-}) {
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualTranslationGenerationPrompt(args);
   return `${AUTHORITATIVE_STANDARD}
 
 GOAL
@@ -322,7 +396,9 @@ export function translationEvaluationPrompt(args: {
   approvedSpread1?: string;
   approvedSpread1Note?: string;
   candidatesJson: string;
-}) {
+  evaluationConcerns?: Array<{ id: string; text: string }>;
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualTranslationEvaluationPrompt(args);
   return `${AUTHORITATIVE_STANDARD}
 
 ROLE: Independent Slovenian literary editor and quality gate. Return exactly three publication-ready finalists. Start from the strongest submitted candidates, but repair a candidate when necessary before selecting it. Never pass a flaw through merely to fill three slots.
@@ -356,6 +432,16 @@ Editorial process:
 - preserve the exact locked refrain whenever it is used;
 - output only the three finalists in the required schema, with a short English strategy label and the source candidate id each finalist developed from.
 
+${leanPageEditorialContract({
+  language: "Slovenian",
+  rhymeRequired: requiresRhyme({
+    bookForm: args.bookForm ?? "refrain_verse",
+    sourceRhyme: args.sourceRhyme ?? "sustained",
+    priority: args.priority
+  }),
+  evaluationConcerns: args.evaluationConcerns
+})}
+
 Never output "čisto do gobic", invented love-growing-like-mushrooms meaning, "rad/a", incomplete grammar, awkward or unnatural Slovenian, forced rhyme, or an unrhymed finalist under rhythm priority. If a submitted candidate has one of these failures, repair it fully or use another approach.`;
 }
 
@@ -367,7 +453,8 @@ export function fullBookGenerationPrompt(args: {
   sourceRhyme?: SourceRhyme;
   direction?: DirectionBrief;
   approvedVoice: Array<{ spread: number; text: string; parentNote?: string }>;
-}) {
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualFullBookGenerationPrompt(args);
   return `${AUTHORITATIVE_STANDARD}
 
 GOAL
@@ -403,7 +490,8 @@ export function fullBookEditorialPrompt(args: {
   direction?: DirectionBrief;
   approvedVoice: Array<{ spread: number; text: string; parentNote?: string }>;
   draftsJson: string;
-}) {
+} & LanguageSelection) {
+  if (!isReviewedSlovenian(args)) return multilingualFullBookEditorialPrompt(args);
   return `${AUTHORITATIVE_STANDARD}
 
 ROLE
@@ -423,4 +511,205 @@ DRAFTS TO EDIT
 ${args.draftsJson}
 
 For every returned spread, verify fidelity, natural grammatical Slovenian, child-friendly read-aloud flow, locked-form compliance, and ${requiresRhyme({ bookForm: args.bookForm ?? "refrain_verse", sourceRhyme: args.sourceRhyme ?? "sustained", priority: args.priority }) ? "genuine phonetic rhyme" : "the absence of invented rhyme or refrain"}. Repair rather than merely report failures. Preserve exact recurring wording only for refrain_verse and make the whole sequence sound like one book. Return only the required structured JSON.`;
+}
+
+type MultilingualPromptBase = LanguageSelection & {
+  priority: Priority;
+  freedom: Freedom;
+  bookForm?: BookForm;
+  sourceRhyme?: SourceRhyme;
+  direction?: DirectionBrief;
+};
+
+function multilingualFormContract(args: MultilingualPromptBase) {
+  const language = targetLanguageName(args);
+  const bookForm = args.bookForm ?? "refrain_verse";
+  const sourceRhyme = args.sourceRhyme ?? "sustained";
+  if (bookForm === "prose_story") {
+    return `LOCKED BOOK FORM: PROSE STORY
+Write warm, fluent ${language} prose. Do not add rhyme, meter, verse lineation, a chant, or a refrain.`;
+  }
+  if (bookForm === "continuous_verse") {
+    return `LOCKED BOOK FORM: CONTINUOUS VERSE
+Preserve cadence, line structure, repetition, sound play, and ${sourceRhyme === "sustained" ? "the source's sustained rhyme" : sourceRhyme === "occasional" ? "only the source's occasional rhyme" : "its non-rhyming poetic flow"}. Never invent a fixed recurring refrain.`;
+  }
+  if (!args.direction?.refrain) throw new Error("refrain_verse requires a parent-approved refrain");
+  return `LOCKED BOOK FORM: VERSE WITH A REPEATING REFRAIN
+Use this exact parent-approved ${language} refrain wherever the source refrain appears: ${args.direction.refrain}`;
+}
+
+function multilingualPreferenceContract(args: MultilingualPromptBase) {
+  const language = targetLanguageName(args);
+  const rhymeRequired = requiresRhyme({
+    bookForm: args.bookForm ?? "refrain_verse",
+    sourceRhyme: args.sourceRhyme ?? "sustained",
+    priority: args.priority
+  });
+  const priority = args.priority === "meaning"
+    ? "Preserve meaning, picture details, jokes, emotional beats, and page turns above ornamental wording."
+    : args.priority === "simple"
+      ? `Use especially clear, child-appropriate ${language} without flattening the story.`
+      : rhymeRequired
+        ? `Use convincing spoken rhyme and read-aloud rhythm in ${language}, without distorting meaning or syntax.`
+        : `Protect natural read-aloud cadence; do not invent rhyme that the source does not sustain.`;
+  const freedom = args.freedom === "close"
+    ? `Stay close to the source while changing what idiomatic ${language} requires.`
+    : args.freedom === "natural"
+      ? `Freely repair English-shaped wording so the result sounds naturally written in ${language}.`
+      : `Reimagine wordplay and sound where useful while preserving events, picture truth, and emotional scope.`;
+  return `LOCKED PARENT PRIORITY\n${priority}\n\nCREATIVE FREEDOM\n${freedom}`;
+}
+
+type DirectionGenerationArgs = Parameters<typeof directionsGenerationPrompt>[0];
+function multilingualDirectionsGenerationPrompt(args: DirectionGenerationArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+TASK
+Draft exactly five compact, genuinely different ${language} refrain candidates from the corrected English and visual context. This is a private breadth pass. Variation must come from rhythm, syntax, concise wordplay, and rhyme strategy—not invented content or extra length.
+
+${multilingualPreferenceContract({ ...args, bookForm: "refrain_verse", sourceRhyme: "sustained" })}
+
+CORRECTED ENGLISH
+${args.texts.map((text, index) => `${index + 1}. ${text}`).join("\n")}
+
+VISUAL CONTEXT
+${(args.visualContexts || []).map((text, index) => `${index + 1}. ${text}`).join("\n")}
+
+LIMITS
+- Maximum words: ${args.refrainBudget?.maximumWordCount ?? 12}
+- Maximum characters: ${args.refrainBudget?.maximumCharacterCount ?? 120}
+- Maximum sentences: ${args.refrainBudget?.maximumSentenceCount ?? 1}
+- At most two short semantic lines
+${args.parentFeedback ? `\nPARENT FEEDBACK\n${args.parentFeedback}` : ""}
+${args.previousRefrains?.length ? `\nDO NOT REPEAT\n${args.previousRefrains.map((item) => `- ${item}`).join("\n")}` : ""}
+
+Return only the required candidates schema. Keep English names and approach labels short; every refrain must be solely in ${language}.`;
+}
+
+type DirectionEvaluationArgs = Parameters<typeof directionsEvaluationPrompt>[0];
+function multilingualDirectionsEvaluationPrompt(args: DirectionEvaluationArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+ROLE
+Act as an independent native ${language} children's-book editor. Repair or replace weak drafts and return exactly three compact, parent-ready refrain options. Never retain awkward language merely to fill three slots.
+
+${multilingualPreferenceContract({ ...args, bookForm: "refrain_verse", sourceRhyme: "sustained" })}
+
+CORRECTED ENGLISH
+${args.texts.map((text, index) => `${index + 1}. ${text}`).join("\n")}
+
+VISUAL CONTEXT
+${(args.visualContexts || []).map((text, index) => `${index + 1}. ${text}`).join("\n")}
+
+PRIVATE DRAFTS
+${args.directionsJson}
+
+HARD LIMITS
+- Maximum words: ${args.refrainBudget?.maximumWordCount ?? 12}
+- Maximum characters: ${args.refrainBudget?.maximumCharacterCount ?? 120}
+- Maximum sentences: ${args.refrainBudget?.maximumSentenceCount ?? 1}
+
+Privately verify fidelity, native grammar, natural read-aloud flow, concise repeatability, and spoken rhyme when required. Return exactly one finalist with construction "couplet", exactly one with construction "playful_hook", and exactly one with construction "lyrical_refrain". The three options must differ visibly in opening, syntax, rhythm, and rhyme pair.
+
+${comparativeEditorialContract(language, args.priority === "rhythm")}
+
+Labels/descriptions may be English; refrain text must be ${language}.`;
+}
+
+type TranslationGenerationArgs = Parameters<typeof translationGenerationPrompt>[0];
+function multilingualTranslationGenerationPrompt(args: TranslationGenerationArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+GOAL
+Create exactly six private, genuinely different ${language} adaptations for Page ${args.spreadNumber}.
+
+${multilingualFormContract(args)}
+${multilingualPreferenceContract(args)}
+
+CORRECTED ENGLISH
+${args.source}
+${args.visualContext ? `\nVISUAL CONTEXT\n${args.visualContext}` : ""}
+${args.approvedSpread1 ? `\nAPPROVED PAGE 1 VOICE — imitate, never rewrite\n${args.approvedSpread1}` : ""}
+${args.approvedSpread1Note ? `\nPARENT EDIT NOTE — apply as binding editorial evidence\n${args.approvedSpread1Note}` : ""}
+
+Return complete reader-facing ${language} text, never notes or fragments. Preserve exact approved refrain wording only for refrain_verse. Give candidates ids c01–c06 and short English strategy labels. Return only the required schema.`;
+}
+
+type TranslationEvaluationArgs = Parameters<typeof translationEvaluationPrompt>[0];
+function multilingualTranslationEvaluationPrompt(args: TranslationEvaluationArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+ROLE
+Act as an independent native ${language} children's-book editor. Repair the strongest private drafts and return exactly three publication-ready finalists.
+
+${multilingualFormContract(args)}
+${multilingualPreferenceContract(args)}
+
+CORRECTED ENGLISH — PAGE ${args.spreadNumber}
+${args.source}
+${args.visualContext ? `\nVISUAL CONTEXT\n${args.visualContext}` : ""}
+${args.approvedSpread1 ? `\nAPPROVED PAGE 1 VOICE\n${args.approvedSpread1}` : ""}
+${args.approvedSpread1Note ? `\nPARENT EDIT NOTE\n${args.approvedSpread1Note}` : ""}
+
+PRIVATE CANDIDATES
+${args.candidatesJson}
+
+For each returned text, set every schema pass field true only after the text itself passes fidelity, native ${language} grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement.
+
+${leanPageEditorialContract({
+  language,
+  rhymeRequired: requiresRhyme({
+    bookForm: args.bookForm ?? "refrain_verse",
+    sourceRhyme: args.sourceRhyme ?? "sustained",
+    priority: args.priority
+  }),
+  evaluationConcerns: args.evaluationConcerns
+})}`;
+}
+
+type FullBookGenerationArgs = Parameters<typeof fullBookGenerationPrompt>[0];
+function multilingualFullBookGenerationPrompt(args: FullBookGenerationArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+GOAL
+Translate every requested page into one coherent ${language} book voice.
+
+${multilingualFormContract(args)}
+${multilingualPreferenceContract(args)}
+
+APPROVED VOICE REFERENCES
+${args.approvedVoice.map((item) => `PAGE ${item.spread}\n${item.text}${item.parentNote ? `\nPARENT NOTE: ${item.parentNote}` : ""}`).join("\n\n")}
+
+CORRECTED ENGLISH PAGES
+${args.spreads.map((item) => `PAGE ${item.spread}\n${item.source}\nVISUAL CONTEXT: ${item.visualContext}`).join("\n\n")}
+
+Return exactly one complete ${language} text for every requested page. Keep repeated wording exact, preserve sequence and picture truth, and return only the required schema.`;
+}
+
+type FullBookEditorialArgs = Parameters<typeof fullBookEditorialPrompt>[0];
+function multilingualFullBookEditorialPrompt(args: FullBookEditorialArgs) {
+  const language = targetLanguageName(args);
+  return `${languagePromptGuidance(args)}
+
+ROLE
+Act as the final native ${language} children's-book editor. Repair every submitted page and return exactly one publication-ready text for every requested page.
+
+${multilingualFormContract(args)}
+${multilingualPreferenceContract(args)}
+
+APPROVED VOICE REFERENCES
+${args.approvedVoice.map((item) => `PAGE ${item.spread}\n${item.text}${item.parentNote ? `\nPARENT NOTE: ${item.parentNote}` : ""}`).join("\n\n")}
+
+AUTHORITATIVE ENGLISH
+${args.spreads.map((item) => `PAGE ${item.spread}\n${item.source}`).join("\n\n")}
+
+DRAFTS
+${args.draftsJson}
+
+Privately verify fidelity, native ${language} grammar, child-friendly read-aloud flow, locked-form compliance, repeated wording, selected regional/script variant, and applicable spoken rhyme. Return only the required schema.`;
 }

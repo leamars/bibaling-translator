@@ -1,0 +1,638 @@
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import OpenAI from "openai";
+import { z } from "zod";
+import {
+  deriveRefrainBudget,
+  editorialOptionsSchema,
+  validateDirectionEditorialResult
+} from "../app/api/direction-pipeline.ts";
+import {
+  directionsEvaluationPrompt,
+  translationEvaluationPrompt,
+  type DirectionBrief
+} from "../app/api/translation-prompts.ts";
+import {
+  comparativeJsonProperties,
+  comparativeJsonRequired,
+  selectRecommendedFinalist,
+  winnerComparisonsJsonSchema,
+  winnerComparisonsSchema
+} from "../app/api/editorial-contract.ts";
+import {
+  leanPageEditorialJsonSchema,
+  leanPageEditorialResultSchema,
+  resolveLeanPageDecision
+} from "../app/api/page-editorial-contract.ts";
+import { requiresRhyme } from "../app/api/book-form-contract.ts";
+import {
+  calculateCost,
+  pricingFor,
+  type UsageRecord
+} from "../app/api/openai-control.ts";
+import { MULTILINGUAL_EVALUATION_FIXTURES } from "../tests/fixtures/multilingual-evaluation-fixtures.ts";
+
+const SOURCE_DIRECTORY = resolve("artifacts/spanish-evaluation-1785444427987");
+const REVIEW_BUNDLE_PATH = resolve(SOURCE_DIRECTORY, "review-bundle.json");
+const HUMAN_REVIEW_PATH = resolve(SOURCE_DIRECTORY, "finalized-human-review.json");
+const PRIOR_RUN_DIRECTORY = resolve(
+  "artifacts/spanish-editor-only-reevaluation-1785466884205"
+);
+const PRIOR_REFRAIN_RESPONSE_PATH = resolve(
+  "artifacts/spanish-editor-only-reevaluation-1785465843780",
+  "01-refrain-raw-response.json"
+);
+const MODEL = "gpt-5.6-sol";
+const REASONING_EFFORT = "low";
+const TARGET_LANGUAGE = "es" as const;
+const REGIONAL_VARIANT = "es-ES";
+const CALL_COUNT = 1;
+const PAGE_EDITOR_OUTPUT_TOKENS = 2_500;
+const MAX_VERIFICATION_COST_USD = 0.14;
+
+const directionEditorialJsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    options: {
+      type: "array",
+      minItems: 3,
+      maxItems: 3,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          sourceCandidateIndex: { type: "integer", minimum: -1, maximum: 4 },
+          label: { type: "string", maxLength: 40 },
+          refrain: { type: "string", maxLength: 320 },
+          description: { type: "string", maxLength: 120 },
+          genderDependency: { type: "string", maxLength: 120 },
+          construction: {
+            type: "string",
+            enum: ["couplet", "playful_hook", "lyrical_refrain"]
+          },
+          rhymePairs: {
+            type: "array",
+            minItems: 1,
+            maxItems: 2,
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                endingA: { type: "string", maxLength: 30 },
+                endingB: { type: "string", maxLength: 30 }
+              },
+              required: ["endingA", "endingB"]
+            }
+          },
+          fidelityPass: { type: "boolean" },
+          grammarPass: { type: "boolean" },
+          readAloudPass: { type: "boolean" },
+          directionPass: { type: "boolean" },
+          rhymePass: { type: "boolean" },
+          ...comparativeJsonProperties
+        },
+        required: [
+          "sourceCandidateIndex",
+          "label",
+          "refrain",
+          "description",
+          "genderDependency",
+          "construction",
+          "rhymePairs",
+          "fidelityPass",
+          "grammarPass",
+          "readAloudPass",
+          "directionPass",
+          "rhymePass",
+          ...comparativeJsonRequired
+        ]
+      }
+    },
+    winnerComparisons: winnerComparisonsJsonSchema
+  },
+  required: ["options", "winnerComparisons"]
+} as const;
+
+type SavedFixture = {
+  fixtureId: string;
+  category: string;
+  sourceBook: string;
+  sourceAsset: string;
+  englishSource: string;
+  visualContext: string;
+  bookForm: "prose_story" | "continuous_verse" | "refrain_verse";
+  sourceRhyme: "none" | "sustained" | "occasional" | "uncertain";
+  requirements: string;
+  draftOptions: Array<{ id: string; strategy: string; text: string }>;
+  finalSelectedOutput: string;
+};
+
+type SavedBundle = {
+  refrainSetup: {
+    englishSources: string[];
+    survivingDrafts: Array<{
+      name: string;
+      refrain: string;
+      approach: string;
+      directionIndex: number;
+    }>;
+    selectedDirection: DirectionBrief;
+    editorialOptions: Array<{ refrain: string }>;
+  };
+  fixtures: SavedFixture[];
+};
+
+type HumanConclusion = {
+  type: "preferred" | "equivalent" | "none";
+  candidateIds: string[];
+};
+
+type HumanItem = {
+  fixtureId: string;
+  humanConclusion: HumanConclusion;
+  candidates: Array<{
+    candidateId: string;
+    exactText: string;
+    rating: string | null;
+    reasonTags: string[];
+    explanation: string;
+    preferredRewrite: string;
+    lineComments: unknown[];
+  }>;
+  selectableCandidates: Array<{
+    candidateId: string;
+    source: string;
+    exactText: string;
+  }>;
+  timestamp: string;
+};
+
+type HumanReview = {
+  evaluationId: string;
+  runId: string;
+  exportedAt: string;
+  items: HumanItem[];
+};
+
+function completedJson(response: {
+  status?: string;
+  output_text?: string;
+  incomplete_details?: { reason?: string } | null;
+}, stage: string) {
+  if (response.status !== "completed" || !response.output_text?.trim()) {
+    throw new Error(
+      `${stage} did not complete: ${
+        response.incomplete_details?.reason || response.status || "missing output"
+      }`
+    );
+  }
+  return JSON.parse(response.output_text);
+}
+
+function validateHumanReview(review: HumanReview) {
+  if (review.items.length !== 7) throw new Error("Finalized human review must contain seven items.");
+  for (const item of review.items) {
+    const ids = item.humanConclusion.candidateIds;
+    const validShape =
+      (item.humanConclusion.type === "preferred" && ids.length === 1) ||
+      (item.humanConclusion.type === "equivalent" && ids.length >= 2) ||
+      (item.humanConclusion.type === "none" && ids.length === 0);
+    const selectable = new Set(item.selectableCandidates.map((candidate) => candidate.candidateId));
+    if (!validShape || !ids.every((id) => selectable.has(id)) || !item.timestamp) {
+      throw new Error(`Human conclusion for ${item.fixtureId} is incomplete or invalid.`);
+    }
+  }
+}
+
+function sumUsage(records: UsageRecord[]) {
+  return {
+    callCount: records.length,
+    latencyMs: records.reduce((sum, record) => sum + record.latencyMs, 0),
+    inputTokens: records.reduce((sum, record) => sum + record.inputTokens, 0),
+    cachedInputTokens: records.reduce((sum, record) => sum + record.cachedInputTokens, 0),
+    outputTokens: records.reduce((sum, record) => sum + record.outputTokens, 0),
+    reasoningTokens: records.reduce((sum, record) => sum + record.reasoningTokens, 0),
+    estimatedCostUsd: records.reduce((sum, record) => sum + record.estimatedCostUsd, 0)
+  };
+}
+
+function humanTexts(item: HumanItem) {
+  const byId = new Map(
+    item.selectableCandidates.map((candidate) => [candidate.candidateId, candidate.exactText])
+  );
+  return item.humanConclusion.candidateIds.map((id) => ({
+    candidateId: id,
+    exactText: byId.get(id) || ""
+  }));
+}
+
+function selectedCandidateMatchesHumanConclusion(
+  human: HumanItem,
+  recommendedText: string,
+  recommendedSourceCandidateId?: string
+) {
+  return humanTexts(human).some((candidate) =>
+    candidate.exactText === recommendedText ||
+    candidate.candidateId === recommendedSourceCandidateId
+  );
+}
+
+function selectionLevelAgreement(args: {
+  human: HumanItem;
+  selection:
+    | { ok: true; finalist: { text?: string; refrain?: string; sourceCandidateId?: string } }
+    | { ok: false; error: { code: string } };
+}) {
+  if (args.human.humanConclusion.type === "none") {
+    return {
+      agrees: !args.selection.ok &&
+        args.selection.error.code === "NO_QUALIFYING_FINALIST",
+      basis: args.selection.ok
+        ? "Human rejected the entire set, but the editor recommended a finalist."
+        : "Human rejected the entire set; agreement requires the editor to return NO_QUALIFYING_FINALIST."
+    };
+  }
+  if (!args.selection.ok) {
+    return {
+      agrees: false,
+      basis: "Human supplied an accepted candidate or equivalent group, but the editor rejected the set."
+    };
+  }
+  const recommendedText =
+    args.selection.finalist.text || args.selection.finalist.refrain || "";
+  const agrees = selectedCandidateMatchesHumanConclusion(
+    args.human,
+    recommendedText,
+    args.selection.finalist.sourceCandidateId
+  );
+  return {
+    agrees,
+    basis: args.human.humanConclusion.type === "equivalent"
+      ? "Agreement means the editor recommendation falls anywhere within the completed human equivalent group."
+      : "Agreement means the editor recommendation matches the completed human preferred candidate."
+  };
+}
+
+async function main() {
+  if (
+    !process.argv.includes("--live") ||
+    process.env.CONFIRM_SPANISH_EDITOR_ONLY !== "VERIFY_LEAN_JIGGLY_EDITOR"
+  ) {
+    throw new Error(
+      "This verification requires --live and CONFIRM_SPANISH_EDITOR_ONLY=VERIFY_LEAN_JIGGLY_EDITOR."
+    );
+  }
+  const pricing = pricingFor(MODEL);
+  const calculatedRemainingMaximum =
+    calculateCost(
+      {
+        inputTokens: 13_000,
+        cachedInputTokens: 0,
+        outputTokens: PAGE_EDITOR_OUTPUT_TOKENS
+      },
+      pricing
+    );
+  if (
+    calculatedRemainingMaximum > MAX_VERIFICATION_COST_USD
+  ) {
+    throw new Error(
+      `Verification cost $${calculatedRemainingMaximum.toFixed(6)} exceeds the approved $${MAX_VERIFICATION_COST_USD.toFixed(2)} ceiling.`
+    );
+  }
+
+  const [savedBundle, humanReview, priorRefrainResponse] = await Promise.all([
+    readFile(REVIEW_BUNDLE_PATH, "utf8").then(
+      (value) => JSON.parse(value) as SavedBundle
+    ),
+    readFile(HUMAN_REVIEW_PATH, "utf8").then(
+      (value) => JSON.parse(value) as HumanReview
+    ),
+    readFile(PRIOR_REFRAIN_RESPONSE_PATH, "utf8").then(JSON.parse)
+  ]);
+  validateHumanReview(humanReview);
+  if (savedBundle.fixtures.length !== 6) {
+    throw new Error("Saved evaluation bundle must contain exactly six fixtures.");
+  }
+
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey || apiKey === "your_actual_key_here") {
+    throw new Error("OPENAI_API_KEY is required.");
+  }
+  const client = new OpenAI({ apiKey, maxRetries: 0 });
+  const { controlledResponse } = await import("../app/api/openai-control.ts");
+  const outputDirectory = resolve(
+    "artifacts",
+    `spanish-editor-only-reevaluation-${Date.now()}`
+  );
+  await mkdir(outputDirectory, { recursive: true });
+  await writeFile(
+    resolve(outputDirectory, "run-manifest.json"),
+    `${JSON.stringify(
+      {
+        runType: "spanish_lean_editor_contract_verification",
+        startedAt: new Date().toISOString(),
+        sourceDirectory: SOURCE_DIRECTORY,
+        priorRunDirectory: PRIOR_RUN_DIRECTORY,
+        preservedSuccessfulRefrainResponse: PRIOR_REFRAIN_RESPONSE_PATH,
+        humanReviewPath: HUMAN_REVIEW_PATH,
+        model: MODEL,
+        reasoningEffort: REASONING_EFFORT,
+        automaticRetries: 0,
+        plannedCallCount: CALL_COUNT,
+        pageEditorOutputTokens: PAGE_EDITOR_OUTPUT_TOKENS,
+        maximumEstimatedCostUsd: calculatedRemainingMaximum,
+        approvedCostCeilingUsd: MAX_VERIFICATION_COST_USD
+      },
+      null,
+      2
+    )}\n`
+  );
+
+  const usage: UsageRecord[] = [];
+  const results: unknown[] = [];
+  const humanByFixture = new Map(
+    humanReview.items.map((item) => [item.fixtureId, item])
+  );
+
+  try {
+    const mushroomFixtures = savedBundle.fixtures.filter(
+      (fixture) => fixture.sourceBook === "I Love You So Mush"
+    );
+    const refrainBudget = deriveRefrainBudget(savedBundle.refrainSetup.englishSources);
+    const directionPrompt = directionsEvaluationPrompt({
+      texts: savedBundle.refrainSetup.englishSources,
+      visualContexts: mushroomFixtures.map((fixture) => fixture.visualContext),
+      priority: "rhythm",
+      freedom: "natural",
+      targetLanguage: TARGET_LANGUAGE,
+      regionalVariant: REGIONAL_VARIANT,
+      refrainBudget,
+      directionsJson: JSON.stringify(savedBundle.refrainSetup.survivingDrafts)
+    });
+    const parsedDirection = editorialOptionsSchema.parse(
+      completedJson(priorRefrainResponse, "Preserved refrain editorial reevaluation")
+    );
+    const directionDiagnostics = validateDirectionEditorialResult(
+      parsedDirection,
+      refrainBudget,
+      true,
+      savedBundle.refrainSetup.survivingDrafts.length,
+      TARGET_LANGUAGE
+    );
+    const directionSelection = selectRecommendedFinalist({
+      finalists: parsedDirection.options,
+      winnerComparisons: parsedDirection.winnerComparisons,
+      rhymeRequired: true
+    });
+    const directionWinner = directionSelection.ok
+      ? directionSelection.finalist
+      : null;
+    const directionHuman = humanByFixture.get("refrain-lab");
+    if (!directionHuman) throw new Error("Finalized refrain review is missing.");
+    results.push({
+      fixtureId: "refrain-lab",
+      previousAutomaticSelection: savedBundle.refrainSetup.selectedDirection.refrain,
+      savedDrafts: savedBundle.refrainSetup.survivingDrafts,
+      prompt: directionPrompt,
+      finalists: parsedDirection.options,
+      winnerComparisons: parsedDirection.winnerComparisons,
+      selection: directionSelection,
+      hardFailures: directionDiagnostics.hardFailures,
+      advisoryWarnings: directionDiagnostics.qualityWarnings,
+      humanConclusion: directionHuman.humanConclusion,
+      humanConclusionTexts: humanTexts(directionHuman),
+      humanCandidateReviews: directionHuman.candidates,
+      selectionLevelAgreement: selectionLevelAgreement({
+        human: directionHuman,
+        selection: directionSelection
+      }),
+      concernRecognition:
+        "Assess separately from selection-level agreement using candidate ratings, required edits, written explanations, and line comments.",
+      usage: {
+        preservedFrom: PRIOR_RUN_DIRECTORY,
+        includedInPriorSpendUsd: true
+      }
+    });
+
+    const verificationFixtures = savedBundle.fixtures.filter(
+      (fixture) => fixture.fixtureId === "mush-jiggly-orange"
+    );
+    if (verificationFixtures.length !== 1) {
+      throw new Error("The saved mush-jiggly-orange fixture is missing or duplicated.");
+    }
+    for (const [index, fixture] of verificationFixtures.entries()) {
+      const approvedFixture = MULTILINGUAL_EVALUATION_FIXTURES.find(
+        (candidate) => candidate.id === fixture.fixtureId
+      );
+      if (!approvedFixture) {
+        throw new Error(`Approved fixture definition is missing ${fixture.fixtureId}.`);
+      }
+      const direction =
+        fixture.bookForm === "refrain_verse"
+          ? savedBundle.refrainSetup.selectedDirection
+          : undefined;
+      const promptBase = {
+        spreadNumber: 1,
+        source: fixture.englishSource,
+        visualContext: fixture.visualContext,
+        priority: approvedFixture.priority,
+        freedom: approvedFixture.freedom,
+        bookForm: fixture.bookForm,
+        sourceRhyme: fixture.sourceRhyme,
+        direction,
+        targetLanguage: TARGET_LANGUAGE,
+        regionalVariant: REGIONAL_VARIANT
+      };
+      const editorialPrompt = translationEvaluationPrompt({
+        ...promptBase,
+        candidatesJson: JSON.stringify(fixture.draftOptions),
+        evaluationConcerns: [
+          {
+            id: "move-c06-forest-line-before-refrain",
+            text: "For c06, move “¡Hacéis bailar al bosque entero!” before the repeated refrain."
+          },
+          {
+            id: "move-c02-forest-line-before-refrain",
+            text: "For c02, move “¡Le dais ritmo al bosque entero!” before the repeated refrain."
+          }
+        ]
+      });
+      const editorResult = await controlledResponse({
+        client,
+        requestSignal: AbortSignal.timeout(120_000),
+        action: `spanish-reevaluation.${fixture.fixtureId}.editor`,
+        model: MODEL,
+        maxOutputTokens: PAGE_EDITOR_OUTPUT_TOKENS,
+        timeoutMs: 120_000,
+        body: {
+          model: MODEL,
+          reasoning: { effort: REASONING_EFFORT },
+          input: editorialPrompt,
+          text: {
+            format: {
+              type: "json_schema",
+              name: "spanish_page_comparative_reevaluation",
+              strict: true,
+              schema: leanPageEditorialJsonSchema
+            }
+          }
+        }
+      });
+      usage.push(editorResult.usage);
+      await writeFile(
+        resolve(
+          outputDirectory,
+          `${String(index + 1).padStart(2, "0")}-${fixture.fixtureId}-raw-response.json`
+        ),
+        `${JSON.stringify(editorResult.response, null, 2)}\n`
+      );
+      const parsed = leanPageEditorialResultSchema.parse(
+        completedJson(editorResult.response, `${fixture.fixtureId} editorial reevaluation`)
+      );
+      const rhymeRequired = requiresRhyme({
+        bookForm: fixture.bookForm,
+        sourceRhyme: fixture.sourceRhyme,
+        priority: promptBase.priority
+      });
+      const selection = resolveLeanPageDecision({
+        result: parsed,
+        rhymeRequired,
+        sourceCandidates: fixture.draftOptions,
+        expectedConcernIds: [
+          "move-c06-forest-line-before-refrain",
+          "move-c02-forest-line-before-refrain"
+        ]
+      });
+      const human = humanByFixture.get(fixture.fixtureId);
+      if (!human) throw new Error(`Finalized human review is missing ${fixture.fixtureId}.`);
+      const selectedIds = selection.ok
+        ? selection.finalists.map((finalist) => finalist.sourceCandidateId)
+        : [];
+      const humanIds = new Set(human.humanConclusion.candidateIds);
+      const agreesWithHuman =
+        human.humanConclusion.type === "none"
+          ? selection.ok && selection.outcome === "no_qualifying_finalist"
+          : selectedIds.some((id) => humanIds.has(id));
+      results.push({
+        fixtureId: fixture.fixtureId,
+        category: fixture.category,
+        sourceBook: fixture.sourceBook,
+        sourceAsset: fixture.sourceAsset,
+        englishSource: fixture.englishSource,
+        visualContext: fixture.visualContext,
+        bookForm: fixture.bookForm,
+        sourceRhyme: fixture.sourceRhyme,
+        spanishVariant: REGIONAL_VARIANT,
+        previousAutomaticSelection:
+          fixture.finalSelectedOutput,
+        savedDrafts: fixture.draftOptions,
+        prompt: editorialPrompt,
+        finalists: parsed.finalists,
+        decision: parsed.decision,
+        concernFindings: parsed.concernFindings,
+        selection,
+        humanConclusion: human.humanConclusion,
+        humanConclusionTexts: humanTexts(human),
+        humanCandidateReviews: human.candidates,
+        selectionLevelAgreement: agreesWithHuman,
+        recommendedUnrepairedSubstantiveEdit:
+          selection.ok &&
+          selection.outcome !== "no_qualifying_finalist" &&
+          selection.finalists.some((finalist) =>
+            finalist.requiredEdits.some((edit) => !edit.resolved)
+          ),
+        usage: editorResult.usage
+      });
+    }
+
+    if (usage.length !== CALL_COUNT) {
+      throw new Error(`Expected exactly ${CALL_COUNT} calls, recorded ${usage.length}.`);
+    }
+    const completedAt = new Date().toISOString();
+    const bundle = {
+      runType: "spanish_lean_editor_contract_verification",
+      completedAt,
+      sourceDirectory: SOURCE_DIRECTORY,
+      preservedHumanReview: {
+        path: HUMAN_REVIEW_PATH,
+        evaluationId: humanReview.evaluationId,
+        runId: humanReview.runId,
+        exportedAt: humanReview.exportedAt
+      },
+      targetLanguage: TARGET_LANGUAGE,
+      regionalVariant: REGIONAL_VARIANT,
+      model: MODEL,
+      reasoningEffort: REASONING_EFFORT,
+      automaticRetries: 0,
+      plannedCallCount: CALL_COUNT,
+      actualCallCount: usage.length,
+      pageEditorOutputTokens: PAGE_EDITOR_OUTPUT_TOKENS,
+      maximumEstimatedCostUsd: calculatedRemainingMaximum,
+      approvedCostCeilingUsd: MAX_VERIFICATION_COST_USD,
+      totals: sumUsage(usage),
+      results
+    };
+    await writeFile(
+      resolve(outputDirectory, "reevaluation-bundle.json"),
+      `${JSON.stringify(bundle, null, 2)}\n`
+    );
+    await writeFile(
+      resolve(outputDirectory, "run-manifest.json"),
+      `${JSON.stringify(
+        {
+          runType: bundle.runType,
+          status: "completed",
+          startedAt: JSON.parse(
+            await readFile(resolve(outputDirectory, "run-manifest.json"), "utf8")
+          ).startedAt,
+          completedAt,
+          sourceDirectory: SOURCE_DIRECTORY,
+          humanReviewPath: HUMAN_REVIEW_PATH,
+          model: MODEL,
+          reasoningEffort: REASONING_EFFORT,
+          automaticRetries: 0,
+          plannedCallCount: CALL_COUNT,
+          actualCallCount: usage.length,
+          pageEditorOutputTokens: PAGE_EDITOR_OUTPUT_TOKENS,
+          maximumEstimatedCostUsd: calculatedRemainingMaximum,
+          approvedCostCeilingUsd: MAX_VERIFICATION_COST_USD,
+          totals: bundle.totals
+        },
+        null,
+        2
+      )}\n`
+    );
+    console.log(
+      JSON.stringify(
+        {
+          outputDirectory,
+          status: "completed",
+          totals: bundle.totals
+        },
+        null,
+        2
+      )
+    );
+  } catch (error) {
+    const failure = {
+      status: "failed",
+      failedAt: new Date().toISOString(),
+      completedCallCount: usage.length,
+      automaticRetries: 0,
+      totals: sumUsage(usage),
+      error:
+        error instanceof Error
+          ? { name: error.name, message: error.message }
+          : { name: "UnknownError", message: String(error) }
+    };
+    await writeFile(
+      resolve(outputDirectory, "failure.json"),
+      `${JSON.stringify(failure, null, 2)}\n`
+    );
+    console.error(JSON.stringify({ outputDirectory, ...failure }, null, 2));
+    process.exitCode = 1;
+  }
+}
+
+void main();

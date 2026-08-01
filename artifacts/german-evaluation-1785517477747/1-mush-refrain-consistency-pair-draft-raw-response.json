@@ -1,0 +1,164 @@
+{
+  "id": "resp_0b4a675af23b8533006a6cd5a6bfc4819f81047fd7862bb547",
+  "object": "response",
+  "created_at": 1785517478,
+  "status": "completed",
+  "background": false,
+  "billing": {
+    "payer": "developer"
+  },
+  "completed_at": 1785517516,
+  "error": null,
+  "frequency_penalty": 0,
+  "incomplete_details": null,
+  "instructions": null,
+  "max_output_tokens": 3500,
+  "max_tool_calls": null,
+  "model": "gpt-5.6-sol",
+  "moderation": null,
+  "output": [
+    {
+      "id": "rs_0b4a675af23b8533006a6cd5a7badc819fb95b5e967244789f",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbNXMVIwGJhoo9wku-SfNftfIJT7kV9vxue38K3J3nL6ZkVpV-awGqM-bePMBnCSsJISB3S9c0wjmYezEYJEze0RnPG-TwqExEu0juHG18MLBmx4YQ3Sc5g8wtZV7jQPblirI1msM6wDWFhkmqIfKQt8L8IHU2-CsukR1Qm_CR_HCUiYbZusY4pMWexIUyiSpihyLkePNuTcY47yxfdRJuOCCNpPVqZAQkmM2KvmACK1WvFnangoBkjCcKZ13UFR7IJfA808K-qcRpB0xIL7iBR8W5PiRzjdZILn9hkvfpoSLiEBu9OYUvumyqEIdR25YFHUJDClnmpqhOFi1N7S5G1XcFSHmn0isFkA6bciyj_KzDtmg0aT6jLrgdNFiA-kPJn0LZovz2D5N3Fx5WM3yPfJuOin69bBJSwlBAMFJjXOKLQomBDW0gXYEn4Dk9BEBiVDOaLPxUHAMslbuMyzaOT-FJ8AzmHS_eKWGrqvcv5DuhVW0CLJcbZIqaEc2Xs8GyG_mwc8AxZS5kN6ZcoJCZCpG_nRuC1vXXVXWl7BZYKP7bQeBsZ2WquV92xjXiF-V3SIUoqr-G7_XTIvEwJ4GVtTbOjx80dT3GWF4HJzzXhGJuyG1yeSqy9e-dISRxA7hDKTVYwoSbmxf5zClZx0Dcge1v018Vn0TbLfqFKZrG-Q9gtSqg_JJebq3VCD2bTpQs6R48JHqL-lwKxPb19lN6f-rDoTafGARBlhMZaB9UoiqwwQFmn3Ez4U_7oB3w7-iIdb2YCQVS5tQs3GBtltUILBCQdltqixL--o7-4Uxa1xi7gZpw4oUPx4admF3_rg14aNMpM1AUl70rc-QXzxoBIDtRyr28b1K0iFpGnsZCekPpfU7V927aZwadkCeVFHWXyPf9jXrxiXSCik1T2JJhn6QYupYOZmFl_UlGpufAB2pkmp7ZyF4N2SecX2PA1XozzjLqxTWBqM2quhh-ka1vi1UewDPKfoaghy03kCbqH750TSzf-41fr67KxdeR-GoYVeWfPfLhlufG-RULLzKt819xKkTUy-AozOGqLmx-I8XbfVP6E9NQgKoRsYwRt7Vl54LmWVSwURRCBEnkfsRe1s4MyUl21PjrCR4b4h8gnLf1vDPUe0zA8SAfSBR9xWaeJYOm6HQ2OvJQZU0sqhhNhav4Kup3nGTH4XxglhL1xjhKFRVXsqxwOYsCvhqhtM_Df30LldghO5ATtX80yCOSDNKHtoPQnvYh25IkmzoSHxZKKZYm6yoGTRhXq3D2rzK4t6KQ8U7Y-jEkQ9ElrfzJAmF_PK4r6KrT0PMoBjWj4Lv0Qz8cODXX659U_1tU19ZsK3saDEhaRnzoo9OZIAQn5KUtuAdtpcOcTnjgo0IsS0E7tlfyfPZEkZEUQK6gbHzZCpr3PIVacSUKYJSiLTa-L8K08_GdONyTBYtpl9flfVKqtZvcivvrdqiw1pFJkq8l92Mwxr4r5JThpeVd1gx8d1A8MeSQW-heykwnTJyt62w_hn_neE_5d7Okw_3G6f70Oi4i7RUEWxvYYSN2RiAp10n7wldnPoePGRtnkaljF6sAtRy5kApoRnWKVHVpes0NgGcSCAhemmthRpq2YCwSeIAKPwa9l-o63xowX3RvuuOgg7r8ZO_BQMWLL1GhfCmcKspvXxpI8xo-j-07XNbwvvM2LRVTzWqkZoARyQg9vKlWJJ6iRVdMMihoQG_nC_1jfwbBslgIqbnYCZ9ZYI_oHZSuVilxZP1sDAnElXOrj8oTfQbUvn2P6yUMyIyus66wRo96tdlhIS3fkx_rOk6gTKxJc8kaR43DcUxQG8niougQhN5dlmjVvzsqAVWZO4ayYd_dsQJMKfCnCB-UlS6ljYC-fz-k_-e2IRz_pFNcB-D9pXF6sga23NsLZ0qs2R9R0S05_T5PIWJmHt6h7igYUrYBpREiNoxbF3jQ6axVGMhioFiBVAf4Bn2kYjb6OCTALFZ8iEyt7emBTRSC7m2Zs4uEMugcTV6_PLI-fckQS4AH5Mu5i-hha3W4W8mUoUebZIhqEFsZOz5959TCP5oItjIMW4_lGokuHQiV39Bq8z-m30W4KaGLhfXN1LUNgeaFtdkw0FYQ5S8FCtvkwoOXgbmdhltqwgEjAcND8HeCOfBGUGB9kbb5cHroxKQL8IE0gQWW96q0IXF1M9oM8bbxIAz2n9oTMG1g332aGjZ79P-OEfW3StGXZZz0U1av3QHrvt4fYIutciRggm7jnCUgixZBjgp_zvUbFR_3yEhuVcuiPwCig3DJtqerAW1AMdwsSKQ6dV9Uuka5TD6kxNzWh7QYCrkgWCy2IvJ5bihRZGcbmQ2bD8vTTD4eHXVml4YCgXdRMF0fFiwUwoWZFnB34E4PiELHrNstCC_pYKTMoFWz0zgucL8cr-eGhBo7ipB0lYeCYURaCk6eL1wtPSm6dLUYvEF_SjMzNE__wgZ-KpQVnDKMikYAmJLhLmSDvgfaa-LEO0M6ftNs1U7NiP2F336arsUD6ljcQcclmp96YhwsWjo9x3hIB1XVyjyDMJd2I3YoQoHNrbJrAF5AVBcsI5YQO11nl-k8UTns_80NOBj30HcAoZwXtpr0BkMG2q_MsSFktXeFr0dilguyzyBa8c5EX0-qwmwxFHH3cV9vg-5Hzrl-nPUdGarqYV_4108bi7DXrp4MWhKn3DC2yKZ-14DCM6uSyvWyv11SYx3C0MUppA3oDsuZQ0iPfo91WrQ2FQu9BPPOiKdXSbC2kN3RtIXsdXlhDAmjXk3L_JoKSpYJIE_lFFNMNBjqi6mPzWkynQJ--xfk_NI3WmFZivkzXUxxA7-3EJEtI6bIS8D2-fgFNTAUh8Wm6SzFcSAy8UtEQGFppETutepzXScwk7SIjKXLYajUOvWmMAiH3cwuVbigJjsrmJ33_LNAJkHVGDiboPLJH5ivTEr-2xbxYC5iuwK1O8sq_O7ZPLp8-Np_3T8rtdb63LhH4QNP5UNkOj8M87l6czEKRwNkhpQ2h88WjRWOMlhuYYWi7CkbvPcaDkFmv6vs77Gc0iXveQQodEGywQQVp5K1maknUEdx6dIjzgZAOMEPH63ZuDqcmF9_PZK-yZNsiwpMrR_cS61FfP0Khmi_cMJGsSIg4dETBVzJH0nx7yjeLKyP7xz5RL74y34CACMh66Lx7e5TUUh4uM89f9ceD4VUMbkUjqxCWjiYlnO5XD6sZl5VniENLY7dZeLlW9xB4jYt4eVwp9J7FPMBO_CzJCQDFVfr6j0I9afAHYmkHN6tawYT8nanEs3iV4EGfAePRIb1Szvixy5KBg-WZxYIoG3fgIHE3XXR-szPML12LRKIRNYAXxlnthBE_cL-p1lyvaH9MqW1y6HyzxvW95f7Me3k4atOQyivBlcCCJCu1uyfQIgKfdMLKWjHrupIMmXfV3KBSH3nNML78IXiiJdrRKz969CxHbvt6yvb2dXXCjRV7w2UjEgrwjRsm7x0WbHzH75IhZpf3TGmiM7oyoS1dkOW00sp6fcK4nBmhViWMdJF_aBhjCvkTIa18t_7WLVr_T2AL6HPxkUO-l41bb2bhBAVgEA2-OfhQGONqbDhuamQhxoWm6FITBKRwAnzg9R7quFhrqUFrPePZvM25plKWEK_nDhfh2rEFZd-e5iNOu6Xc4kurD7L8hQVt2ku4O29ljHxWYLwUX8wc9MGbijFGuvZgV4xmeRvkjPt0se4Q8WwpXjZ9zNcDCU6ttyDdy7aCyCgCICg7y_a7FCVICYrm1kOsBERYlxSwgpP2cMSPTO9T1gFDE442f-wZ15ImdRxkNtgIuVh4_C4SKnJ9xuAUkHAxXUCfP6Zfb1k9_c3Py2K_2ijTI_7f3tcxU7Ug52KnqewPzRDhGbe7HAu0M_wCcJbJD1zbqi02aK-aM8SUIBAhCB1ujVk89l8UtOggQ=",
+      "summary": []
+    },
+    {
+      "id": "rs_0b4a675af23b8533006a6cd5b746c0819fb9e79d18d47ed054",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbNXMGxUxxSqUjO6TPfSN6sc8Usk_i0xM8j5JbcoY7wNQDFAkP7zicwTvlrsRmRXjzHFZ-RLR69_x6kHHdy9jU3FMD2NMOHUCFSpMo9MujCVo0j8xnkis4Ta4pu6EzdrApScHE-_aolWaEhDCyYiqeG3jkCjh-aRZ5q0Yb-wZnvz0pRjoM4W9K1RZuwS2HXig1wVbczVrOhEPT1namPnJu5i_3yOVtWeWIKOcpJPcSC71Arkpfgrkty96J0B3N3FAzEB5MN7c3W_9Lh_mw0foXcyri3tSF_-oBJEZrmAcqhshAG5IQElkjk1GGqRMbs9_cyGNBFrXtEn31BBKZG4gTmjGEH9EOBo-_1CS4uD36PXLYrugWGzlluEoMNY9tFsY4IV4wJ1FyEEf3RVilAj3HbYW8CIStDxodJxwhkJDwB67d7g7eekliluzh0i3HtrimtwrZkLiXKI-2aw_Jj4ARfUkcUVNay211o9WC42dVOXfZ2lFRcExqjgPvf_txWgZn8lRsjIY9FQCXEZq1QVPM01TKmIJ7ir5Iinf5DWt_5XAgoMS0IOElvys8W9Bz9uoxNLSpw6Usux-qHkFNRlimZM1hVrUcO0-xVQCpdudAy7wQP-pEDrJhd1u9Ft5Ckeiyh0GxNilTzklGmaawl4at--U11vnMTSGcjtPvcgnxzLLJiX2i4RnpvtRmmq8qlb4X_XP5Xrwu1J0UqLc9MyLuZpEj-USxQ-wUHsCWn5sMLe_O1O3lhG2zArUfkx6OXxqSK7DX6eIrooL-3ox6bIiE7ThEDm9M2QWAs2Jll_vMFuW3ZzoQXJQNw1rin4J_OF2CFqW8p5x6JVPhkGP2Yaq0KHQXQeG4WXPUNRPve55IE03RiKCGaRc_wStuqs3B-z1UNTcCT2hoDA3gCvotiu20C9rRTHao961IK6XsYGJ6AsSZ4enNYdpEREEeWxDwHh6Jv96h1tNd-8CTB4UkG51MEwuTeeXjb9SRW27MtbqpdccaN14a47F6UzBZV2RTUEXlqx92b45RhSFJGiDyfEfzD7rcL3Cc78L7Othk4Vps2_FqjR6D6Nw2H5t6ztmyoIvHwhzXnqW5ZFfoCwHIybCkO3uXuZiqfL-K-6krr_7RzPsTMmWIiQqXyOuMLC26J4Yw0nJulToxRievc4F0Moz12VTH8dOr9MLsg_IScow1CeS4YOHLoYlrHqDRHSP3hwepNNRJreJccXjMuvX6F6_O1rv3i1OdDx5uJhJoKprmxH_CpXGDSCt2FESGSnxSHu8Gp3F0Cl-dRpZ4yZdwNcUpVT7GW9vv40RS_fZrkKOuVepik71vR6eFVx1qOiR6af2hnpF6Ky56YSBxSRPPKP-qu37bzYPrjNb-Yexax8ppcXB2aZD0YKyZrUXHcS_GUCxn5M6FYjFgL_3Zv1H4b-E9_EaLEKtYJn_bQN5c_RBnvqngRlij6UDzYQTKLkc1cr9NMfByiYf_pKWq-cMYiCiByo0EvKxoY_2wj0krvg5_Fr6pQLab0rbyQlHoVx3oa-hgm0GIfytmVdesWN6FP6CczP3p1BSsMExR7NKKcN1jHSf4Jvce7Hq3eAiNnwBX3xi7lSHf0HpHgts5YqsX39q0Pn5-AB_9ABXLegf3wXi0FVt2VtR6ZeaRKQkyv7mLQ7GCEbN9PJbyu-VEZ2btfwBN8KmZTie7B67KWp1hR_0ReCYP6RrH5dChqVRSe9QeDMYF7wfoqCRXWhthYxjXq_XQF4L8FX5GFQnGAA-E44Bnd1Nsr4bTWfPPoZyaB8oHhLiyHGHpQzEbQ_w7orx9JdiYYPFrftT2pytco8p5uKojCoSHWZk-SowD4uF_XrMejEYYK7wFOp5JCOP4t4H38Zh1zGGJ9W_n9RMC7bIc_QCPNH5t5PXT54MvyjRNBHhoS3k4sZxRnKS2TJ71OSd5nG_S1wNCGuuP-b1ZICjPF5AJfE8QNNk-_EMeqvRC5FHKGQzEFogI-kKKX_wmg_QsE8eWJ1dAuxng_41iJE9UOOTtiJMqcs8B6p7kffbDRf52mWlVGbcXuTc-k6z67uvGxitPHNFlwul36j5DbP73Uce9ZMsOP0p2KyYrj3_HicG9u4fhk_IyFd0P6W0Ayt_cYG2uTcU5MRMBL_O7ylZi16rvIZw1Dg0lb6nCfrxaNyzQEV-BwGDgKFwdufln0E6KyPUUvND-JnfzMAnToP4tazyrJlt_XNQVIt0Mx02xrP_nek9sxmtpggV9zdJMoGR3DwNiWuq2ZaCSOBmVlK8Xxv7rRHbu3_W0VKN30jMWGXYWX3tIC3TDTqp4oXowSs9fz6bbzUoVAbHA23Lt82WFh6vPoi7OITQE7tpocuZtA9q11l9Cl3wlmanpfWOHQWf4_hlW38alqBEvHPAQs4ew-os0WJWsSJT0_LuLGl7tARcv2o6fKuTMOAfBHcIq7lEo_-dp1ad5G4HGfLe2opxFEoK8oosal3Yp6a--aipcpFrbJhN0cZ7uyesInz8nzCB-rV6t8ay01YQg1MIH2QSE7Vyfg1Oa5aJV687q3GL_YrfWSWne4L8Lxf9BBEeZyewJsXIAc8J8VGiMz4Ulo5QumMjXSKDFsc=",
+      "summary": []
+    },
+    {
+      "id": "msg_0b4a675af23b8533006a6cd5bffee4819fa94cb48273b71eb8",
+      "type": "message",
+      "status": "completed",
+      "content": [
+        {
+          "type": "output_text",
+          "annotations": [],
+          "logprobs": [],
+          "text": "{\"candidates\":[{\"id\":\"c01\",\"strategy\":\"Warm natural rhyme with a compact mushroom pun\",\"refrain\":\"Ich bin so pilzverliebt!\",\"page1Text\":\"Mein froher, zotteliger Freund\\nsitzt kuschelig im Geäst.\\nIch bin so pilzverliebt!\\nWeil du mich nie aus den Augen lässt.\",\"page2Text\":\"Die Pilzfreunde fassen sich\\nmit vielen Händen an.\\nIch bin so pilzverliebt!\\nIhr dreht mich hoch, so gut ihr könnt!\"},{\"id\":\"c02\",\"strategy\":\"Playful spoken rhythm and clear group address\",\"refrain\":\"Ich hab euch pilzgern lieb!\",\"page1Text\":\"Mein lieber Freund mit Zottelfell\\nruht oben auf dem Baum.\\nIch hab euch pilzgern lieb!\\nDu passt auf mich auf – man glaubt es kaum.\",\"page2Text\":\"Die Pilzfreunde halten sich\\nmit vielen Händen fest.\\nIch hab euch pilzgern lieb!\\nIhr dreht mich hoch und gebt nicht nach!\"},{\"id\":\"c03\",\"strategy\":\"Gentle lyrical cadence with simple end rhyme\",\"refrain\":\"Meine Liebe ist pilzgroß!\",\"page1Text\":\"Mein fröhlicher, haariger Freund\\nhat es sich im Baum bequem gemacht.\\nMeine Liebe ist pilzgroß!\\nWeil du dort oben über mich wachst.\",\"page2Text\":\"Die Pilzfreunde reichen sich\\nall ihre Hände im Kreis.\\nMeine Liebe ist pilzgroß!\\nIhr wirbelt mich vom Boden hoch!\"},{\"id\":\"c04\",\"strategy\":\"Bouncy read-aloud phrasing with mushroom wordplay\",\"refrain\":\"Ich hab dich pilzinnig lieb!\",\"page1Text\":\"Mein munterer Freund mit struppigem Fell\\nkuschelt sich oben ins Geäst.\\nIch hab dich pilzinnig lieb!\\nWeil du mich nicht aus den Augen lässt.\",\"page2Text\":\"Die Pilzfreunde halten sich\\nmit all ihren Händen fest.\\nIch hab dich pilzinnig lieb!\\nIhr dreht mich hoch mit Schwung und Kraft!\"},{\"id\":\"c05\",\"strategy\":\"Tender direct style with light internal rhyme\",\"refrain\":\"Ich bin ganz pilzvoll Liebe!\",\"page1Text\":\"Mein glücklicher, zotteliger Freund\\nruht gemütlich in einem Baum.\\nIch bin ganz pilzvoll Liebe!\\nDu passt auf mich auf – man glaubt es kaum.\",\"page2Text\":\"Die Pilzfreunde fassen sich\\nmit ihren vielen Händen an.\\nIch bin ganz pilzvoll Liebe!\\nIhr dreht mich, bis ich schweben kann!\"},{\"id\":\"c06\",\"strategy\":\"Energetic child-friendly rhythm with concise phrasing\",\"refrain\":\"So pilzsehr hab ich lieb!\",\"page1Text\":\"Mein fröhlicher Freund mit wuscheligem Fell\\nliegt geborgen im Geäst.\\nSo pilzsehr hab ich lieb!\\nWeil du mich nie allein dort lässt.\",\"page2Text\":\"Die Pilzfreunde nehmen sich\\nan ihren vielen Händen.\\nSo pilzsehr hab ich lieb!\\nIhr dreht mich hoch vom Boden weg!\"}]}"
+        }
+      ],
+      "phase": "final_answer",
+      "role": "assistant"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "presence_penalty": 0,
+  "previous_response_id": null,
+  "prompt_cache_key": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+    "context": "all_turns",
+    "effort": "low",
+    "mode": "standard",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "store": true,
+  "temperature": 1,
+  "text": {
+    "format": {
+      "type": "json_schema",
+      "description": null,
+      "name": "german_paired_page_drafts",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "type": "array",
+            "minItems": 6,
+            "maxItems": 6,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20
+                },
+                "strategy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "refrain": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "page1Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "page2Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              },
+              "required": [
+                "id",
+                "strategy",
+                "refrain",
+                "page1Text",
+                "page2Text"
+              ]
+            }
+          }
+        },
+        "required": [
+          "candidates"
+        ]
+      },
+      "strict": true
+    },
+    "verbosity": "medium"
+  },
+  "tool_choice": "auto",
+  "tool_usage": {
+    "image_gen": {
+      "input_tokens": 0,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "output_tokens": 0,
+      "output_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "total_tokens": 0
+    },
+    "web_search": {
+      "num_requests": 0
+    }
+  },
+  "tools": [],
+  "top_logprobs": 0,
+  "top_p": 0.98,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 940,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cached_tokens": 0
+    },
+    "output_tokens": 1515,
+    "output_tokens_details": {
+      "reasoning_tokens": 822
+    },
+    "total_tokens": 2455
+  },
+  "user": null,
+  "metadata": {},
+  "output_text": "{\"candidates\":[{\"id\":\"c01\",\"strategy\":\"Warm natural rhyme with a compact mushroom pun\",\"refrain\":\"Ich bin so pilzverliebt!\",\"page1Text\":\"Mein froher, zotteliger Freund\\nsitzt kuschelig im Geäst.\\nIch bin so pilzverliebt!\\nWeil du mich nie aus den Augen lässt.\",\"page2Text\":\"Die Pilzfreunde fassen sich\\nmit vielen Händen an.\\nIch bin so pilzverliebt!\\nIhr dreht mich hoch, so gut ihr könnt!\"},{\"id\":\"c02\",\"strategy\":\"Playful spoken rhythm and clear group address\",\"refrain\":\"Ich hab euch pilzgern lieb!\",\"page1Text\":\"Mein lieber Freund mit Zottelfell\\nruht oben auf dem Baum.\\nIch hab euch pilzgern lieb!\\nDu passt auf mich auf – man glaubt es kaum.\",\"page2Text\":\"Die Pilzfreunde halten sich\\nmit vielen Händen fest.\\nIch hab euch pilzgern lieb!\\nIhr dreht mich hoch und gebt nicht nach!\"},{\"id\":\"c03\",\"strategy\":\"Gentle lyrical cadence with simple end rhyme\",\"refrain\":\"Meine Liebe ist pilzgroß!\",\"page1Text\":\"Mein fröhlicher, haariger Freund\\nhat es sich im Baum bequem gemacht.\\nMeine Liebe ist pilzgroß!\\nWeil du dort oben über mich wachst.\",\"page2Text\":\"Die Pilzfreunde reichen sich\\nall ihre Hände im Kreis.\\nMeine Liebe ist pilzgroß!\\nIhr wirbelt mich vom Boden hoch!\"},{\"id\":\"c04\",\"strategy\":\"Bouncy read-aloud phrasing with mushroom wordplay\",\"refrain\":\"Ich hab dich pilzinnig lieb!\",\"page1Text\":\"Mein munterer Freund mit struppigem Fell\\nkuschelt sich oben ins Geäst.\\nIch hab dich pilzinnig lieb!\\nWeil du mich nicht aus den Augen lässt.\",\"page2Text\":\"Die Pilzfreunde halten sich\\nmit all ihren Händen fest.\\nIch hab dich pilzinnig lieb!\\nIhr dreht mich hoch mit Schwung und Kraft!\"},{\"id\":\"c05\",\"strategy\":\"Tender direct style with light internal rhyme\",\"refrain\":\"Ich bin ganz pilzvoll Liebe!\",\"page1Text\":\"Mein glücklicher, zotteliger Freund\\nruht gemütlich in einem Baum.\\nIch bin ganz pilzvoll Liebe!\\nDu passt auf mich auf – man glaubt es kaum.\",\"page2Text\":\"Die Pilzfreunde fassen sich\\nmit ihren vielen Händen an.\\nIch bin ganz pilzvoll Liebe!\\nIhr dreht mich, bis ich schweben kann!\"},{\"id\":\"c06\",\"strategy\":\"Energetic child-friendly rhythm with concise phrasing\",\"refrain\":\"So pilzsehr hab ich lieb!\",\"page1Text\":\"Mein fröhlicher Freund mit wuscheligem Fell\\nliegt geborgen im Geäst.\\nSo pilzsehr hab ich lieb!\\nWeil du mich nie allein dort lässt.\",\"page2Text\":\"Die Pilzfreunde nehmen sich\\nan ihren vielen Händen.\\nSo pilzsehr hab ich lieb!\\nIhr dreht mich hoch vom Boden weg!\"}]}"
+}

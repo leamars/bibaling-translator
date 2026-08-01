@@ -1,0 +1,14 @@
+{
+  "fixtureId": "mush-refrain-consistency-pair",
+  "sourceRawResponse": "1-mush-refrain-consistency-pair-draft-raw-response.json",
+  "privateDraftCount": 6,
+  "deterministicDraftFindings": [
+    { "candidateId": "c01", "hardFailures": [], "qualityWarnings": [] },
+    { "candidateId": "c02", "hardFailures": [], "qualityWarnings": [] },
+    { "candidateId": "c03", "hardFailures": [], "qualityWarnings": [] },
+    { "candidateId": "c04", "hardFailures": [], "qualityWarnings": [] },
+    { "candidateId": "c05", "hardFailures": [], "qualityWarnings": [] },
+    { "candidateId": "c06", "hardFailures": [], "qualityWarnings": [] }
+  ],
+  "note": "The complete exact drafts are preserved in the raw completed Responses API object. Every draft preserved its declared refrain verbatim in both page texts; no exact duplicate or high-overlap warning was detected."
+}

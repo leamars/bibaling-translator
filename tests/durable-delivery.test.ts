@@ -21,6 +21,7 @@ const input: DeliveryInput = {
     { page: 3, sourceText: "Third page." }
   ],
   bookForm: "prose_story",
+  targetLanguage: "sl",
   sourceRhyme: "none",
   priority: "rhythm",
   freedom: "natural",

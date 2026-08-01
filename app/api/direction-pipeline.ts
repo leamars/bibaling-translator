@@ -5,9 +5,19 @@ import { join } from "node:path";
 import { z } from "zod";
 import type { Response } from "openai/resources/responses/responses";
 import { deterministicViolations } from "./translation-quality.ts";
+import type { TargetLanguage } from "../languages/language-config.ts";
+import {
+  comparativeFinalistFields,
+  selectRecommendedFinalist,
+  validateComparativeEditorialResult,
+  winnerComparisonsSchema
+} from "./editorial-contract.ts";
 
+// These versions describe the cached drafting stage only. The comparative
+// editorial contract changed without invalidating already-valid private drafts.
 export const DIRECTION_PROMPT_VERSION = "step5-v8-assigned-observable-constructions";
 export const DIRECTION_VALIDATION_VERSION = "step5-validation-v8-hard-boundary-advisory-quality";
+export const EDITORIAL_CONTRACT_VERSION = "comparative-editorial-v1";
 export const DIRECTION_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 export const HARD_MAX_REFRAIN_CHARACTERS = 220;
 
@@ -88,11 +98,29 @@ export const editorialOptionSchema = z.object({
   rhymePairs: z.array(z.object({
     endingA: z.string().trim().min(1).max(30),
     endingB: z.string().trim().min(1).max(30)
-  })).min(1).max(2)
+  })).min(1).max(2),
+  fidelityPass: z.boolean(),
+  grammarPass: z.boolean(),
+  readAloudPass: z.boolean(),
+  directionPass: z.boolean(),
+  rhymePass: z.boolean(),
+  ...comparativeFinalistFields
 });
 export const editorialOptionsSchema = z.object({
-  options: z.array(editorialOptionSchema).length(DIRECTION_PIPELINE_CONFIG.editorial.optionCount)
+  options: z.array(editorialOptionSchema).length(DIRECTION_PIPELINE_CONFIG.editorial.optionCount),
+  winnerComparisons: winnerComparisonsSchema
 });
+
+type DirectionStructuralOption = Pick<
+  z.infer<typeof editorialOptionSchema>,
+  | "sourceCandidateIndex"
+  | "label"
+  | "refrain"
+  | "description"
+  | "genderDependency"
+  | "construction"
+  | "rhymePairs"
+>;
 
 type Stage = "draft" | "editor";
 type ResponseLike = Pick<Response, "id" | "status" | "output" | "output_text" | "incomplete_details" | "usage">;
@@ -292,7 +320,9 @@ export function rhymePairViolations(
   return violations;
 }
 
-function constructionViolations(option: z.infer<typeof editorialOptionSchema>) {
+function constructionViolations(
+  option: Pick<DirectionStructuralOption, "refrain" | "construction">
+) {
   const violations: string[] = [];
   const lines = option.refrain.split(/\r?\n/u).map((line) => line.trim()).filter(Boolean);
   const units = rhymeUnits(option.refrain);
@@ -333,7 +363,7 @@ function clauseOrderSignature(value: string) {
 }
 
 export function finalDirectionSetViolations(
-  options: z.infer<typeof editorialOptionsSchema>["options"],
+  options: DirectionStructuralOption[],
   requireRhyme: boolean,
   availableSeedCount: number = DIRECTION_PIPELINE_CONFIG.drafting.candidateCount
 ) {
@@ -387,8 +417,8 @@ function validationIssue(code: string, message: string, candidateIndex?: number)
   return { code, message, ...(candidateIndex === undefined ? {} : { candidateIndex }) };
 }
 
-function unmistakableTextFailures(text: string, candidateIndex: number) {
-  const failures = deterministicViolations(text, { requireCompleteSentence: false })
+function unmistakableTextFailures(text: string, candidateIndex: number, targetLanguage: TargetLanguage = "sl") {
+  const failures = deterministicViolations(text, { requireCompleteSentence: false, targetLanguage })
     .map((message) => validationIssue("PROHIBITED_NON_FINAL_TEXT", message, candidateIndex));
   if (!normalizeRefrain(text) || !/\p{L}/u.test(text)) {
     failures.push(validationIssue("MALFORMED_REFRAIN", "refrain is empty or malformed", candidateIndex));
@@ -404,10 +434,11 @@ function unmistakableTextFailures(text: string, candidateIndex: number) {
 }
 
 export function validateFinalEditorialSet(
-  options: z.infer<typeof editorialOptionsSchema>["options"],
+  options: DirectionStructuralOption[],
   budget: RefrainBudget,
   requireRhyme: boolean,
-  availableSeedCount: number
+  availableSeedCount: number,
+  targetLanguage: TargetLanguage = "sl"
 ): ValidationDiagnostics {
   const hardFailures: ValidationIssue[] = [];
   const qualityWarnings: ValidationIssue[] = [];
@@ -426,7 +457,7 @@ export function validateFinalEditorialSet(
   }
   const seen = new Set<string>();
   for (const [candidateIndex, option] of options.entries()) {
-    hardFailures.push(...unmistakableTextFailures(option.refrain, candidateIndex));
+    hardFailures.push(...unmistakableTextFailures(option.refrain, candidateIndex, targetLanguage));
     const normalized = normalizeRefrain(option.refrain);
     if (seen.has(normalized)) {
       hardFailures.push(validationIssue("EXACT_DUPLICATE", "refrain exactly duplicates another option", candidateIndex));
@@ -440,6 +471,54 @@ export function validateFinalEditorialSet(
   return { hardFailures, qualityWarnings };
 }
 
+export function validateDirectionEditorialResult(
+  result: z.infer<typeof editorialOptionsSchema>,
+  budget: RefrainBudget,
+  requireRhyme: boolean,
+  availableSeedCount: number,
+  targetLanguage: TargetLanguage = "sl"
+): ValidationDiagnostics {
+  const diagnostics = validateFinalEditorialSet(
+    result.options,
+    budget,
+    requireRhyme,
+    availableSeedCount,
+    targetLanguage
+  );
+  diagnostics.hardFailures.push(
+    ...validateComparativeEditorialResult({
+      finalists: result.options,
+      winnerComparisons: result.winnerComparisons,
+      rhymeRequired: requireRhyme
+    }).map((issue) => validationIssue(issue.code, issue.message, issue.finalistIndex))
+  );
+  const selection = selectRecommendedFinalist({
+    finalists: result.options,
+    winnerComparisons: result.winnerComparisons,
+    rhymeRequired: requireRhyme
+  });
+  if (!selection.ok && !diagnostics.hardFailures.some((issue) =>
+    issue.code === selection.error.code
+  )) {
+    diagnostics.hardFailures.push(validationIssue(
+      selection.error.code,
+      selection.error.message
+    ));
+  }
+  return diagnostics;
+}
+
+export function selectRecommendedDirection(
+  result: z.infer<typeof editorialOptionsSchema>,
+  requireRhyme: boolean
+) {
+  return selectRecommendedFinalist({
+    finalists: result.options,
+    winnerComparisons: result.winnerComparisons,
+    rhymeRequired: requireRhyme
+  });
+}
+
 export function validatePrivateCandidates(
   candidates: PrivateDirectionCandidate[],
   budget: RefrainBudget = {
@@ -450,7 +529,8 @@ export function validatePrivateCandidates(
     maximumCharacterCount: 120,
     maximumSentenceCount: 2,
     maximumClauseCount: 2
-  }
+  },
+  targetLanguage: TargetLanguage = "sl"
 ) {
   if (candidates.length !== DIRECTION_PIPELINE_CONFIG.drafting.candidateCount) {
     throw new DirectionPipelineError("DRAFT_QUALITY_REJECTION", "The draft returned the wrong candidate count.");
@@ -460,7 +540,7 @@ export function validatePrivateCandidates(
   const qualityWarnings: ValidationIssue[] = [];
   const seen = new Set<string>();
   for (const [directionIndex, candidate] of candidates.entries()) {
-    const reasons = unmistakableTextFailures(candidate.refrain, directionIndex).map((failure) => failure.message);
+    const reasons = unmistakableTextFailures(candidate.refrain, directionIndex, targetLanguage).map((failure) => failure.message);
     const normalized = normalizeRefrain(candidate.refrain);
     if (seen.has(normalized)) reasons.push("exactly duplicates an earlier candidate");
     if (survivors.some((other) => nearDuplicate(normalized, normalizeRefrain(other.refrain)))) {

@@ -1,0 +1,717 @@
+{
+  "runType": "spanish_lean_editor_contract_verification",
+  "completedAt": "2026-07-31T03:24:30.085Z",
+  "sourceDirectory": "/Users/leamarolt/Bibaling/bibaling-translator/artifacts/spanish-evaluation-1785444427987",
+  "preservedHumanReview": {
+    "path": "/Users/leamarolt/Bibaling/bibaling-translator/artifacts/spanish-evaluation-1785444427987/finalized-human-review.json",
+    "evaluationId": "spanish-human-review-2026-07-30T20:47:07.982Z",
+    "runId": "f34ee3c0-9a27-4a1d-a05e-4bea24c30cf4",
+    "exportedAt": "2026-07-31T02:34:48.542Z"
+  },
+  "targetLanguage": "es",
+  "regionalVariant": "es-ES",
+  "model": "gpt-5.6-sol",
+  "reasoningEffort": "low",
+  "automaticRetries": 0,
+  "plannedCallCount": 1,
+  "actualCallCount": 1,
+  "pageEditorOutputTokens": 2500,
+  "maximumEstimatedCostUsd": 0.14,
+  "approvedCostCeilingUsd": 0.14,
+  "totals": {
+    "callCount": 1,
+    "latencyMs": 35770,
+    "inputTokens": 2054,
+    "cachedInputTokens": 0,
+    "outputTokens": 2238,
+    "reasoningTokens": 877,
+    "estimatedCostUsd": 0.07741
+  },
+  "results": [
+    {
+      "fixtureId": "refrain-lab",
+      "previousAutomaticSelection": "¡Amor sincero; lo firma este champiñón compañero!",
+      "savedDrafts": [
+        {
+          "name": "Mogollón",
+          "refrain": "¡Cariño a mogollón, de parte de este champiñón!",
+          "approach": "Playful internal rhyme",
+          "directionIndex": 0
+        },
+        {
+          "name": "Montón",
+          "refrain": "¡Amor a montones, palabra de champiñón!",
+          "approach": "Punchy spoken rhyme",
+          "directionIndex": 1
+        },
+        {
+          "name": "Corazón",
+          "refrain": "¡Mi corazón os quiere un montón!",
+          "approach": "Warm direct address",
+          "directionIndex": 2
+        },
+        {
+          "name": "Muchísimo",
+          "refrain": "¡Con corazón de seta, os quiero muchísimo!",
+          "approach": "Gentle mushroom wordplay",
+          "directionIndex": 3
+        },
+        {
+          "name": "Locura",
+          "refrain": "¡Cuánto os quiero, criaturas de altura!",
+          "approach": "Bouncy end rhyme",
+          "directionIndex": 4
+        }
+      ],
+      "prompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nROLE\nAct as an independent native Spanish children's-book editor. Repair or replace weak drafts and return exactly three compact, parent-ready refrain options. Never retain awkward language merely to fill three slots.\n\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nFreely repair English-shaped wording so the result sounds naturally written in Spanish.\n\nCORRECTED ENGLISH\n1. I love my happy, hairy friend\nwho's nestled on a tree.\n\nI really love you oh-so-MUSH\nfor watching over me.\n2. These mushroom friends have many hands\nto hold and spin around.\n\nI really love you oh-so-MUSH!\nYou lift me off the ground!\n3. I spy my jiggly orange friends.\nIt's fun the way you move.\n\nI really love you oh-so-MUSH!\nYou make the forest groove!\n\nVISUAL CONTEXT\n1. A small mushroom looks up affectionately at a shaggy white forest friend resting in a tree, with a squirrel nearby.\n2. A ring of orange mushrooms hold one another's many arms and spin the smiling narrator mushroom off the ground.\n3. Bright yellow-orange jelly fungi wiggle on a tree while the narrator mushroom watches them dance.\n\nPRIVATE DRAFTS\n[{\"name\":\"Mogollón\",\"refrain\":\"¡Cariño a mogollón, de parte de este champiñón!\",\"approach\":\"Playful internal rhyme\",\"directionIndex\":0},{\"name\":\"Montón\",\"refrain\":\"¡Amor a montones, palabra de champiñón!\",\"approach\":\"Punchy spoken rhyme\",\"directionIndex\":1},{\"name\":\"Corazón\",\"refrain\":\"¡Mi corazón os quiere un montón!\",\"approach\":\"Warm direct address\",\"directionIndex\":2},{\"name\":\"Muchísimo\",\"refrain\":\"¡Con corazón de seta, os quiero muchísimo!\",\"approach\":\"Gentle mushroom wordplay\",\"directionIndex\":3},{\"name\":\"Locura\",\"refrain\":\"¡Cuánto os quiero, criaturas de altura!\",\"approach\":\"Bouncy end rhyme\",\"directionIndex\":4}]\n\nHARD LIMITS\n- Maximum words: 12\n- Maximum characters: 65\n- Maximum sentences: 1\n\nPrivately verify fidelity, native grammar, natural read-aloud flow, concise repeatability, and spoken rhyme when required. Return exactly one finalist with construction \"couplet\", exactly one with construction \"playful_hook\", and exactly one with construction \"lyrical_refrain\". The three options must differ visibly in opening, syntax, rhythm, and rhyme pair.\n\nCOMPARATIVE EDITORIAL CONTRACT\n- Return exactly three finalists with unique ranks 1, 2, and 3. Ties are forbidden.\n- Set recommendedFinalist=true for exactly one finalist: the unique rank-1 option. Set it false for ranks 2 and 3.\n- Boolean pass fields are minimum eligibility gates only. They do not make passing finalists equal and must not determine the winner by array order.\n- For every finalist, return at least one specific material strength and one specific material weakness. Empty, generic, purely complimentary, or \"no weakness\" assessments are invalid.\n- Compare every finalist explicitly on natural contemporary Spanish, source and picture fidelity, tone, child-friendly read-aloud rhythm/cadence, applicable rhyme, and unsupported invention.\n- Return winnerComparisons for alternative ranks 2 and 3. Each explanation must say specifically why rank 1 is better than that alternative.\n- Recommend rank 1 only if it passes every minimum requirement. If no option qualifies, do not disguise that failure by recommending the least weak candidate.\n- Write strengths, weaknesses, comparativeAssessment, rhymeAssessment explanations, and winnerComparisons in concise English for internal review. Reader-facing book text remains solely in Spanish.\n\nRHYME EVIDENCE\n- Set rhymeAssessment.required=true for every finalist.\n- Identify every specific rhyme anchor being credited and quote both complete lines or spoken phrase units.\n- For each anchor, record the sound sequence from the final stressed vowel onward and classify it as full_rhyme, assonance, consonance, internal_rhyme, or no_meaningful_rhyme.\n- Judge how the complete lines sound in continuous speech, not merely their spelling.\n- Grammatical endings, repeated words, and same-root echoes are not sufficient rhyme evidence; mark those facts explicitly and set countsAsRhyme=false unless an independent spoken rhyme remains.\n- Natural child-friendly wording, fidelity, and tone outrank a technically exact but forced rhyme.\n- Return only the structured editorial schema. Do not expose private deliberation beyond the concise comparative fields required for review.\n\nLabels/descriptions may be English; refrain text must be Spanish.",
+      "finalists": [
+        {
+          "sourceCandidateIndex": 1,
+          "label": "Direct and warm",
+          "refrain": "¡Amigos, cuánto os quiero; mi cariño es verdadero!",
+          "description": "A warm, highly repeatable couplet with a clean spoken rhyme.",
+          "genderDependency": "Gender-neutral plural address; suitable as a shared refrain across the three scenes.",
+          "construction": "couplet",
+          "rhymePairs": [
+            {
+              "endingA": "quiero",
+              "endingB": "verdadero"
+            }
+          ],
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true,
+          "rank": 1,
+          "recommendedFinalist": true,
+          "strengths": [
+            "Natural contemporary Spanish with an affectionate, child-friendly cadence.",
+            "Preserves the repeated declaration of love without adding actions or objects.",
+            "The quiero/verdadero rhyme is clear in continuous speech."
+          ],
+          "weaknesses": [
+            "It loses the source's mushroom-specific MUSH wordplay.",
+            "The plural opening is broader than the single-friend focus of the first scene."
+          ],
+          "comparativeAssessment": {
+            "naturalness": "The most effortless option for repeated reading in Spain.",
+            "fidelity": "Preserves the central declaration of strong, sincere affection.",
+            "tone": "Warm, direct and reassuring without becoming sentimental.",
+            "readAloudRhythm": "The balanced clauses and natural pause after quiero create a steady cadence.",
+            "rhyme": "Strong full rhyme on quiero/verdadero, achieved without distorted syntax.",
+            "unsupportedInvention": "Verdadero reinforces sincerity but introduces no new event, object or motive."
+          },
+          "rhymeAssessment": {
+            "required": true,
+            "evidence": [
+              {
+                "anchorA": "quiero",
+                "anchorB": "verdadero",
+                "lineA": "Amigos, cuánto os quiero",
+                "lineB": "mi cariño es verdadero",
+                "soundFromFinalStressedVowelA": "ero",
+                "soundFromFinalStressedVowelB": "ero",
+                "classification": "full_rhyme",
+                "spokenAssessment": "Both phrase units end naturally in /éro/, producing a clear rhyme when read continuously.",
+                "grammaticalEndingOnly": false,
+                "repeatedWord": false,
+                "sameRootEcho": false,
+                "countsAsRhyme": true
+              }
+            ],
+            "overallAssessment": "A convincing spoken rhyme combined with the strongest naturalness, warmth and repeatability."
+          }
+        },
+        {
+          "sourceCandidateIndex": 0,
+          "label": "Mushroom wordplay",
+          "refrain": "¡Cariño a mogollón, de parte de este champiñón!",
+          "description": "A playful hook that recreates the source's mushroom joke through rhyme.",
+          "genderDependency": "Gender-neutral toward the friends; champiñón identifies the narrator grammatically as masculine.",
+          "construction": "playful_hook",
+          "rhymePairs": [
+            {
+              "endingA": "mogollón",
+              "endingB": "champiñón"
+            }
+          ],
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true,
+          "rank": 2,
+          "recommendedFinalist": false,
+          "strengths": [
+            "Recreates the MUSH joke with unmistakable mushroom vocabulary.",
+            "Mogollón/champiñón gives a strong, memorable full rhyme.",
+            "The wording avoids singular-versus-plural second-person pronouns."
+          ],
+          "weaknesses": [
+            "De parte de makes the affection sound slightly more like a message or sign-off than direct speech.",
+            "Este champiñón is playful but less emotionally immediate than cuánto os quiero."
+          ],
+          "comparativeAssessment": {
+            "naturalness": "Idiomatic and lively, though mildly slogan-like.",
+            "fidelity": "Closely preserves abundant affection and restores mushroom-based wordplay.",
+            "tone": "Comic and buoyant, with slightly less tenderness than rank 1.",
+            "readAloudRhythm": "Punchy and memorable, but the second phrase is heavier than the first.",
+            "rhyme": "Excellent full rhyme on mogollón/champiñón.",
+            "unsupportedInvention": "No unsupported scene detail; identifying the speaker as a mushroom matches the illustrations."
+          },
+          "rhymeAssessment": {
+            "required": true,
+            "evidence": [
+              {
+                "anchorA": "mogollón",
+                "anchorB": "champiñón",
+                "lineA": "Cariño a mogollón",
+                "lineB": "de parte de este champiñón",
+                "soundFromFinalStressedVowelA": "ón",
+                "soundFromFinalStressedVowelB": "ón",
+                "classification": "full_rhyme",
+                "spokenAssessment": "The two phrase units land clearly on the same stressed /ón/ ending.",
+                "grammaticalEndingOnly": false,
+                "repeatedWord": false,
+                "sameRootEcho": false,
+                "countsAsRhyme": true
+              }
+            ],
+            "overallAssessment": "The strongest option for overt mushroom wordplay, but less direct and tender than the winner."
+          }
+        },
+        {
+          "sourceCandidateIndex": 2,
+          "label": "Gentle friendship refrain",
+          "refrain": "¡Cuánto quiero a cada amigo, qué alegría estar contigo!",
+          "description": "A flowing lyrical refrain built around affection for each forest friend.",
+          "genderDependency": "Uses masculine generic amigo and singular contigo to address each friend individually.",
+          "construction": "lyrical_refrain",
+          "rhymePairs": [
+            {
+              "endingA": "amigo",
+              "endingB": "contigo"
+            }
+          ],
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true,
+          "rank": 3,
+          "recommendedFinalist": false,
+          "strengths": [
+            "Smooth, musical full rhyme on amigo/contigo.",
+            "Cada amigo bridges the singular first scene and plural later scenes.",
+            "The flowing rhythm is well suited to a lyrical refrain."
+          ],
+          "weaknesses": [
+            "Qué alegría estar contigo adds a general emotional statement not explicitly repeated in every source stanza.",
+            "The singular contigo is distributive rather than directly matching the plural friends in scenes two and three."
+          ],
+          "comparativeAssessment": {
+            "naturalness": "Natural and lyrical, though slightly more literary than rank 1.",
+            "fidelity": "Retains love for the friends but broadens the source into shared happiness.",
+            "tone": "Gentle and joyful, with less of the original mushroom joke.",
+            "readAloudRhythm": "Fluid and singable, but longer and less punchy than the higher-ranked options.",
+            "rhyme": "Clear full rhyme on amigo/contigo.",
+            "unsupportedInvention": "The joy of being together is compatible with the scenes but is a modest emotional addition."
+          },
+          "rhymeAssessment": {
+            "required": true,
+            "evidence": [
+              {
+                "anchorA": "amigo",
+                "anchorB": "contigo",
+                "lineA": "Cuánto quiero a cada amigo",
+                "lineB": "qué alegría estar contigo",
+                "soundFromFinalStressedVowelA": "igo",
+                "soundFromFinalStressedVowelB": "igo",
+                "classification": "full_rhyme",
+                "spokenAssessment": "The matching /íɣo/ endings produce an easy, audible rhyme in normal speech.",
+                "grammaticalEndingOnly": false,
+                "repeatedWord": false,
+                "sameRootEcho": false,
+                "countsAsRhyme": true
+              }
+            ],
+            "overallAssessment": "Musical and affectionate, but its added emotional claim and distributive singular address reduce precision."
+          }
+        }
+      ],
+      "winnerComparisons": [
+        {
+          "alternativeRank": 2,
+          "whyWinnerIsBetter": "Rank 1 addresses the friends more directly and sounds more like spontaneous affection; rank 2 has better mushroom wordplay but its de parte de phrasing is more slogan-like and less emotionally immediate."
+        },
+        {
+          "alternativeRank": 3,
+          "whyWinnerIsBetter": "Rank 1 is shorter, punchier and more faithful to the repeated declaration of love; rank 3 adds the broader claim of joy in being together and handles the plural scenes less directly through contigo."
+        }
+      ],
+      "selection": {
+        "ok": true,
+        "finalist": {
+          "sourceCandidateIndex": 1,
+          "label": "Direct and warm",
+          "refrain": "¡Amigos, cuánto os quiero; mi cariño es verdadero!",
+          "description": "A warm, highly repeatable couplet with a clean spoken rhyme.",
+          "genderDependency": "Gender-neutral plural address; suitable as a shared refrain across the three scenes.",
+          "construction": "couplet",
+          "rhymePairs": [
+            {
+              "endingA": "quiero",
+              "endingB": "verdadero"
+            }
+          ],
+          "fidelityPass": true,
+          "grammarPass": true,
+          "readAloudPass": true,
+          "directionPass": true,
+          "rhymePass": true,
+          "rank": 1,
+          "recommendedFinalist": true,
+          "strengths": [
+            "Natural contemporary Spanish with an affectionate, child-friendly cadence.",
+            "Preserves the repeated declaration of love without adding actions or objects.",
+            "The quiero/verdadero rhyme is clear in continuous speech."
+          ],
+          "weaknesses": [
+            "It loses the source's mushroom-specific MUSH wordplay.",
+            "The plural opening is broader than the single-friend focus of the first scene."
+          ],
+          "comparativeAssessment": {
+            "naturalness": "The most effortless option for repeated reading in Spain.",
+            "fidelity": "Preserves the central declaration of strong, sincere affection.",
+            "tone": "Warm, direct and reassuring without becoming sentimental.",
+            "readAloudRhythm": "The balanced clauses and natural pause after quiero create a steady cadence.",
+            "rhyme": "Strong full rhyme on quiero/verdadero, achieved without distorted syntax.",
+            "unsupportedInvention": "Verdadero reinforces sincerity but introduces no new event, object or motive."
+          },
+          "rhymeAssessment": {
+            "required": true,
+            "evidence": [
+              {
+                "anchorA": "quiero",
+                "anchorB": "verdadero",
+                "lineA": "Amigos, cuánto os quiero",
+                "lineB": "mi cariño es verdadero",
+                "soundFromFinalStressedVowelA": "ero",
+                "soundFromFinalStressedVowelB": "ero",
+                "classification": "full_rhyme",
+                "spokenAssessment": "Both phrase units end naturally in /éro/, producing a clear rhyme when read continuously.",
+                "grammaticalEndingOnly": false,
+                "repeatedWord": false,
+                "sameRootEcho": false,
+                "countsAsRhyme": true
+              }
+            ],
+            "overallAssessment": "A convincing spoken rhyme combined with the strongest naturalness, warmth and repeatability."
+          }
+        }
+      },
+      "hardFailures": [],
+      "advisoryWarnings": [
+        {
+          "code": "SOURCE_RELATIVE_SHAPE",
+          "message": "contains 3 clauses",
+          "candidateIndex": 0
+        },
+        {
+          "code": "EDITORIAL_HEURISTIC",
+          "message": "option 1: couplet is not written as exactly two short lines"
+        },
+        {
+          "code": "EDITORIAL_HEURISTIC",
+          "message": "option 2: playful_hook has no observable repetition or echo"
+        }
+      ],
+      "humanConclusion": {
+        "type": "none",
+        "candidateIds": []
+      },
+      "humanConclusionTexts": [],
+      "humanCandidateReviews": [
+        {
+          "candidateId": "refrain-finalist-1",
+          "exactText": "¡Amor sincero; lo firma este champiñón compañero!",
+          "presentationIndex": 0,
+          "rating": "needs_editing",
+          "reasonTags": [
+            "unnatural_phrasing"
+          ],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:49:03.720Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "refrain-finalist-2",
+          "exactText": "¡Cariño a mogollón, de parte de este champiñón!",
+          "presentationIndex": 1,
+          "rating": "needs_editing",
+          "reasonTags": [
+            "awkward_read_aloud_rhythm"
+          ],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:47:56.866Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "refrain-finalist-3",
+          "exactText": "¡Todo mi cariño nace aquí, dentro de mí!",
+          "presentationIndex": 2,
+          "rating": "would_not_use",
+          "reasonTags": [
+            "unnatural_phrasing"
+          ],
+          "explanation": "just sounds pretty weird as a phrase",
+          "preferredRewrite": "I actually think this one was a nice candidate as well that I'd use: \"¡Mi corazón os quiere un montón!\"",
+          "reviewedAt": "2026-07-31T01:46:47.932Z",
+          "lineComments": []
+        }
+      ],
+      "selectionLevelAgreement": {
+        "agrees": false,
+        "basis": "Human rejected the entire set, but the editor recommended a finalist."
+      },
+      "concernRecognition": "Assess separately from selection-level agreement using candidate ratings, required edits, written explanations, and line comments.",
+      "usage": {
+        "preservedFrom": "/Users/leamarolt/Bibaling/bibaling-translator/artifacts/spanish-editor-only-reevaluation-1785466884205",
+        "includedInPriorSpendUsd": true
+      }
+    },
+    {
+      "fixtureId": "mush-jiggly-orange",
+      "category": "wordplay",
+      "sourceBook": "I Love You So Mush",
+      "sourceAsset": "Screenshot 2026-07-18 at 20.28.23.png",
+      "englishSource": "I spy my jiggly orange friends.\nIt's fun the way you move.\n\nI really love you oh-so-MUSH!\nYou make the forest groove!",
+      "visualContext": "Bright yellow-orange jelly fungi wiggle on a tree while the narrator mushroom watches them dance.",
+      "bookForm": "refrain_verse",
+      "sourceRhyme": "sustained",
+      "spanishVariant": "es-ES",
+      "previousAutomaticSelection": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!",
+      "savedDrafts": [
+        {
+          "id": "c01",
+          "strategy": "Bouncy and direct",
+          "text": "Veo a mis amigos naranjas bailar.\n¡Qué divertido es verlos menear!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!"
+        },
+        {
+          "id": "c02",
+          "strategy": "Playful wiggle rhyme",
+          "text": "Mis amigos naranjas se agitan sin parar.\n¡Cómo me divierte verlos bailar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Le dais ritmo al bosque entero!"
+        },
+        {
+          "id": "c03",
+          "strategy": "Warm and musical",
+          "text": "Ahí están mis amigos, naranjas y saltarines.\n¡Qué gracia tienen al moverse así!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Ponéis a bailar al bosque entero!"
+        },
+        {
+          "id": "c04",
+          "strategy": "Lively spoken rhythm",
+          "text": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Con vosotros baila el bosque entero!"
+        },
+        {
+          "id": "c05",
+          "strategy": "Compact and rhythmic",
+          "text": "Mis amigos naranjas se mueven con salero.\n¡Me encanta ver su baile gelatinoso y ligero!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!"
+        },
+        {
+          "id": "c06",
+          "strategy": "Cheerful forest dance",
+          "text": "Veo a mis amigos naranjas temblar y bailar.\n¡Qué bien me lo paso al verlos danzar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Todo el bosque se pone a bailar!"
+        }
+      ],
+      "prompt": "UNIVERSAL BIBALING READ-ALOUD CONTRACT\n- Translate only from the corrected English source.\n- Write for a parent reading aloud repeatedly, not for word-for-word equivalence.\n- Preserve events, emotional beats, jokes, illustration truth, page turns, address, and approximate density.\n- Use complete, idiomatic, contemporary language appropriate for a young child.\n- Never invent unsupported actions, objects, settings, motives, metaphors, or emotional claims.\n- Never output analysis, instructions, placeholders, slash alternatives, or multiple versions inside one text field.\n- Preserve the selected book form. Prose must remain prose; continuous verse must not acquire a fixed refrain; refrain verse must keep the exact parent-approved refrain.\n- When rhyme is required, judge it by natural continuous speech in the target language. Natural phrasing and fidelity outrank a forced rhyme.\n- The independent editorial pass must repair or replace weak drafts before returning reader-facing text.\n\nLOCKED TARGET LANGUAGE\n- Language: Spanish\n- BCP 47: es-ES\n- Regional/script variant: Spain\n- Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it.\n- Return reader-facing book text only in Spanish. English is allowed only in private strategy labels required by the schema.\n\nLANGUAGE-PACK DRAFTING GUIDANCE\nWrite idiomatic, contemporary Spanish for a parent reading aloud to a young child. Preserve meaning and picture truth; reshape English syntax naturally.\n\nLANGUAGE-PACK EDITORIAL GUIDANCE\nAct as a native children's-book editor in Spanish. Reject literal English syntax, awkward rhyme, invented meaning, and language a parent would not naturally repeat aloud.\n\nROLE\nAct as an independent native Spanish children's-book editor. Repair the strongest private drafts and return exactly three publication-ready finalists.\n\nLOCKED BOOK FORM: VERSE WITH A REPEATING REFRAIN\nUse this exact parent-approved Spanish refrain wherever the source refrain appears: ¡Amor sincero; lo firma este champiñón compañero!\nLOCKED PARENT PRIORITY\nUse convincing spoken rhyme and read-aloud rhythm in Spanish, without distorting meaning or syntax.\n\nCREATIVE FREEDOM\nReimagine wordplay and sound where useful while preserving events, picture truth, and emotional scope.\n\nCORRECTED ENGLISH — PAGE 1\nI spy my jiggly orange friends.\nIt's fun the way you move.\n\nI really love you oh-so-MUSH!\nYou make the forest groove!\n\nVISUAL CONTEXT\nBright yellow-orange jelly fungi wiggle on a tree while the narrator mushroom watches them dance.\n\n\n\nPRIVATE CANDIDATES\n[{\"id\":\"c01\",\"strategy\":\"Bouncy and direct\",\"text\":\"Veo a mis amigos naranjas bailar.\\n¡Qué divertido es verlos menear!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Hacéis bailar al bosque entero!\"},{\"id\":\"c02\",\"strategy\":\"Playful wiggle rhyme\",\"text\":\"Mis amigos naranjas se agitan sin parar.\\n¡Cómo me divierte verlos bailar!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Le dais ritmo al bosque entero!\"},{\"id\":\"c03\",\"strategy\":\"Warm and musical\",\"text\":\"Ahí están mis amigos, naranjas y saltarines.\\n¡Qué gracia tienen al moverse así!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Ponéis a bailar al bosque entero!\"},{\"id\":\"c04\",\"strategy\":\"Lively spoken rhythm\",\"text\":\"Veo a mis amigos naranjas balancearse.\\n¡Qué divertido es verlos contonearse!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Con vosotros baila el bosque entero!\"},{\"id\":\"c05\",\"strategy\":\"Compact and rhythmic\",\"text\":\"Mis amigos naranjas se mueven con salero.\\n¡Me encanta ver su baile gelatinoso y ligero!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Hacéis bailar al bosque entero!\"},{\"id\":\"c06\",\"strategy\":\"Cheerful forest dance\",\"text\":\"Veo a mis amigos naranjas temblar y bailar.\\n¡Qué bien me lo paso al verlos danzar!\\n\\n¡Amor sincero; lo firma este champiñón compañero!\\n¡Todo el bosque se pone a bailar!\"}]\n\nFor each returned text, set every schema pass field true only after the text itself passes fidelity, native Spanish grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement.\n\nLEAN PAGE EDITORIAL CONTRACT\n- Return exactly three finalists with unique ranks 1, 2, and 3.\n- Preserve sourceCandidateId and copy the submitted draft verbatim into originalText.\n- evaluatedText is the exact reader-facing text being judged. Never silently alter a draft while treating it as unchanged.\n- Set repaired=true exactly when evaluatedText differs from originalText. Record every applied change in appliedEdits with exact before/after text.\n- Minor optional polish belongs only in weaknesses or optionalEdits. Never put minor polish in requiredEdits.\n- requiredEdits contains only substantive or fatal issues. Mark each resolved or unresolved.\n- An unresolved substantive issue must make at least one relevant eligibility gate false. The unchanged candidate cannot be selected.\n- A fatal issue disqualifies the candidate unless it is fully rewritten, returned with repaired=true and repairedAsDistinctResult=true, and reevaluated from scratch.\n- Give each finalist one or two concise material strengths and weaknesses. Avoid duplicated criterion-by-criterion prose.\n- eligibility must independently cover fidelity, natural contemporary Spanish, tone, child-friendly read-aloud flow, locked direction, and applicable rhyme.\n- Return one decision outcome:\n  1. recommended: exactly one qualifying rank-1 candidate;\n  2. equivalent_group: rank 1 plus at least one genuinely equivalent qualifying candidate;\n  3. no_qualifying_finalist: no candidate ids, and every finalist fails at least one eligibility gate.\n- For recommendation or an equivalent group, comparisons must briefly justify the decision against every finalist outside the selected set.\n\nRHYME EVIDENCE\n- Rhyme is required. Credit only spoken rhyme that remains convincing in the complete lines.\n- For each credited or rejected pairing, return exact anchors, classification, whether it counts, whether it is forced or merely grammatical, and one concise note.\n- Constructed, literary, inverted, semantically weak, repeated-word, same-root, or grammatical-ending rhyme must reduce naturalness, fidelity, read-aloud, or rhyme eligibility when materially harmful.\n- Natural child-friendly phrasing and meaning outrank technically exact but forced rhyme.\n\nEVALUATION CONCERNS\nThese concerns are evidence to assess, not instructions to copy mechanically. Return exactly one concernFinding for each id:\n- move-c06-forest-line-before-refrain: For c06, move “¡Hacéis bailar al bosque entero!” before the repeated refrain.\n- move-c02-forest-line-before-refrain: For c02, move “¡Le dais ritmo al bosque entero!” before the repeated refrain.\n\nReturn only the lean structured schema. Keep explanations concise.",
+      "finalists": [
+        {
+          "sourceCandidateId": "c02",
+          "originalText": "Mis amigos naranjas se agitan sin parar.\n¡Cómo me divierte verlos bailar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Le dais ritmo al bosque entero!",
+          "evaluatedText": "Mis amigos naranjas se agitan sin parar.\n¡Cómo me divierte verlos bailar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Le dais ritmo al bosque entero!",
+          "repaired": false,
+          "repairedAsDistinctResult": false,
+          "appliedEdits": [],
+          "rank": 1,
+          "strengths": [
+            "«Se agitan» refleja bien el movimiento gelatinoso de la imagen.",
+            "«Ritmo» recrea con naturalidad la idea de que el bosque cobra vida."
+          ],
+          "weaknesses": [
+            "La rima «parar/bailar» depende de terminaciones verbales, aunque fluye bien al leerla."
+          ],
+          "optionalEdits": [],
+          "requiredEdits": [],
+          "eligibility": {
+            "fidelity": true,
+            "naturalness": true,
+            "tone": true,
+            "readAloud": true,
+            "direction": true,
+            "rhyme": true
+          },
+          "rhymeEvidence": [
+            {
+              "anchorA": "sin parar",
+              "anchorB": "verlos bailar",
+              "classification": "full_rhyme",
+              "countsAsRhyme": true,
+              "forcedOrGrammatical": true,
+              "note": "Rima verbal sencilla, pero clara y natural en voz alta."
+            },
+            {
+              "anchorA": "champiñón compañero",
+              "anchorB": "bosque entero",
+              "classification": "full_rhyme",
+              "countsAsRhyme": true,
+              "forcedOrGrammatical": false,
+              "note": "Rima sonora y convincente que remata la estrofa."
+            }
+          ]
+        },
+        {
+          "sourceCandidateId": "c01",
+          "originalText": "Veo a mis amigos naranjas bailar.\n¡Qué divertido es verlos menear!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!",
+          "evaluatedText": "Veo a mis amigos naranjas bailar.\n¡Qué divertido es verlos menear!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!",
+          "repaired": false,
+          "repairedAsDistinctResult": false,
+          "appliedEdits": [],
+          "rank": 2,
+          "strengths": [
+            "«Veo» conserva de forma directa la observación del narrador.",
+            "Tiene un ritmo ágil y dos cierres rimados fáciles de decir."
+          ],
+          "weaknesses": [
+            "«Menear» resulta algo menos preciso que «agitarse» para el movimiento gelatinoso de los hongos."
+          ],
+          "optionalEdits": [],
+          "requiredEdits": [],
+          "eligibility": {
+            "fidelity": true,
+            "naturalness": true,
+            "tone": true,
+            "readAloud": true,
+            "direction": true,
+            "rhyme": true
+          },
+          "rhymeEvidence": [
+            {
+              "anchorA": "bailar",
+              "anchorB": "menear",
+              "classification": "full_rhyme",
+              "countsAsRhyme": true,
+              "forcedOrGrammatical": true,
+              "note": "Coincidencia verbal sencilla que funciona con fluidez en las líneas completas."
+            },
+            {
+              "anchorA": "champiñón compañero",
+              "anchorB": "bosque entero",
+              "classification": "full_rhyme",
+              "countsAsRhyme": true,
+              "forcedOrGrammatical": false,
+              "note": "Rima nítida y natural, reforzada por un buen ritmo final."
+            }
+          ]
+        },
+        {
+          "sourceCandidateId": "c04",
+          "originalText": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Con vosotros baila el bosque entero!",
+          "evaluatedText": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Con vosotros baila el bosque entero!",
+          "repaired": false,
+          "repairedAsDistinctResult": false,
+          "appliedEdits": [],
+          "rank": 3,
+          "strengths": [
+            "Conserva la mirada del narrador y el baile colectivo del bosque.",
+            "La segunda pareja de versos ofrece una rima firme y musical."
+          ],
+          "weaknesses": [
+            "«Contonearse» suena algo más afectado y menos infantil que las opciones mejor clasificadas.",
+            "La primera rima se apoya por completo en dos infinitivos reflexivos."
+          ],
+          "optionalEdits": [
+            "Sustituir «contonearse» por un verbo de movimiento más sencillo si se rehace también la rima."
+          ],
+          "requiredEdits": [],
+          "eligibility": {
+            "fidelity": true,
+            "naturalness": true,
+            "tone": true,
+            "readAloud": true,
+            "direction": true,
+            "rhyme": true
+          },
+          "rhymeEvidence": [
+            {
+              "anchorA": "balancearse",
+              "anchorB": "contonearse",
+              "classification": "full_rhyme",
+              "countsAsRhyme": true,
+              "forcedOrGrammatical": true,
+              "note": "Rima audible, aunque basada en la misma terminación verbal reflexiva."
+            },
+            {
+              "anchorA": "champiñón compañero",
+              "anchorB": "bosque entero",
+              "classification": "full_rhyme",
+              "countsAsRhyme": true,
+              "forcedOrGrammatical": false,
+              "note": "Cierre rimado sólido y cómodo para la lectura en voz alta."
+            }
+          ]
+        }
+      ],
+      "decision": {
+        "outcome": "recommended",
+        "candidateIds": [
+          "c02"
+        ],
+        "rationale": "c02 combina mejor el movimiento gelatinoso, la alegría del narrador, la idea de dar ritmo al bosque y una cadencia oral convincente.",
+        "comparisons": [
+          {
+            "candidateId": "c01",
+            "justification": "Es muy fluido, pero «menear» describe el movimiento con menos precisión que «se agitan»."
+          },
+          {
+            "candidateId": "c04",
+            "justification": "Mantiene el sentido y la rima, pero «contonearse» resulta menos sencillo y espontáneo para un álbum infantil."
+          }
+        ]
+      },
+      "concernFindings": [
+        {
+          "concernId": "move-c06-forest-line-before-refrain",
+          "disposition": "disagreed",
+          "note": "Ese cambio alteraría el orden de los versos del original y desplazaría la aparición del estribillo."
+        },
+        {
+          "concernId": "move-c02-forest-line-before-refrain",
+          "disposition": "disagreed",
+          "note": "El verso del bosque debe seguir al estribillo para conservar la progresión y el cierre rimado de la página."
+        }
+      ],
+      "selection": {
+        "ok": true,
+        "outcome": "recommended",
+        "finalists": [
+          {
+            "sourceCandidateId": "c02",
+            "originalText": "Mis amigos naranjas se agitan sin parar.\n¡Cómo me divierte verlos bailar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Le dais ritmo al bosque entero!",
+            "evaluatedText": "Mis amigos naranjas se agitan sin parar.\n¡Cómo me divierte verlos bailar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Le dais ritmo al bosque entero!",
+            "repaired": false,
+            "repairedAsDistinctResult": false,
+            "appliedEdits": [],
+            "rank": 1,
+            "strengths": [
+              "«Se agitan» refleja bien el movimiento gelatinoso de la imagen.",
+              "«Ritmo» recrea con naturalidad la idea de que el bosque cobra vida."
+            ],
+            "weaknesses": [
+              "La rima «parar/bailar» depende de terminaciones verbales, aunque fluye bien al leerla."
+            ],
+            "optionalEdits": [],
+            "requiredEdits": [],
+            "eligibility": {
+              "fidelity": true,
+              "naturalness": true,
+              "tone": true,
+              "readAloud": true,
+              "direction": true,
+              "rhyme": true
+            },
+            "rhymeEvidence": [
+              {
+                "anchorA": "sin parar",
+                "anchorB": "verlos bailar",
+                "classification": "full_rhyme",
+                "countsAsRhyme": true,
+                "forcedOrGrammatical": true,
+                "note": "Rima verbal sencilla, pero clara y natural en voz alta."
+              },
+              {
+                "anchorA": "champiñón compañero",
+                "anchorB": "bosque entero",
+                "classification": "full_rhyme",
+                "countsAsRhyme": true,
+                "forcedOrGrammatical": false,
+                "note": "Rima sonora y convincente que remata la estrofa."
+              }
+            ]
+          }
+        ]
+      },
+      "humanConclusion": {
+        "type": "equivalent",
+        "candidateIds": [
+          "c06",
+          "c02"
+        ]
+      },
+      "humanConclusionTexts": [
+        {
+          "candidateId": "c06",
+          "exactText": "Veo a mis amigos naranjas temblar y bailar.\n¡Qué bien me lo paso al verlos danzar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!"
+        },
+        {
+          "candidateId": "c02",
+          "exactText": "Mis amigos naranjas se agitan sin parar.\n¡Cómo me divierte verlos bailar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Le dais ritmo al bosque entero!"
+        }
+      ],
+      "humanCandidateReviews": [
+        {
+          "candidateId": "c06",
+          "exactText": "Veo a mis amigos naranjas temblar y bailar.\n¡Qué bien me lo paso al verlos danzar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!",
+          "presentationIndex": 0,
+          "rating": "needs_editing",
+          "reasonTags": [],
+          "explanation": "¡Hacéis bailar al bosque entero!\n^ this should come before the repeated refrain",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:54:59.162Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c02",
+          "exactText": "Mis amigos naranjas se agitan sin parar.\n¡Cómo me divierte verlos bailar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Le dais ritmo al bosque entero!",
+          "presentationIndex": 1,
+          "rating": "needs_editing",
+          "reasonTags": [],
+          "explanation": "¡Le dais ritmo al bosque entero!\n^ come before refrain",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:55:10.186Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c04",
+          "exactText": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!",
+          "presentationIndex": 2,
+          "rating": "would_not_use",
+          "reasonTags": [
+            "awkward_read_aloud_rhythm"
+          ],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:55:22.986Z",
+          "lineComments": []
+        }
+      ],
+      "selectionLevelAgreement": true,
+      "recommendedUnrepairedSubstantiveEdit": false,
+      "usage": {
+        "action": "spanish-reevaluation.mush-jiggly-orange.editor",
+        "model": "gpt-5.6-sol",
+        "reasoningEffort": "low",
+        "responseId": "resp_0292e88a3bbc75f8006a6c154b35b4819cacb235ce25ba66ef",
+        "responseStatus": "completed",
+        "latencyMs": 35770,
+        "inputTokens": 2054,
+        "cachedInputTokens": 0,
+        "outputTokens": 2238,
+        "reasoningTokens": 877,
+        "estimatedCostUsd": 0.07741
+      }
+    }
+  ]
+}

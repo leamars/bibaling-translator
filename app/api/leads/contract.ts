@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { BOOK_FORMS } from "../book-form-contract";
+import { resolveLanguageSelection, targetLanguageSchema } from "../../languages/language-config.ts";
 
 export const leadCaptureSchema = z.object({
   email: z.string().email().max(320).transform((value) => value.trim().toLowerCase()),
@@ -14,7 +15,19 @@ export const leadCaptureSchema = z.object({
     landingPage: z.string().url().max(500)
   }),
   languagePair: z.string().max(40),
+  targetLanguage: targetLanguageSchema.default("sl"),
+  regionalVariant: z.string().max(20).optional(),
   bookForm: z.enum(BOOK_FORMS)
+}).superRefine((input, context) => {
+  try {
+    resolveLanguageSelection(input.targetLanguage, input.regionalVariant);
+  } catch (error) {
+    context.addIssue({
+      code: "custom",
+      path: ["regionalVariant"],
+      message: error instanceof Error ? error.message : "Invalid language variant"
+    });
+  }
 });
 
 export type LeadCapture = z.infer<typeof leadCaptureSchema>;

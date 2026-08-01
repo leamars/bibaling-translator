@@ -8,6 +8,10 @@ import {
 } from "../api/translation-prompts";
 import type { BookForm, SourceRhyme } from "../api/book-form-contract.ts";
 import type { DirectionBrief, Freedom, Priority } from "../api/translation-prompts";
+import {
+  languageSelectionLabel,
+  type TargetLanguage
+} from "../languages/language-config.ts";
 
 type TranslationPage = { page: number; sourceText: string };
 type TranslatedPage = { page: number; text: string; idempotencyKey: string };
@@ -18,6 +22,8 @@ export type WorkflowDeliveryInput = {
   sourceRhyme: SourceRhyme;
   priority: Priority;
   freedom: Freedom;
+  targetLanguage: TargetLanguage;
+  regionalVariant?: string;
   direction?: DirectionBrief;
   approvedPage1: string;
   approvedPage1Note?: string;
@@ -83,6 +89,8 @@ function promptBase(input: WorkflowDeliveryInput) {
     bookForm: input.bookForm,
     sourceRhyme: input.sourceRhyme,
     direction: input.direction,
+    targetLanguage: input.targetLanguage,
+    regionalVariant: input.regionalVariant,
     approvedVoice: [{
       spread: 1,
       text: input.approvedPage1,
@@ -202,14 +210,15 @@ export async function sendTranslationEmailStep(input: WorkflowDeliveryInput, pag
   const replyTo = process.env.RESEND_REPLY_TO_EMAIL?.trim();
   if (!apiKey || !from) throw new FatalError("Transactional email is not configured.");
   const ordered = [...pages].sort((a, b) => a.page - b.page);
+  const language = languageSelectionLabel(input.targetLanguage, input.regionalVariant);
   const text = [
-    "Your Bibaling translation",
+    `Your Bibaling ${language} translation`,
     "",
     ...ordered.flatMap((page) => [`Page ${page.page}`, page.text, ""]),
     "Please review the translation before reading it with your child.",
     "Reply to this email if you need help."
   ].join("\n");
-  const html = `<h1>Your Bibaling translation</h1>${ordered.map((page) =>
+  const html = `<h1>Your Bibaling ${escapeHtml(language)} translation</h1>${ordered.map((page) =>
     `<section><h2>Page ${page.page}</h2><p>${escapeHtml(page.text).replace(/\n/g, "<br>")}</p></section>`
   ).join("")}<p>Please review the translation before reading it with your child.</p>`;
   const response = await fetch("https://api.resend.com/emails", {
@@ -222,7 +231,7 @@ export async function sendTranslationEmailStep(input: WorkflowDeliveryInput, pag
     body: JSON.stringify({
       from,
       to: [input.recipientEmail],
-      subject: "Your finished Bibaling translation",
+      subject: `Your finished Bibaling ${language} translation`,
       html,
       text,
       ...(replyTo ? { reply_to: replyTo } : {})

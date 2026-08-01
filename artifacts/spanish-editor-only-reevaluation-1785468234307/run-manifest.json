@@ -1,0 +1,25 @@
+{
+  "runType": "spanish_lean_editor_contract_verification",
+  "status": "completed",
+  "startedAt": "2026-07-31T03:23:54.307Z",
+  "completedAt": "2026-07-31T03:24:30.085Z",
+  "sourceDirectory": "/Users/leamarolt/Bibaling/bibaling-translator/artifacts/spanish-evaluation-1785444427987",
+  "humanReviewPath": "/Users/leamarolt/Bibaling/bibaling-translator/artifacts/spanish-evaluation-1785444427987/finalized-human-review.json",
+  "model": "gpt-5.6-sol",
+  "reasoningEffort": "low",
+  "automaticRetries": 0,
+  "plannedCallCount": 1,
+  "actualCallCount": 1,
+  "pageEditorOutputTokens": 2500,
+  "maximumEstimatedCostUsd": 0.14,
+  "approvedCostCeilingUsd": 0.14,
+  "totals": {
+    "callCount": 1,
+    "latencyMs": 35770,
+    "inputTokens": 2054,
+    "cachedInputTokens": 0,
+    "outputTokens": 2238,
+    "reasoningTokens": 877,
+    "estimatedCostUsd": 0.07741
+  }
+}

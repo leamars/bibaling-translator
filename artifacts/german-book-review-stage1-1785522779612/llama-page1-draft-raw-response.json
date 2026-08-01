@@ -1,0 +1,159 @@
+{
+  "id": "resp_01098752475895a1006a6cea5c9d508192b7049d8b6b41537a",
+  "object": "response",
+  "created_at": 1785522780,
+  "status": "completed",
+  "background": false,
+  "billing": {
+    "payer": "developer"
+  },
+  "completed_at": 1785522832,
+  "error": null,
+  "frequency_penalty": 0,
+  "incomplete_details": null,
+  "instructions": null,
+  "max_output_tokens": 3500,
+  "max_tool_calls": null,
+  "model": "gpt-5.6-sol",
+  "moderation": null,
+  "output": [
+    {
+      "id": "rs_01098752475895a1006a6cea5e14788192ac7bb909993629b6",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbOqQw75iJ32k07o1fVkzfSVCXm_eBWCyIYd5wISeTEeoNY0ZWQxS7EAxJX5_aZ8xUwHptpwzObryYGXP3cG3mQMMk6U-bGY9Llvz-AzJdtMwYqBxXHj6g0PBQCivahUUf8TeiXZeV8oQA_-2pSuXXl9MnjqWmUPsnaERGTu05FrUTGgksNiZ1Qay6xm1dlu5P_c07carstaulK2H3u0dVayCuu-C7uIeGPKOQ-tm3_pq6WeLSMZInujFJC32yQFnP6X4l766W8UgvY7CQc_TWV_tqWYwapf19rsKXTxvNiXzqFrJofgDEkyplw2jv4_yr0th6KhVlYKzSFWqAmxS2u9BmA7manpgzkuQ9TU6IEOPt0APt6Rk6wfLy5LCpmVZvrIl0aH4FqTw8cr5dLQWGiP05ibjPJiy6ecSaDTv6GQYCbUfTX97Cw_idTzQvd8uWxA6c87h9vzF5Saxm6Kqbnf70Y_Rul7DFj4QvL01J5tgeDxq5z4D5X34Nbxx6lS5_CgJL85aIne6-3RtsysFbsL0A_f4tInZacuM-s9K9r6nxDZ9B8Uil8liJooCvJ5E9ozVK9CYok1-hGblmI5J9avk_Y5Ihosk5QiDvC3dxQWpjnM1W_x2l41BV4KaiLkCGfcHKAtz2owI_n2YvvY-0W1XbI-5aYzxSHCatH9ubgNznAjMaDjS91H8r59rFXbNTzxs01f9uGQ_wC4DQA_8IK5Pa1V9037re-8vrxndm7jgHtndswJ-hVtMZ1e6IndIusAQPJZ1mdhp5INcwsnF18r9h5ZCv964PcG7Gtj9vhXefD-426xGmhEgdSRepTWnRLyN4o7QOjENHFjnS6HLA7aG25JKlo4LgzqU4PlO5CzhIZiI-zlsdz88iL4cHM-3N8mWJ72v4Z_xJpJr65-D8Q0j_iLVpIZ4Dws-DrWzLhxeEhCfG7N9d4s4kcy4q5S4UTqPbESxV_Y_Imcioj1lfIvWSz4GIL2nNsOb8t-XFzqKtrMq16U_d6GogMmvu3z7WpXRTrBqFS5o-JUILN7EiT6LqgWHdT1evxmbatzT-C53WUOwhBvWlmUwT_yCCpr69w0HRp4pHB2GujucWXtGHaGF1XOPdjZZT0fxnY3BIerN8Te1MhCnXNRaCmj9J5ozONm6QTUDpb6kkfkVGUOadhRRBPxXmXTlTVwOtWdXo9YEQ6utJgXLl6IVYBW864M0SAIrADye4VXkMExjLa45XHewtLqsgj7GLtOjYZWOSh3M3G10LII95LCKEF35PL1LnBS57XWHap76Q-BANSeKQDuyhQ0TUHTQqfvIAveRT6Hcl_11UgQLOh_AzAqVmgMlBA994HJs5JU57JyuPWjHvf8pLMdCtrKu0n_YS1CndcWuT1YhsEeUDDufTfTsIl14nVcUklHy655Ir0SnWapXzyO_J7OO_Y0PeYirwCEBXR-d2KpYfThR1HnAP3C0QmcDcMRgGEuTRvcT05k6lnDNN2ZP7XQ-VgPNoogX0fplQPxTHd1xJTs3ZQo4J0T6dUx-tiO6Nj4ERptvhCYygYWroxWKiU_OVtLch4EusJMz_z559TRvRGVCsxr8IsQlreeANFrTwHEUNBS_Z66cOQEAX5UVUx3Hxd1WxTyO1U1MGHYUhb9SqYuDNHU4CMkfTndi5zLVFfRth_XMIXezbdk2Jgp8y_tLR8za0eI9dWU9h1esm34bka56fY72gUyiRC2acl0eEDz1PRRX_aMorXO2ZLvZry-INRfsVXZgEnhAIVN79I7N6Z32m2DHOLmBcubE6GMuLOoPRD_cafD6Xq9--X8_de3LIGm44DV_GUOtgsLzhlaEQK5DZVPJqnZdjp-igsjvWzHGrB2UBU4Sy7BkNB42_LYPp-_2pIahcJX0AAbyCs-JSkaxCpWWVIjwJ5gVMKjniCwkD4oqBliMrBqjztUOhd1xQS37wjACy1V5pEjn3MB5Iu-gbonvIh7oPakHTZUJ9B6z2IQZqxX_aHyv0d6IPRKzgjbhp2k3YYtpSaD1E5nHt2sN8Pjd8L5mrUaRcsa66Sc08k7XNxPQdJE0unKosr_dxT223FHRh0yIN4U7WrJrATkkJLPrkBXzzKVcr_Z8uCSM_mC7h5KS0ZLpMTBnhPgICzh1dqDg9gBWbJqYGiAaqen55Z0Y5B2W-PVpaQMb_IZBWvpjSDgPXrTLO8JjRtr0hd1ShaqZF95iDDoWlVqGBkUcbBLpu63jS4sdszOgjeQTSBC_ulzSleemFnsGHJZ45ZItJUCdI5GUwrWBNKFOxe72QbELqVuXGA1q98C21737xZBuG3oCaI9MRsxhcuFCus0lX9zcdn0HXGFCujLKeimGZSdx7Dq6nXdnYSVmLAb01KelYUQlWoCgBMqUn18sGniGz7eilR2Jg2yT_3vX_sTYsDmHX551F3lO8nnNtWJDjtWTRWc6-jWeo8qZgFYX1yV2x7IQP2gmtd1RVQiRMo6AJRbwKMquhGyayNWmj1FhzeTxOsFLs3x6vEZPla1D1UDUjlzwCn14DlLYbGviN-PeJ2jyCG3h1w3t7sSKbGYgsYnlK2bbnv_TCpvCyxxk5bDx4_WydwS9TtxQd8DHlgEDR4i_lwgRyqsxf77VoECWBrhsXHwEOzXQzAoUmuNKjbJWMp7FVPivJ6hi-Uf2wLEJVdb7yfBPgU_Tr9fLyNqGDUbQmD9qQ-8PkScxrVxsJ4mI5FK1pP3uOFbYPLfTJv35tv9AaIGUmeS2TqsDShdzle5OXm2WxMbPKxyfIeTVdTeWmH5pSsRxODl95GxOCaZqCUjAlHN9Px1ZUJVa_bxlWIM7xYuW8ogNjNMldnXuBqtttUG4xraBiLFJohaEh2IlLsgsmaaPqT87YoMQNGQ_2W342E9kGkj5sx3P-AKgyZOmdtMXM0RlekQ_oMuWdW7XFA1nLj4sv9XfgmJQxpdy7VAtQHQzkF70IFatVIdcmXOuzRmzRUfqs2oS254mr-Aw87FJIyEtvw-Kpxphd2NIL9QwIZeG9G8tFGFAK7MJPGOuNOpaXXRPSnvZVixaWLL_VILimn3QyQtWdkXCXzmFomFZ0Eca8R7gKmMamk5Rjn7A_cWT98SGHCohazLG6-FFTa7iO1NxhPKXKYZCuTF-vU5SMElEdMv-8NzLo1cYxF4ZEaCkChWrsqX-l-1zWGHJhCYu0DmaoBYphBo_DwCkLL5lM3Z_W7PgGOWPuOd3ajErqOT7AOhrWncjiZKJYsJ0_lHLO5LSG8UmE8twPWMRmi8mswA1kUz5FnOQEjM-zhrs2_Tz80mlxdDe-KhGvF5E45IFa2GltKLu3NzkrQNwEcTu_CtXahUEu-aPzC5WOx8Q9CB6DlF9kHj6R5vmspiR5FqqB_ZCghaejNC580Zv9IYTHQt9TXYdW4byyrWmJA32_x1U6mFUObhaG4YmhOmMgqFL1reD4d4S2mBnDOk9VLZ0RZGcWywY12TBi8ziCsUdpiUWpZ0fHpBaH2V20Qzmjsi5iNp5CdFsxVXDkCLKwZoJWPFSSJOTX4_TR2a5eIzYu14tVe9uWgfEkF-vBwuC6_3tx047IqoBAh5U0nZuEJwfhDTXDYYHkfGpijpmDQYTwFDaXGLa3EbBb6uMQAr_jWK_B_G9QUNuNnIXQ_SsH1GH7SY8m05cafduWW0lehlyBaQbRU0HncB1QoT63-NPzi9O0I1WH76obOxkdvaAqb_9GbGeoZm1QTeJdsx5SE87ylkCTMtezCUQr0VhEm8sox2kEUVUj-yxFJT2MqAEaOxV3fBvHyUhpXfjsbfi9hJGLrJOP2X5Z7QZJGobKMMb9X46R6e_S125y0fxhArspRdCJ4nnSg9VVJCFaOHTW7DME_LHIwtiQJE_ftf5c4NNGpQDhOFbLrcHirT8",
+      "summary": []
+    },
+    {
+      "id": "rs_01098752475895a1006a6cea6f5d808192925ff6c51dd5aae6",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbOqQV_4y9mA7i5mYCpbbKwueIPs8BfvUlCgh9dNdCF0adXY7-ukCRerBKjmS4EMq6Eb0UxD5LcGBtKdyUoXBjrxrDIfn9BPO6CqlE2HJJXwlX01xjyIavzaGQsUO8bvMNDzOXUzw-LKfHISIs486MS5Tss2gJCPXvuZbVnvt6xLH9-PU4gI9B-ORiXV4h8q_cLgVFNXIh01ji1qIgmXUqLg7mYpfIcbeC_-RszHSPgPgceG0Koji5aR_AYvccPtO2XR6YBPcVS5Zf-C6v_4IA_-_mkSze3hqEpGpzZyT7D6XM49hTOoPXMuLY0Dgytt-bZ7GMS58NnhbTjK4r6AbXUdSVcS4njqPVAf7scmwxTXoSCfPSIXOHegm6h3BovU5eb2bFbhuyhjsVUvEwOHLoQ-bMf6nb_ep_4mY3YrrvMTHEtFhiJjSYLx0HLevriibaVaeSn9SIYYKuuhvNUtpI0bCgGfh7xtC3zUtC5cTIeSNZEwAdDveAmfUH3bsfVkU2F-ccUP1Phuo8h_-VI5rBa2qX9FE2HZ1Fa3FwLsJcj-Hr5dF4Db2_6MZ5HgwNQpHa1vfoozM6Ustvay68XKVMaFe66L_hG7qnBCIWJ_mmOMfEH8N4juP3tdDTw3NvJ58D66zWTFhFGmUTba0CC1Fvsn4Kyl2Rvf6hKWQUsv9DwvajxMxB20Tfe-9eTGbiPmxX_qmttPgJvXezTGTurdiX7LcVQDFsUT825SPxxz0QZbG0yqkFM7VNGxm4Q9j2AjE_LAiDzA6Owsgh4TH_2jpuAwwQI2PxWT7ZfE2Y1GhvocTpQUG7ulh5a5_5DprAcPmsSWMXaeLAZ3E2RiONLVdWmfmXalgy9XU-t6NfYXoJ5kOLZWCbEXFfxouiA-qZDsfV5sm0ueEOcnmrzxUIW-tSUYwHU8IdAnYjwDILpphlsGJH4c-c3ctkxATkYUkVyfh8wMfgrcpa19X52ABuubMcuZ1roG8Q37-i8drFLgR_ZnMw6YkF0wIBG7xkIAFzUNOxNUaxKnjadHhx0EhiZJHjajEK8FNQf5Aly6lOBDf14YdRFqua5w7Fc2Hmpk2sLetbVlLdbIvIAIBsQP6VzDhRgt6y1MCuh5PcxjXAQQVh_agN4KRJJ2xsgBWuj6bXkZ2wYeLG6bqZyLqS0dH8zygSv1PJpTEANs3gRx5eGWJeJ2TD75O1XeUOc9A0hXsj2fDGH5aJmVPUm2P-VyVwh6n7Go7_IyqfkrA3Pm3ZxSVG39SLc4geoev8tOjwQm7AyAnivqYcuKx086x16CBKRtPGUpYlwjMOeQ_XShRS8dzP9W56dz2c4zYWi_09MOB3pZ4L1st6bhdNEVeFUisPNMjvI5FufAdvy_PDIcDTh35209F9U7EhAXnKDk51Mh0LT9VpDgcpRjetJ9AFXHqKuaREOBIkmRVZGxjyCnxP5Pj5kRU9duBGuviz3nPUfIEw-8LpdKQsE9yChxU_dhUQTo8BQFlKNUFzEOZYrbKCdjrX-UTaC7cGfNvb2Z2cH1DutQeHeFcIWUh55zc3VB4iazsGAvNZfBZR4967uCDwH_A9-mjl6uHaiW869R-M_MbNfovBo9Gdp9L9QkXKg8SP6g8zLYWTOTb1kXDpPZB5mu_NOCXonOIq-m8bo9p5ZUn2UU1W_9Wb0vX0ampiDhYX4Lrxmbx5Xi0IadNRppOqYXP2qB9DKAAAyngDaxOiKvbwCRNWU1TCHcZ0F-6jihTlh9pqghrzLgQ5bkRBWH4s-F_CKX_d83meI46WFmkspC2LDkv0WLVLvuSm3KsxLtoxZbp1TW1oI9tgcdhkj_lCyp_TzI07dnj298kgswHBpsEocT063Pm-3rFCe7zLp7nVPulLWeMDV0CmvxNwfG1t-AP7NE2iuV6u4_nOPCOik7o8PUho6hJNv5FTcXfardT_HWbBbQuMMcEMhQiEQk5CX59QkUEgpuTFNH7eRiEaN08fV-dsTZfi9BfPMKdJw0CUwlmx5OUf3QAkOzw2qhXKXhR2OiAbSLeIkxyW1sGiSGthdVXP75Rpu2O7wtR7sJ7TCs1NsMRlR2LkiMtSuboovzoc3OhzlhzzqxD-GIJWwPxE5Eudk7PmSFv8OXekEM0pmgAkJa7RF4ib-V33k-Evq-cxackTQXue4OYxVY1QVmFVA3RVNqJaz6x44ZIjz_-_0_o6inSliJ3CgE9poAEFbL7T6MAufwPsfJaV9cyWWkeRZvjtO_qeIsVqz9l4eL-zmdooPlr06ELukUEbtXVtec4niUZXrN9K6Dq8p83y7jp1ilWxfx5op2mk4Ixe78xXgKS7LGCIXhjCq_7XoEULo-t3akaAIOuJU_wt-DLZS5caXdnM9eJOwRNDe0bU6nZPH3mPP9ckxAIqAIgLQc6arb4PixzDN6vma8IM4fV0XtDz_X6iKyUlR14KjLI9cZk6ZJ2H_fDnixurLEZCHwYA6xmYukjhjD75_iTYIm_st2VAnWLjWZ8c2XL12elXOYCph1CYkAbrN49GWwzkmMdEc7yJnIirtK3MmtG8Pb4-uLT0lB1gXuGMUAxQ5VA0INFA3qLvxURg473ooCDYDdID0e2mgd4b9AhHhkCsyKfLMcpmB5tRG3f_jfpsG6kk0WJCP2oQmVIiePRUt830hyEaHQbVg1PsPNU2fVVnZ9usSuY6tIVPKJ43tlZVJA2rrF7XV6bzODPQYF_1i0sEtPhh4PlfVLM3VN3vo3e7glCV4SRBRLxcbE68QXXoxz20zWA1SqZzI0wY4aEIXxnKMGK112pZAxLQkd2I35KAeE_rPIp9vlgXCRzoZHsWi5HqqUmuFEQA191H54nV87h42XaXFxheBEsMaJvFsSuzkn84WlCEunVxTXTDjQnQkd5REmN8cBzJadybNkESx8wiT4oLzVrsqTp9Lm-jSkgF6THsjvQox8xFzaoyHOiRHFNz_wIt93JO_8Sk5STWFkPctA3KPie6Ps0rfVSh541v1iyYt_27pP1bR1ZTxdZ21lMsYFuy7PwXrRx9CtrCyReTpZgEHMEQpw3SGS6AP_tiUMmowCCuPKS_fvx39gcqwzJ3t_HRXmT_1jtEl3SrBl1MK-bCQMG3YFnVq-LbDcy9nx2E_uUpxeFAtsPiag8dDnMnosJEKkP0uSdvt1XlFz3ZpzX4DXmluVy7I7GhssK308nhNpvxdl0wiukyu_9qtlqYIvaV0FHhbYtYMlHGhG43RFjz4DKeI3XUYud8OqSHirvPBhaR100lHwh9ZLNr6pvvFnxX6UN33NDTqd06Jb3XvocKpef6Ccg1KW_sesbMAYjoBtzCEFqjfnAtqvK7dVOtyY61ZFBGrLYSHX32VQRV3eIxEQzvAWXlnfz5CfZOgRC6yLXcPW0R2W0XJzc5CwuNOsLBG5aQN6S25-7YcF1XrGf4Zr117NjtYl4nJBhVHZcfOuF3Cpd09d2XYa9XhxVssw_HMiOBEOibOfTGPeAFKtsL_N-a_dJoLCmNcH5F1kJvzTK94zyKLchRnzpTs__FkRHquMw4pmgE7ISpLCCwSeMZ1dJYPoZj6717qkDALhMfwjGhcnrsFstE0or8Z-c7VN-TmGucf04CWhl8DEG-FsSekdb1L54G5nkzGRgyZeK2YJJGZ3yX2yYfYW8FEIvRLKVjb_m-uudrDjAPuMxDTCwJ9jNtzUJfCkzA3zPrinMX0oHkA-cleUwQ5CblJ1YxHfNKz1p0XAWh3zwIOjd_Nl_RW06xUPJAlhGGI5vbIYdt8fi1ToIt6ORLsZBN7lbMKnVpqJmX9uTtyFiWL2_DXHL3KJlomgYHN8qhmzp_-lI40Ui31sTjaD_CRvqsZRjRZfPFi_i7J1KyZtuCaF1Z0H_CCN7T3JcoxSkaJ0nQsnF-mwXgQkwab0I",
+      "summary": []
+    },
+    {
+      "id": "rs_01098752475895a1006a6cea81a5308192a0d2c06a585760c3",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbOqQLw5Hh5Oos0Df-ICY0fUz3J7a6eoWnmjF5Yyy_fqi8jUgr95O-X8HpX6UUQLw_CC39Ls59K-DVFoOrUswP89l5h-T3tEkBzAB9VIVd9ux5tD21eTqcNQV6cVVprSMcOUXZ_ocg5XJNyItTXfZP9Dfha-juo-Ed9NMhFJvdIlqUnDmyb-aWhr6_qxxzM6wDGycUJFQ96rqIS0VIJh6LXCg8Tuh3SnDMN--q27hTWfXoVsNAZkNXL7XdO2jWSJvrr99hF32pvB16DXckUJUHeGsME1Q-5xNClIjTtfqQLY6aIqNKteBgR4FPEG8EtbGTXNOC2BkqjN5rOyY1BgdSnzrR_h99ROOpgkMnFCSkauTpgfRs5I4DcKbCXolpzPdgrW0CgC5NSnhpUdiRcuQ1TkbvVqYAc3pG4H7pHU8hrNo5TPsZT8_0J3KL69ROqEBnbWVTy17lsGhrELzQEwWYzK9gh4hXiXPbtrDjTcnR8CAQ_AzNO_sOx9Extld7-IY7Fg3jOUZsA5EapqVGPtLhGOxjYvxBNa6FK8agtnq8iCMMWuhQXhnAy3VZlricLVuNpNjBzCiWt8CyT5PEhfabtb5kjKhRrlmgimRD_qSMORgMst4WKgSUG4PTCesOHuQFAgLwmknPk7rS8_FAe7AJ_SWajf5UQdznTVn60xJGDjM_fLm-Je1kKTe-LiP_9YRNhxphT6AG_-lFumXmHSmpBu98SwwDLph3y7qJdQ0xFAPKxLYO2Z1aQ3VeKqrAe3WE8fnY6UoBO1skhxbk8hx4_UQLYeCBi8m_1TET3li2QT68dMj_s2SEEma8eqw5LVb9sg3QzWArE9GxEJ_fZjmIAb6hr293AQMFG2aXUMPU1MQXplTpQrCVgEoC6zrYlCSrQ1R96jN0iZcOED_SnSzU6P4rHd9YI6qcGGo7VAH4VLiN-4jXxI6LYmZKhL61dtPNEyd6JNYMZgNIzlwHQvX3KMx5r2AYplwuNvxVTI5yu_YAS9jHugTOvU5N1kRV1jz0ej1U1BJFCcXEt9WBxzunNLPGpmOuNcA2e6oIb4CF5niD6lMFVXmKFWHrL1W2dXlR3uHzn2hFcWjRmVZnLbRWGpXE8glsbGuTMel0JY0B9isSAdJLOtv_7YWqdlwwANccGLKF0XONcO5kR248-_D8BbSw4bYewwtVRs8aaNMKnbjYw0WXLf5JSDWHGMZICSgYlksnDXe5Xa9T1SaJbYcHWn4lbre2Zv10cmSYNj-ajsu_xAvWhaI_uDeujB4cTI3AGIJGBC_QyBElulnChhNYRvnIxt8u8fLUM4Oeua2aqHD0rdVCfnpX8XF1Q8U7QAEw2u4WHPZo1fy4ss43zDqtd2Rc75R4Axkzrx3cbTzeWQFNAsrQ3RSwWT3Kz8cnUxxqFv39q3VnkWxnPa_-MTKHSU6TWhVwmGqwcUnc14Bw-RibQcy0N8JtJO1ZGPmQ0yy7Mzcsve7jV924JbGEuTXHsf0E84pRQeuFRA1hL8WFcq7awOMC1kaMtzU1-wH1OZVQyse35XtzQzBPsO56T5WkTsERgdJX15U3_I1KD6AZJulf9Z6Tsv13-GMk_YvYhA4zugFu1KK2mEl6o4uRiSK32aG1KO5isOxHzEEkcvpP0ovet0KMOAIYP7Inc2DmcE_BHyxfq9rlBXaXeWs1qzbgiQUUXDsID0x-_uHCvL3y7g_Vr7rfKQw7bpDI1HgntYcdoOAHd9y06lDDJJn3cTHfoNUNBKOllYgEl04D73DlSIMBMBdDqlWqHbT1XK7H-Xg2GIx1YrOMScVgyVG2PGL-V4ZfwkIMBpiFxfkUrzuvnXoIElA2A0Q1dqOUij5dr8TG3tm0o3mcn7nlytSXyuZh--3gfJXaj9ub1YycQLYYoDuMABhYnmV7p6PI38XKl5I5vuQ0c2JRtPFwYPbU8SJbqQjLuCbdhEPC54QF_6SE83226z9ARz9xhixiYPEKcUtsP5OkFSooHuQWVPlTDPpGeW0gh79XhdLUCZm-fZedi36MpHbCak-NWLzMQ_zzRoeFS9rbCkgG4Ju_HnzdINN2HJxZl9ITFwDvk4n5oP1fDzGre9H4bUmqkZIaDBHPOWBNyxkhx2eHzaHAmObZm_rYi0buunJJMu_vskonckRZPjb3kckX2LmmuaekXf3YkUFtSFptXeK2BZ17YnEkRDq4hu56yChyUoGGRsS_BrtaQb8TfZYtoU4LU1MOWKbyhgZaKBBlEPXU0wAHFDpceIuPxU9It2el7XdG7_NUA3u8j_Cmi113XwFfek2jMJv5Bsjp8tNuIPaq0x1XZrf4kM7K1-9Q3Mm1ClWqiyG4V8j-65A5zqEaTLEuU_ADe8GaIIfHe_YKxEAV7kCWkm0XNjb2cUJ42cJ-DWY89olBOdz_S7H41m5t6DU5EV92hVLvxl1BXYSsE4ASgGjUq3Jw4vWo4MCP2Vxrj8W3J3k3_XBYmvTKew4ZRoJjASwIXYCJQ_8uS_B9MKCkSeGw6q3xshN2w05YizFGn5GPhlypkFtKER_rusoaCAv416lzDGDOfve8SQV6UqPxfE_OtC30uAy57g9gQLACu6MXUQxQlySMQ4GKLd4E-ypwOPiEJY-3chwfXCdh_Wp6-FYY8T5NUhzaIWesafCPE03mSZOaHXk_IEtQYw_Dm1lZVCtLay94mVoOUU7ZEcNluC1pYwcQatlxypSUMuZ0m8xh8ZhdYzXTlgt-H6gYPYIKvTan33EoMul4slD",
+      "summary": []
+    },
+    {
+      "id": "msg_01098752475895a1006a6cea8b5350819284009d3a8dacf5b2",
+      "type": "message",
+      "status": "completed",
+      "content": [
+        {
+          "type": "output_text",
+          "annotations": [],
+          "logprobs": [],
+          "text": "{\"candidates\":[{\"id\":\"c01\",\"strategy\":\"Classic triple rhyme\",\"text\":\"Das kleine Lama\\nim roten Pyjama\\nliest eine Geschichte\\nzusammen mit Mama.\"},{\"id\":\"c02\",\"strategy\":\"Front-loaded color image\",\"text\":\"Im roten Pyjama\\nliest das kleine Lama\\neine Geschichte\\nmit seiner Mama.\"},{\"id\":\"c03\",\"strategy\":\"Cozy bed setting\",\"text\":\"Im Bett bei Mama\\nsitzt das kleine Lama.\\nIm roten Pyjama\\nliest es eine Geschichte.\"},{\"id\":\"c04\",\"strategy\":\"Bedtime cadence\",\"text\":\"Vor dem Schlafengehen\\nliest das kleine Lama\\nim roten Pyjama\\nmit Mama eine Geschichte.\"},{\"id\":\"c05\",\"strategy\":\"Story-first phrasing\",\"text\":\"Eine Geschichte\\nliest das kleine Lama\\nim roten Pyjama\\nganz nah bei Mama.\"},{\"id\":\"c06\",\"strategy\":\"Evening read-aloud flow\",\"text\":\"Am Abend liest das Lama\\nim roten Pyjama\\neine Geschichte\\ngemeinsam mit Mama.\"}]}"
+        }
+      ],
+      "phase": "final_answer",
+      "role": "assistant"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "presence_penalty": 0,
+  "previous_response_id": null,
+  "prompt_cache_key": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+    "context": "all_turns",
+    "effort": "low",
+    "mode": "standard",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "store": true,
+  "temperature": 1,
+  "text": {
+    "format": {
+      "type": "json_schema",
+      "description": null,
+      "name": "german_book_review_llama_page1_drafts",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "type": "array",
+            "minItems": 6,
+            "maxItems": 6,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20
+                },
+                "strategy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                }
+              },
+              "required": [
+                "id",
+                "strategy",
+                "text"
+              ]
+            }
+          }
+        },
+        "required": [
+          "candidates"
+        ]
+      },
+      "strict": true
+    },
+    "verbosity": "medium"
+  },
+  "tool_choice": "auto",
+  "tool_usage": {
+    "image_gen": {
+      "input_tokens": 0,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "output_tokens": 0,
+      "output_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "total_tokens": 0
+    },
+    "web_search": {
+      "num_requests": 0
+    }
+  },
+  "tools": [],
+  "top_logprobs": 0,
+  "top_p": 0.98,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 805,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cached_tokens": 0
+    },
+    "output_tokens": 1593,
+    "output_tokens_details": {
+      "reasoning_tokens": 1360
+    },
+    "total_tokens": 2398
+  },
+  "user": null,
+  "metadata": {},
+  "output_text": "{\"candidates\":[{\"id\":\"c01\",\"strategy\":\"Classic triple rhyme\",\"text\":\"Das kleine Lama\\nim roten Pyjama\\nliest eine Geschichte\\nzusammen mit Mama.\"},{\"id\":\"c02\",\"strategy\":\"Front-loaded color image\",\"text\":\"Im roten Pyjama\\nliest das kleine Lama\\neine Geschichte\\nmit seiner Mama.\"},{\"id\":\"c03\",\"strategy\":\"Cozy bed setting\",\"text\":\"Im Bett bei Mama\\nsitzt das kleine Lama.\\nIm roten Pyjama\\nliest es eine Geschichte.\"},{\"id\":\"c04\",\"strategy\":\"Bedtime cadence\",\"text\":\"Vor dem Schlafengehen\\nliest das kleine Lama\\nim roten Pyjama\\nmit Mama eine Geschichte.\"},{\"id\":\"c05\",\"strategy\":\"Story-first phrasing\",\"text\":\"Eine Geschichte\\nliest das kleine Lama\\nim roten Pyjama\\nganz nah bei Mama.\"},{\"id\":\"c06\",\"strategy\":\"Evening read-aloud flow\",\"text\":\"Am Abend liest das Lama\\nim roten Pyjama\\neine Geschichte\\ngemeinsam mit Mama.\"}]}"
+}

@@ -1,5 +1,6 @@
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 import type { BookForm } from "../book-form-contract";
+import type { TargetLanguage } from "../../languages/language-config.ts";
 
 function secret() {
   const value = process.env.RESEND_API_KEY?.trim();
@@ -7,9 +8,11 @@ function secret() {
   return value;
 }
 
-export function createLeadReceipt(bookForm: BookForm) {
+export function createLeadReceipt(bookForm: BookForm, targetLanguage: TargetLanguage = "sl", regionalVariant?: string) {
   const payload = Buffer.from(JSON.stringify({
     bookForm,
+    targetLanguage,
+    regionalVariant: regionalVariant || "",
     capturedAt: Date.now(),
     nonce: randomUUID()
   })).toString("base64url");
@@ -17,7 +20,12 @@ export function createLeadReceipt(bookForm: BookForm) {
   return `${payload}.${signature}`;
 }
 
-export function verifyLeadReceipt(receipt: string, bookForm: BookForm) {
+export function verifyLeadReceipt(
+  receipt: string,
+  bookForm: BookForm,
+  targetLanguage: TargetLanguage = "sl",
+  regionalVariant?: string
+) {
   const [payload, signature] = receipt.split(".");
   if (!payload || !signature) return false;
   const expected = createHmac("sha256", secret()).update(payload).digest();
@@ -26,9 +34,13 @@ export function verifyLeadReceipt(receipt: string, bookForm: BookForm) {
   try {
     const decoded = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as {
       bookForm?: string;
+      targetLanguage?: string;
+      regionalVariant?: string;
       capturedAt?: number;
     };
     return decoded.bookForm === bookForm &&
+      (decoded.targetLanguage || "sl") === targetLanguage &&
+      (decoded.regionalVariant || "") === (regionalVariant || "") &&
       typeof decoded.capturedAt === "number" &&
       Date.now() - decoded.capturedAt < 24 * 60 * 60 * 1000;
   } catch {

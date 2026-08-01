@@ -1,0 +1,19 @@
+{
+  "status": "failed",
+  "failedAt": "2026-07-31T03:04:29.728Z",
+  "completedCallCount": 3,
+  "automaticRetries": 0,
+  "totals": {
+    "callCount": 3,
+    "latencyMs": 185511,
+    "inputTokens": 5375,
+    "cachedInputTokens": 1747,
+    "outputTokens": 9473,
+    "reasoningTokens": 3974,
+    "estimatedCostUsd": 0.3032035
+  },
+  "error": {
+    "name": "Error",
+    "message": "mush-jiggly-orange editorial reevaluation did not complete: max_output_tokens"
+  }
+}

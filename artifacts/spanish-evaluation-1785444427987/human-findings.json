@@ -1,0 +1,39 @@
+{
+  "reviewer": "Lea",
+  "status": "human_review_recorded",
+  "refrain-lab": {
+    "selection": "¡Cariño a mogollón, de parte de este champiñón!",
+    "selectionLabel": "Mushroom rhyme",
+    "status": "preferred"
+  },
+  "mush-watch-over": {
+    "selectionIndex": 0,
+    "status": "provisional_approval",
+    "notes": "Provisional approval of finalist 1, with concern about the constructed contento / atento phrasing."
+  },
+  "mush-many-hands": {
+    "selectionIndex": 1,
+    "status": "preferred",
+    "notes": "Prefer finalist 2 over finalist 1. Reject se agarran … agarrados and do not treat manos / agarrados as a successful rhyme."
+  },
+  "mush-jiggly-orange": {
+    "selectionIndex": 1,
+    "status": "preferred",
+    "notes": "Prefer finalist 2 over finalist 1. balancearse / contonearse feels forced and less child-friendly."
+  },
+  "llama-bedtime-story": {
+    "selectionIndex": 0,
+    "status": "approved",
+    "notes": "Approve finalist 1."
+  },
+  "llama-drama": {
+    "selectionIndex": 0,
+    "status": "provisional_only",
+    "notes": "Provisional only. Flag qué alborotada and Ya basta as possible meaning/tone shifts."
+  },
+  "llama-goes-to-sleep": {
+    "selectionIndex": 0,
+    "status": "approved",
+    "notes": "Approve finalist 1."
+  }
+}

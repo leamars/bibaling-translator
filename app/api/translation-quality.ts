@@ -1,5 +1,6 @@
 import type { Priority } from "./translation-prompts";
 import { requiresRhyme, type BookForm, type SourceRhyme } from "./book-form-contract.ts";
+import type { TargetLanguage } from "../languages/language-config.ts";
 
 export type CandidateEvaluation = {
   candidateId: string;
@@ -19,18 +20,28 @@ const metaLabel = /(?:^|\n)\s*(?:["“„]\s*)?(?:opomba|navodilo|razlaga|altern
 const instructionFragment = /\b(?:izberi(?:te)?|vstavi(?:te)?|zamenjaj(?:te)?|po želji|lahko uporabite|druga možnost)\b/iu;
 const placeholder = /\{\{[^}]+\}\}|\[[^[\]]*(?:vstavi|izberi|besedilo|refren)[^[\]]*\]|<[^>]+>|_{2,}|…{2,}/iu;
 
-export function deterministicViolations(text: string, options: { requireCompleteSentence?: boolean } = {}) {
+export function deterministicViolations(
+  text: string,
+  options: { requireCompleteSentence?: boolean; targetLanguage?: TargetLanguage } = {}
+) {
   const violations: string[] = [];
+  const targetLanguage = options.targetLanguage || "sl";
   if (slashForm.test(text)) violations.push("slash-form gender placeholder");
-  if (forcedPhrase.test(text)) violations.push("forced phrase: čisto do gobic");
-  if (inventedMushroomLove.test(text)) violations.push("invented love-growing-like-mushrooms meaning");
+  if (targetLanguage === "sl") {
+    if (forcedPhrase.test(text)) violations.push("forced phrase: čisto do gobic");
+    if (inventedMushroomLove.test(text)) violations.push("invented love-growing-like-mushrooms meaning");
+  }
   if (metaLabel.test(text)) violations.push("meta-commentary or quoted output label inside book text");
   if (instructionFragment.test(text)) violations.push("instruction fragment inside book text");
   if (placeholder.test(text)) violations.push("placeholder or unresolved alternative inside book text");
   if (
     !text.trim() ||
     (options.requireCompleteSentence !== false && !/[.!?…]|\n/u.test(text.trim()))
-  ) violations.push("incomplete or fragmentary Slovenian");
+  ) violations.push(
+    targetLanguage === "sl"
+      ? "incomplete or fragmentary Slovenian"
+      : "incomplete or fragmentary translation"
+  );
   return violations;
 }
 

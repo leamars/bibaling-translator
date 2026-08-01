@@ -1,0 +1,741 @@
+{
+  "schemaVersion": 1,
+  "evaluationId": "spanish-human-review-2026-07-30T20:47:07.982Z",
+  "runId": "f34ee3c0-9a27-4a1d-a05e-4bea24c30cf4",
+  "language": "es",
+  "regionalVariant": "es-ES",
+  "startedAt": "2026-07-31T01:45:20.725Z",
+  "updatedAt": "2026-07-31T02:34:42.785Z",
+  "exportedAt": "2026-07-31T02:34:48.542Z",
+  "items": [
+    {
+      "fixtureId": "refrain-lab",
+      "presentationOrder": [
+        "refrain-finalist-1",
+        "refrain-finalist-2",
+        "refrain-finalist-3"
+      ],
+      "candidates": [
+        {
+          "candidateId": "refrain-finalist-1",
+          "exactText": "¡Amor sincero; lo firma este champiñón compañero!",
+          "presentationIndex": 0,
+          "rating": "needs_editing",
+          "reasonTags": [
+            "unnatural_phrasing"
+          ],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:49:03.720Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "refrain-finalist-2",
+          "exactText": "¡Cariño a mogollón, de parte de este champiñón!",
+          "presentationIndex": 1,
+          "rating": "needs_editing",
+          "reasonTags": [
+            "awkward_read_aloud_rhythm"
+          ],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:47:56.866Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "refrain-finalist-3",
+          "exactText": "¡Todo mi cariño nace aquí, dentro de mí!",
+          "presentationIndex": 2,
+          "rating": "would_not_use",
+          "reasonTags": [
+            "unnatural_phrasing"
+          ],
+          "explanation": "just sounds pretty weird as a phrase",
+          "preferredRewrite": "I actually think this one was a nice candidate as well that I'd use: \"¡Mi corazón os quiere un montón!\"",
+          "reviewedAt": "2026-07-31T01:46:47.932Z",
+          "lineComments": []
+        }
+      ],
+      "selectableCandidates": [
+        {
+          "candidateId": "refrain-finalist-1",
+          "source": "editorial_finalist",
+          "exactText": "¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "candidateId": "refrain-finalist-2",
+          "source": "editorial_finalist",
+          "exactText": "¡Cariño a mogollón, de parte de este champiñón!"
+        },
+        {
+          "candidateId": "refrain-finalist-3",
+          "source": "editorial_finalist",
+          "exactText": "¡Todo mi cariño nace aquí, dentro de mí!"
+        },
+        {
+          "candidateId": "draft:refrain-2",
+          "source": "private_draft",
+          "exactText": "¡Amor a montones, palabra de champiñón!"
+        },
+        {
+          "candidateId": "draft:refrain-3",
+          "source": "private_draft",
+          "exactText": "¡Mi corazón os quiere un montón!"
+        },
+        {
+          "candidateId": "draft:refrain-4",
+          "source": "private_draft",
+          "exactText": "¡Con corazón de seta, os quiero muchísimo!"
+        },
+        {
+          "candidateId": "draft:refrain-5",
+          "source": "private_draft",
+          "exactText": "¡Cuánto os quiero, criaturas de altura!"
+        }
+      ],
+      "equivalentPairs": [],
+      "humanConclusion": {
+        "type": "none",
+        "candidateIds": []
+      },
+      "timestamp": "2026-07-31T02:31:48.260Z",
+      "previousModelSelection": "¡Amor sincero; lo firma este champiñón compañero!",
+      "currentModelSelection": null,
+      "priorHumanFinding": {
+        "selection": "¡Cariño a mogollón, de parte de este champiñón!",
+        "selectionLabel": "Mushroom rhyme",
+        "status": "preferred"
+      }
+    },
+    {
+      "fixtureId": "mush-watch-over",
+      "presentationOrder": [
+        "c03",
+        "c05",
+        "c04"
+      ],
+      "candidates": [
+        {
+          "candidateId": "c03",
+          "exactText": "Quiero mucho a mi amigo, peludo y contento;\nen un árbol se acurruca y me cuida, atento.\n¡Amor sincero; lo firma este champiñón compañero!",
+          "presentationIndex": 0,
+          "rating": "would_not_use",
+          "reasonTags": [
+            "awkward_read_aloud_rhythm"
+          ],
+          "explanation": "",
+          "preferredRewrite": "Mi amigo feliz, de pelo alborotado,\ndesde el árbol me cuida con cuidado.\n¡Amor sincero; lo firma este champiñón compañero!",
+          "reviewedAt": "2026-07-31T01:52:14.656Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c05",
+          "exactText": "¡Cuánto quiero a mi amigo, tan feliz y peludo!\nEn un árbol se acurruca y me cuida a menudo.\n¡Amor sincero; lo firma este champiñón compañero!",
+          "presentationIndex": 1,
+          "rating": "read_as_written",
+          "reasonTags": [],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:51:28.020Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c04",
+          "exactText": "A mi amigo feliz y peludo lo quiero un montón;\nse acurruca en un árbol y me cuida con atención.\n¡Amor sincero; lo firma este champiñón compañero!",
+          "presentationIndex": 2,
+          "rating": "read_as_written",
+          "reasonTags": [],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:52:08.087Z",
+          "lineComments": []
+        }
+      ],
+      "selectableCandidates": [
+        {
+          "candidateId": "c03",
+          "source": "editorial_finalist",
+          "exactText": "Quiero mucho a mi amigo, peludo y contento;\nen un árbol se acurruca y me cuida, atento.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "candidateId": "c04",
+          "source": "editorial_finalist",
+          "exactText": "A mi amigo feliz y peludo lo quiero un montón;\nse acurruca en un árbol y me cuida con atención.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "candidateId": "c05",
+          "source": "editorial_finalist",
+          "exactText": "¡Cuánto quiero a mi amigo, tan feliz y peludo!\nEn un árbol se acurruca y me cuida a menudo.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "candidateId": "draft:c01",
+          "source": "private_draft",
+          "exactText": "Mi amigo peludo, alegre y risueño,\ndesde el árbol vela por mi sueño.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "candidateId": "draft:c02",
+          "source": "private_draft",
+          "exactText": "En el árbol descansa mi amigo peludo,\nfeliz y pendiente de mí a cada minuto.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "candidateId": "draft:c03",
+          "source": "private_draft",
+          "exactText": "Mi amigo feliz, de pelo alborotado,\ndesde el árbol me cuida con mimo y cuidado.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "candidateId": "draft:c04",
+          "source": "private_draft",
+          "exactText": "Quiero a mi amigo, tan feliz y peludo,\nque me cuida en el árbol, atento y seguro.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "candidateId": "draft:c05",
+          "source": "private_draft",
+          "exactText": "Mi alegre amigo de pelo esponjoso\ndesde el árbol me cuida, atento y cariñoso.\n¡Amor sincero; lo firma este champiñón compañero!"
+        },
+        {
+          "candidateId": "draft:c06",
+          "source": "private_draft",
+          "exactText": "Acurrucado en el árbol está\nmi amigo peludo, que siempre me cuidará.\n¡Amor sincero; lo firma este champiñón compañero!"
+        }
+      ],
+      "equivalentPairs": [],
+      "humanConclusion": {
+        "type": "equivalent",
+        "candidateIds": [
+          "c04",
+          "c05"
+        ]
+      },
+      "timestamp": "2026-07-31T02:32:16.048Z",
+      "previousModelSelection": "Quiero mucho a mi amigo, peludo y contento;\nen un árbol se acurruca y me cuida, atento.\n¡Amor sincero; lo firma este champiñón compañero!",
+      "currentModelSelection": null,
+      "priorHumanFinding": {
+        "selectionIndex": 0,
+        "status": "provisional_approval",
+        "notes": "Provisional approval of finalist 1, with concern about the constructed contento / atento phrasing."
+      }
+    },
+    {
+      "fixtureId": "mush-many-hands",
+      "presentationOrder": [
+        "c02",
+        "c04",
+        "c06"
+      ],
+      "candidates": [
+        {
+          "candidateId": "c02",
+          "exactText": "Manos y más manos tiene esta pandilla;\nse agarran y giran, todos en cuadrilla.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Y al dar tantas vueltas, me alzáis del suelo!",
+          "presentationIndex": 0,
+          "rating": "needs_editing",
+          "reasonTags": [],
+          "explanation": "It's weird that we're adding this bit at the end? ¡Y al dar tantas vueltas, me alzáis del suelo!",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:53:03.103Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c04",
+          "exactText": "Mis amigos tienen muchísimas manos;\nse agarran y giran, todos bien agarrados.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Con vuestras vueltas, me alzáis del suelo!",
+          "presentationIndex": 1,
+          "rating": "would_not_use",
+          "reasonTags": [
+            "awkward_read_aloud_rhythm"
+          ],
+          "explanation": "Doesn't rhyme + the same issue as A.",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:53:38.658Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c06",
+          "exactText": "Muchas manos tienen mis amigos;\nse agarran y giran, todos bien unidos.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Dando vueltas, me alzáis del suelo!",
+          "presentationIndex": 2,
+          "rating": "needs_editing",
+          "reasonTags": [],
+          "explanation": "Would get rid of the last sentence, otherwise sounds good.",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:53:56.157Z",
+          "lineComments": []
+        }
+      ],
+      "selectableCandidates": [
+        {
+          "candidateId": "c04",
+          "source": "editorial_finalist",
+          "exactText": "Mis amigos tienen muchísimas manos;\nse agarran y giran, todos bien agarrados.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Con vuestras vueltas, me alzáis del suelo!"
+        },
+        {
+          "candidateId": "c06",
+          "source": "editorial_finalist",
+          "exactText": "Muchas manos tienen mis amigos;\nse agarran y giran, todos bien unidos.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Dando vueltas, me alzáis del suelo!"
+        },
+        {
+          "candidateId": "c02",
+          "source": "editorial_finalist",
+          "exactText": "Manos y más manos tiene esta pandilla;\nse agarran y giran, todos en cuadrilla.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Y al dar tantas vueltas, me alzáis del suelo!"
+        },
+        {
+          "candidateId": "draft:c01",
+          "source": "private_draft",
+          "exactText": "Estos amigos tienen manos a montones;\nse agarran y giran formando un gran corro.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me alzáis por los aires y vuelo!"
+        },
+        {
+          "candidateId": "draft:c02",
+          "source": "private_draft",
+          "exactText": "Manos y más manos tiene esta pandilla;\ntodos se agarran, dan vueltas y giran.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me levantáis del suelo hasta que vuelo!"
+        },
+        {
+          "candidateId": "draft:c03",
+          "source": "private_draft",
+          "exactText": "Con tantas manos, mis amigos se agarran\ny vuelta tras vuelta, girando, me alzan.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me hacéis despegar del suelo!"
+        },
+        {
+          "candidateId": "draft:c04",
+          "source": "private_draft",
+          "exactText": "Mis amigos tienen muchas manos;\nse agarran y giran, todos bien juntados.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me alzáis del suelo y vuelo!"
+        },
+        {
+          "candidateId": "draft:c05",
+          "source": "private_draft",
+          "exactText": "Cuántas manos tienen estos champiñones:\nse agarran y giran, dando vueltas y más vueltas.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me levantáis del suelo mientras dais la vuelta!"
+        },
+        {
+          "candidateId": "draft:c06",
+          "source": "private_draft",
+          "exactText": "Muchas manos, muchos amigos;\nse agarran y giran todos unidos.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me alzáis del suelo y por el aire vuelo!"
+        }
+      ],
+      "equivalentPairs": [],
+      "humanConclusion": {
+        "type": "equivalent",
+        "candidateIds": [
+          "c02",
+          "c04"
+        ]
+      },
+      "timestamp": "2026-07-31T02:32:59.056Z",
+      "previousModelSelection": "Mis amigos tienen muchísimas manos;\nse agarran y giran, todos bien agarrados.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Con vuestras vueltas, me alzáis del suelo!",
+      "currentModelSelection": null,
+      "priorHumanFinding": {
+        "selectionIndex": 1,
+        "status": "preferred",
+        "notes": "Prefer finalist 2 over finalist 1. Reject se agarran … agarrados and do not treat manos / agarrados as a successful rhyme."
+      }
+    },
+    {
+      "fixtureId": "mush-jiggly-orange",
+      "presentationOrder": [
+        "c06",
+        "c02",
+        "c04"
+      ],
+      "candidates": [
+        {
+          "candidateId": "c06",
+          "exactText": "Veo a mis amigos naranjas temblar y bailar.\n¡Qué bien me lo paso al verlos danzar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!",
+          "presentationIndex": 0,
+          "rating": "needs_editing",
+          "reasonTags": [],
+          "explanation": "¡Hacéis bailar al bosque entero!\n^ this should come before the repeated refrain",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:54:59.162Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c02",
+          "exactText": "Mis amigos naranjas se agitan sin parar.\n¡Cómo me divierte verlos bailar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Le dais ritmo al bosque entero!",
+          "presentationIndex": 1,
+          "rating": "needs_editing",
+          "reasonTags": [],
+          "explanation": "¡Le dais ritmo al bosque entero!\n^ come before refrain",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:55:10.186Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c04",
+          "exactText": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!",
+          "presentationIndex": 2,
+          "rating": "would_not_use",
+          "reasonTags": [
+            "awkward_read_aloud_rhythm"
+          ],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:55:22.986Z",
+          "lineComments": []
+        }
+      ],
+      "selectableCandidates": [
+        {
+          "candidateId": "c04",
+          "source": "editorial_finalist",
+          "exactText": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!"
+        },
+        {
+          "candidateId": "c02",
+          "source": "editorial_finalist",
+          "exactText": "Mis amigos naranjas se agitan sin parar.\n¡Cómo me divierte verlos bailar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Le dais ritmo al bosque entero!"
+        },
+        {
+          "candidateId": "c06",
+          "source": "editorial_finalist",
+          "exactText": "Veo a mis amigos naranjas temblar y bailar.\n¡Qué bien me lo paso al verlos danzar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!"
+        },
+        {
+          "candidateId": "draft:c01",
+          "source": "private_draft",
+          "exactText": "Veo a mis amigos naranjas bailar.\n¡Qué divertido es verlos menear!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!"
+        },
+        {
+          "candidateId": "draft:c03",
+          "source": "private_draft",
+          "exactText": "Ahí están mis amigos, naranjas y saltarines.\n¡Qué gracia tienen al moverse así!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Ponéis a bailar al bosque entero!"
+        },
+        {
+          "candidateId": "draft:c04",
+          "source": "private_draft",
+          "exactText": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Con vosotros baila el bosque entero!"
+        },
+        {
+          "candidateId": "draft:c05",
+          "source": "private_draft",
+          "exactText": "Mis amigos naranjas se mueven con salero.\n¡Me encanta ver su baile gelatinoso y ligero!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!"
+        },
+        {
+          "candidateId": "draft:c06",
+          "source": "private_draft",
+          "exactText": "Veo a mis amigos naranjas temblar y bailar.\n¡Qué bien me lo paso al verlos danzar!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Todo el bosque se pone a bailar!"
+        }
+      ],
+      "equivalentPairs": [],
+      "humanConclusion": {
+        "type": "equivalent",
+        "candidateIds": [
+          "c06",
+          "c02"
+        ]
+      },
+      "timestamp": "2026-07-31T02:34:04.048Z",
+      "previousModelSelection": "Veo a mis amigos naranjas balancearse.\n¡Qué divertido es verlos contonearse!\n\n¡Amor sincero; lo firma este champiñón compañero!\n¡Hacéis bailar al bosque entero!",
+      "currentModelSelection": null,
+      "priorHumanFinding": {
+        "selectionIndex": 1,
+        "status": "preferred",
+        "notes": "Prefer finalist 2 over finalist 1. balancearse / contonearse feels forced and less child-friendly."
+      }
+    },
+    {
+      "fixtureId": "llama-bedtime-story",
+      "presentationOrder": [
+        "c04",
+        "c06",
+        "c01"
+      ],
+      "candidates": [
+        {
+          "candidateId": "c04",
+          "exactText": "Llama, llama, en la cama,\ncon su rojo pijama,\nlee un cuento\njunto a su mamá.",
+          "presentationIndex": 0,
+          "rating": "would_not_use",
+          "reasonTags": [
+            "awkward_read_aloud_rhythm"
+          ],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:55:54.920Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c06",
+          "exactText": "Llama, llama,\nrojo es su pijama;\nlee un cuento\njunto a su mamá.",
+          "presentationIndex": 1,
+          "rating": "read_as_written",
+          "reasonTags": [],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:56:13.795Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c01",
+          "exactText": "Llama, llama,\nlleva rojo el pijama;\nlee un cuento\ncon su mamá.",
+          "presentationIndex": 2,
+          "rating": "read_as_written",
+          "reasonTags": [],
+          "explanation": "mama in all of these is weirdly pronounced -- would spanish ppl break the rule and put the emphasis on the first ma here? otherwise, this story is really hard",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:56:19.236Z",
+          "lineComments": []
+        }
+      ],
+      "selectableCandidates": [
+        {
+          "candidateId": "c01",
+          "source": "editorial_finalist",
+          "exactText": "Llama, llama,\nlleva rojo el pijama;\nlee un cuento\ncon su mamá."
+        },
+        {
+          "candidateId": "c04",
+          "source": "editorial_finalist",
+          "exactText": "Llama, llama, en la cama,\ncon su rojo pijama,\nlee un cuento\njunto a su mamá."
+        },
+        {
+          "candidateId": "c06",
+          "source": "editorial_finalist",
+          "exactText": "Llama, llama,\nrojo es su pijama;\nlee un cuento\njunto a su mamá."
+        },
+        {
+          "candidateId": "draft:c01",
+          "source": "private_draft",
+          "exactText": "Llama, llama,\ncon rojo pijama,\nlee un cuento\njunto a su mamá."
+        },
+        {
+          "candidateId": "draft:c02",
+          "source": "private_draft",
+          "exactText": "Llamita, llamita,\ncon pijama rojo,\nlee con mamá,\nmuy juntitos los dos."
+        },
+        {
+          "candidateId": "draft:c03",
+          "source": "private_draft",
+          "exactText": "Llama, llama,\npijama colorado,\nlee con su mamá,\nsentadita a su lado."
+        },
+        {
+          "candidateId": "draft:c04",
+          "source": "private_draft",
+          "exactText": "Con su pijama\nrojo de verdad,\nla llama lee un cuento\njunto a su mamá."
+        },
+        {
+          "candidateId": "draft:c05",
+          "source": "private_draft",
+          "exactText": "La llama en pijama,\nvestida de rojo,\nlee con su mamá\nun cuento entre los dos."
+        },
+        {
+          "candidateId": "draft:c06",
+          "source": "private_draft",
+          "exactText": "Llama, llamita,\nde rojo va;\nlee un cuento en la cama\ncon su mamá."
+        }
+      ],
+      "equivalentPairs": [],
+      "humanConclusion": {
+        "type": "equivalent",
+        "candidateIds": [
+          "c01",
+          "c06"
+        ]
+      },
+      "timestamp": "2026-07-31T02:34:17.514Z",
+      "previousModelSelection": "Llama, llama,\nlleva rojo el pijama;\nlee un cuento\ncon su mamá.",
+      "currentModelSelection": null,
+      "priorHumanFinding": {
+        "selectionIndex": 0,
+        "status": "approved",
+        "notes": "Approve finalist 1."
+      }
+    },
+    {
+      "fixtureId": "llama-drama",
+      "presentationOrder": [
+        "c02",
+        "c03",
+        "c06"
+      ],
+      "candidates": [
+        {
+          "candidateId": "c02",
+          "exactText": "Llamita, llamita,\n¡vaya jaleo!\nA veces mamá\ntiene mucho ajetreo.\n\nNo armes, Llama,\nsemejante drama.\nTen paciencia\ny espera a mamá.",
+          "presentationIndex": 0,
+          "rating": "needs_editing",
+          "reasonTags": [
+            "awkward_read_aloud_rhythm"
+          ],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:57:20.228Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c03",
+          "exactText": "Pequeña Llama,\n¡qué alborotada!\nA veces mamá\nestá muy ocupada.\n\nYa basta, Llama,\nde tanto drama.\nTen paciencia\ny espera a mamá.",
+          "presentationIndex": 1,
+          "rating": "read_as_written",
+          "reasonTags": [],
+          "explanation": "same comment about the \"mama\" as before, but otherwise great",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:57:41.805Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c06",
+          "exactText": "Llama bebé,\n¡un lío sin fin!\nA veces mamá\ntiene mucho trajín.\n\nNo sigas, Llama,\ncon este drama.\nTen paciencia\ny espera a mamá.",
+          "presentationIndex": 2,
+          "rating": "read_as_written",
+          "reasonTags": [],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:58:17.528Z",
+          "lineComments": []
+        }
+      ],
+      "selectableCandidates": [
+        {
+          "candidateId": "c03",
+          "source": "editorial_finalist",
+          "exactText": "Pequeña Llama,\n¡qué alborotada!\nA veces mamá\nestá muy ocupada.\n\nYa basta, Llama,\nde tanto drama.\nTen paciencia\ny espera a mamá."
+        },
+        {
+          "candidateId": "c02",
+          "source": "editorial_finalist",
+          "exactText": "Llamita, llamita,\n¡vaya jaleo!\nA veces mamá\ntiene mucho ajetreo.\n\nNo armes, Llama,\nsemejante drama.\nTen paciencia\ny espera a mamá."
+        },
+        {
+          "candidateId": "c06",
+          "source": "editorial_finalist",
+          "exactText": "Llama bebé,\n¡un lío sin fin!\nA veces mamá\ntiene mucho trajín.\n\nNo sigas, Llama,\ncon este drama.\nTen paciencia\ny espera a mamá."
+        },
+        {
+          "candidateId": "draft:c01",
+          "source": "private_draft",
+          "exactText": "Bebé Llama,\n¡qué alboroto!\nA veces mamá\nno puede con todo.\n\nBasta ya\nde tanto drama.\nTen paciencia\ny espera a mamá."
+        },
+        {
+          "candidateId": "draft:c02",
+          "source": "private_draft",
+          "exactText": "Llamita, llamita,\n¡vaya jaleo!\nA veces mamá\ntiene mucho ajetreo.\n\nNo armes ahora\nun drama de llama.\nEspera un poquito\ny ten paciencia con mamá."
+        },
+        {
+          "candidateId": "draft:c03",
+          "source": "private_draft",
+          "exactText": "Pequeña Llama,\n¡qué alborotada!\nHay veces que mamá\nestá muy atareada.\n\nTermina ya\ncon este drama.\nEspera paciente\na tu mamá."
+        },
+        {
+          "candidateId": "draft:c04",
+          "source": "private_draft",
+          "exactText": "Llama bebé,\n¡menuda función!\nA veces mamá\ntiene otra ocupación.\n\nNo montes ahora\nun drama de llama.\nTen un poco de paciencia\ncon tu mamá."
+        },
+        {
+          "candidateId": "draft:c05",
+          "source": "private_draft",
+          "exactText": "Ay, Bebé Llama,\n¡cuánto revuelo!\nA veces mamá\nno puede hacerlo todo.\n\nDeja ya\ntodo este drama.\nSé paciente\ny espera a mamá."
+        },
+        {
+          "candidateId": "draft:c06",
+          "source": "private_draft",
+          "exactText": "Llama pequeña,\n¡vaya jornada!\nA veces mamá\nestá muy ocupada.\n\nNo sigas ya\ncon el drama, Llama.\nEspera con paciencia\na tu mamá."
+        }
+      ],
+      "equivalentPairs": [],
+      "humanConclusion": {
+        "type": "equivalent",
+        "candidateIds": [
+          "c03",
+          "c06"
+        ]
+      },
+      "timestamp": "2026-07-31T02:34:32.398Z",
+      "previousModelSelection": "Pequeña Llama,\n¡qué alborotada!\nA veces mamá\nestá muy ocupada.\n\nYa basta, Llama,\nde tanto drama.\nTen paciencia\ny espera a mamá.",
+      "currentModelSelection": null,
+      "priorHumanFinding": {
+        "selectionIndex": 0,
+        "status": "provisional_only",
+        "notes": "Provisional only. Flag qué alborotada and Ya basta as possible meaning/tone shifts."
+      }
+    },
+    {
+      "fixtureId": "llama-goes-to-sleep",
+      "presentationOrder": [
+        "c01",
+        "c02",
+        "c05"
+      ],
+      "candidates": [
+        {
+          "candidateId": "c01",
+          "exactText": "La llamita\nse queda dormida.",
+          "presentationIndex": 0,
+          "rating": "read_as_written",
+          "reasonTags": [],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:58:30.667Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c02",
+          "exactText": "La pequeña llama\nse duerme.",
+          "presentationIndex": 1,
+          "rating": "would_not_use",
+          "reasonTags": [
+            "awkward_read_aloud_rhythm"
+          ],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:58:34.015Z",
+          "lineComments": []
+        },
+        {
+          "candidateId": "c05",
+          "exactText": "La llamita bebé\nse duerme ya.",
+          "presentationIndex": 2,
+          "rating": "would_not_use",
+          "reasonTags": [
+            "awkward_read_aloud_rhythm"
+          ],
+          "explanation": "",
+          "preferredRewrite": "",
+          "reviewedAt": "2026-07-31T01:58:42.786Z",
+          "lineComments": []
+        }
+      ],
+      "selectableCandidates": [
+        {
+          "candidateId": "c01",
+          "source": "editorial_finalist",
+          "exactText": "La llamita\nse queda dormida."
+        },
+        {
+          "candidateId": "c02",
+          "source": "editorial_finalist",
+          "exactText": "La pequeña llama\nse duerme."
+        },
+        {
+          "candidateId": "c05",
+          "source": "editorial_finalist",
+          "exactText": "La llamita bebé\nse duerme ya."
+        },
+        {
+          "candidateId": "draft:c03",
+          "source": "private_draft",
+          "exactText": "La bebé llama\nse va a dormir."
+        },
+        {
+          "candidateId": "draft:c04",
+          "source": "private_draft",
+          "exactText": "Llama pequeña,\nya duerme."
+        },
+        {
+          "candidateId": "draft:c06",
+          "source": "private_draft",
+          "exactText": "La pequeña llama\nse queda dormidita."
+        }
+      ],
+      "equivalentPairs": [],
+      "humanConclusion": {
+        "type": "preferred",
+        "candidateIds": [
+          "c01"
+        ],
+        "importedFrom": "human-findings.json"
+      },
+      "timestamp": "2026-07-31T02:34:42.785Z",
+      "previousModelSelection": "La llamita\nse queda dormida.",
+      "currentModelSelection": null,
+      "priorHumanFinding": {
+        "selectionIndex": 0,
+        "status": "approved",
+        "notes": "Approve finalist 1."
+      }
+    }
+  ]
+}

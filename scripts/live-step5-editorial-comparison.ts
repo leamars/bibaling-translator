@@ -12,6 +12,13 @@ import {
 import { calculateCost, pricingFor } from "../app/api/openai-control.ts";
 import { deterministicViolations } from "../app/api/translation-quality.ts";
 import { directionsEvaluationPrompt } from "../app/api/translation-prompts.ts";
+import {
+  comparativeFinalistFields,
+  comparativeJsonProperties,
+  comparativeJsonRequired,
+  winnerComparisonsJsonSchema,
+  winnerComparisonsSchema
+} from "../app/api/editorial-contract.ts";
 
 const MODEL = "gpt-5.6-sol";
 const TIMEOUT_MS = 90_000;
@@ -62,9 +69,18 @@ const productionOptionSchema = z.object({
   description: z.string().trim().min(1).max(120),
   genderDependency: z.string().trim().min(1).max(120),
   construction: z.enum(["couplet", "playful_hook", "lyrical_refrain"]),
-  rhymePairs: z.array(rhymePairSchema).min(1).max(2)
+  rhymePairs: z.array(rhymePairSchema).min(1).max(2),
+  fidelityPass: z.boolean(),
+  grammarPass: z.boolean(),
+  readAloudPass: z.boolean(),
+  directionPass: z.boolean(),
+  rhymePass: z.boolean(),
+  ...comparativeFinalistFields
 });
-const productionOutputSchema = z.object({ options: z.array(productionOptionSchema).length(3) });
+const productionOutputSchema = z.object({
+  options: z.array(productionOptionSchema).length(3),
+  winnerComparisons: winnerComparisonsSchema
+});
 const techniques = [
   "balanced_couplet",
   "repeated_hook",
@@ -113,7 +129,13 @@ const productionJsonSchema = {
               },
               required: ["endingA", "endingB"]
             }
-          }
+          },
+          fidelityPass: { type: "boolean" },
+          grammarPass: { type: "boolean" },
+          readAloudPass: { type: "boolean" },
+          directionPass: { type: "boolean" },
+          rhymePass: { type: "boolean" },
+          ...comparativeJsonProperties
         },
         required: [
           "sourceCandidateIndex",
@@ -122,12 +144,19 @@ const productionJsonSchema = {
           "description",
           "genderDependency",
           "construction",
-          "rhymePairs"
+          "rhymePairs",
+          "fidelityPass",
+          "grammarPass",
+          "readAloudPass",
+          "directionPass",
+          "rhymePass",
+          ...comparativeJsonRequired
         ]
       }
-    }
+    },
+    winnerComparisons: winnerComparisonsJsonSchema
   },
-  required: ["options"]
+  required: ["options", "winnerComparisons"]
 } as const;
 
 const revisedJsonSchema = {

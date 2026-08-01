@@ -1,0 +1,24 @@
+{
+  "status": "completed",
+  "completedAt": "2026-07-31T18:33:52.447Z",
+  "model": "gpt-5.6-sol",
+  "reasoningEffort": "low",
+  "callCount": 1,
+  "automaticRetries": 0,
+  "outputAllowance": 3500,
+  "maximumEstimatedCostUsd": 0.145,
+  "actualUsage": {
+    "action": "german-book-review.llama-page1.draft",
+    "model": "gpt-5.6-sol",
+    "reasoningEffort": "low",
+    "responseId": "resp_01098752475895a1006a6cea5c9d508192b7049d8b6b41537a",
+    "responseStatus": "completed",
+    "latencyMs": 52828,
+    "inputTokens": 805,
+    "cachedInputTokens": 0,
+    "outputTokens": 1593,
+    "reasoningTokens": 1360,
+    "estimatedCostUsd": 0.051815
+  },
+  "reviewBundle": "review-bundle.json"
+}
