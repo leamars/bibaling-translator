@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { COMPARISON_MODELS, generationError, isMockRequest, openAIClient } from "../generation";
+import { QUALITY_MODEL, generationError, isMockRequest, openAIClient } from "../generation";
 import { mockOptions } from "../mock-fixtures";
 import {
   assertActionBudget,
@@ -33,7 +33,6 @@ import {
   productionPageEditorialResultSchema,
   resolveProductionPageResult
 } from "../page-editorial-contract.ts";
-import { verifyLeadReceipt } from "../leads/receipt";
 import {
   resolveLanguageSelection,
   languageConfig,
@@ -70,9 +69,11 @@ const bodySchema = z.discriminatedUnion("mode", [
     direction: directionSchema.optional(),
     ...languageFields
   }),
+  // The workshop happens before email capture, so pattern testing carries no
+  // lead receipt: the email gate now sits after the page-4 teaser, and only
+  // full-book delivery requires it.
   z.object({
     mode: z.literal("pattern"),
-    leadReceipt: z.string().min(1),
     visualContexts: z.array(visualContextSchema).length(2),
     sources: z.array(z.string().min(1)).length(2),
     priority: z.enum(["rhythm", "meaning", "simple"]),
@@ -84,14 +85,15 @@ const bodySchema = z.discriminatedUnion("mode", [
     approvedSpread1Note: z.string().max(1200).optional(),
     ...languageFields
   }),
+  // Teaser: one page written in the locked voice while the parent watches.
+  // Its text is returned for seeding delivery but never displayed pre-email.
   z.object({
-    mode: z.literal("fullbook"),
-    leadReceipt: z.string().min(1),
-    spreads: z.array(z.object({
+    mode: z.literal("preview"),
+    spread: z.object({
       spread: z.number().int().positive(),
       visualContext: visualContextSchema,
       source: z.string().min(1)
-    })).min(1).max(40),
+    }),
     priority: z.enum(["rhythm", "meaning", "simple"]),
     freedom: z.enum(["close", "natural", "playful"]),
     bookForm: z.enum(BOOK_FORMS),
@@ -101,7 +103,7 @@ const bodySchema = z.discriminatedUnion("mode", [
       spread: z.number().int().positive(),
       text: z.string().min(1),
       parentNote: z.string().max(1200).optional()
-    })).length(3),
+    })).min(1).max(3),
     ...languageFields
   })
 ]).superRefine((input, context) => {
@@ -335,20 +337,23 @@ async function generatePassingOptions(args: PipelineArgs) {
     }));
 }
 
-async function generateFullBook(args: {
+// Teaser generation: one page written in the locked voice with the approved
+// workshop pages as binding references. Same draft → editorial shape as the
+// delivery workflow, so the returned text can seed that page's delivery draft.
+async function generatePreviewPage(args: {
   client: NonNullable<ReturnType<typeof openAIClient>>;
   requestSignal: AbortSignal;
-  input: Extract<z.infer<typeof bodySchema>, { mode: "fullbook" }>;
+  input: Extract<z.infer<typeof bodySchema>, { mode: "preview" }>;
 }) {
   const { input } = args;
   assertActionBudget({
-    model: "gpt-5.6-sol",
-    maxInputTokens: 12_000,
-    maxOutputTokens: 5_000,
+    model: QUALITY_MODEL.model,
+    maxInputTokens: 8_000,
+    maxOutputTokens: 3_500,
     callCount: 2
   });
   const promptArgs = {
-    spreads: input.spreads.map(({ spread, source, visualContext }) => ({ spread, source, visualContext })),
+    spreads: [input.spread],
     priority: input.priority,
     freedom: input.freedom,
     bookForm: input.bookForm,
@@ -361,46 +366,50 @@ async function generateFullBook(args: {
   const { response: draftResponse } = await controlledResponse({
     client: args.client,
     requestSignal: args.requestSignal,
-    action: "fullbook.generate",
-    model: "gpt-5.6-sol",
-    maxOutputTokens: 5_000,
+    action: `preview.page.${input.spread.spread}.generate`,
+    model: QUALITY_MODEL.model,
+    maxOutputTokens: 3_500,
     timeoutMs: 90_000,
     body: {
-      model: "gpt-5.6-sol",
+      model: QUALITY_MODEL.model,
       reasoning: { effort: "low" },
       input: [{
         role: "user",
         content: [
-          { type: "input_text", text: fullBookGenerationPrompt(promptArgs) }
+          { type: "input_text", text: fullBookGenerationPrompt({ ...promptArgs, spreads: [{ spread: input.spread.spread, source: input.spread.source, visualContext: input.spread.visualContext }] }) }
         ]
       }],
-      text: { format: { type: "json_schema", name: "full_book_drafts", strict: true, schema: fullBookJsonSchema(input.spreads.length, false) } }
+      text: { format: { type: "json_schema", name: "preview_page_draft", strict: true, schema: fullBookJsonSchema(1, false) } }
     }
   });
-  const drafts = z.object({
-    spreads: z.array(fullBookItemSchema.pick({ spread: true, text: true })).length(input.spreads.length)
+  const draft = z.object({
+    spreads: z.array(fullBookItemSchema.pick({ spread: true, text: true })).length(1)
   }).parse(JSON.parse(draftResponse.output_text));
 
   const { response: editorialResponse } = await controlledResponse({
     client: args.client,
     requestSignal: args.requestSignal,
-    action: "fullbook.edit",
-    model: "gpt-5.6-sol",
-    maxOutputTokens: 5_000,
+    action: `preview.page.${input.spread.spread}.edit`,
+    model: QUALITY_MODEL.model,
+    maxOutputTokens: 3_500,
     timeoutMs: 90_000,
     body: {
-      model: "gpt-5.6-sol",
+      model: QUALITY_MODEL.model,
       reasoning: { effort: "low" },
       input: [{
         role: "user",
         content: [
           {
             type: "input_text",
-            text: fullBookEditorialPrompt({ ...promptArgs, draftsJson: JSON.stringify(drafts.spreads) })
+            text: fullBookEditorialPrompt({
+              ...promptArgs,
+              spreads: [{ spread: input.spread.spread, source: input.spread.source, visualContext: input.spread.visualContext }],
+              draftsJson: JSON.stringify(draft.spreads)
+            })
           }
         ]
       }],
-      text: { format: { type: "json_schema", name: "full_book_final", strict: true, schema: fullBookJsonSchema(input.spreads.length, true) } }
+      text: { format: { type: "json_schema", name: "preview_page_final", strict: true, schema: fullBookJsonSchema(1, true) } }
     }
   });
   const final = z.object({
@@ -410,40 +419,36 @@ async function generateFullBook(args: {
       readAloudPass: z.boolean(),
       directionPass: z.boolean(),
       rhymePass: z.boolean()
-    })).length(input.spreads.length)
+    })).length(1)
   }).parse(JSON.parse(editorialResponse.output_text));
-  const expected = new Set(input.spreads.map((spread) => spread.spread));
-  const unique = new Set(final.spreads.map((spread) => spread.spread));
-  if (unique.size !== expected.size || final.spreads.some((spread) =>
-    !expected.has(spread.spread) || deterministicViolations(spread.text, { targetLanguage: input.targetLanguage }).length > 0
-  )) {
-    throw new Error("The full-book editorial response did not contain one valid translation for every spread.");
+  const page = final.spreads[0];
+  if (
+    page.spread !== input.spread.spread ||
+    deterministicViolations(page.text, { targetLanguage: input.targetLanguage }).length > 0
+  ) {
+    throw new Error("The preview editorial response did not contain a valid translation for the requested page.");
   }
-  const failedGates = failedFullBookGates(final.spreads, requiresRhyme({
+  const failedGates = failedFullBookGates([page], requiresRhyme({
     bookForm: input.bookForm,
     sourceRhyme: input.sourceRhyme,
     priority: input.priority
   }));
   if (failedGates.length > 0) {
     throw new Error(
-      `The final editorial pass reported failed quality gates: ${failedGates
-        .map((item) => `spread ${item.spread} (${item.failed.join(", ")})`)
-        .join("; ")}.`
+      `The preview editorial pass reported failed quality gates: ${failedGates[0].failed.join(", ")}.`
     );
   }
-  return final.spreads.map(({ spread, text }) => ({ spread, text }));
+  return { spread: page.spread, text: page.text };
 }
 
 export async function POST(request: Request) {
   try {
     const input = bodySchema.parse(await request.json());
     if (isMockRequest(request)) {
-      if (input.mode === "fullbook") {
+      if (input.mode === "preview") {
         return NextResponse.json({
-          spreads: input.spreads.map(({ spread }) => ({
-            spread,
-            text: `[MOCK ${languageConfig(input.targetLanguage).name} — NOT QUALITY EVALUATED] Full-book spread ${spread}.`
-          })),
+          spread: input.spread.spread,
+          text: `[MOCK ${languageConfig(input.targetLanguage).name} — NOT QUALITY EVALUATED] Preview page ${input.spread.spread}.`,
           mock: true
         });
       }
@@ -456,41 +461,31 @@ export async function POST(request: Request) {
           label: "Mock fixture",
           ...(input.mode === "spread1" ? { options: mockOptions(1, languageConfig(input.targetLanguage).name) } : { spreads })
         }],
-        rejectedRuns: [],
         mock: true
       });
     }
     const client = openAIClient();
     if (!client) return NextResponse.json({ error: "Translation generation isn’t connected right now. Please try again later." }, { status: 503 });
-    if (input.mode === "fullbook") {
-      if (!verifyLeadReceipt(input.leadReceipt, input.bookForm, input.targetLanguage, input.regionalVariant)) {
-        return NextResponse.json({ error: "Email capture is required before full-book generation." }, { status: 403 });
-      }
-      const spreads = await deduplicate(requestKey("fullbook", input), () =>
-        generateFullBook({ client, requestSignal: request.signal, input })
+    if (input.mode === "preview") {
+      const preview = await deduplicate(requestKey("preview", input), () =>
+        generatePreviewPage({ client, requestSignal: request.signal, input })
       );
-      return NextResponse.json({ spreads });
+      return NextResponse.json(preview);
     }
-    if (input.mode === "pattern" && !verifyLeadReceipt(input.leadReceipt, input.bookForm, input.targetLanguage, input.regionalVariant)) {
-      return NextResponse.json({ error: "Email capture is required before generating Pages 2 and 3." }, { status: 403 });
-    }
-    for (const { model } of COMPARISON_MODELS) {
-      assertActionBudget({
-        model,
-        maxInputTokens: 4_000,
-        maxOutputTokens: 3_500,
-        callCount: input.mode === "spread1" ? 2 : 4
-      });
-    }
+    assertActionBudget({
+      model: QUALITY_MODEL.model,
+      maxInputTokens: 4_000,
+      maxOutputTokens: 3_500,
+      callCount: input.mode === "spread1" ? 2 : 4
+    });
 
     if (input.mode === "spread1") {
-      const settled = await deduplicate(requestKey("spread1", input), () =>
-        Promise.allSettled(COMPARISON_MODELS.map(async ({ model, label }) => ({
-        model,
-        label,
+      const run = await deduplicate(requestKey("spread1", input), async () => ({
+        model: QUALITY_MODEL.model,
+        label: QUALITY_MODEL.label,
         options: await generatePassingOptions({
           client,
-          model,
+          model: QUALITY_MODEL.model,
           visualContext: input.visualContext,
           spreadNumber: 1,
           source: input.source,
@@ -503,25 +498,16 @@ export async function POST(request: Request) {
           regionalVariant: input.regionalVariant,
           requestSignal: request.signal
         })
-      }))));
-      const runs = settled.flatMap((result) => result.status === "fulfilled" ? [result.value] : []);
-      const rejectedRuns = settled.flatMap((result, index) =>
-        result.status === "rejected"
-          ? [{ model: COMPARISON_MODELS[index].model, error: result.reason instanceof Error ? result.reason.message : String(result.reason) }]
-          : []
-      );
-      if (rejectedRuns.length > 0) console.warn("Spread 1 comparison runs rejected", rejectedRuns);
-      if (runs.length === 0) throw new Error(rejectedRuns.map((run) => `${run.model}: ${run.error}`).join("\n"));
-      return NextResponse.json({ runs, rejectedRuns });
+      }));
+      return NextResponse.json({ runs: [run] });
     }
 
-    const settled = await deduplicate(requestKey("pattern", input), () =>
-      Promise.allSettled(COMPARISON_MODELS.map(async ({ model, label }) => {
+    const run = await deduplicate(requestKey("pattern", input), async () => {
       const spreads = await Promise.all([2, 3].map(async (spreadNumber, index) => ({
         spread: spreadNumber,
         options: await generatePassingOptions({
           client,
-          model,
+          model: QUALITY_MODEL.model,
           visualContext: input.visualContexts[index],
           spreadNumber,
           source: input.sources[index],
@@ -537,17 +523,9 @@ export async function POST(request: Request) {
           requestSignal: request.signal
         })
       })));
-      return { model, label, spreads };
-    })));
-    const runs = settled.flatMap((result) => result.status === "fulfilled" ? [result.value] : []);
-    const rejectedRuns = settled.flatMap((result, index) =>
-      result.status === "rejected"
-        ? [{ model: COMPARISON_MODELS[index].model, error: result.reason instanceof Error ? result.reason.message : String(result.reason) }]
-        : []
-    );
-    if (rejectedRuns.length > 0) console.warn("Pattern comparison runs rejected", rejectedRuns);
-    if (runs.length === 0) throw new Error(rejectedRuns.map((run) => `${run.model}: ${run.error}`).join("\n"));
-    return NextResponse.json({ runs, rejectedRuns });
+      return { model: QUALITY_MODEL.model, label: QUALITY_MODEL.label, spreads };
+    });
+    return NextResponse.json({ runs: [run] });
   } catch (error) {
     return generationError(
       error,

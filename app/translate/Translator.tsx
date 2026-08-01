@@ -50,17 +50,6 @@ type DirectionProgress = { active: number; completedThrough: number; rejectedCou
 type DirectionStreamResult = {
   runs: Array<{ label: string; directions: Omit<Direction, "modelLabel">[] }>;
 };
-type BookPage = {
-  id: string;
-  preview: string;
-  fileName: string;
-  sourceText: string;
-  visualContext: string;
-  approvedText: string | null;
-  parentNote?: string;
-  voiceSample?: boolean;
-  workStatus?: "pending" | "reading" | "translating" | "ready" | "failed";
-};
 
 const priorities = [
   ["rhythm", "Rhyme and read-aloud rhythm", "Make it musical and satisfying to say."],
@@ -168,11 +157,13 @@ export default function Translator() {
   const [approvedNotes, setApprovedNotes] = useState<Record<number, string>>({});
   const [request, setRequest] = useState<RequestState>({ loading: false, error: null });
   const [directionProgress, setDirectionProgress] = useState<DirectionProgress>({ active: 0, completedThrough: -1, rejectedCount: 0 });
-  const [bookPages, setBookPages] = useState<BookPage[]>([]);
-  const [draggedPage, setDraggedPage] = useState<string | null>(null);
   const [mockMode, setMockMode] = useState(false);
   const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null);
-  const [emailGateVisible, setEmailGateVisible] = useState(false);
+  // The Page 4 teaser: real generation whose text is never shown pre-email.
+  const [teaser, setTeaser] = useState<{
+    status: "idle" | "writing" | "ready" | "unavailable" | "skipped";
+    page: { page: number; text: string } | null;
+  }>({ status: "idle", page: null });
   const [emailCaptured, setEmailCaptured] = useState(false);
   const [leadReceipt, setLeadReceipt] = useState("");
   const [email, setEmail] = useState("");
@@ -186,7 +177,7 @@ export default function Translator() {
   }>({ token: "", status: "idle", error: null });
   const directionsAbort = useRef<AbortController | null>(null);
   const translationAbort = useRef<AbortController | null>(null);
-  const fullBookAbort = useRef<AbortController | null>(null);
+  const teaserAbort = useRef<AbortController | null>(null);
   const classifierAbort = useRef<AbortController | null>(null);
   const language = useMemo(
     () => resolveLanguageSelection(targetLanguage, regionalVariant),
@@ -574,8 +565,6 @@ export default function Translator() {
         }))
       ));
       trackFunnelEventOnce("first_page_translation_displayed", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
-      setEmailGateVisible(true);
-      trackFunnelEventOnce("email_gate_displayed", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
       setSpread1Selection(null);
       setRequest({ loading: false, error: null });
     } catch (error) {
@@ -617,8 +606,17 @@ export default function Translator() {
     setLanguageFeedbackSaved(true);
   }
 
-  async function startPatternTest(approved: string, approvedNote: string, captureReceipt = leadReceipt) {
-    if (!captureReceipt || !bookForm || (bookForm === "refrain_verse" && !lockedDirection)) return;
+  async function approveSpread1AndPatternTest() {
+    if (spread1Selection === null) return;
+    const approved = spread1Options[spread1Selection].text.trim();
+    if (!approved) return;
+    await startPatternTest(approved, spread1Options[spread1Selection].editNote.trim());
+  }
+
+  // The workshop runs before email capture: pattern testing needs no lead
+  // receipt. The email gate sits after the Page 4 teaser (step 10).
+  async function startPatternTest(approved: string, approvedNote: string) {
+    if (!bookForm || (bookForm === "refrain_verse" && !lockedDirection)) return;
     const controller = new AbortController();
     translationAbort.current = controller;
     setApprovedSpread1(approved);
@@ -628,7 +626,6 @@ export default function Translator() {
     try {
       const result = await postJson<{ runs: Array<{ label: string; spreads: Array<{ spread: number; options: GeneratedOption[] }> }> }>("/api/translations", {
         mode: "pattern",
-        leadReceipt: captureReceipt,
         visualContexts: [spreads[1].visualContext, spreads[2].visualContext],
         sources: [spreads[1].text, spreads[2].text],
         priority,
@@ -703,32 +700,49 @@ export default function Translator() {
     setStep(9);
   }
 
-  function startRestOfBook() {
-    if (!emailCaptured || !leadReceipt) return;
-    const samples = spreads.map((spread, index) => ({
-      id: spread.id,
-      preview: spread.preview,
-      fileName: spread.file.name,
-      sourceText: spread.text,
-      visualContext: spread.visualContext,
-      approvedText: approvedDrafts[index + 1] || null,
-      parentNote: approvedNotes[index + 1] || undefined,
-      voiceSample: true,
-      workStatus: "ready" as const
-    }));
-    const mockRemainder = mockMode ? [4, 5, 6].map((number) => ({
-      id: crypto.randomUUID(),
-      preview: mockPreview(number),
-      fileName: `mock-page-${number}.png`,
-      sourceText: `Mock English source for page ${number}. The friends continue their adventure.`,
-      visualContext: "A mock picture-book page continuing the friends’ adventure.",
-      approvedText: null,
-      parentNote: undefined,
-      voiceSample: false,
-      workStatus: "pending" as const
-    })) : [];
-    setBookPages([...samples, ...mockRemainder]);
+  // The teaser: Page 4 is genuinely written in the locked voice while the
+  // parent watches, but its text is never displayed — it seeds the delivery.
+  // The email gate appears the moment the teaser settles, success or not:
+  // a failed teaser must never block the funnel.
+  async function startTeaser() {
+    if (!bookForm || (bookForm === "refrain_verse" && !lockedDirection)) return;
     setStep(10);
+    if (spreads.length <= 3) {
+      setTeaser({ status: "skipped", page: null });
+      trackFunnelEventOnce("email_gate_displayed", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
+      return;
+    }
+    teaserAbort.current?.abort();
+    const controller = new AbortController();
+    teaserAbort.current = controller;
+    setTeaser({ status: "writing", page: null });
+    try {
+      const result = await postJson<{ spread: number; text: string }>("/api/translations", {
+        mode: "preview",
+        spread: { spread: 4, visualContext: spreads[3].visualContext, source: spreads[3].text },
+        priority,
+        freedom,
+        bookForm,
+        sourceRhyme,
+        targetLanguage,
+        regionalVariant,
+        ...(lockedDirection ? { direction: lockedDirection } : {}),
+        approvedVoice: [1, 2, 3].map((number) => ({
+          spread: number,
+          text: approvedDrafts[number],
+          ...(approvedNotes[number] ? { parentNote: approvedNotes[number] } : {})
+        }))
+      }, controller.signal);
+      setTeaser({ status: "ready", page: { page: result.spread, text: compactGeneratedText(result.text) } });
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") return;
+      // Silent fallback: the gate still opens; delivery regenerates Page 4.
+      console.warn("teaser_preview_failed", error instanceof Error ? error.message : error);
+      setTeaser({ status: "unavailable", page: null });
+    } finally {
+      if (teaserAbort.current === controller) teaserAbort.current = null;
+      trackFunnelEventOnce("email_gate_displayed", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
+    }
   }
 
   async function captureEmail(event: FormEvent<HTMLFormElement>) {
@@ -736,13 +750,8 @@ export default function Translator() {
     if (
       !bookForm ||
       emailRequest.loading ||
-      spread1Selection === null ||
-      !spread1Options[spread1Selection]?.text.trim()
+      [1, 2, 3].some((number) => !approvedDrafts[number]?.trim())
     ) return;
-    const approved = spread1Options[spread1Selection].text.trim();
-    const approvedNote = spread1Options[spread1Selection].editNote.trim();
-    setApprovedSpread1(approved);
-    setApprovedNotes((current) => ({ ...current, 1: approvedNote }));
     setEmailRequest({ loading: true, error: null });
     setAnalyticsConsent(analyticsConsent);
     const params = new URLSearchParams(window.location.search);
@@ -771,7 +780,11 @@ export default function Translator() {
       const delivery = await postJson<{ jobToken: string; status: "processing" }>("/api/delivery", {
         leadReceipt: result.receipt,
         recipientEmail: email,
-        pages: spreads.map((spread, index) => ({ page: index + 1, sourceText: spread.text.trim() })),
+        pages: spreads.map((spread, index) => ({
+          page: index + 1,
+          sourceText: spread.text.trim(),
+          visualContext: spread.visualContext
+        })),
         bookForm,
         sourceRhyme,
         priority,
@@ -779,13 +792,17 @@ export default function Translator() {
         targetLanguage,
         regionalVariant,
         ...(lockedDirection ? { direction: lockedDirection } : {}),
-        approvedPage1: approved,
-        approvedPage1Note: approvedNote || undefined
+        approvedPages: [1, 2, 3].map((number) => ({
+          page: number,
+          text: approvedDrafts[number],
+          ...(approvedNotes[number] ? { parentNote: approvedNotes[number] } : {})
+        })),
+        previewPages: teaser.page ? [{ page: teaser.page.page, text: teaser.page.text }] : []
       });
       sessionStorage.setItem("bibaling_delivery_job", delivery.jobToken);
       setDeliveryJob({ token: delivery.jobToken, status: "processing", error: null });
       setEmailRequest({ loading: false, error: null });
-      setStep(8);
+      setStep(11);
       trackFunnelEventOnce("remaining_translation_started", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
     } catch (error) {
       setEmailRequest({
@@ -795,153 +812,13 @@ export default function Translator() {
     }
   }
 
-  async function addRemainingFiles(files?: FileList | File[]) {
-    if (!files) return;
-    const images = Array.from(files).filter((file) => file.type.startsWith("image/"));
-    const additions = await Promise.all(images.map(async (file) => ({
-      id: crypto.randomUUID(),
-      preview: await fileToDataUrl(file),
-      fileName: file.name,
-      sourceText: "",
-      visualContext: "",
-      approvedText: null,
-      parentNote: undefined,
-      voiceSample: false,
-      workStatus: "pending" as const
-    })));
-    setBookPages((current) => [...current, ...additions]);
-  }
-
-  function moveBookPage(fromId: string, toId: string) {
-    if (fromId === toId) return;
-    setBookPages((current) => {
-      const from = current.findIndex((page) => page.id === fromId);
-      const to = current.findIndex((page) => page.id === toId);
-      if (from < 0 || to < 0) return current;
-      const next = [...current];
-      const [moved] = next.splice(from, 1);
-      next.splice(to, 0, moved);
-      return next;
-    });
-  }
-
-  async function generateRestOfBook() {
-    if (!emailCaptured || !leadReceipt || !bookForm || (bookForm === "refrain_verse" && !lockedDirection) || fullBookAbort.current) return;
-    const controller = new AbortController();
-    fullBookAbort.current = controller;
-    setStep(11);
-    setRequest({ loading: true, error: null });
-    try {
-      const working = bookPages.map((page) => ({ ...page }));
-      const approvedVoice = working.flatMap((page, index) =>
-        page.voiceSample && page.approvedText ? [{
-            spread: index + 1,
-            text: page.approvedText,
-            parentNote: page.parentNote || undefined
-          }] : []
-      );
-      for (let index = 0; index < working.length; index += 1) {
-        if (working[index].approvedText?.trim()) {
-          working[index].workStatus = "ready";
-          continue;
-        }
-        try {
-          if (!working[index].sourceText.trim()) {
-            working[index].workStatus = "reading";
-            setBookPages(working.map((page) => ({ ...page })));
-            const transcription = await postJson<{ text: string; visualContext: string }>(
-              "/api/transcribe",
-              { image: working[index].preview },
-              controller.signal
-            );
-            working[index].sourceText = compactGeneratedText(transcription.text);
-            working[index].visualContext = transcription.visualContext;
-          }
-          working[index].workStatus = "translating";
-          setBookPages(working.map((page) => ({ ...page })));
-          const result = await postJson<{ spreads: Array<{ spread: number; text: string }> }>("/api/translations", {
-            mode: "fullbook",
-            leadReceipt,
-            spreads: [{
-              spread: index + 1,
-              visualContext: working[index].visualContext,
-              source: working[index].sourceText
-            }],
-            priority,
-            freedom,
-            bookForm,
-            sourceRhyme,
-            targetLanguage,
-            regionalVariant,
-            ...(lockedDirection ? { direction: lockedDirection } : {}),
-            approvedVoice
-          }, controller.signal);
-          const translation = result.spreads.find((spread) => spread.spread === index + 1)?.text;
-          if (!translation?.trim()) throw new Error(`Page ${index + 1} returned without a translation.`);
-          working[index].approvedText = compactGeneratedText(translation);
-          working[index].workStatus = "ready";
-          setBookPages(working.map((page) => ({ ...page })));
-        } catch (error) {
-          working[index].workStatus = "failed";
-          setBookPages(working.map((page) => ({ ...page })));
-          throw new Error(
-            `We couldn’t finish Page ${index + 1}. Everything before it is saved—try again to continue.`,
-            { cause: error }
-          );
-        }
-      }
-      setRequest({ loading: false, error: null });
-    } catch (error) {
-      if (error instanceof Error && error.name === "AbortError") {
-        if (fullBookAbort.current === controller) setRequest({ loading: false, error: null });
-      } else {
-        setRequest({
-          loading: false,
-          error: error instanceof Error ? error.message : "We couldn’t finish the full book. Everything approved so far is still here."
-        });
-      }
-    } finally {
-      if (fullBookAbort.current === controller) fullBookAbort.current = null;
-    }
-  }
-
-  function restartFullBook() {
-    fullBookAbort.current?.abort();
-    fullBookAbort.current = null;
-    setRequest({ loading: false, error: null });
-    window.setTimeout(() => void generateRestOfBook(), 0);
-  }
-
-  function updateBookTranslation(index: number, approvedText: string) {
-    setBookPages((current) => current.map((page, pageIndex) =>
-      pageIndex === index ? { ...page, approvedText } : page
-    ));
-  }
-
-  function saveFinishedDraft() {
-    const text = bookPages
-      .map((page, index) => `PAGE ${index + 1}\n${page.approvedText?.trim() || ""}`)
-      .join("\n\n");
-    const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `bibaling-${targetLanguage}-draft.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
-  }
-
   const retry = step === 3
     ? analyzeBookForm
     : step === 6
     ? generateDirections
     : step === 7
       ? () => writeSpread1(lockedDirection ?? undefined)
-      : step === 11
-        ? generateRestOfBook
-        : () => startPatternTest(approvedSpread1, approvedNotes[1] || "");
-  const activeBookPageIndex = bookPages.findIndex((page) =>
-    page.workStatus === "reading" || page.workStatus === "translating"
-  );
+      : () => startPatternTest(approvedSpread1, approvedNotes[1] || "");
 
   return (
     <main className="translator-shell">
@@ -1281,9 +1158,104 @@ export default function Translator() {
               </aside>
             )}
             {request.error && <GenerationError message={request.error} retry={retry} />}
-            {!request.loading && emailGateVisible && !emailCaptured && spread1Options.length > 0 && (
+            <nav>
+              <button className="secondary" disabled={request.loading} onClick={() => setStep(page1BackStep(bookForm))}>Back</button>
+              <button
+                className="primary"
+                disabled={request.loading || spread1Selection === null || !spread1Options[spread1Selection]?.text.trim()}
+                onClick={() => void approveSpread1AndPatternTest()}
+              >
+                Approve and test the pattern
+              </button>
+            </nav>
+          </>
+        )}
+
+        {step === 8 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
+          <>
+            <h1>Does this voice work on every page?</h1>
+            <p className="lead">Choose one version for each page. Use Page 1 as your guide.</p>
+            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
+            <article className="approved-card voice-reference">
+              <button className="zoomable-image-button" type="button" aria-label="Open approved Page 1 photo at full size" onClick={() => setExpandedImage({ src: spreads[0].preview, alt: "Approved Page 1" })}>
+                <img src={spreads[0].preview} alt="" />
+              </button>
+              <label>Approved Page 1 · voice reference</label>
+              <p>{approvedSpread1}</p>
+              {approvedNotes[1] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[1]}</p>}
+            </article>
+            {request.loading && <ProgressLog messages={languageLoadingMessages(patternLoadingMessages, language.config.name)} />}
+            {!request.loading && [2, 3].map((number) => (
+              <section className="pattern-section" key={number}>
+                <Source spread={spreads[number - 1]} number={number} onExpand={setExpandedImage} />
+                <OptionList
+                  options={patternOptions[number] || []}
+                  selection={patternSelections[number]}
+                  onSelect={(index) => setPatternSelections((current) => ({ ...current, [number]: index }))}
+                  onEdit={(index, text) => updatePatternOption(number, index, text)}
+                  onNote={(index, note) => updatePatternNote(number, index, note)}
+                />
+              </section>
+            ))}
+            {request.error && <GenerationError message={request.error} retry={retry} />}
+            <nav>
+              <button className="secondary" disabled={request.loading} onClick={() => setStep(7)}>Back</button>
+              <button className="primary" disabled={request.loading || patternSelections[2] === null || patternSelections[3] === null} onClick={approvePattern}>Review all three</button>
+            </nav>
+          </>
+        )}
+
+        {step === 9 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
+          <>
+            <h1>Do these belong in the same book?</h1>
+            <p className="lead">Read them aloud and tune any line that feels off.</p>
+            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
+            <div className="approved-grid">
+              {[1, 2, 3].map((number) => (
+                <article className="approved-card" key={number}>
+                  <button className="zoomable-image-button" type="button" aria-label={`Open Page ${number} photo at full size`} onClick={() => setExpandedImage({ src: spreads[number - 1].preview, alt: `Page ${number}` })}>
+                    <img src={spreads[number - 1].preview} alt="" />
+                  </button>
+                  <label>Page {number}</label>
+                  <textarea value={approvedDrafts[number] || ""} onChange={(event) => setApprovedDrafts((current) => ({ ...current, [number]: event.target.value }))} />
+                  {approvedNotes[number] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[number]}</p>}
+                </article>
+              ))}
+            </div>
+            <nav>
+              <button className="secondary" onClick={() => setStep(8)}>Back</button>
+              <button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={() => void startTeaser()}>
+                {spreads.length > 3 ? "Write the next page" : "Finish my book"}
+              </button>
+            </nav>
+          </>
+        )}
+
+        {step === 10 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
+          <>
+            <h1>Now let’s write the rest of your book.</h1>
+            <p className="lead">
+              {teaser.status === "writing"
+                ? "Your approved voice is carrying into the pages you haven’t seen yet."
+                : "We’ll translate every remaining page, check the whole book, and email it to you."}
+            </p>
+            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
+            {spreads.length > 3 && (
+              <article className="approved-card voice-reference teaser-card" aria-busy={teaser.status === "writing"}>
+                <button className="zoomable-image-button" type="button" aria-label="Open Page 4 photo at full size" onClick={() => setExpandedImage({ src: spreads[3].preview, alt: "Page 4" })}>
+                  <img src={spreads[3].preview} alt="" />
+                </button>
+                <label>{teaser.status === "ready" ? "Page 4 · written in your voice" : "Page 4"}</label>
+                {teaser.status === "writing"
+                  ? <ProgressLog messages={languageLoadingMessages(teaserLoadingMessages, language.config.name)} />
+                  : <p>{teaser.status === "ready"
+                      ? `Page 4 is ready. It follows your refrain, rhythm, and every note you gave us — you’ll read it in your finished book.`
+                      : `We’ll write Page 4 with the rest of your book.`}</p>}
+              </article>
+            )}
+            {teaser.status !== "writing" && !emailCaptured && (
               <form className="email-gate" onSubmit={captureEmail}>
-                <h2>Like your first page? Let’s finish the book.</h2>
+                <h2>{teaser.status === "ready" ? "Page 4 is ready — let’s finish your whole book." : "Let’s finish your whole book."}</h2>
                 <p>Enter the email address where you’d like us to send the completed translation.</p>
                 <label>
                   <span>Email</span>
@@ -1308,200 +1280,43 @@ export default function Translator() {
                 <button
                   className="primary"
                   type="submit"
-                  disabled={
-                    emailRequest.loading ||
-                    !validEmail(email) ||
-                    spread1Selection === null ||
-                    !spread1Options[spread1Selection]?.text.trim()
-                  }
+                  disabled={emailRequest.loading || !validEmail(email)}
                 >
                   {emailRequest.loading ? "Starting your book…" : "Email me the finished translation"}
                 </button>
               </form>
             )}
             <nav>
-              <button className="secondary" disabled={request.loading} onClick={() => setStep(page1BackStep(bookForm))}>Back</button>
-            </nav>
-          </>
-        )}
-
-        {step === 8 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
-          <>
-            <h1>{deliveryJob.status === "completed" ? "Your translation is on its way." : deliveryJob.status === "failed" ? "We couldn’t finish your book." : "We’re finishing your book."}</h1>
-            <p className="lead">
-              {deliveryJob.status === "completed"
-                ? `We sent the completed translation to ${email.trim()}.`
-                : deliveryJob.status === "failed"
-                ? "Your photos and Page 1 choice are still here. Try starting the delivery again."
-                : `We’re translating each remaining page, checking the whole book, and will email it to ${email.trim()}. You can safely close this page.`}
-            </p>
-            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
-            <article className="approved-card voice-reference">
-              <button className="zoomable-image-button" type="button" aria-label="Open approved Page 1 photo at full size" onClick={() => setExpandedImage({ src: spreads[0].preview, alt: "Approved Page 1" })}>
-                <img src={spreads[0].preview} alt="" />
-              </button>
-              <label>Approved Page 1</label>
-              <p>{approvedSpread1}</p>
-              {approvedNotes[1] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[1]}</p>}
-            </article>
-            {deliveryJob.status === "processing" && <ProgressLog messages={languageLoadingMessages(fullBookLoadingMessages, language.config.name)} />}
-            {deliveryJob.error && <GenerationError message={deliveryJob.error} retry={() => setStep(7)} />}
-          </>
-        )}
-
-        {step === 9 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
-          <>
-            <h1>Do these belong in the same book?</h1>
-            <p className="lead">Read them aloud and tune any line that feels off.</p>
-            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
-            <div className="approved-grid">
-              {[1, 2, 3].map((number) => (
-                <article className="approved-card" key={number}>
-                  <button className="zoomable-image-button" type="button" aria-label={`Open Page ${number} photo at full size`} onClick={() => setExpandedImage({ src: spreads[number - 1].preview, alt: `Page ${number}` })}>
-                    <img src={spreads[number - 1].preview} alt="" />
-                  </button>
-                  <label>Page {number}</label>
-                  <textarea value={approvedDrafts[number] || ""} onChange={(event) => setApprovedDrafts((current) => ({ ...current, [number]: event.target.value }))} />
-                  {approvedNotes[number] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[number]}</p>}
-                </article>
-              ))}
-            </div>
-            <nav>
-              <button className="secondary" onClick={() => setStep(8)}>Back</button>
-              <button className="primary" disabled={!emailCaptured || !leadReceipt || [1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={() => startRestOfBook()}>Add the rest of the book</button>
-            </nav>
-          </>
-        )}
-
-        {step === 10 && emailCaptured && (
-          <>
-            <h1>Arrange the whole book.</h1>
-            <p className="lead">Add the remaining photos, then drag every page into order.</p>
-            <label
-              className="rest-drop"
-              onDrop={(event) => { event.preventDefault(); void addRemainingFiles(event.dataTransfer.files); }}
-              onDragOver={(event) => event.preventDefault()}
-            >
-              <input type="file" accept="image/*" multiple onChange={(event) => { void addRemainingFiles(event.target.files ?? undefined); event.target.value = ""; }} />
-              <strong>+</strong>
-              <span>Drop all remaining book photos here</span>
-            </label>
-
-            <div className="order-heading">
-              <div><strong>Book order</strong><small>{bookPages.length} pages · drag to rearrange</small></div>
-            </div>
-            <div className="book-order">
-              {bookPages.map((page, index) => (
-                <article
-                  className={draggedPage === page.id ? "page-order-card dragging" : "page-order-card"}
-                  key={page.id}
-                  draggable
-                  onDragStart={(event) => {
-                    event.dataTransfer.effectAllowed = "move";
-                    event.dataTransfer.setData("text/plain", page.id);
-                    setDraggedPage(page.id);
-                  }}
-                  onDragEnd={() => setDraggedPage(null)}
-                  onDragOver={(event) => event.preventDefault()}
-                  onDragEnter={(event) => {
-                    event.preventDefault();
-                    if (draggedPage && draggedPage !== page.id) moveBookPage(draggedPage, page.id);
-                  }}
-                  onDrop={(event) => {
-                    event.preventDefault();
-                    setDraggedPage(null);
-                  }}
-                >
-                  <div className="page-number">{index + 1}</div>
-                  <img src={page.preview} alt={`Book page ${index + 1}`} />
-                  <div className="page-order-meta">
-                    <strong>{page.fileName}</strong>
-                    <small>{page.approvedText ? "Approved voice sample" : "New page"}</small>
-                  </div>
-                </article>
-              ))}
-            </div>
-            <nav>
-              <button className="secondary" onClick={() => setStep(9)}>Back</button>
-              <button className="primary" disabled={bookPages.length < 3} onClick={() => void generateRestOfBook()}>
-                Translate the full book
-              </button>
+              <button className="secondary" disabled={emailRequest.loading} onClick={() => setStep(9)}>Back</button>
             </nav>
           </>
         )}
 
         {step === 11 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
-            <h1>{request.loading ? "Writing the rest of your book." : request.error ? "Let’s finish the unread pages." : `Your full ${language.config.name} draft.`}</h1>
+            <h1>{deliveryJob.status === "completed" ? "Your translation is on its way." : deliveryJob.status === "failed" ? "We couldn’t finish your book." : "We’re finishing your book."}</h1>
             <p className="lead">
-              {request.loading
-                ? "We’re carrying your approved voice through every page."
-                : request.error
-                ? "Everything we’ve read is saved. Try again to continue."
-                : "Read each page, edit any line, then save your draft."}
+              {deliveryJob.status === "completed"
+                ? `We sent the completed translation to ${email.trim()}.`
+                : deliveryJob.status === "failed"
+                ? "Your photos and approved pages are still here. Try starting the delivery again."
+                : `We’re translating each remaining page, checking the whole book, and will email it to ${email.trim()}. You can safely close this page.`}
             </p>
             <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
-            {request.loading && (
-              <>
-                <div className="full-book-draft approved-while-writing">
-                  {bookPages.map((page, index) => ({ page, index }))
-                    .filter(({ page }) => page.approvedText)
-                    .map(({ page, index }) => (
-                    <article className="approved-card page-ready" key={page.id}>
-                      <button className="zoomable-image-button" type="button" aria-label={`Open approved Page ${index + 1} photo at full size`} onClick={() => setExpandedImage({ src: page.preview, alt: `Approved Page ${index + 1}` })}>
-                        <img src={page.preview} alt="" />
-                      </button>
-                      <div className="english-column">
-                        <label>Page {index + 1} · English</label>
-                        <p className="english-reference">{page.sourceText || "Reading this page…"}</p>
-                      </div>
-                      <div className="slovenian-column">
-                        <label>{language.config.name} · ready</label>
-                        <p className="approved-translation">{page.approvedText}</p>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-                <ProgressLog
-                  messages={languageLoadingMessages(fullBookLoadingMessages, language.config.name)}
-                  activePage={activeBookPageIndex >= 0 ? {
-                    number: activeBookPageIndex + 1,
-                    preview: bookPages[activeBookPageIndex].preview,
-                    sourceText: bookPages[activeBookPageIndex].sourceText,
-                    phase: bookPages[activeBookPageIndex].workStatus === "reading" ? "Reading the English text" : `Writing the ${language.config.name} translation`
-                  } : undefined}
-                />
-              </>
-            )}
-            {!request.loading && (
-              <div className="full-book-draft">
-                {bookPages.map((page, index) => (
-                  <article className="approved-card" key={page.id}>
-                    <button className="zoomable-image-button" type="button" aria-label={`Open Page ${index + 1} photo at full size`} onClick={() => setExpandedImage({ src: page.preview, alt: `Page ${index + 1}` })}>
-                      <img src={page.preview} alt="" />
-                    </button>
-                    <div className="english-column">
-                      <label>Page {index + 1} · English</label>
-                      <p className="english-reference">{page.sourceText}</p>
-                    </div>
-                    <div className="slovenian-column">
-                      <label htmlFor={`translation-page-${index + 1}`}>{language.config.name}</label>
-                      <textarea
-                        id={`translation-page-${index + 1}`}
-                        value={page.approvedText || ""}
-                        onChange={(event) => updateBookTranslation(index, event.target.value)}
-                      />
-                    </div>
-                    {page.parentNote && <p className="parent-edit-note"><strong>Parent’s note</strong>{page.parentNote}</p>}
-                  </article>
-                ))}
-              </div>
-            )}
-            {request.error && <GenerationError message={request.error} retry={retry} />}
-            <nav>
-              <button className="secondary" disabled={request.loading} onClick={() => setStep(10)}>Back</button>
-              <button className="primary" onClick={saveFinishedDraft} disabled={request.loading || bookPages.some((page) => !page.approvedText?.trim())}>Save finished draft</button>
-            </nav>
+            <div className="approved-grid">
+              {[1, 2, 3].map((number) => (
+                <article className="approved-card" key={number}>
+                  <button className="zoomable-image-button" type="button" aria-label={`Open approved Page ${number} photo at full size`} onClick={() => setExpandedImage({ src: spreads[number - 1].preview, alt: `Approved Page ${number}` })}>
+                    <img src={spreads[number - 1].preview} alt="" />
+                  </button>
+                  <label>Approved Page {number}</label>
+                  <p>{approvedDrafts[number]}</p>
+                  {approvedNotes[number] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[number]}</p>}
+                </article>
+              ))}
+            </div>
+            {deliveryJob.status === "processing" && <ProgressLog messages={languageLoadingMessages(fullBookLoadingMessages, language.config.name)} />}
+            {deliveryJob.error && <GenerationError message={deliveryJob.error} retry={() => setStep(10)} />}
           </>
         )}
       </section>
@@ -1586,6 +1401,15 @@ const patternLoadingMessages = [
   "Applying your edits to the next choices…",
   "Checking both pages side by side…",
   "Making sure the voice travels naturally…",
+  ...translationLoadingMessages
+];
+
+const teaserLoadingMessages = [
+  "Writing Page 4 in your book’s voice…",
+  "Carrying your refrain into the next page…",
+  "Keeping the rhythm you approved…",
+  "Following your notes from the first three pages…",
+  "Reading Page 4 aloud to check the flow…",
   ...translationLoadingMessages
 ];
 

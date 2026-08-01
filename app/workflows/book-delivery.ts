@@ -14,7 +14,7 @@ import {
   type TargetLanguage
 } from "../languages/language-config.ts";
 
-type TranslationPage = { page: number; sourceText: string };
+type TranslationPage = { page: number; sourceText: string; visualContext?: string };
 type TranslatedPage = { page: number; text: string; idempotencyKey: string };
 export type WorkflowDeliveryInput = {
   recipientEmail: string;
@@ -26,10 +26,16 @@ export type WorkflowDeliveryInput = {
   targetLanguage: TargetLanguage;
   regionalVariant?: string;
   direction?: DirectionBrief;
-  approvedPage1: string;
-  approvedPage1Note?: string;
+  // Parent-approved workshop pages: binding voice references, never rewritten.
+  approvedPages: Array<{ page: number; text: string; parentNote?: string }>;
+  // Teaser output: seeds that page's draft; the final editorial pass may polish it.
+  previewPages?: Array<{ page: number; text: string }>;
   jobId: string;
 };
+
+// Independent page translations run concurrently in small batches; each page
+// is still an idempotent workflow step.
+const PAGE_TRANSLATION_CONCURRENCY = 4;
 
 function pageIdempotencyKey(jobId: string, page: number) {
   return `book/${jobId}/page/${page}`;
@@ -92,11 +98,13 @@ function promptBase(input: WorkflowDeliveryInput) {
     direction: input.direction,
     targetLanguage: input.targetLanguage,
     regionalVariant: input.regionalVariant,
-    approvedVoice: [{
-      spread: 1,
-      text: input.approvedPage1,
-      parentNote: input.approvedPage1Note
-    }]
+    approvedVoice: [...input.approvedPages]
+      .sort((a, b) => a.page - b.page)
+      .map((page) => ({
+        spread: page.page,
+        text: page.text,
+        parentNote: page.parentNote
+      }))
   };
 }
 
@@ -121,7 +129,7 @@ export async function translatePageStep(input: WorkflowDeliveryInput, page: Tran
           type: "input_text",
           text: fullBookGenerationPrompt({
             ...promptBase(input),
-            spreads: [{ spread: page.page, source: page.sourceText, visualContext: "" }]
+            spreads: [{ spread: page.page, source: page.sourceText, visualContext: page.visualContext || "" }]
           })
         }]
       }],
@@ -155,7 +163,8 @@ export async function finalEditorialStep(input: WorkflowDeliveryInput, drafts: T
   assertActionBudget({ model: "gpt-5.6-sol", maxInputTokens: 16_000, maxOutputTokens: 6_000, callCount: 1 });
   const promptArgs = {
     ...promptBase(input),
-    spreads: input.pages.map(({ page, sourceText }) => ({ spread: page, source: sourceText, visualContext: "" })),
+    spreads: input.pages.map(({ page, sourceText, visualContext }) =>
+      ({ spread: page, source: sourceText, visualContext: visualContext || "" })),
     draftsJson: JSON.stringify(ordered.map(({ page, text }) => ({ spread: page, text })))
   };
   const { response } = await controlledResponse({
@@ -203,11 +212,14 @@ export async function finalEditorialStep(input: WorkflowDeliveryInput, drafts: T
         .join("; ")}.`
     );
   }
+  // Parent-approved wording is exact: the editor sees it as voice reference
+  // but its output for those pages is always overridden with the approved text.
+  const approvedByPage = new Map(input.approvedPages.map((page) => [page.page, page.text]));
   return parsed.spreads
     .sort((a, b) => a.spread - b.spread)
     .map(({ spread, text }) => ({
       page: spread,
-      text: spread === 1 ? input.approvedPage1 : text
+      text: approvedByPage.get(spread) ?? text
     }));
 }
 finalEditorialStep.maxRetries = 2;
@@ -261,14 +273,31 @@ sendTranslationEmailStep.maxRetries = 3;
 export async function deliverBookWorkflow(input: WorkflowDeliveryInput) {
   "use workflow";
   const unique = new Map<number, TranslatedPage>();
-  unique.set(1, {
-    page: 1,
-    text: input.approvedPage1,
-    idempotencyKey: pageIdempotencyKey(input.jobId, 1)
-  });
-  for (const page of [...input.pages].sort((a, b) => a.page - b.page)) {
-    if (page.page === 1 || unique.has(page.page)) continue;
-    unique.set(page.page, await translatePageStep(input, page));
+  // Parent-approved pages are final text; teaser previews are pre-generated
+  // drafts. Neither needs a generation step.
+  for (const approved of input.approvedPages) {
+    unique.set(approved.page, {
+      page: approved.page,
+      text: approved.text,
+      idempotencyKey: pageIdempotencyKey(input.jobId, approved.page)
+    });
+  }
+  for (const preview of input.previewPages ?? []) {
+    if (unique.has(preview.page)) continue;
+    unique.set(preview.page, {
+      page: preview.page,
+      text: preview.text,
+      idempotencyKey: pageIdempotencyKey(input.jobId, preview.page)
+    });
+  }
+  const remaining = [...input.pages]
+    .sort((a, b) => a.page - b.page)
+    .filter((page) => !unique.has(page.page));
+  // Page translations are independent — run them in small concurrent batches.
+  for (let index = 0; index < remaining.length; index += PAGE_TRANSLATION_CONCURRENCY) {
+    const batch = remaining.slice(index, index + PAGE_TRANSLATION_CONCURRENCY);
+    const translated = await Promise.all(batch.map((page) => translatePageStep(input, page)));
+    for (const page of translated) unique.set(page.page, page);
   }
   const finalPages = await finalEditorialStep(input, [...unique.values()]);
   const delivery = await sendTranslationEmailStep(input, finalPages);

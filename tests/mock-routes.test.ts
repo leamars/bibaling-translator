@@ -69,14 +69,14 @@ test("translation routes allow an unavailable optional visual summary", async ()
   assert.doesNotMatch(source, /visualContexts:\s*z\.array\(z\.string\(\)\.min\(1\)\)/);
 });
 
-test("full-book reading preserves successful OCR when another page fails", async () => {
+test("upload-time OCR failures stay per-page and recoverable", async () => {
   const source = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
-  assert.match(source, /workStatus = "reading"/);
-  assert.match(source, /workStatus = "translating"/);
-  assert.match(source, /workStatus = "ready"/);
-  assert.match(source, /Everything before it is saved/);
-  assert.match(source, /activePage=\{activeBookPageIndex/);
-  assert.match(source, /Writing the \$\{language\.config\.name\} translation/);
+  // Every page is read at upload; one unreadable photo never discards the
+  // successful reads around it, and each failed page offers its own retry.
+  assert.match(source, /status: "error"/);
+  assert.match(source, /spread\.status === "error"/);
+  assert.match(source, /onClick=\{\(\) => void readSpread\(spread\.id, spread\.preview\)\}>Try again<\/button>/);
+  assert.match(source, /Type or paste the English text here/);
 });
 
 test("direction generation streams genuine progress and propagates cancellation", async () => {
@@ -93,18 +93,21 @@ test("direction generation streams genuine progress and propagates cancellation"
   assert.match(source, /streamAbort\.abort\(new Error\("Client disconnected"\)\)/);
 });
 
-test("full-book generation is mocked, bounded, and preserves parent feedback", async () => {
+test("the Page 4 preview is mocked, bounded, quality-gated, and preserves parent feedback", async () => {
   const route = await readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8");
   const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
-  assert.match(route, /input\.mode === "fullbook"/);
+  const workflow = await readFile(new URL("../app/workflows/book-delivery.ts", import.meta.url), "utf8");
+  assert.match(route, /input\.mode === "preview"/);
   assert.match(route, /assertActionBudget\(\{/);
-  assert.match(route, /fullbook\.generate/);
-  assert.match(route, /fullbook\.edit/);
-  assert.match(page, /parentNote: page\.parentNote/);
-  assert.match(page, /Translate the full book/);
-  assert.match(page, /onDragEnter/);
-  assert.match(page, /activePage=\{activeBookPageIndex/);
-  assert.match(page, /approved-while-writing/);
+  assert.match(route, /preview\.page\.\$\{input\.spread\.spread\}\.generate/);
+  assert.match(route, /preview\.page\.\$\{input\.spread\.spread\}\.edit/);
+  assert.match(route, /Preview page \$\{input\.spread\.spread\}/); // mock branch
+  assert.match(route, /failedFullBookGates/);
+  // The interactive full-book mode is gone: delivery is the only whole-book path.
+  assert.doesNotMatch(route, /fullbook/);
+  // Parent notes flow into the teaser call and the durable delivery input.
+  assert.match(page, /parentNote: approvedNotes\[number\]/);
+  assert.match(workflow, /parentNote: page\.parentNote/);
 });
 
 test("all long-running client states use non-repeating rotating copy", async () => {

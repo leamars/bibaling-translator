@@ -1,14 +1,10 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
-const QUALITY_MODEL = { model: "gpt-5.6-sol", label: "Sol · quality-first" } as const;
-const DEBUG_MODEL = { model: "gpt-5.6-terra", label: "Terra · faster" } as const;
-
-// Production returns exactly three quality-gated choices. The earlier side-by-side
-// experiment remains available without doubling latency or choices for families.
-export const COMPARISON_MODELS = process.env.BIBALING_COMPARE_MODELS === "true"
-  ? [DEBUG_MODEL, QUALITY_MODEL]
-  : [QUALITY_MODEL];
+// The single production generation model. The earlier side-by-side model
+// comparison experiment was retired; model comparisons belong in the
+// live-evaluation harness under scripts/, not in the parent-facing funnel.
+export const QUALITY_MODEL = { model: "gpt-5.6-sol", label: "Sol · quality-first" } as const;
 
 export function openAIClient() {
   const apiKey = process.env.OPENAI_API_KEY?.trim();

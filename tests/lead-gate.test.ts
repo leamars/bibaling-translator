@@ -92,67 +92,91 @@ test("existing Resend contacts update properties and memberships through the doc
   }
 });
 
-test("all photos precede the Page 1 gate and capture starts durable delivery", async () => {
+test("the workshop precedes the gate; the teaser precedes capture; capture starts durable delivery", async () => {
   const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
   const route = await readFile(new URL("../app/api/delivery/route.ts", import.meta.url), "utf8");
+  const translations = await readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8");
   const contract = await readFile(new URL("../app/api/delivery/contract.ts", import.meta.url), "utf8");
   const workflow = await readFile(new URL("../app/workflows/book-delivery.ts", import.meta.url), "utf8");
-  const writeSpread1 = page.slice(
-    page.indexOf("async function writeSpread1"),
-    page.indexOf("async function lockDirectionAndWriteSpread1")
+  const startTeaser = page.slice(
+    page.indexOf("async function startTeaser"),
+    page.indexOf("async function captureEmail")
   );
   const captureEmail = page.slice(
     page.indexOf("async function captureEmail"),
-    page.indexOf("async function addRemainingFiles")
+    page.indexOf("const retry = step === 3")
   );
   const pageOneScreen = page.slice(page.indexOf("{step === 7"), page.indexOf("{step === 8"));
-  const deliveryScreen = page.slice(page.indexOf("{step === 8"), page.indexOf("{step === 9"));
+  const patternScreen = page.slice(page.indexOf("{step === 8"), page.indexOf("{step === 9"));
+  const teaserScreen = page.slice(page.indexOf("{step === 10"), page.indexOf("{step === 11"));
+  const deliveryScreen = page.slice(page.indexOf("{step === 11"), page.indexOf("{expandedImage"));
 
   assert.match(page, /spreads\.length < 3/);
   assert.match(page, /Add every page from your book/);
   assert.match(page, /all_photos_uploaded/);
-  assert.ok(
-    writeSpread1.indexOf('trackFunnelEventOnce("first_page_translation_displayed"') <
-    writeSpread1.indexOf('trackFunnelEventOnce("email_gate_displayed"')
-  );
-  assert.match(pageOneScreen, /spread1Options\.length > 0/);
-  assert.match(pageOneScreen, /Like your first page\? Let’s finish the book\./);
-  assert.match(pageOneScreen, /Email me the finished translation/);
-  assert.match(captureEmail, /spread1Selection === null/);
-  assert.match(captureEmail, /spread1Options\[spread1Selection\]\?\.text\.trim\(\)/);
+
+  // The full workshop happens before any email ask.
+  assert.match(pageOneScreen, /Approve and test the pattern/);
+  assert.doesNotMatch(pageOneScreen, /email-gate|Email me the finished translation/);
+  assert.match(patternScreen, /Does this voice work on every page\?/);
+  assert.doesNotMatch(patternScreen, /email-gate|leadReceipt/);
+  assert.doesNotMatch(page.slice(0, page.indexOf("async function startTeaser")), /mode: "pattern",\s*\n\s*leadReceipt/);
+
+  // The teaser writes Page 4 for real, never renders its text, and the gate
+  // opens whether or not the teaser succeeded.
+  assert.match(startTeaser, /mode: "preview"/);
+  assert.match(startTeaser, /spread: \{ spread: 4/);
+  assert.match(startTeaser, /status: "unavailable"/);
+  assert.ok(startTeaser.indexOf('trackFunnelEventOnce("email_gate_displayed"') > 0);
+  assert.match(startTeaser, /finally \{[\s\S]*email_gate_displayed/);
+  assert.match(teaserScreen, /teaser\.status !== "writing" && !emailCaptured/);
+  assert.match(teaserScreen, /Email me the finished translation/);
+  assert.doesNotMatch(teaserScreen, /teaser\.page\.text|previewText/);
+
+  // Capture requires the approved workshop pages and starts durable delivery
+  // with the approved voice and the teaser seed.
+  assert.match(captureEmail, /approvedDrafts\[number\]\?\.trim\(\)/);
   assert.match(captureEmail, /setLeadReceipt\(result\.receipt\)/);
   assert.match(captureEmail, /postJson<\{ jobToken: string; status: "processing" \}>\("\/api\/delivery"/);
   assert.match(captureEmail, /pages: spreads\.map/);
-  assert.doesNotMatch(captureEmail, /preview|file\.name|startPatternTest/);
+  assert.match(captureEmail, /visualContext: spread\.visualContext/);
+  assert.match(captureEmail, /approvedPages: \[1, 2, 3\]\.map/);
+  assert.match(captureEmail, /previewPages: teaser\.page \? \[\{ page: teaser\.page\.page, text: teaser\.page\.text \}\] : \[\]/);
+  assert.doesNotMatch(captureEmail, /file\.name|startPatternTest/);
   const captureFailure = captureEmail.slice(captureEmail.indexOf("} catch (error)"));
   assert.doesNotMatch(
     captureFailure,
-    /setSpreads|setSpread1Options|setSpread1Selection|setApprovedSpread1|setApprovedNotes/
+    /setSpreads|setSpread1Options|setSpread1Selection|setApprovedSpread1|setApprovedNotes|setTeaser/
   );
   assert.ok(captureEmail.indexOf('trackFunnelEventOnce("generate_lead"') < captureEmail.indexOf('trackFunnelEventOnce("remaining_translation_started"'));
   assert.match(deliveryScreen, /You can safely close this page/);
   assert.doesNotMatch(deliveryScreen, /OptionList|patternOptions|Save finished draft|Add the rest of the book/);
   assert.match(page, /emailRequest\.loading/);
   assert.match(page, /emailRequest\.error/);
+
+  // Only delivery requires the signed receipt; the workshop and teaser do not.
   assert.match(route, /verifyLeadReceipt\(input\.leadReceipt, input\.bookForm, input\.targetLanguage, input\.regionalVariant\)/);
   assert.match(route, /start\(deliverBookWorkflow/);
-  assert.doesNotMatch(contract, /photo|preview|filename|visualContext/i);
+  assert.doesNotMatch(translations, /verifyLeadReceipt|leadReceipt/);
+  assert.doesNotMatch(contract, /photo|filename/i);
+  assert.match(contract, /previewPages/);
   assert.match(workflow, /"use workflow"/);
   assert.match(workflow, /"use step"/);
+  assert.match(workflow, /PAGE_TRANSLATION_CONCURRENCY/);
   assert.match(workflow, /sendTranslationEmailStep\.maxRetries = 3/);
 });
 
 test("email-gate consent is separate, unchecked, and non-blocking", async () => {
   const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
-  const pageOneScreen = page.slice(page.indexOf("{step === 7"), page.indexOf("{step === 8"));
+  const teaserScreen = page.slice(page.indexOf("{step === 10"), page.indexOf("{step === 11"));
   assert.match(page, /const \[marketingConsent, setMarketingConsent\] = useState\(false\)/);
   assert.match(page, /const \[analyticsConsent, setAnalyticsConsentChoice\] = useState\(false\)/);
-  assert.match(pageOneScreen, /Send me occasional Bibaling news and product updates\./);
-  assert.match(pageOneScreen, /Allow anonymous usage analytics to help improve Bibaling\./);
-  assert.doesNotMatch(pageOneScreen, />Optional</);
-  assert.match(pageOneScreen, /disabled=\{\s*emailRequest\.loading \|\|[\s\S]*spread1Options\[spread1Selection\]\?\.text\.trim\(\)\s*\}/);
+  assert.match(teaserScreen, /Send me occasional Bibaling news and product updates\./);
+  assert.match(teaserScreen, /Allow anonymous usage analytics to help improve Bibaling\./);
+  assert.doesNotMatch(teaserScreen, />Optional</);
+  assert.match(teaserScreen, /disabled=\{emailRequest\.loading \|\| !validEmail\(email\)\}/);
   assert.doesNotMatch(
-    pageOneScreen.match(/disabled=\{\s*emailRequest\.loading[\s\S]*?\n\s*\}/)?.[0] || "",
+    teaserScreen.match(/disabled=\{emailRequest\.loading[\s\S]*?\}/)?.[0] || "",
     /marketingConsent|analyticsConsent/
   );
 });
