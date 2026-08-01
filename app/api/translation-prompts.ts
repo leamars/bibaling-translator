@@ -125,6 +125,25 @@ Approach: ${direction.approach}
 Gender dependency: ${direction.genderDependency}`;
 }
 
+function privateCandidateMechanismContract() {
+  return `CANDIDATE MECHANISM DIVERSITY
+- Across the six private candidates, use at least four materially different refrain, wordplay, or literary mechanisms.
+- No more than two candidates may use the same coined adjective/adverb mechanism (for example, a construction equivalent to “I love you mushroom-ly”).
+- Each short English strategy label must name the actual linguistic mechanism used in that candidate, not its mood or a generic claim of creativity.
+- Useful mechanism families include mushroom-part imagery, a natural target-language idiom, an affectionate refrain without mushroom coinage, sound-based wordplay, compact call-and-response, and a source-grounded semantic pun. Use only mechanisms that fit the source and selected book form.
+- Synonym swaps, reordered clauses, and small intensifier additions such as “really” or “very” are surface rewrites of one mechanism. They do not count as materially different mechanisms.
+- Translation quality remains the first requirement. Never introduce awkward language, weaker fidelity, forced rhyme, or unsupported invention merely to increase variety.`;
+}
+
+function editorialMechanismDiversityContract() {
+  return `FINALIST MECHANISM DIVERSITY
+- Verify the mechanism in the actual candidate text; do not trust a strategy label that overstates the difference.
+- When multiple publication-quality mechanisms exist, the three finalists must represent materially different mechanisms rather than three surface rewrites of one central joke.
+- Synonym swaps, reordered clauses, and small intensifier additions do not establish mechanism-level diversity.
+- Translation quality outranks diversity. Never promote an awkward, less faithful, less natural, or otherwise lower-quality text solely to create variety.
+- If three strong distinct mechanisms do not exist, return the strongest qualifying texts even when their mechanisms overlap. Do not pretend they are meaningfully different. Put the exact prefix “CANDIDATE_DIVERSITY_WARNING:” in the weakness of each finalist whose mechanism materially overlaps another finalist.`;
+}
+
 function comparativeEditorialContract(language: string, rhymeRequired: boolean) {
   return `COMPARATIVE EDITORIAL CONTRACT
 - Return exactly three finalists with unique ranks 1, 2, and 3. Ties are forbidden.
@@ -369,6 +388,8 @@ Candidate requirements:
 - no unsupported invention, filler, slash forms, placeholders, English syntax, or unresolved gender;
 - apply rhyme only when the locked book form and source rhyme require it: ${requiresRhyme({ bookForm: args.bookForm ?? "refrain_verse", sourceRhyme: args.sourceRhyme ?? "sustained", priority: args.priority }) ? "rhyme is required" : "rhyme is not required and must not be invented"}.
 
+${privateCandidateMechanismContract()}
+
 Give every candidate a stable id c01 through c06 and a short English strategy label. Do not expose reasoning.
 ${args.rejectionFeedback ? `\nPREVIOUS EVALUATOR REJECTIONS — create new candidates that repair these failures:\n${args.rejectionFeedback}` : ""}`;
 }
@@ -420,6 +441,8 @@ Editorial process:
 - set every pass field to true only after the returned text itself satisfies that gate;
 - preserve the exact locked refrain whenever it is used;
 - output only the three finalists in the required schema, with a short English strategy label and the source candidate id each finalist developed from.
+
+${editorialMechanismDiversityContract()}
 
 ${leanPageEditorialContract({
   language: "Slovenian",
@@ -624,6 +647,8 @@ ${args.visualContext ? `\nVISUAL CONTEXT\n${args.visualContext}` : ""}
 ${args.approvedSpread1 ? `\nAPPROVED PAGE 1 VOICE — imitate, never rewrite\n${args.approvedSpread1}` : ""}
 ${args.approvedSpread1Note ? `\nPARENT EDIT NOTE — apply as binding editorial evidence\n${args.approvedSpread1Note}` : ""}
 
+${privateCandidateMechanismContract()}
+
 Return complete reader-facing ${language} text, never notes or fragments. Preserve exact approved refrain wording only for refrain_verse. Give candidates ids c01–c06 and short English strategy labels. Return only the required schema.`;
 }
 
@@ -646,6 +671,8 @@ ${args.approvedSpread1Note ? `\nPARENT EDIT NOTE\n${args.approvedSpread1Note}` :
 
 PRIVATE CANDIDATES
 ${args.candidatesJson}
+
+${editorialMechanismDiversityContract()}
 
 For each returned text, set every schema pass field true only after the text itself passes fidelity, native ${language} grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement.
 
