@@ -20,10 +20,11 @@ These findings remain provisional until the relevant native-language review is c
 - The drafting response reached `max_output_tokens`.
 - No complete candidate set or editorial result exists.
 
-## Croatian — likely PASS (provisional)
+## Croatian — PASS for translation quality
 
-- The completed finalists are structurally credible.
-- Native judgment is still needed on whether `gljivasto te volim` sounds naturally playful rather than constructed.
+- Finalists 1 and 2 form an acceptable equivalent group.
+- Candidate-set diversity receives a warning: the set does not explore meaningfully different refrain or wordplay mechanisms.
+- This distinction is recorded as `translationQuality: PASS` and `candidateSetDiversity: WARNING`.
 
 ## Serbian — NEEDS_TARGETED_TUNING or native confirmation
 

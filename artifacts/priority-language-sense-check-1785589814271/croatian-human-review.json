@@ -4,7 +4,9 @@
   "conclusion": {
     "type": "equivalent_group",
     "equivalentFinalists": [1, 2],
-    "overallStatus": null
+    "overallStatus": "PASS",
+    "translationQuality": "PASS",
+    "candidateSetDiversity": "WARNING"
   },
   "candidateFeedback": [
     {
@@ -19,7 +21,8 @@
     }
   ],
   "setLevelFeedback": [
-    "Explore genuinely different refrain ideas instead of repeatedly using ‘gljivasto vas volim’."
+    "Explore genuinely different refrain ideas instead of repeatedly using ‘gljivasto vas volim’.",
+    "The set does not explore meaningfully different refrain or wordplay mechanisms."
   ],
   "unratedFinalists": [3],
   "source": "Lea's direct review feedback"

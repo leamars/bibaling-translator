@@ -112,6 +112,6 @@ jer me dižete s tla — to mi je krasno!
 
 Preferred finalist: **Finalists 1 and 2 are effectively equivalent**
 
-Overall status: **Pending Lea's explicit status decision**
+Overall status: **PASS for translation quality, with a candidate-diversity warning**
 
-Comments: Both are good. The generated set should explore genuinely different refrain ideas instead of repeatedly using “gljivasto vas volim.”
+Comments: Finalists 1 and 2 are an acceptable equivalent group. The set does not explore meaningfully different refrain or wordplay mechanisms and should not count as passing candidate-set diversity.
