@@ -20,6 +20,11 @@ export type GermanEvaluationFixture = {
   proxyLimitation?: string;
   pages: GermanEvaluationPage[];
   requirements: string[];
+  goldStandardGuidance?: {
+    recommended: string;
+    acceptableAlternative: string;
+    benchmarkRhymePairs: Array<[string, string]>;
+  };
 };
 
 export const GERMAN_EVALUATION_FIXTURES: GermanEvaluationFixture[] = [
@@ -47,12 +52,40 @@ export const GERMAN_EVALUATION_FIXTURES: GermanEvaluationFixture[] = [
       }
     ],
     requirements: [
-      "Use one exact compact German refrain in both pages",
+      "Write each page as one four-line German stanza with two clearly audible end-rhyme pairs",
       "Preserve the affectionate declaration and mushroom wordplay function",
       "Keep singular and collective scene relationships accurate",
-      "Preserve page-specific action before or around the refrain in a natural order",
-      "Use natural spoken German rhyme without inversion or filler"
-    ]
+      "Preserve the repeated-refrain feeling while allowing the necessary dich/euch variation",
+      "Use natural mushroom-speaker wordplay such as von Stiel bis Hut or mein kleines Pilzherz; never translate mush literally",
+      "Prefer roughly 6–10 syllables per line and avoid long explanatory sentences",
+      "Use strong spoken German rhyme without inversion, filler, or merely visual endings"
+    ],
+    goldStandardGuidance: {
+      recommended: `Mein Zottelfreund sitzt froh im Baum,
+eingekuschelt wie im Traum.
+Ich hab dich lieb von Stiel bis Hut,
+du passt auf mich auf – das tut mir gut.
+
+Die Pilzfreunde fassen sich an
+und drehen sich, so schnell man kann.
+Ich hab euch lieb von Stiel bis Hut,
+ihr hebt mich hoch – das tut mir gut!`,
+      acceptableAlternative: `Mein Zottelfreund sitzt hoch im Baum,
+so weich und warm wie in einem Traum.
+Mein kleines Pilzherz liebt dich sehr,
+du passt auf mich auf – was will ich mehr?
+
+Die Pilzfreunde reichen sich die Hand
+und drehen sich fröhlich am Waldesrand.
+Mein kleines Pilzherz liebt euch sehr,
+ihr hebt mich hoch – was will ich mehr?`,
+      benchmarkRhymePairs: [
+        ["Baum", "Traum"],
+        ["Hut", "gut"],
+        ["an", "kann"],
+        ["Hut", "gut"]
+      ]
+    }
   },
   {
     id: "llama-drama",

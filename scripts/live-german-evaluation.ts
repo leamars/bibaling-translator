@@ -57,6 +57,24 @@ export const pairedDraftSchema = z.object({
   })).length(6)
 });
 
+export const pairedVerseDraftSchema = z.object({
+  candidates: z.array(z.object({
+    id: z.string().trim().min(1).max(20),
+    strategy: z.string().trim().min(1).max(80),
+    refrainPage1: z.string().trim().min(1).max(240),
+    refrainPage2: z.string().trim().min(1).max(240),
+    page1Text: z.string().trim().min(1).max(2_000),
+    page2Text: z.string().trim().min(1).max(2_000),
+    rhymePairs: z.array(z.object({
+      page: z.union([z.literal(1), z.literal(2)]),
+      lineA: z.union([z.literal(1), z.literal(3)]),
+      lineB: z.union([z.literal(2), z.literal(4)]),
+      wordA: z.string().trim().min(1).max(80),
+      wordB: z.string().trim().min(1).max(80)
+    })).length(4)
+  })).length(6)
+});
+
 const standardDraftJsonSchema = {
   type: "object",
   additionalProperties: false,
@@ -105,11 +123,56 @@ const pairedDraftJsonSchema = {
   required: ["candidates"]
 } as const;
 
+export const pairedVerseDraftJsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    candidates: {
+      type: "array",
+      minItems: 6,
+      maxItems: 6,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          id: { type: "string", minLength: 1, maxLength: 20 },
+          strategy: { type: "string", minLength: 1, maxLength: 80 },
+          refrainPage1: { type: "string", minLength: 1, maxLength: 240 },
+          refrainPage2: { type: "string", minLength: 1, maxLength: 240 },
+          page1Text: { type: "string", minLength: 1, maxLength: 2_000 },
+          page2Text: { type: "string", minLength: 1, maxLength: 2_000 },
+          rhymePairs: {
+            type: "array",
+            minItems: 4,
+            maxItems: 4,
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                page: { type: "integer", enum: [1, 2] },
+                lineA: { type: "integer", enum: [1, 3] },
+                lineB: { type: "integer", enum: [2, 4] },
+                wordA: { type: "string", minLength: 1, maxLength: 80 },
+                wordB: { type: "string", minLength: 1, maxLength: 80 }
+              },
+              required: ["page", "lineA", "lineB", "wordA", "wordB"]
+            }
+          }
+        },
+        required: ["id", "strategy", "refrainPage1", "refrainPage2", "page1Text", "page2Text", "rhymePairs"]
+      }
+    }
+  },
+  required: ["candidates"]
+} as const;
+
 export type NormalizedCandidate = {
   id: string;
   strategy: string;
   text: string;
   refrain?: string;
+  refrainVariants?: [string, string];
+  rhymePairs?: Array<{ page: 1 | 2; lineA: 1 | 3; lineB: 2 | 4; wordA: string; wordB: string }>;
   pages?: string[];
 };
 
@@ -128,17 +191,34 @@ function maximumEstimatedCost() {
   return GERMAN_EVALUATION_FIXTURES.length * (draft + editor);
 }
 
-function pairedDraftPrompt(fixture: GermanEvaluationFixture) {
+export function pairedDraftPrompt(fixture: GermanEvaluationFixture) {
   const [first, second] = fixture.pages;
+  if (!fixture.goldStandardGuidance) throw new Error("The paired German fixture requires reviewed gold-standard guidance.");
   return `${languagePromptGuidance({ targetLanguage: TARGET_LANGUAGE, regionalVariant: REGIONAL_VARIANT })}
 
 CONTROLLED EVALUATION TASK
-Create exactly six private, genuinely different German two-page adaptations. Each candidate must:
-- contain one compact German refrain corresponding to “I really love you oh-so-MUSH”;
-- use that exact refrain verbatim once in page 1 and once in page 2;
-- preserve each page's separate scene, action, address, line order, and picture truth;
-- retain natural child-friendly spoken German and convincing source-supported rhyme;
-- vary strategy through natural syntax, rhythm, wordplay, and rhyme rather than invented content.
+Create exactly six private, genuinely different German two-page adaptations. Unrhymed prose split into short lines is a failure.
+
+REVIEWED FIXTURE BENCHMARK — emulate its quality and structural discipline, not necessarily its exact wording
+RECOMMENDED
+${fixture.goldStandardGuidance.recommended}
+
+ACCEPTABLE ALTERNATIVE
+${fixture.goldStandardGuidance.acceptableAlternative}
+
+BENCHMARK SPOKEN RHYME PAIRS
+${fixture.goldStandardGuidance.benchmarkRhymePairs.map(([a, b]) => `${a} / ${b}`).join("\n")}
+
+HARD REQUIREMENTS FOR EVERY CANDIDATE
+- Write page 1 and page 2 as separate four-line stanzas.
+- Every stanza must contain exactly two clearly audible end-rhyme pairs: lines 1/2 and lines 3/4.
+- State the exact four end-rhyme word pairs in rhymePairs: two for page 1 and two for page 2.
+- Preserve the repeated-refrain feeling while allowing necessary dich/euch variation between the two refrain lines.
+- Preserve “oh-so-MUSH” through natural mushroom-speaker wordplay such as “von Stiel bis Hut” or “mein kleines Pilzherz”; never translate “mush” literally.
+- Prefer roughly 6–10 syllables per line, natural spoken German, smooth read-aloud rhythm, child-friendly vocabulary, and source fidelity.
+- Mild compression or source-grounded invention is allowed when required for rhyme. Unrhymed fidelity is unacceptable.
+- Reject stiff or literary filler such as “beglückt”, “entzückt”, “ruht ganz geborgen”, and any awkward formulation created solely for rhyme.
+- Preserve each page's scene, action, singular/plural address, and picture truth.
 
 PAGE 1 — CORRECTED ENGLISH
 ${first.source}
@@ -152,7 +232,7 @@ ${second.source}
 PAGE 2 — VISUAL CONTEXT
 ${second.visualContext}
 
-Return exactly candidates c01–c06 in the required schema. English is permitted only in the short strategy field. refrain, page1Text, and page2Text must contain solely reader-facing German. Do not include page labels, explanations, or alternatives inside those fields.`;
+Return exactly candidates c01–c06 in the required schema. English is permitted only in the short strategy field. refrainPage1, refrainPage2, page1Text, and page2Text must contain solely reader-facing German. Do not include page labels, explanations, or alternatives inside those fields.`;
 }
 
 export function pairedEditorPrompt(
@@ -160,16 +240,30 @@ export function pairedEditorPrompt(
   candidates: NormalizedCandidate[]
 ) {
   const [first, second] = fixture.pages;
+  if (!fixture.goldStandardGuidance) throw new Error("The paired German fixture requires reviewed gold-standard guidance.");
   return `${languagePromptGuidance({ targetLanguage: TARGET_LANGUAGE, regionalVariant: REGIONAL_VARIANT })}
 
 ROLE
 Act as an independent native German children's-book editor. Evaluate the six paired-page adaptations and return exactly three publication-ready paired finalists.
 
 LOCKED BOOK FORM: VERSE WITH A REPEATING REFRAIN
-Each finalist covers two pages separated in the private text container by a form-feed character. The exact same meaningful German refrain must recur in both pages. Preserve the separator in originalText and evaluatedText. Do not print a page label.
+Each finalist covers two pages separated in the private text container by a form-feed character. Preserve the repeated refrain pattern and permit only the necessary dich/euch agreement variation. Preserve the separator in originalText and evaluatedText. Do not print a page label.
 
 LOCKED PARENT PRIORITY
 Use convincing spoken rhyme and read-aloud rhythm without distorting meaning, German word order, or syntax.
+
+RHYME QUALITY GATE
+- Independently pronounce every proposed rhyme pair in the complete lines before allowing a candidate through.
+- Each four-line page stanza requires two clearly audible end-rhyme pairs, on lines 1/2 and lines 3/4.
+- Reject a missing pair, merely visual rhyme, weak consonance presented as rhyme, grammatical endings, repeated words, or prose merely divided into lines.
+- Natural spoken German, strong immediate rhyme, smooth rhythm, child-friendly vocabulary, and fidelity are all mandatory for this fixture.
+- If no candidate meets every rhyme requirement, return NO_QUALIFYING_FINALIST rather than presenting unrhymed options.
+
+REVIEWED QUALITY BENCHMARK
+${fixture.goldStandardGuidance.recommended}
+
+ACCEPTABLE QUALITY FLOOR
+${fixture.goldStandardGuidance.acceptableAlternative}
 
 CREATIVE FREEDOM
 Sound naturally German while preserving both scenes and their illustration truth.
@@ -187,7 +281,7 @@ PAGE 2 — VISUAL CONTEXT
 ${second.visualContext}
 
 PRIVATE CANDIDATES
-${JSON.stringify(candidates.map(({ id, strategy, text }) => ({ id, strategy, text })))}
+${JSON.stringify(candidates)}
 
 ${leanPageEditorialContract({ language: "German", rhymeRequired: true })}`;
 }
@@ -231,9 +325,33 @@ function draftFindings(candidates: NormalizedCandidate[], fixture: GermanEvaluat
     if (seen.has(key)) hardFailures.push("exact duplicate candidate");
     seen.add(key);
     if (fixture.bookForm === "refrain_verse") {
-      if (!candidate.refrain || !candidate.pages?.every((page) => page.includes(candidate.refrain!))) {
-        hardFailures.push("declared refrain is not preserved exactly in both pages");
+      if (!candidate.pages || candidate.pages.length !== 2) hardFailures.push("paired verse requires two pages");
+      candidate.pages?.forEach((page, pageIndex) => {
+        const lines = page.split("\n").map((line) => line.trim()).filter(Boolean);
+        if (lines.length !== 4) hardFailures.push(`page ${pageIndex + 1} must contain exactly four verse lines`);
+      });
+      if (!candidate.refrainVariants?.every((refrain, pageIndex) =>
+        candidate.pages?.[pageIndex]?.includes(refrain)
+      )) hardFailures.push("declared refrain variants must appear in their corresponding pages");
+      if (candidate.rhymePairs?.length !== 4 ||
+        candidate.rhymePairs.filter((pair) => pair.page === 1).length !== 2 ||
+        candidate.rhymePairs.filter((pair) => pair.page === 2).length !== 2) {
+        hardFailures.push("each page must declare exactly two rhyme pairs");
       }
+      candidate.rhymePairs?.forEach((pair) => {
+        if (pair.wordA.toLocaleLowerCase("de-DE") === pair.wordB.toLocaleLowerCase("de-DE")) {
+          hardFailures.push(`page ${pair.page} repeats one word as a rhyme pair`);
+        }
+        const endings = candidate.pages?.[pair.page - 1]
+          ?.split("\n")
+          .map((line) => line.trim().match(/[\p{L}ÄÖÜäöüß]+[.!?…,:;”“„\-–—]*$/u)?.[0]
+            ?.replace(/[^\p{L}ÄÖÜäöüß]/gu, "").toLocaleLowerCase("de-DE")) || [];
+        for (const word of [pair.wordA, pair.wordB]) {
+          if (!endings.includes(word.toLocaleLowerCase("de-DE"))) {
+            hardFailures.push(`declared rhyme word ${word} is not a page ${pair.page} line ending`);
+          }
+        }
+      });
     }
     const qualityWarnings: string[] = [];
     for (let prior = 0; prior < index; prior += 1) {
@@ -333,7 +451,7 @@ async function main() {
               type: "json_schema",
               name: paired ? "german_paired_page_drafts" : "german_page_drafts",
               strict: true,
-              schema: paired ? pairedDraftJsonSchema : standardDraftJsonSchema
+              schema: paired ? pairedVerseDraftJsonSchema : standardDraftJsonSchema
             }
           }
         }
@@ -345,10 +463,11 @@ async function main() {
       );
       const rawDrafts = completedOutput(draftResult.response, `${fixture.id} drafting`);
       const candidates: NormalizedCandidate[] = paired
-        ? pairedDraftSchema.parse(rawDrafts).candidates.map((candidate) => ({
+        ? pairedVerseDraftSchema.parse(rawDrafts).candidates.map((candidate) => ({
             id: candidate.id,
             strategy: candidate.strategy,
-            refrain: candidate.refrain,
+            refrainVariants: [candidate.refrainPage1, candidate.refrainPage2] as [string, string],
+            rhymePairs: candidate.rhymePairs,
             pages: [candidate.page1Text, candidate.page2Text],
             text: `${candidate.page1Text}${PAGE_SEPARATOR}${candidate.page2Text}`
           }))
