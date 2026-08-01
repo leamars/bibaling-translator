@@ -1,0 +1,225 @@
+{
+  "id": "resp_0d95e04da8db8667006a6df05ec4e88195a321d82ea4777f8c",
+  "object": "response",
+  "created_at": 1785589854,
+  "status": "incomplete",
+  "background": false,
+  "billing": {
+    "payer": "developer"
+  },
+  "completed_at": null,
+  "error": null,
+  "frequency_penalty": 0,
+  "incomplete_details": {
+    "reason": "max_output_tokens"
+  },
+  "instructions": null,
+  "max_output_tokens": 3500,
+  "max_tool_calls": null,
+  "model": "gpt-5.6-sol",
+  "moderation": null,
+  "output": [
+    {
+      "id": "rs_0d95e04da8db8667006a6df05f72c8819583c9ea200aa545c6",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfCaPTlJM_AkM_Zz8JaFL5vpPDr5gYkiasVa2-VkarYtuOeNk99Si6yoPANuGRUmqEOseTMzKW_GTg6bTAr-F-vWN5IZwKI0ffF3bIxXogVH4_E2khc4OBWgIqElACpOjAwAxVK0bMhNi7VsbqIm5JCi2__nLR0j4-u31ZXfT40-xfJtPgcIMkVI1HexFzoDdjx9XJNPleRmqsUjnbnWa7ky03cQ2d73KTBL-slGN29tQWuN8zk9I1icni54zXBliwjqgxHkQZQ6YbcenaMyLF9G-izunAzlBsf6ddcxxjMmxtibdUCfXps-p_MPOAiH9WTezqUCiGIokgBTNNH02Ukl6bNKgMF0fitSiYgEEmeZWvbADxSMnRcDh3aMiwbh-Yq7y_cE6G4BAc9Ko9jrrLbU35SjjHbrUCeMr8WQdgI4mKtZ80zKuLwvzrpnzIOdYgcOYJdsoudHnahLPiFQ5CWXTRl_OnJzSDZoGRuj9h_U1vbZPx8imipHy8-0YrLBqemaJ-XNtg-yo2kUr0KAZfJKZBqCryb2kBt7pwFAu9RI-MvVnwctlWYUosxrQ0l-fGomIk3F69_pwr192xrFazNIDgqTnetZch-rYuVdcEFjQikLRvEcIfcEhxnyEXC152JikT4BcJlo6bbQpVmK57mRgBNgoXspG5jDURYSiUPJUErllfRTjzex5jyttL3ZNAoy5oXgE4g7B9sblQke0ODArU8_Z69BK06yH8fRQ9bCpghJlpN-EIVdKmsLOpqRWjLtBzTvQAXIDOStcUW5wAS_19rnRmSiU-CmTKag5MNi9gcLTtwlonjANF8Hywagl8ePddJq2XAQeoKVUfBChtvWEWhZAb5kq4rNPYD9B-SakuMdKEnCAiwin3noznvGEbGLUIOXWg7rzuCwa2TBnKzpc6fvYB035ijEhmebohfjpY8xhRccexa8-Q2kTOkkUxF7diOGK-ErIaXoxUSolfWswgCjZbwZV6KcXcz7PrXu0O7ueIWJtoNuALsOjjTYuZK0uy3-zRvGL4xcYyeYmn8sDFUw68rVXQnWe7gbDeOSEeC-DOnuBITC-MTIJlGLZy4tPWQsqmMmp_zM5z40wCSuAm6PPS5fStitzcctWHRsPKnVA-5DfJUA8pYDpo3XxO48Fm4BvWO85Yhtg6XNDUPNe5rxdFrJ0U972mDY2Qal4m12_zCcEapg63R10cknWB152HQZDygKPbmTbgIRwP_ZEOJ8ybZSCXH8G-FxLbw1R-nX7REeIAv6O7AwCPr6LFDk4gKOfL2fYUIOwVo45fGBhOPCyZLnjj0XOIf1RKmmJ_LYxsS0TciqP4LgKhmQ5LdG7vj9Q6fgEjxFWIEvUVzt9D0kSweQePfG04hxHqFyqe_vW5-c9jmfrSNeGm9IVsF4w-KJGB74CHCOldClQDoajBPKwaDWa8z4mgXTofOC3V_aSeAYUqU1_B6eLpNSpt14iraYCwVw6dmZ2iYXzz_RR7rvoSLsJEa5Netetx1erD5EmbfOY8mg9LKsk9IXSLeJJyq0bKe__QjnGiSRMn13njt3BilbwM76XHMbRMAsF2Mz55NOPNFvfRn6tQ8kVO3Wf4eOhR69yyRjYBwcW_Tk2f3IZsJKoUiwK5MPqLSm-87qbHgVPPCwI8G4-xybHnR8XG0X75Ug_mp4Lq8Y700ggQsUQn0egmCRM9WAa7KsAZGwcj4gEcjYHqsfpwDGPZPpXM70pFDqd6ze4xsYIlxEfYx8a8tKD9O9c8_O5ayggJ-mlu52uovwg626_r25ExQzXK2pk791vLzMWu21_C7H2GdxH25r3fGOt4pwyVB-rQz9LngdPu4g4-IzDknT0_oFTzCbyWqxmGqFOuIHHEdPvTvZnA-80AEhln36VLizIwdoSrptPbjomorUvBz7V7K-UgOdaWxKq_YXDcO2tMV3nKoj7zjzMEanH1sSq44Cxuntv_P1-yQSKCdlX9k9jIF_vPB3768EI5MI7mBdoClhz3mLU8P7qNFjibYey5ASxmN9DVc22FUp4k8SM707epT2_efdH3m_oD3L6aVFMAXQO10SwgO1cq4dc3kVulDaN6bo4BGY4tC3hJQl8eKBfl_SrYOlekGBNwwXwpxdIH-ctwtb6BnOlTIffEMsGoZjNujuccnSLtWdx90qbAz2MdVBKzbh5tnXv0MovGKEKMM9WmsSqDWsElW6XhSZ4eDW4eflLYY-giWHq1g9RZiyFvZeTEmS9xJ6c9sVUoxl8eyXMLtnAUfR_rLx63R6q5XALpSVDIJQYSvCLY6MmPNC6YHEzpn0rhnaakQA4hhKg7tfNnrIkNs-nqoU_truYkCTdioJ-N2Z2Dc26U8qsUGb19V9eh6v-hZxykVyzG1TA1iY1HeHdTPKcDpNDYGfYT2Db3T1GlzqFGSctaNCh3noYg-WjccX-kdJje5_zl3N65z4TNSY8Be7XSV6QlK69liDKknZzCE6pxCCElIQnrTF8bV__L-_klSBPshRPJLVHP6gFbHKW-DObkCjgbcDHLAkfPqFlgSz79hIbPbWmVZ2yoZEFypoqaI369LIIQ05ttr83nrvuyWxX7Qh4mUvljSRd7s8yuyBkhRtK8ANYseiFwSxRXOLjAzAJERQUmt55TcBV7hIOS-pQBI229og5el0xE_wRRRXBAyBWzrnRzyApLu2NnfV4pviACjB6tXOYyYgEYUl3obqzZu3JFomLeTkMSBk0_-JGZ7HqFI-n-iOPL5JYpKWkDM2uZolqzgSXq2Z_kp5lNrKderU79Qoi_xyZl52qUCQKMjB7HWsbfy-08509HdtWVxeASgPJVFeqq3McM99MpsaUd8one-FxQjw1bwN10eXc6nBgKsfk7QavCycJp3KyjROOmMf7jkhESqfAYhaRRrrsJbnoRr4gpzzfI2aUhcH3lN05jSoMMfuWQJ5nyMyU-HrzZBVo-olFxYrk5DxXOded50Mtqa5RuGnGLD3Aoj-2bM__kKQD4FrX1YuSukp6NNxOTUYgvTLZ_WWRa-kl0xuj5ATtk2Zhw-aVkO8GWR66noFIKHY2EmXeEDAQ07bS8BwwWWZIuFU6IiFwYJ2zsQdPMUB6LzuZNlPB0D4pdUjjZBbnfzkugjrbXLJ8yYKlb7j2ZrbxhtXtZ6RF6Tgnyi5dkkTXq-QXV5gogXEIdcDO6KrICmZQBp77JPaQrlvPUzhIvyefZN7WUROxTxoFC0O1Ok9V3tD8ax52s4VlW-tQYxHNuFM7M9_Q8B6NZANEDMUMs0xrdPuK_NvnIID9XbUVGSelvbEdSqjPUFortag8WaNiqcLEanTFzLbKvmk9ByloQf2JYacTfNJvuXVXZkTajw9a22JdOqn93QfBifYJkloU2RFD-vz9sWLOfZa8q6aNNX0dz028hcw91NJ_cr67dJaUFbmg1yqxrK1Rc_jqr2IwbMj3hHOZbcDX8ixVrCvqsvX39lj6kUpzUxHEuaa0pbB-6_zqhWCrcfmj2W7oU-zF6SmpIUMx5gqH9yYVdiLIEyVyKC8BrhUS_oNv8V23FX82w6cnlQQuky4C1ndvpmvCg2rn61TYKl1NNUxvsPHuEvHClUxOxX1Rj2j4bN2GkzqBdlMmYkFTiJuEmeSJzd2aObPxOVNHPWQwwVwKmCAMkwuywYUByKhPPxSj2cudNB4lOFuqauMXp4=",
+      "summary": []
+    },
+    {
+      "id": "rs_0d95e04da8db8667006a6df06b99348195b4bca62c82761bbb",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfCa4lTmUH2u4tX3QK8kMQxpqjH__Q9LNdPyey_0bt-fXs0LFe9CT4VZwVGYDmsMGNqW6CEn98FH7F5HLV2voUjn3juZmGgnrbubrAB7HNcXhnLUrx_mXAVQ9Wsqcr0Gxzc40mKsAvy7k2JrjrwJJSEzi85d-3dMkdRjo9rTEgjYfYpE9bDKJ5m65KkgLGgxBzxiCQ3XAJx6T81zddgs8RXQhRU3xlXRbwxh-Tvd4waBjQ0RXyh-GAgZ3gUjLuOblZdwY7ldFV2Qb71I_Zu0NhAPcG2kJ7rMojRtZvqd78msYBPTeeET3WqVK3mmOdBmPaXnBQ_pJuH6zOqHQgR2DxN2ut8Srk9cVoEDub8nzwUGhCb9C5KFgHeDZX1Y1vsnKdrgyRp27XSUfjjk5xL1o2IC2-D8Ne7vO_b93ezCwPrrUPPa0ZnfWnjQMAh0NtekBj1wXNBxPMVBynzfCcmyX8EJa3M5p0K0dKMFg76MNeg1bCsVpzcEge2U2d38yxxdQyZXLuj3kq8a45_s4ySF8KV695Jsq4JJjhI7A1QsYH0cji4H45PdE3XgfOy6x32UVOQ85SJfv4dMdMKqTBcuwLpXk3eDxk3QfbeLBklbCvZnL4zNeTkh_iEX518AgF5PVarF3LHJK0oEN9fWfjq836suQtwlJGtR08nuHbBa9neh8Ms6UQB4WQhWzeEPYN0HhdE5LlWkyyCehnLUds74u7-nUcy6PzNd9jxoE49EABAug_vR3tY1HNSmZXB7Gzk0YGB3vdZXlT-H_YBLlaa6eXZb5ZHoAHOaw-i5hyEkH33l7g-LAyqpLp7S-heHjMsvA2TNE26aAwKh0oEKfK2trRIwkev5EeRKIFNw8JxqzVxohNevIdDMKsRSmw93rII2lVn8ODpOWl7eQVlZ07r7_K8W4n6obHoL939YnTMTaawIhRd8_rJkZ8yJc7C4pI3nBfhPVGtWdRxd6j8U3y4ECs0Eod_h-UsdQ1XROEOdZYaihvd1w5ahEzrX3orkZbzPJVyZzvebqXCTXHdoOw32a_rv2K3tAZqacHKGvR6HiZ9nVBajYtPpYzNSoTTrhcxEHI5G7U1msjKn93nV1PmUijYvEan491rPDFn2VYuf5rFUKuu_7GjLGYU6JW-xMVtBr5TOlqvBhQkzh5YnQff6aWZ0ZAucE1FoRwkw4foOcmhThDUgZ8W06In2_8LfpPmDakbJXUY7y6a7941X8-CMnLm9cjTzHX_R1msZBIkUGKilcoeNnYzvbvUUI9oFynjlvrQEW3TbbDJQ56Egx5tdbsAiI9SO2KEHX0C-LjHFV1-oO5bET7PnficeHmQ-Ssq32Lv2Dp097kyComVhtNiZsh3b3Z4cgxDTw8ubt27gsI-zx-nG2rc1WF5wFUbs5SncpjdRRPTta9mnsdPrWefgPfHrlZDcuPbZho0e7SjoZAABQCL42nCjrj1rDyM19c9KU0y1Mn7FP2B01klKYyyRdyeFHxxSOw6bygft9wyBrAO6Pa0HTU8221auYSJJ7u5K9DVq-HRSBTatXh3HogdUSP_kz1puGtImbM5OpIPNcXLe5gxQNHKAgRKTFzd3y4ZRHW2hbEr8iJ5CqViR6cLcF2YuiJ2yd3cgG_MZgVIVX9KThbt_fBDZSTdkDtVQOAJganInvAOrEHin49fRCzhAwG7NoT9n7R7cxinjpYAHVSI2kPu4OEkCZsfau7SgZomYSFjiO3TP2-_FeJzfkllcEeCIl_U2leprIHd2ThkUBdXppmxRd1jalqCML7mJvdytnEayRDgL8LB8jckFY7rmuLJqfmP9foKJeG6r-R4jTPaXStpkoiXMN1B23AZYqW5SCE8Ylxhve_cB-FTdvCEISVD-AOEiLAZhrMEB_zsTBbGcs4RmE4GUzVjE5w15w9bNEtk-Lach2jgseHuhKozYBCrFJKPUVL-fpbmYL08y2vqMf630OHfNWmAjPCx9Qvr0qmCdkwsgNXKb1lgB42tH83TbmZR0AvO1f76dGtBa1ZSDTNtLiFstiZkWnCepSeRTlwh7UXQ9iRMKSwmMPyForj_UkEwZi0Fadol3GxwSBbDSehV5yzNgW-2qvIK9GQ2aH7RMKlNl2Pfnkei--B-thp21HrcekzoECHZ7caBzb7sAZlC-D4w7IfW7bywRZ6_O3C-VSoss8S4id5zYQLt3mQMqlXu278RLN8aerelKX5kMnC3xcWkgaWCCY3c9Kv5qnaIVw0qTGN6hS7x2BAi62hd6f1Ko78g1vIc1YJz2e88XLcEjTSZPeL2kcTDUPpFXrWKN4MZyhB-HosdqwUBqU-r5GexjwIX28azF9R-7GjBKK1q5iVetNgHNtU5kYUXJ0AG8CyCzligYqCNF_YNjUz_Wv8Mm75cc32D1LrShJuJDTxWwAAbPPhylPshv-boyqpwaVxgcum8InKhVUTTMTuo1YBwIFFf1zkfkzwvTZjBg8NXpI0BRbMSYp4iM-ve6me3yWADh6WhCUlaaqKlLDGQHHAQ6ppaPD2Gia7QXkwZIREHYiYtp9YGg78bHmoaCHhtT-HU2-AYsokZBAP6AciRqc7oxKd6lgL1Xn2A1_qbxxCAmZYCZQYLFliFa6Ilc-g4owesyheCDZ62t6007MFgmlz01wVy6i7mX3L8zZOEhir0jZrK70qp1b65wuHw3POKzvUVURWPgAW2qbh_zFlnRTquIhfA_zKCsJiN164nVJiDPSHO9QY9cubDs1FVW1ebeJj6UnJ1CMREHvCxCM79_3QElHHACnBdn0Qps13JklUFCisMgceVWf4INQxFDJ092cY3NXqoEYN49XQN-Lm9378Z41qqPcntebXmW2QEwTlq6DRWoPojsYb1e21eowd_qM1ioc33dVjeED_SrX7DDYScPeiXwbyWtJPW20wzqvJWGDfd5ILGcM0OPbg1WgdiYGG52RpQ3WphpSrhGz8uyP2LoD71do9zh3pV7hANj9aXo7kAHjM8sFFSABtGtSab4DrK7mTuOF06EREvIbuV2VyYS3vXAxIrJcnNVrClI8MJBVC1d2J7_MNHuQnduC5CJJeJqZmtQ37S2CbA5j4Rq2EWOmFDC076qQ1kLuRYg37FmXeqSc8UQ-hrHKeA6EItkYUAX3MmpOkepHBKId7r2nTRnxuMhnYFSft7NbdeweE9n3TueXB-YeblBnhmtIt-9bVVTJQUwyHDaZLWFRR7YPAQjp2X31sJSeaxrAJO2uXcdan-JWfASUbo_uPf5Qn5cxAnYix9W6bF6nk4YSHFtZFWyADbQeAwaA-is18E5M94KZou02N4DE7WoVliiBwnHrVaWdMIvXDfU50iMo4CwwioXAIbbd8n3EMfsbCWh0y98kiyr-maLa_w3yKrN5P4HcxRfiuv4oGMV8aFdQHQcTDNSxkqecWnBPpYGcL65r9_oUrOzNrspwsEZi4vAeFEHe3g-WsDqqT21E-oZg29SKlMx72pmqFClJBHTd1stYbnoalsIGN9pLXXybSD4H1N9l85x-QQ_XyKyf9pwTXrkiw==",
+      "summary": []
+    },
+    {
+      "id": "rs_0d95e04da8db8667006a6df07563a88195981a9c9e91eb6ca2",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfCaz7rfd6tnJAc9W__Zu_tAuWnwhzWrofOAypB9NqBl55jISMjfJ4T_hLqQ9i-sjaYvFmXYquLXz3BJvGI9lebBD5YjYiogD-hIlSm7iASHvQdNjxEbQHi3KZtamLZSw-uNUDtWYlncpEtPNvxJFPCNBxqpYiXKCJYlomDQhCDWQNMMFoVv1EQUZydUNt1y6srv5VOYySC-kqOUQeRTS86rGeYTCkYmg_YfqZKQZH4GMuG3tLvkRvpWSuWtUpSm1MmdoB5-wdQbsQbZ0bd00JY_uxijAUKxg4r3_VnWljdeDasqFU44X5c7Qu5RdTKeeudvcQeozCYpT9TzBwKFLqRAb5M_DQelRJHoGy3xzWZFfJsej8zxyTYml_EQsX53TnVtvwpwV5PrKCrGdpB5TE189z5DoWySqpuDBzF1ccJUhNtQkCG1lGsUTB1S5d9RBgTvW7iRwj2_bdz9Ydv2FYdeRHtJ0uGQbNkVPyBfscrEyRnfNXGIA156UesRvJaw-fvdf94gzb1R4yzATrY-pclcEscobWaXuvnFvKQwv2hrB73dOTbpkQubBSPiHIYMbxxTE4LBCx0Vj_7I_48eeA8oYOQtJqCs6KqxYexdPDNvmpaTZYPZwnysZjW4FgKTQv2Gf1zn2ZGRqxYTFmQTP-QUBah8s6aGfzEA435ulh3c7FHlOlSpx7QWbMSTZnDZqiuyCRGRtbT4rZxQB6mHIkSazEvTi4UQ0-CYfRQoVr0Lq3rB1WbOfZF2EyGAeP7p9mp2oYlXn5tnVZKFYQ_sHZJQ75Df-wKW7NuBde-HRf2GgKJhMoiqZYTHkYZTTsHPVoTebBsVrcXVQ8Ma9HEN3UpTkS2VuNPmtgCjdrgBnPx0yFAzsr1IoL-1FkB8DtSnOT7IT1CnQNLOqGoiOkxzXe9mIaukGMQHYdcftlEVJZesemwqXhpRx0f9mWpKehaaeqr1xqkzpN3ZKCCS3QiJxoPtopxwQeOy8PAHZdLbCg3r9Jz7ETfvjmBu5oEwOgjwc1atwwNj9GpcG_RnXihwodpm07dM2MeqJownXlw4tKPMtwYogiU1Kow__W27mCV5gCSTwDmVBj2RMki4opxWk1ATaNZnYmegwrDoSXGOGHnbWBHe42Vb1Z7bLQ5R9UXGlKW5jW-MhvQkfaX81tjo7f6eJkO96R_eVly0riFCwCWkqRfxqIU4h2FtbR4QYAKSG7DKwUxBu-vak6SPhl9wkPADnyD6FqcOptCyyc482FTaQj3NBSjxesFOPARKDBwFlM9T83ukL8JJeiMOQIbFweixtwacKO6HCmyTQ18Owuhlgl91dutGxZ4r2-90eY65BgLRrMV4o3HONOxmWQZ_QP1Fc4HMNI0FdA50o96e1pnQvQ-cAJDKT2WWwSC4YyI52kiAgNFhAtabPGEfHvuFlDnRTeS5tHdc7VeCZNOQmRqde1lJhxtpjkmYLtpO-S4Nob6YRNTPEsLI7X7A-zs4neYzPcsp5dvfKZW_oANu54uAZgR-NqHZl8AfKaBvW5eFoHybP9mVT9tjwsogy9QOE5vmjQ4RISrU8LzoDUBwtlCqc0-_ovGILbtOfVoYxEvkZA1B9U0_nK3OJb_M7CGGkbSv2vHL5zM2SSfPk85klIewqipxL0QF6APjzd5w5U-R5d_-YFW53wLb1FMt_33ElBG1BeKpLpG4HV0KONtygdPAfRKWWnI5S6Ap9ZOQ_606lfc7mlrG1wF7Tgpjr1GjJrWk66bLhtNb18twr5wWoNsFReOxplnnQ3l2Gm3DdWHoTtdpIk5nljtRLv3SwrLdb4LhE-ebV5oFGcseRosxb0q-brAK0v3A1k1BZQlJFm2qW0infeMTBkZxZ81Crf_1IB-ER7yoNt5CSlXnKS4OiHOWTsyfUfOHQh1_SVKsA0Adi0C03P8ExJ63vYoQNEEZISU4uDGtp-oafoUt3UEKoEBjSTTRMd6e78gAbHvV_wBPaxfXDG8ImgqRfwBSeoVnPgbAcgzPpKT4JhJaJlqLLwjCTF2Ig1m5RlEiIG6wtZxgmDWY8t3priN9IeRsIv_ta9OOobm0HiVtJjIfH_CvCnDc1Gb_qu5V1TPxnZMr9Q9NeWCghEHI8fXWUbnjayGDAW_LX34OPkcfxl87qQXP-eDX42IpRzSCpPBewskFQbly24zmiL5caiiBVV6S5YL7iRrFWxJHFWR2UjamWU6GxqSFewdahKwUY9joEmVs7XaOeWbLyaEBIoQE19EAdko_0q3pni7LDXQ3a7Uv8vHnUZXqwEy2eynIwcwIpwPxzw9fWpKwzg6YcD4lKtupa9ZejxzcvWBMcP3hF5qc-8TKeJsinfhFGEO1u2svhp1TrsY-A2sHE1A5xexNR_Z7Oqn8WJwExTQTAeOUY7yEd5IaJ49EH9G-0Ug1LTKmdOBM64UndAuA_dhabfR_0nNv84p4YUJFZHGtEQvpv4JHe-p19we2Rgora3TkDT6Xf6_rI9M5Cz5RTnEQZqymUNNYKa0tU25wUQe_nQZ74GplFB_VDUBqtSYCJV2UqIUG662Km4qxblSuc-06-trPAbIiYqUkfSEECBBumsObBUAn6bPlTOPlKjE5tfovdq-TqLpmrOTE6byUMHyvXiRdm5dubrWdnWRFjNOFvjF0sH5CVvHoX-p8K1fKfq_e-KDFu5AbNRadrJzeDZPt-ErpLhmS4OKBukiu5dJkZan_40k-QJu6eKprT1uFx1woTglLCCTOokHZ6qJNwe99842f4VVT6yLhi_WJJI03NKxIZNlKwC7yj6dPhd2K_Sqbxl9qAietrlmsQCa2b2n7YNes3kjrdl-082vhhOXu6rD_NP44lwJoiNCNBWQtJWcJtnwaqmyAR_4vuYo9tHoxwivwncb-MoGpqoY835QypDvWOquHvZ3BadIlAco23zyJCF0McRqC4SPKr1BzPbi6-pbekjY2X9PeU1ZXnVc9y4vxV__u74q67v2mU7fgS04Cvex4biD5lJVTsLrtpZJMl-npo88HHR-Zk0Krm-jFp3t30_PyV8BGEtDtbr6G1AFwYv2yRWCJU8Bbv9Gcvr4ptpSsSnZlZV8gyoMrrweFWJbgVIcW3RXJlIuPbdLSNZH9uhDMm0u-g55vydjzrTkVwy4MM8tyQPlA3El8-rPkzOXSnii6z1GMP1GqyH8tiFVtYxUcxrrtvGhLbuNhJgFjzjvxEUxy_Afm-LS3CEQwU2fh9XZZ3q6reeMBlxZ2A-8tmLeVVoE50Du0Qg8aOcmFcTyAGX037ZLwxh0wXT5a5FcqBt_qkM62iIWI9kREiJrSKbLkn2QZmWUfmCZ0OI9BNa1Ub23HihjA6Xv9smPgfYB502Cb5OmmaJeM04AHGANX71BCvYT_q1Sl6XL9kGW2Yk2xyzJs7dnPo8KqndEBde-hIs9kHep6ooslFkyvuSnKWRALO1D6igvYKFg168Oruw8VzwITRFyKdH9jErjxANkIcpJuZtNEVT38hxjM-_H9B-_v-grnkvyZN8QdGwHhImwAD89EO7Ulj0P9J_MEQ_rzk383_4dAXcHZPaaj6qTnWHw_J6dsBE7G4xkE",
+      "summary": []
+    },
+    {
+      "id": "rs_0d95e04da8db8667006a6df07eecd081958b5acbddb70c9417",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfCaXzia0UerdiwtIQHZiKV-rBd0NWj16Jlk-4DVhM3Zc1o3AGVW6RsJz47bRKw3OF4f8W3D9EesIrOWqmg9Q4bbejE_HsyWWuf1KTFmKwWc-FlL1qSUqn3Dhch0izP_5Z2wbS-Ol6G3qkoc7-hBhyi7JB0B5xm9lIkqM8ETbNpGRxjSp-QO59xltLcluieNe6l4vQPdIJeda7455V1BMxc9AWxbzdwXWVmZW1RYoLEOAHDlfid0_yeK_D-97YwMoOUqVuwHuMg22cG8DAtBWEWSwxEjWtgibHgHdcU8xitrChrjsZIIQomPIMa3Nzt-wMef7ACT2K99keHENA0UPLnRAxAYGDoYHdGA9jlwl4aR6DREwQk8ADicGUdi7VyWGjvKiAKi1gRHxKzIe0xFiN8KuutoeeX3ZepDWpRNyLtYA-Arc8p3AKZlmTCjx8hdZGNAuZXHFJdrma41FXF-wEWpbJpihPQm_A8p6CA9_FGRBYCR3MBJM4v6c9YHNK-d9OMjDA_vVJgz_51Bu8PMCftd1PE5gnu75NlEwrg9z_qMjFG0LoNRUrLC4CV5fJM6M5GdsSdbyyXsVWXEbxdlxaWL40HhTl-nrlIzzFvoomi7gVhnMDfl64RSsft2I__WfdzVNjCgZXqOeQncr5ElIeW_ljzF65Vz7Wrn3R6UKGjRf9RSS_FnNogwjly8YwIuzMxUPPXnwYAwgVZYRLZWZdkx9BJx-HAZt1g-Q_E-6duzbExSBoerysy_LaLcskpBn5tJu-jnhYhCUD3B6zMOxpbx1vZPGfTVd_8G1bTyujE2xMAdTyTFIzEYpyTQwYhcAhhDG7EwsxaLdoM4Iyo8o51HB7JqslvUJRf-fQswyyMvPUNWesQqM5MXuF6za1NJ2R5OL23w421SDNq-e4m6AfrZgP0AB0R4AknWwmHrKZJzaWJ1fs8anIbjZFXYqD2A4Q_-4Dji5hhJWRbTgC8NvfdCOCu6fmVupbWD5hie7a_eELxgXHAb-poz1TUjxFVeBjZFXMRCkN5GJgib5UCI-6aDRZQRgR4aaLV0fjVa3RqDzSZwY1cq792Ax0VBD8asQExCR3hTFaZO83A1XNv_vZSExYyNCMiQTqTyyc0Ll5cZ_TIFhLzackCqTn8HMJH7CiHut7ZUmG3BVMCdk1qG_odP5dIzSa0vDX3d0xkH_Ghrpi3zilojVZFYelioqLR0-94C2sFGGaQ-morOj0_jVWkUZfba965ucgFTOSUGlfVoAB5w1GTchmtnP0jyA0iXnwK_s18Yp9skv65MzZpz5RYJlEKnGG4FiIOQ-k5KHxZi4O8wFImgs5dBfCtMdqqq27YWUJXHqNK8RtHoKnI6e9RTp_R1c-sGRAtcJo_RKspQZmeIRpKjM-hd5IrvfE5MhGN7VWvlf8AfQzH09qjQbgIB-Mgv-EFxBuwh98jphw2gyY_23q6jzCt4fDe9k-lqoL4l6BhlYODmAr94RgfoFHPMQvZGvZcIxm3jxpMoEE4DKMjilJghiXHxv0OEEVRXHe32qb30jo-__NjSmAoXuenlymPZW0gzXdeAAwfWnrx1fwLSM3j8fmWwh1tOrOv-HKZpwfN9dPN1ZBfdfSfI9ksZq9wJtOztrhzOarKaMYm1tgS0asZARBuxJNU7j9ZkRThrbtcm9VYQJ-z64KGw9bUt7sL5pgFyhgr687l6KClXqNlb7l8aW-n7_C1EwqRP-sRZ7rkvaJD_bd7kty7HYASO8oHFGFBdfnSdfuiR_12RfVMJFt3OLEZPuhK-97IiRbmmkoYViVHuwPgHPwFgbOAku_0EKRDIN6Q5MYtTcFilYa-dKZ437It30d6H8UN9vAtiQL9sgb0IBjgQO3zdfpi3hTV-dM8qCy8Cb42zaJWjcpTdFXQ5nLOQ7-UV2XYfcG_420Ou1mrcUoawX4-fhWc3nwij7oHiyqBJT_bOiPCRf-q_IK5l6dceK3EBIYU4rn-tPZCfPyMrUZxWbUGX43SgDcxX3N_grf-8YQ9dlvuUyZIXuPXJpyyYWOfX6wJZMykPHZujWLDjzIb2XsK9Bmh727yg5BxfTrOAWwkfezbWajBY3nTShRGfMX2BclxtQASdl530nZNzzrJE6UMAacaYQ1qLlxMNqPdl29M98INORHKnorQ5Bhi76xgEepdlx9stT4D_k9aFkg_WnHeIyFjMK2ay0bbfJFlV7jdEIxfpxnCYS5W8gotXAID5Qc0MK-4Oe4TYkx-JNN36N6_gdKBoJMA6YzrVcDvIyIpGTD8tsd6F5B0FfGoEvQzYyQ-I2yuxuvJyObQdmeZ11Vps7YuHoxYneculHFE1o0ZMyWefkcrtD5pFvOJZnrP6t4aX35YIZxb-VA41T-DIZfBP1uChq-teGc21tD8KVZTMzLUQsFLYcp9Dz7Rav7DY2aTyfOXnpMqpCY_SQzdSYhe74FMNW0_b70dV-JigGMRW980qan5v8jOvvykr16C1DODEbxAOAPrSTJM7x87oJy5VL4xh6KIbTxeZoBg1d3_bpcE6Okuidx9yIGvKOCGIYezDzg-H-X5CmRUekMNNUvbXBgf47RJiMFA9MJAEVku2jF3yxKYzg2qZ44sCYmUdFtfKnaquCrR666yQaATireTwx3MXJ0Cbf3vnaDftuHVZS1ppp91ewzuljkem_FUGDfKKwwWlowtMo1eZH4YxzSQBxhV43Lm5pVcc37QYhx-gObfA2Xw-o_0PEyKnDzuggZfx69YEwjheOT8iHN-TDTb7ptNJGGk8lajkLDQVcK40npTB1V_mPzsqR61kxpkz2BkSQu4PfBoF35IaAiREw3HkhIjOSg1RxxQJDPWTSfVfyCrZfdXfLYmR3424DE5pBSzyrkxLx6bBlYzAg3FZM0XgS0neHC5FnLTsgNIukXg4UjIKTfs6cModqWaSCmyeVaJqYaQFh31EMK2VhaBmyJjaiMLzkkSgnaEq1axafCpBqSojpYvyiVTaNTTfx4Qsga4ASx32mnSVNpV1ITU4B7IrD8wkCVOz_yzGm9YiPmL9y9lb2vRdw-Ti1OMv0Z4rD6FDMHJ4dFiC3mTPxhiKva5iLdAfdimZ2E1hEBplx_WqBrWPTRCCDDj_e_SdU1PU1HalZCJX9YJBIQiChBvgsn510ror-X1kePb5E0hXKZPkrWn3bSiwqLpEUEyPKrLmal3I5JRVBv6_s_8qdCLG-XTienZfaMbTdNr_is9PWLqHW2zsMs29ASTC_CjJH54VyovWkHYd1HefLB3AATaGza6mdtjF9kZ0NE6ULaU0yI5Hlq7Q4XvJodMgUqp7j8m2QDIhFmU73v2tVhzrcANgO2vl6-4EQOs7cpCvitFwGuq7ynmeSUqs5aDmx7nTpw3FakIS79mgprzetJjWkgtOFg34tODkV9W-yPMHJPXgPnaLZb5RtX6iTuHt4MkzU3IXmG0PP6ID4o_gbDpfY0pQKKwMPAOwYGBdfCr8ZbaVB4kKUwnSLcSeXCqWx8Z4V1In3MvQbLpbx-vK-mNDFZYCiwvxmi9EvdzSJIuOR090-2dr6H0dXSWCKPpjcQWMY9xpMbkGwCpB7xaCBojQ-xXGvKw0PRAefg==",
+      "summary": []
+    },
+    {
+      "id": "rs_0d95e04da8db8667006a6df089484c81958ebb4d4749978b92",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfCal_BzkH-T4DxQCLABT9St6PbyplsuJNQKCCq8Bui4Li9H-A3VmMyLQTKFYdCZR2A4-FMUX-nxp5F1OUE_rYjVmQxljtr1wWip6H1K2uIIHnIFOz0ZM_a8DsCu5YLnHC2ti8nEda50f4ax3nJisHXj6q6Cff2EhjVwmEfX187O0dK3v7JzHVxiTrsswIYmugoAsB3e46Icql30kkEfJXZ3PwXLMCcHfzvUm2KeNsauK0g-cEHp9JUOQzp1ZEkrkM_Emdcx2G0a-B1MwKgBoTQN2x57591ZAJtCVfOvqnPUu8t6quSdQCLE_CBa8F6leRix9zS97lwE_kC91Q3nJQkEsaENTdEgu74DxPg99iNnDH9v8368Qork4sPY1SSO1voNrP8b1hwmxsQp4RIHVc04bBXyGqJ2ZzweoOe585mUvsePXTABaP5PuazrY11C0NNV1rmtvD6ghbp8F4tZJG_8Fm1sFEiQuprZOCnfDT_qin1gCRhT8mdnTW9Z8OUxpCivJKzjiKFBVG3SuJusUDA4JPb0kYKU6VJcuqPVhNjdR2NZoo6WMSVnDWsR2cEjdUz6OjvSip4VlDh3C3q6UQnfNsHj9CkgpieWNV8__Q-qvIbVg_yGquumW6v2KQ8HToYs6tIadoUy24O5PvX7OW89ZIknZmWpFhnNMI0EwEukdTkRou6BMDUF81jHiw7iU0B6h4qwWBdxot6h8Fj3ISftECGyuyut6qeeDMbokKYuTM3dhyQy-cfbCvwdRyu0oiqOiySMFiONGRsxhJNn-7uZxZG10AsyqljXgHqywmVhDVsJptTwaJyPUo6e_4Kesiatvz7ZtBuaHPWJzvC-PSg1qX7CytxyJN_zGZmF0DwKkZPtnqsmxw2_Gto3B67CN_-BiWtkWmfVHpmS7lzDXBYUBiACtCTlPtFH_-gtoJlcLpRg12YyA31nRYHDcfObBHa1Qpe_agQpnR-voImLvoyCFeGJcKnsSPdCIUq2yNTIsVcbmL4ZKyI0LyhGp7MW6_0zbvlEYwiko7IbqAVzYGr8N06IDeS8mOBG2R3Yaxk_zMnLYQMiPWRqa4Xs3sj5kgu1OwimZ8mBT1zW_n7iCc4xQGY1EExn9p5nLpCyswsHAL9-BcoN0CwQ1DXTVXrsnR_Iffr6aRW-6NKmLzn5TPv7CjDmQymuXw8qv_q6ic2VsFkcKHT3MHTVgU32sbHmasNUr3NIdnByvEFNqQYk3BWZW_0ogj1slJ9SWArQwfePSYwJlaaMuGWH8n6KZSeCzOVfdCb6sLVsULM3zHqa3bDnOatiNPuJ4uT-enwOMBmJPl3Gh_mSzrEPYDOri8Oj2khj9Xj8x08F49THQS_BHJO9Nu_WSB3AV0hH90iDfUUoWHwyb65A-aiNOf36OvXdvxWh4ytrZfFSpEYPJ7wkt4TWfsfqt-FAnqEOFRlbBee4-cfER290FCnrWabQa2RMpRFmZRBwW1DMOMd3b5IhItIFlwIo6L-VtoJVSdAHd16_Puk=",
+      "summary": []
+    },
+    {
+      "id": "msg_0d95e04da8db8667006a6df08b557c819588d9c4ce73c31c76",
+      "type": "message",
+      "status": "incomplete",
+      "content": [
+        {
+          "type": "output_text",
+          "annotations": [],
+          "logprobs": [],
+          "text": "{\"candidates\":[{\"id\":\"c01\",\"strategy\":\"Warm, simple couplets with a clear mushroom simile\",\"page1Text\":\"Amo il mio amico allegro e arruffato,\\nche sull’albero sta accoccolato.\\nTi voglio un bene grande come un fungo,\\nperché vegli su di me così a lungo.\",\"page2Text\":\"Questi amici funghetti hanno tante manine,\\nsi tengono e girano senza mai fine.\\nVi voglio un bene grande come un fungo,\\nmi alzate da terra e giro a lungo!\",\"refrainPage1\":\"Ti voglio un bene grande come un fungo,\",\"refrainPage2\":\"Vi voglio un bene grande come un fungo,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"arruffato\",\"accoccolato\"]},{\"page\":1,\"words\":[\"fungo\",\"lungo\"]},{\"page\":2,\"words\":[\"manine\",\"fine\"]},{\"page\":2,\"words\":[\"fungo\",\"lungo\"]}]},{\"id\":\"c02\",\"strategy\":\"Playful coined adjective and lively physical cadence\",\"page1Text\":\"Il mio amico felice è tutto peloso,\\nsopra un albero se ne sta a riposo.\\nTi voglio un bene davvero fungoso,\\nperché vegli su me, così premuroso.\",\"page2Text\":\"Ogni amico funghetto ha tante braccia,\\ne a quelle degli altri le allaccia.\\nVi voglio un bene davvero fungoso,\\nmi alzate da terra nel giro gioioso!\",\"refrainPage1\":\"Ti voglio un bene davvero fungoso,\",\"refrainPage2\":\"Vi voglio un bene davvero fungoso,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"peloso\",\"riposo\"]},{\"page\":1,\"words\":[\"fungoso\",\"premuroso\"]},{\"page\":2,\"words\":[\"braccia\",\"allaccia\"]},{\"page\":2,\"words\":[\"fungoso\",\"gioioso\"]}]},{\"id\":\"c03\",\"strategy\":\"Compact storybook diction with a speaker-centered mushroom joke\",\"page1Text\":\"Il mio amico felice ha il pelo spettinato,\\ne sull’albero riposa, ben accoccolato.\\nTi voglio un bene da vero funghetto,\\nperché da lassù mi tieni protetto.\",\"page2Text\":\"Questi amici funghetti hanno tante manine,\\nle stringono e girano, tutte vicine.\\nVi voglio un bene da vero funghetto,\\nmi alzate da terra nel vostro cerchietto!\",\"refrainPage1\":\"Ti voglio un bene da vero funghetto,\",\"refrainPage2\":\"Vi voglio un bene da vero funghetto,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"spettinato\",\"accoccolato\"]},{\"page\":1,\"words\":[\"funghetto\",\"protetto\"]},{\"page\":2,\"words\":[\"manine\",\"vicine\"]},{\"page\":2,\"words\":[\"funghetto\",\"cerchietto\"]}]},{\"id\":\"c04\",\"strategy\":\"Natural spoken rhythm built around a playful mushroom adverb\",\"page1Text\":\"Amo il mio amico dal pelo arruffato,\\nche riposa sull’albero, tutto accoccolato.\\nTi voglio fungosamente bene,\\ne il tuo sguardo da lassù mi sostiene.\",\"page2Text\":\"Questi amici funghetti hanno braccia in quantità,\\nsi tengono e girano tutti qua e là.\\nVi voglio fungosamente bene,\\ne il vostro giro da terra mi sostiene!\",\"refrainPage1\":\"Ti voglio fungosamente bene,\",\"refrainPage2\":\"Vi voglio fungosamente bene,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"arruffato\",\"accoccolato\"]},{\"page\":1,\"words\":[\"bene\",\"sostiene\"]},{\"page\":2,\"words\":[\"quantità\",\"là\"]},{\"page\":2,\"words\":[\"bene\",\"sostiene\"]}]},{\"id\":\"c05\",\"strategy\":\"Direct narrator voice using a child-friendly mushroom oath\",\"page1Text\":\"Amo il mio amico felice e capellone,\\nche sull’albero riposa in posizione.\\nParola di fungo: ti voglio bene,\\nperché vegli su me come si conviene.\",\"page2Text\":\"Questi amici funghetti hanno mani a dozzine,\\nsi tengono e girano senza mai fine.\\nParola di fungo: vi voglio bene,\\nmi alzate da terra mentre il giro mi sostiene!\",\"refrainPage1\":\"Parola di fungo: ti voglio bene,\",\"refrainPage2\":\"Parola di fungo: vi voglio bene,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"capellone\",\"posizione\"]},{\"page\":1,\"words\":[\"bene\",\"conviene\"]},{\"page\":2,\"words\":[\"dozzine\",\"fine\"]},{\"page\":2,\"words\":[\"bene\",\"sostiene\"]}]},{\"id\":\"c06\",\"strategy\":\"Tender lyrical phrasing with an embodied mushroom-heart pun\",\"page1Text\":\"Che gioia, il mio amico dal pelo scompigliato,\\nsopra un albero riposa, ben rannicchiato.\\nCon tutto il mio fungo, ti voglio bene,\\nmentre vegli su me, il tuo sguardo mi sostiene.\",\"page2Text\":\"Gli amici funghetti hanno tante mani,\\nsi tengono e girano, stretti e vicini.\\nCon tutto il mio fungo, vi voglio bene,\\nmi alzate da terra e il cerchio mi sostiene!\",\"refrainPage1\":\"Con tutto il mio fungo, ti voglio bene,\",\"refrainPage2\":\"Con tutto il mio fungo, vi voglio bene,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"scompigliato\",\"rannicchiato\"]},{\"page\":1,\"words\":[\"bene\",\"sostiene\"]},{\"page\":2,\"words\":[\"mani\",\"vicini\"]},{\"page\":2,\"words\":[\"bene\",\"sostiene\"]}"
+        }
+      ],
+      "phase": "final_answer",
+      "role": "assistant"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "presence_penalty": 0,
+  "previous_response_id": null,
+  "prompt_cache_key": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+    "context": "all_turns",
+    "effort": "low",
+    "mode": "standard",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "store": true,
+  "temperature": 1,
+  "text": {
+    "format": {
+      "type": "json_schema",
+      "description": null,
+      "name": "priority_language_paired_drafts",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "type": "array",
+            "minItems": 6,
+            "maxItems": 6,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^c0[1-6]$"
+                },
+                "strategy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "page1Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "page2Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "refrainPage1": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320
+                },
+                "refrainPage2": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320
+                },
+                "rhymePairs": {
+                  "type": "array",
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "page": {
+                        "type": "integer",
+                        "enum": [
+                          1,
+                          2
+                        ]
+                      },
+                      "words": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        }
+                      }
+                    },
+                    "required": [
+                      "page",
+                      "words"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "strategy",
+                "page1Text",
+                "page2Text",
+                "refrainPage1",
+                "refrainPage2",
+                "rhymePairs"
+              ]
+            }
+          }
+        },
+        "required": [
+          "candidates"
+        ]
+      },
+      "strict": true
+    },
+    "verbosity": "medium"
+  },
+  "tool_choice": "auto",
+  "tool_usage": {
+    "image_gen": {
+      "input_tokens": 0,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "output_tokens": 0,
+      "output_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "total_tokens": 0
+    },
+    "web_search": {
+      "num_requests": 0
+    }
+  },
+  "tools": [],
+  "top_logprobs": 0,
+  "top_p": 0.98,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 790,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cached_tokens": 0
+    },
+    "output_tokens": 3500,
+    "output_tokens_details": {
+      "reasoning_tokens": 2182
+    },
+    "total_tokens": 4290
+  },
+  "user": null,
+  "metadata": {},
+  "output_text": "{\"candidates\":[{\"id\":\"c01\",\"strategy\":\"Warm, simple couplets with a clear mushroom simile\",\"page1Text\":\"Amo il mio amico allegro e arruffato,\\nche sull’albero sta accoccolato.\\nTi voglio un bene grande come un fungo,\\nperché vegli su di me così a lungo.\",\"page2Text\":\"Questi amici funghetti hanno tante manine,\\nsi tengono e girano senza mai fine.\\nVi voglio un bene grande come un fungo,\\nmi alzate da terra e giro a lungo!\",\"refrainPage1\":\"Ti voglio un bene grande come un fungo,\",\"refrainPage2\":\"Vi voglio un bene grande come un fungo,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"arruffato\",\"accoccolato\"]},{\"page\":1,\"words\":[\"fungo\",\"lungo\"]},{\"page\":2,\"words\":[\"manine\",\"fine\"]},{\"page\":2,\"words\":[\"fungo\",\"lungo\"]}]},{\"id\":\"c02\",\"strategy\":\"Playful coined adjective and lively physical cadence\",\"page1Text\":\"Il mio amico felice è tutto peloso,\\nsopra un albero se ne sta a riposo.\\nTi voglio un bene davvero fungoso,\\nperché vegli su me, così premuroso.\",\"page2Text\":\"Ogni amico funghetto ha tante braccia,\\ne a quelle degli altri le allaccia.\\nVi voglio un bene davvero fungoso,\\nmi alzate da terra nel giro gioioso!\",\"refrainPage1\":\"Ti voglio un bene davvero fungoso,\",\"refrainPage2\":\"Vi voglio un bene davvero fungoso,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"peloso\",\"riposo\"]},{\"page\":1,\"words\":[\"fungoso\",\"premuroso\"]},{\"page\":2,\"words\":[\"braccia\",\"allaccia\"]},{\"page\":2,\"words\":[\"fungoso\",\"gioioso\"]}]},{\"id\":\"c03\",\"strategy\":\"Compact storybook diction with a speaker-centered mushroom joke\",\"page1Text\":\"Il mio amico felice ha il pelo spettinato,\\ne sull’albero riposa, ben accoccolato.\\nTi voglio un bene da vero funghetto,\\nperché da lassù mi tieni protetto.\",\"page2Text\":\"Questi amici funghetti hanno tante manine,\\nle stringono e girano, tutte vicine.\\nVi voglio un bene da vero funghetto,\\nmi alzate da terra nel vostro cerchietto!\",\"refrainPage1\":\"Ti voglio un bene da vero funghetto,\",\"refrainPage2\":\"Vi voglio un bene da vero funghetto,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"spettinato\",\"accoccolato\"]},{\"page\":1,\"words\":[\"funghetto\",\"protetto\"]},{\"page\":2,\"words\":[\"manine\",\"vicine\"]},{\"page\":2,\"words\":[\"funghetto\",\"cerchietto\"]}]},{\"id\":\"c04\",\"strategy\":\"Natural spoken rhythm built around a playful mushroom adverb\",\"page1Text\":\"Amo il mio amico dal pelo arruffato,\\nche riposa sull’albero, tutto accoccolato.\\nTi voglio fungosamente bene,\\ne il tuo sguardo da lassù mi sostiene.\",\"page2Text\":\"Questi amici funghetti hanno braccia in quantità,\\nsi tengono e girano tutti qua e là.\\nVi voglio fungosamente bene,\\ne il vostro giro da terra mi sostiene!\",\"refrainPage1\":\"Ti voglio fungosamente bene,\",\"refrainPage2\":\"Vi voglio fungosamente bene,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"arruffato\",\"accoccolato\"]},{\"page\":1,\"words\":[\"bene\",\"sostiene\"]},{\"page\":2,\"words\":[\"quantità\",\"là\"]},{\"page\":2,\"words\":[\"bene\",\"sostiene\"]}]},{\"id\":\"c05\",\"strategy\":\"Direct narrator voice using a child-friendly mushroom oath\",\"page1Text\":\"Amo il mio amico felice e capellone,\\nche sull’albero riposa in posizione.\\nParola di fungo: ti voglio bene,\\nperché vegli su me come si conviene.\",\"page2Text\":\"Questi amici funghetti hanno mani a dozzine,\\nsi tengono e girano senza mai fine.\\nParola di fungo: vi voglio bene,\\nmi alzate da terra mentre il giro mi sostiene!\",\"refrainPage1\":\"Parola di fungo: ti voglio bene,\",\"refrainPage2\":\"Parola di fungo: vi voglio bene,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"capellone\",\"posizione\"]},{\"page\":1,\"words\":[\"bene\",\"conviene\"]},{\"page\":2,\"words\":[\"dozzine\",\"fine\"]},{\"page\":2,\"words\":[\"bene\",\"sostiene\"]}]},{\"id\":\"c06\",\"strategy\":\"Tender lyrical phrasing with an embodied mushroom-heart pun\",\"page1Text\":\"Che gioia, il mio amico dal pelo scompigliato,\\nsopra un albero riposa, ben rannicchiato.\\nCon tutto il mio fungo, ti voglio bene,\\nmentre vegli su me, il tuo sguardo mi sostiene.\",\"page2Text\":\"Gli amici funghetti hanno tante mani,\\nsi tengono e girano, stretti e vicini.\\nCon tutto il mio fungo, vi voglio bene,\\nmi alzate da terra e il cerchio mi sostiene!\",\"refrainPage1\":\"Con tutto il mio fungo, ti voglio bene,\",\"refrainPage2\":\"Con tutto il mio fungo, vi voglio bene,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"scompigliato\",\"rannicchiato\"]},{\"page\":1,\"words\":[\"bene\",\"sostiene\"]},{\"page\":2,\"words\":[\"mani\",\"vicini\"]},{\"page\":2,\"words\":[\"bene\",\"sostiene\"]}"
+}

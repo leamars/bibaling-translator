@@ -1,0 +1,278 @@
+{
+  "id": "resp_0986c279f8d0a44f006a6df0d1347081959b88d8510c075e59",
+  "object": "response",
+  "created_at": 1785589969,
+  "status": "completed",
+  "background": false,
+  "billing": {
+    "payer": "developer"
+  },
+  "completed_at": 1785590029,
+  "error": null,
+  "frequency_penalty": 0,
+  "incomplete_details": null,
+  "instructions": null,
+  "max_output_tokens": 3500,
+  "max_tool_calls": null,
+  "model": "gpt-5.6-sol",
+  "moderation": null,
+  "output": [
+    {
+      "id": "rs_0986c279f8d0a44f006a6df0d234a88195921a4510ed56cfcc",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfEOj9QNZ_nmBn-g88ZNzYzAc4UQkCz37rLChSPtR1ldksQLEm3bwuTF59xFraLmjUHxw1x81KRgyMg_jRWV8e01iNVwdBs6oVAj3ZXTHw-1FzmQkQEFjQf8RKeHBg6o_cRpQoh2ENSQnUMg7cYsU4V2wdOLj4HYjo1B6TkJs3WMxmVYPBHZLL0WBsMAhXsCnLFDPUootma_QOA0lPXcLPNDYPMaaAlmjB5eMDGbIWmlP7pn3ebGNQ7DlrhvcdFrgiyRt8JkP4PJvMgsFkvdLKk3Ii9YVhfajLcVxjGoCM4X-aL7FW0iOpuFQLCyXVfp8bUQq1Dp57zNGy81Byxb5j8XA8Lal9yzbSZ9goDM403KBigNc8MDLJ77CUnSUqBnKq1NIexAQizQ5VbdSonHuOn8XWqAR3N7ublY77PtmFesawwdHamfG6MpoO3wxkkAp0dppayHopfxb0EbQgAi1TS9SvgT1b0qRvKlO3CNrkbOPZ6_c8IXVwRaDoFYKF-RjiGIvTnBSLUO8gcw3eDPwPQIJpBmucop109yXfess_fR9L1P-1jKM_VelDBBfxBxFkLu4KEtXUcbcsiNrQEXsyYZcCc55wNweUmKlFkYCO1bS6GKuqilbYXm-R_pumZQSUKXLYCGYkMyNOa5NPHx8hFk1Gn6eFIvWec47NX2gPzwu2-IMj8cQJXIqaXgpWHCkRZcWkI7JK3I-DEIY5IqIkZPM8fBKjPk0LK9X_r3LwzzcqmPNT6NvvvLPljsMia6rOLxopivseapQvVCJi3Zw8Pc8UlckB3QGf8obCMg-HGzpgpUeIlFtVLJwmIqvV6oHcxp4oyKqQuPHcNrx6HvhhmapPmVaxANvXIM7R4Kui1TGeW7dmC6YYhdpgIssl3QR82THx56ZBmKq2vxy9k-f38ahc3uYswCHheyLhomuRe7pVX_k0C6w4M-73rQQ-pS1mHfgKZhBInineSifJ8554FDfIRSUs9ArCbZwvD-HA0qrHEdbr14CfmvQ5NO_MH8IhOMZYTtCMfmvEkZsoIxxj0K3Cmkft5dxCDTxqsHpgJOxCW6B0ob_TfAOKTdtTBfwg8_oHGv6BHqC0qPc7RFf4h5f6U_WZ8fvWVo8gVkxTJt6SL2YC86QcwUcgP-vosYD2f0iz8Yw4K9htqFRVLUwY0Qgy3t5b6fuUO2H0JNj01pzMLTXiExzjG3Ez2hb6touCGmGhhW3Zh29pSkLRXpEQ4hfDSdBPH0yxETzZhKB5Qj4dPgGWT5z0ZGE1bVcqm_7xB01-eAhL3PKzYMoaxc3ijIXDDVzBmdYLE51Uv1VyZjauk49D5Fx92GshkioPg3AGr8Y9jMtSIbqJJbXip9Ora6DN1Ep4sQryFDobBjNjlA7_8vjKEobUUqj_g65Flj1jx9NgkaED-54zmDNIORhVY60lDpuSiML97wl6htG5L2dFje0c9YUVSuJqOIeCLkNC8xh2vbjMztujfvGoHyQrLhpV31fL_yDSYnaIAcsDLcwjId0lVHcPe2In_dFf1jIXzzcuPLPG_Vh6u9BbnijjLUvZ4no9miZuIV1o8GPvCklkQ9OLkUtbAV_MOjgyrl7stjjRdyIBKUuQnLwupXw56thDiQ5zrxzHTfbgHFv03z0YWTaZw59EDHBGZgFwTzYyo72AdzAkdFkNfaHRdHFaCpmwuDGTJ_eb40grbmOoRxbWrl10ninwxIs-ZcBTF1QQ3Yq5aTThUb7cAYXfrDKs0_pd_apQfY6x6yNtYiAYh0r6RsA0jjiW7pIUB6852qvFQU6aiJtXksksh_cgiYoAgm3xsvOh7Eh6b4B5XLNDAgeEvZ3U6dw6EX6nFYoXvdzrrRvB13G5rAfGttaq59E0Yr1YVQ-eIEAPpD33GnHIBngiBc-sLeQiHHXMiku0OFvO1SSwJ5NWjdMv6YjLg7hisQLBaHANAAc2okLD72lAQuLnJDQNGguL7iMzQOnd0_X_FJByqg2kyHeAlRktG9I3KCQol7LjngKOZKCXIu7hBubHIHEChfQ9Cts0rp6PGQnlABSZwkd6zRtT42eqCkrkTDa3CffGsHJbnfs-P79XbxWguWN8dIUXEHQ3KTxQ75RvcAZIdQ3QRpQm8lg2CTqmPn0z3Bl5w5YyhCf0RbkRBkS64Bq9Eq-eRZxzmGr5mGU4jHdUvF0bxNSgDLHonVGejFxzeKv6Ypm5-tvGAQOMuiSG0ALxqXJgSxJjtRNhhmcyvwXrpxCVx98pdZdbLho1-l8zyXUX7YXSQTxAgaccaQfFZQzsrRxEl43tsCQ4iSac92RxFGIWhZbcIdI-4UhSg8rk7AblcE1NE8A6cAbXceXAc8G2rDxVMCcBV67qfN8Bd8noV8WumxKr3JeOZPvAawDADj8JJwNpFT0J3PMsjkHTs0QGkEwSwJHA9hBuVP9HmZ4Dl6UhbPSa62mJXzUmmeGz4e463xl6m2Yj3uKOLC_9-Vb72S52d0gfTtd8Kl8wa_CoKiCXC7ThEVL1iTBV1dPKlKB_wN2ggI72g5Ozbr4Ea1hDsKnWlYkGwgWzt0tpXLKXIHWBytNiXbmeYH77G1eUXtNMxWdQFt8HKVT263K6RlYWrWo7oZg21uK5Tofrc1uro9dhTusIxMSrrVf6ZdkxAI496NQh1zRti32Kl37gV7qLn3zRZBLi4qEOPKxuk3QDNSmqcnLkmgT-zqPglMZGIF46BAR4V0ZHdC8dfUg4YfguVeEq72f6cca21MoHIUwejMf6e6TzI47__r0-2qU61R6MH1IXSQYi3vbB8x6i84rc1r_xicmmOM_mifW17CD32WUatQoD6CJRp1DZXzmVcGxDB54CvWCzjWECQS0CkBTn0PAZ0loZbNNPuH8fRRZcUzCNTZnBpxMIOmApOFUvZOVjjpgiuWAt-Ot0FIaLHhAneW5TSrBghXq5sdke_zGAYtOr5HaYuQVVCEo2BKfWlLnWQgr-0wa8ffAdkgoQ0BAafeCXcSM6g6d98BZqedE0HZPhkxF_3_0L8PV0pPPFg5uAi8K92Pcm15g5SAbEUpq7LPgGS5l19zw-aCSW0MLzVxouUzwuGJ21O20lgVt40eGC28fguRBXVt3QIwS-ZlE9xuLj78pGGFfVdgKEKvfdYl52Kfr1btcUzwn8LD3DCYsd4fCeTVU_-QsySfMJ_LTodZcME0otJB9FHRceKyILWOk5mZnCwA8XmmmvbQq4h1PmALwgP1BgSLwzjyx_aU-tPjQFBcPvKzVZInx6QpJf55pVHmNavndtN9ruBg3mhmV9mS-J_Deqn9cD7dU6UbmL_IzqXQjX0C7yxY1c9E_yGQ7wKyt-w4eQsVk5Ikvaxtcg0jWNtgpwMJwUwaWPY_6H0s6SstE_c37n-HC7GGqcRDwBgt1lUJTnWA3xOUYqsdyw8zglF830XJR8tNMijtQMhPVMd7D2W38ubDMuZAkeSTLWwtaE2mnVb74CTGCykFUjDQeucJp7oWPfVRfbRfN_LGlLHUdKLeYqn9zX8Kyea-Az7RVLB1h0tyUgjkuO5R20tyl5_Xmj1m9Nz3TQ_tGo9OY8sreJhVe7n8--r0KcpSh9yNrMnJ3RRnnu1bIFT9p9uqeJ2FzfC60mzll4D7TbQy4rQv6E-h8zM0mhEH7q629Xw2DmVr4Gv2NsEAig==",
+      "summary": []
+    },
+    {
+      "id": "rs_0986c279f8d0a44f006a6df0ddab808195a982cc57f684b349",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfEOwyPdJVJX0zjf-P-lJgRFXGKgBNen3qY2YqNctmWL8vRFRhElMHAlWovZlSCiOReMaCtVS7qJ1QhaEUUxcSnB4qPvnY7Y9labf6qV7ILn7BgY5VJfn1syszAhUscNdexmqPEBXp5RIIVGFvudHnie3b3hQWUwxXPTYV6hwSiWMGATW_PSqebDbviipAj9MTtslTFvjZJQPrj3zIDd2QjZyDP_CiAo1iwiaXE8f9Mr7DdcXuq--Zavxc3twkkUhC3DSYqx_Sqz29Ea17tMyXhSKX3Ldv9lql4PGFymCRJah_w98DroW7MlROvJqMPDe1PMjdCtQRKmpIFh_Oa8f8ppgQNUP8hOOqHmJV3GSl_QO9vZN0Z4kBMjkeaU6TDmFjuiCYDYBRCaI4Wrq_iI32fHXJljMrPohBssfu94CAVDFVe9YHcLdwDqDI7o_3MzvfB_DU9RJeqE22o7OkPD29pVEwUjvEGVBLVpM4rgLIJ7ballIX0wZ1oTXBsQuMnmhxm9X67e3581KAMnb-fkjGbz6ZkrFximccoEj95tP0d_nVD6QoNjIcVeMHFgSMRNfJhsdPqotCDBIUQ766ZXzGqFivjmCUSe1EG0LzAjilvn7MzGdGGoneeukKiW7wsCvgjzlOHSExixQ9QUy8FUwy1IhKpvqKtOj9NUi_TuNMQHDzebUInj_6iOJvUwKt7p3iarXD3gQJoq0asiskX5pYBgvpqp-z9fC3Dot0CPpL0o4W8HwzK2h0yYzWCsZ7YnGf5fBULCc661fGKBI6ardK8szrQ7Ps8BNTWJ2z9vvQCPWzA0OOwENxnnOspYaCvsq9GvmtYZehCgdLg3oAaY9YbrgkeGhzEQnHw8vTDQMwQRvgBTP8N9i93UaUPPOXH15ONUwLc1GhIbrutqNzSVekcB-uLWBKlAsbvS0dLFSTa5mMagU_tKueijjONKbOtTu8wCNIuzNF-gO56xC_6XrsWto-4rskZANijaZOKc3dCw5sg1nZZhkhIkyJWsnhGGebq8he7rAbDmEwPtOAH0mIjDGq18VBWdP8nOrz5EdclovFlRpxknKTI5yXLozHjNWEtopYsntpiAHtrNJastx4LHibYr_SbmcuIVx6MKsr3Jr_Lg4wCKO6WmXBh5lfCCxfPCckV0jYDW3PuiyomCd9Qcu84pqoIgudfY_0BllChLMk7wXCpUXSCUXpXhdeFldGdHCaP0l7gm7QMBEQRop1ghbMiCYtmeSxvJosaX70EiGgKlDDI101RRwrGGirRZFL235a5HZC7h7IK567kDaX-t982qF4ongLk9-ndLiUP6_p3YsDxaj4-ja4HkRhGLBVQHV1KpXBeIFlR4pPYMHQpFRMIb02m5ShlxD_REDBDZcq0eLCf0lAfN6FnEJzRmX9U2W9NWsySakAgpD5nBEWBdx_LAS1D_NAa-Qvsqxn4oOOZrcpHVruoGR8LDN7B15UxaLPOQsOwlb9S7YmhShS-Hw_8F9R7GG7BNC3RraPV4hxx9qHSlcoh8H3ikOihekb9SRNz-2DEesdgbPRaXl0EIaZFk9msS9Mydmz32-Civ_du9YkzJdPBHb7QgAyjZ5hAqFiOLH7wVhqR1dNQht09TdLHCSoFL3ODY1kcctOKEZawN0RS6SZXQvCW8wMjsKqr6eXPE8CCxA_tFjI7rJ8iPILzlrO5sR6Un6kSCTj65T8trycuvmTxSnw8KvDkTH70dVyYR6JrQUw8_F64FPsci0pH6stBuEAOkglwPKfsCQ18u9DTZQo34zWtmyX0xxjFQ6NQBdDDHhY4UXjU1oeWfUbUyEThSXstvWQDzetCANvhZ2LW7cD-r_kioKrDyhBZfM50pZnCJ_n7sawUtVFhTCDC0U7G5_jDUppeKDNZYsEwNLZOXUUv4hVFvnj9TzpAn_Cfi_gmnZAf8ppXxV6rw21lJr_jXVKy8xgG5ZWTtK-VTskWQfbK6A5sHuMbfpfqW49neN6DhUrpghKJa2_tGs5-_VoZg7k4CZLU3c4fHYmf5Q-llmB61iD2jvZyNavb2tLwDB3WPFrLtWw7YMC2finPFXfOJm3sv8ow_hlo-g-BQJ9MS5mSdDYfTsVG3cwakXvOU7nzhxkmTpYp0yZYuTx_Q7YtCbglIOp-8W8kUSx6ajgZ06G5EPoRksooxVHzcYOePtPTGjXM_ixf7DUQe78MLavetP8tT0zkZrYghjzPs__AbV-4GCvUfDra5V2HAH_8N64GdIoakEkxjVhudzxu_9rkRXds2RRtn1Ferk6Kizy0ry4XB4sfDKOBJGQjl27F4XQaWEEDLfErc--P1idjY9SQo3TRkctLxV4XhFJYe-tet6fpwOtsNNsEqD26eiPYXlhHKqJGon73g5BYtSRC1MFjc8q5xAjIYdEDBY8TDcOfBnuUypoxAAxX38FRMDlRHlLE8gDpLwBP_QX4x6qIAsRoakphQizfTYx0FzsmKcDy6g9wD9vpTasJ2WJmq1kQ9q7BzMGlyxnHAIwSzJ5RDKMoeyk0cEdZts77QXlZWzirCyA-ePbmkS-zmtLA-YhbYIYi2FNbIGvH_NB0LeVk3uZv_YSSPlcOFgLRksq9zf10eX8ZyrL7M6Cc2p0tugnbK0iZA2ZM6Fbo_telo0uggyYcFSIN4ecl4UPc_qnaBGRBzlJfsI9HT_fnA7VlF_AguRfs2ufUpvN5nJ1Bbp5v5fdELJ7XUad3kg2efgteqGu0mLZfN8xpYyi4tvAbz3Nfo8gpBg5Jo57rc21OsQYPqSO8c69C9Xagb3g20DSrg3R0N6Ij1F43EE60xowNWTnd8Gba_MCMRgxBd2ySduvZsUZLFaQkuDGxYpUaL01huMEp1aWjRQH1llLzf-PT5FLQ2_JZGBpSGRrILJdDvrfDcWbkzfGgP_azynKCzvPMepA62BjvuIDejRnbhnWDmeyccM2nD0OKGZV23jwuLhESJg_YE94DHHP_yY-PQ231JSIDN4XSEfwbLpJdBNK59MrKIFkOjOqeQwP9kYX3FOM35FhDtHYdIOjZbKzg3lmgCRgVdHxDZlEYFtB7ew_srlmrgcUwYHxwhMP5e44f8RKSWAu2qINRm4SN-EE041G_GtqHRVUjqQY3OXL9T3W0FHF2nIG3SkvqTQvMRekhIhzp-lRcb7C8nSaaWyqGO_NvlQfJ15nTrIs0t181IlUI8RJ3dBBArZh_2ty5wADq0lXMCPfL09JAxZJCyCPYeglHcJ56LXv4CmneQlrPH440EeC1ZqMRZk2aakKqZg0zuf_f21EL8QaQ77vEPOSi2rJKTRAW-VhyyT1eYK1HEQDQaGAd1uZwQMd7Blx5vUFbhqNSzj9a4IBAyXtHBgJwPD1I=",
+      "summary": []
+    },
+    {
+      "id": "rs_0986c279f8d0a44f006a6df0e6e1b08195a696ddc8e46d2ed4",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfEO2LXFQXyfZFmXctSu1vMsUZ1qr7ZuLZne9vfdTnKPW-N1xsKGU_90BzREeJ8wC0_5IPxdNrkqlLpzRRl7a2GDggktmJ_0-7ujN_fqDDG7vYo0FrHkmO_7kwpmH039okBGmVJ3_tTUTDSgxhZd8_fvJ0_yYFnP8NlbBX4YLj5Ag0Dak_JYWZpijT2uU-BFgFLgD4kUeJXvoYn8vQjEJnNI2WKuHyS88jbQPzzrr6BxFmPcLYIw-SGsPFHzvlrMTFeH9-bj_398GjFyZEFHJH7ArhuZqB2MS7kAyzwY8nbkztRaAUMC9xGIM-ilsINHMtlcsxLUT546JIVF_CAjJaOaGthQK9L4aXr-JH3kby4Hg8waE97fA2CfDEnqE9JzCmCHf5No0k4B73MDyHOz8SGJ7vGedQoDTIPcljfI2_-FqSpP81eEaMgQAllKOv77aRuJcUUP-IvEWYkdWIb9-4s2ZfmFVMgNo7ubA58Jw906aUoSaKNpaTylxandajyCtPdZ0Bhj_1G43gbCwaT0B51_9drEdjh6lE1cXL6eJUQ7qJBFydu3ylvszSiX-HQ_6M4JVQv8H1XKWhX1GRwFpExKSu1olMV9J8NjFkFXKaIcs1Tyyi3uoNXdVoXREANkmh3pQpSzhFWKi5BsnLkKP4C602NhH5QBsW3gnkQS04XclFFmaE5fJzPyZyly5yJrqM9rP97PJqmbUxOCdb4er2Gl5zHDnYFJLeuvXXaIB4rQsG4YIdW2mXe0-fWiNvEH9zb9j9v3_U5wax4Hcj5fLtXD9TP0KuC2ZgemrjTrY--EcVQuWwN6l5EYn9UrRnlBsoqK86D7BftoDSBZUAPuv4c_grMYgLH9J5fiU1Qk5_OLtI4rU-JIKuuN-sV5HgVSaxLlqTRNEK1KwTZRaAgYdcH21Qvono6QN4LpZYNYuIq4oHgyGh5cW6t8ZoNMxD0KImOiZZwPaQ_gtQAQ9YfSSVD18Cgug9T3KTdst8nOa6f95hzGbAR2kAQuzrLFn0nJB5Syl49tRd30VkkO4uLFNgxBk0CBnaautL6qzXHM0cOGf4nBD5nvdoP23XzY12_UAz5KnP4dOm-qWNd-V1XzcWG17pZ2ry8UgQhTf8LYOXlRRcWH7YJoqODzhBh3JBpI7l9sSpqmsqU5LT1YgPc4B4l1lEJ-8bFbHnmd9_CQsS4bUNy4DgqDbMsQGluvjB2I8Hr-XhBEgKbQc4hBuIFHdFKr_j-5EsNyr_04Arhrd2aX1Zp90hkQx7kuyP_Yv8LwBSAnNi2OE-uE4t70Fgu8y_2Yq2bWDChweIe0WySOVOg98-gNU8AqkFXenvMBTjVfGy4njHtSKU-9Xm1d7e3ZIpvrLHLyEWI4B86n-pXXzoMOSyiwTw2MMVW6Ck-58k9L7ZhCAbO9OK17QsGcIYb5Ck1pPMHJ5tzr17wnbwBnjAJ2jYB03yu3F_HjEvxmNov6AX06QlmANbKkIOHhYhcyDeey8ZUf4EYnscUa3Xq8cUciwIBzzj_DLMc_eT0V-rBtExlEmh2vY93xz35BSGxujyT-FmBBc-G_mAK2Mus6COAr9wbfO2VApZmWasRBm-gyoyBA4O6avwz_kXiGwOEas7GIUyL4B6-uX_Ub23oyUtdsAUv-e6E1qPzHU74BmxEXR0c1FiXxCMzjQ60ZcAdfpH9Ekfl0uGCFBBCHMLtHucEe9chKkeELanrIdTvgURkvgJPSq4r3lm7b8x0JCl1-Y6vUC9mUXo8OfNndk5stskjjsUe9oJIjC2dX0XruJGTR6PXDCaq5c3QAXxBR5lEliLUkgqMebwBlXeOOfvte2IN7QQ-lIg5KXLMwm2fm5G86bwkWv20-YGmLcgap62p6Q1t0wt-985ftw21jYeZK0h_D8-JFhsBmuQD2WinlqrSeNeZnNH7laWDIbHCTVURNaebpHgsblxyiqbAlXubOO-L1iscJB1H7DUsn_l3no1yUIgl0Wt0Avm_APp016hIPx9eXRyzLOSR4YTfgMV_czrvKm-oz6d8qhU0VKpWlOnsqlWgdUDcJPgohD5R8sriwSa0d76pI2BcfRi-PWiuL7b8RL3BZytZJkMNnbc0Z3H4pe9WQfyl1VvhZo-EGuE6iAqfzEfDcVSrbQPJObXXWA_uSBSonyM8cFfxlSeTMzZDz7bWVFcKDZjIR9EoE6RoR179S_2mtZqg4y-G0fgESw_4YDQPDCcHd3C91Aq6FP5eEO1acknYeL4uZhsuS0e_UibpVx9o0RilCYzgsw9N2np9ERmINbVMidr2vzdjOyzfzUxUB0aTN4vrpicST1ZfSRo1_DQmK9NH2d_YdiTPmHFC3S8s_FICkgw1hHJbNnFBAE71I0ZR0YDrK6FRCyydDrvV9DLLC0Vm6QY_jVYc5BCxc1w8lkU4R1QoYar0jWRkwuKwpLDSqO5Q8osC3oLu5qRXu3naNqse-EYhgK0uLBqEgnJWN1e2p-chN0MYDFtEb9maFeXQCFb1KHS17huvH3fIU--PFZwFR3OJ4zRjMHZh82onTE9itJWAEzJVyYgZBHB928-UWdq3_82aqEYaQC5oNVNZmtOcwfWkkZnXPyyhDlW3DGvsTo1hGHfHD9ov74fdIj60seg8xV9nwjGiuy3upJujlPdwxP599a_a9FcjJebNS9Mo1wWqrgIDccfiWqkyNli4YRzJaovzFR-zbSs71WdqV_5q38-TERDYYqmNgSelMCWrpJsWfhNQpOW5Qznr1UixR_rd-RqYe3yj0IY1ix_ngk-msK9l2ByeS8UmjDVeaU5zCR4dlbmMYewq3bHpcE7j6Q-k0zQSSrT0-A7CxUwMqZrqmFx2TYOwC7uKLYBTHC16wdQQEGYnaBhcsZIvX7D-Qo1t8EyDxU2HbXbzOQk1rlrV0ujNBwPsYdzImcTA-8TiMUtaZnrBf9C1DM32VKlKHsLuyvjBu1E629x8NZ0YowLJVsBglPD4aOwr1RXM5oGSCZD8VU7eBtBa4OQvpvYOm51w06ySe7pfhNoP3-ennCGl0A0M8mcEpkSQLgWmzd92OpIQv5cTIiNPMJhWTtj5eu-Wvv7PB8SxRsloMtQuM2Gz6d59RMssJrTAHWICjQfPf5qzb0sKFLBY1McpvfPTqrxec5OzqCrH-_BOpqsz-xGLF7qhW9FpXY-Qsd9SLK0StMGV96AE-ZhFQ7oqtuxvwZswk43BdWweqBc70dDQJ6M2YJSNVX0nbd1FzKrSViuxmFxaHiDZO3xB6XGkK1cPi3UYtJlVuG-g8PZSzzBwi_L8LwX_leZ7mBX8vxjHscYVlxcamwKK5-GZJ7Kmk_FNUuvXR_xZvCcLJiZ22Lm20PXIJr3jRasCYRcgYocAT6FM9t8d07odxKWxffwDXrL02AabohdXV_stTVhwu9brYeAHEQkjQxlLwy0ZxOVh09Z5LOWJCHfQ2sjTPPfwkI_G7oIcZ58oiWlkAk00USg==",
+      "summary": []
+    },
+    {
+      "id": "rs_0986c279f8d0a44f006a6df0f1cd4481959a04876af419f12c",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfEOsAtgtmsq75H92kaNDBgeFq2oT5AlbUySUcrRvsLzipTgmhZh-hcxbzDmMkNepudmxCD0CuDGDDSq4QXjzDhx-p7okE1FhvlcE0UQograLqBYgqgpinhG9oBQbaJRT6iP2Yuh8LR8uuxRmbJq8YHt2UEShBedPoPfTJaldeZ9fFwzpc2Ep1Il7u4C8SIY1ndUKyuLp0QzkWVmVLEKVYJbxr6HE0_8k_1k954uEsxl2nlwuy-R-b69rv3TwuQdAK4b5sUXk4oxl1_6lNs3ny-4lUMup5T6aczs2rpmTagBOoHZTPrHuEdO6NKWf6-6jAH2pcy5gLp1lz71udEmcEHZLNxmm7PfA6ZrFwV3j_cVO_pUiMrDfzKXHBzzW959l7d4QCnCXFxkzj1qYcOITdMsoglZvp6frQNSU-FDJoNzzoMf_2NSJRTRpgeoS1pUA841DCYKXxQ4Ku0t4cV62lFj9mcLvhT4v7CyKjfkywCnjsEi_3NkaoKbsQx0yCtZ06Ce-cmKYmg_m-9gvzPO2pbDWPbxIZq6p84fEbFA5oTlgWMmY8nWPTj62dQ_tRwepBCQ4JdYVLu5K3rcRoYrr3eo-QifDLCnIOeGBB5XQCWzgx7xUnhhpkYlj2vTkPUjTjhyh7ZW5Pmyy7up6CwiR1oSM9cutnqIMZJbeRgonaUsRSdnckRzWDAERtemtXVJB_30idhafobv4oyORXUlgf87zvfYudyCGPMs6yx6677VnKg_Sz2XLgtv_lch3lj4ydZsAui4eMrwEXUB8SLXtw0OtUwZP-xzmjwQ1dTU7qBQa3ceE2CEAyTWfzxOSC_UVZMB5VNJo3uk3E7EghWk_GHs6H5-HWug49CeYqlwCsLGWzpJej1oLku9mVFxIUDcAzI4gnK5taZDScmRrcP3vku6RvxtckzdaQCpaZoTb0LGZ7kHBVfBy1m26w-qpJZ4szDbiK4KN9_z-JamcPzfKHnhS_ssZ1J8DzfqJSt0L55kz7p5yWbUJgxU3SDUDkm2wyyqFcBkNfR5qAS7-TtHKv-YxY47PvWvHrCjFRenh9ciEXWiMpwLd3RxwlLwMi0MrzwnIo3tCWNy1rV71cqp2Jf5RHkY7VWKaA7Mz7FF6Shu3cAfTrixzwZqRssYUmf5FwvCoiK45X5xeV1gQk0RJD-0-hZ9GFSZA-kjpkxXYDGxe5bIdcW3F33Ao2xmQ09lx4kGZj_WdfJsKevZUOvo4kTJREFmarIfp7IW7hd66Pr7PEEUdWHKEJGGmH0ZJ-s2x16eP5mZAXq5E2CX2arS1PZlm1MOp-xKVYI7oK9Xg4rjL4swnObgh0PyrqM14vmmQEa-utQttigj7MmCLOZqfyUq_YKw8p34sET7f66GwgCk1EKCw_bRi1brJaZFMueqEW9-WgiNBiJZRnflC-Tm6epW6apWQrGEk0nNYYtjQLdNtgM5IqzUUUFkCvYAXKz7JYXcmcl8XWLeSsSLMZ9E3RqY_f1qiti5hsx0E9aik6HxyVHeYIG_u0bRk6TfleCntKZXNHItKru8QJqce9M5Wf7rVxgxgYP-Au5PGMFMKRcgVv77yETiIaWixZINv144SQMnNwe-_bA1fiiQClTl7dJoGJUNCTU0V7gUJYOQBBKhKzGVyb3reHn_a_DKXwD8QnsoKZ2SZ8Nc0MtIo3tu-axhinrpB30WTskriCj9lT5VOi5ipkGSsuPBzXOkN8Etxgp3T3utuwyrxoeUIxMnDcPzgplQqSnd4gYmm7C9jFWYHrJ3AmjmlYluGBhot5-y0Cgll1dKDbtct9XgiDUONZIoh8sS-nWB_aE5rhujWYIAgwjhe97x9ESB_3RznFfXG-PJ06dF8SSeFbCMFVbGxUsTeV7VVgAxuSQlllExa2xyZNNSwUp5_SYOovzle9JMDaD7W5Q65FvYcy1TstR2XPxFEuxlPckXxFhc6QhVYYkSoOLntecCBi5NnKqAjapQO_vGaWYz09jCBt88ihGeUU-1CjMdx5Pe-Zc1qtGaJZdAlycF9IJikBQaIh78CrF4kmhwx4j9oUH45oBpmDroe7vBZf0DzSPqpwuIquQggBRM4wz0ebjjfvDes7FsQMF-jvfctZ-WHCgR9uum9sBPII1kC38UsQct5xVJt43C4a8OMJMOWGA2dIIFHN_-syIokSGMqHj9FH5G9OG4PlefoEfmKiyOUDZl_MNhJmbVoNWCPeEGdevTrK1_ET8GJSG9ltnCtUXkBXQtKyfb-O30CQpGN1zvcBUeboHcFETsQ4Slryx62FKlRpMrJYT8WL3GMRh1-F8X3wr4I-ZYDC7l608ahpqBffmVmwPpludsuMKXPbyTiOvhMfccF26YQbNWKd8VypXHbqcJLz01ND2Up3OLQKlT6r9qK5L29GNuWMsuzMntKOt26rjvwaq-x9Hu6l0zns5vLW7ARMNM5eicaUdY5or1tgAxSfy3ehsgsrJzJMXtTsUGNEONgmYMFjjS5d6SrMWg2MYn1EXCdyKdeU-KryRCD5o25GLUGGgVWjkf7QtGtlef2gKk6XdcZAlpUtGgkSd0btOPOWrr8YKW3DLsDD4oYXIDu5i4M7wwF5XSHfoHjLkG9tKMrczk7CMb0s2l4f9yN4g2OuZfT-82JT-z-49rqSxzSav4YDcqXGZxpa_CmNS5LerwVSYg-SVUdcUTvpIdEJx3hu3caNBF2uDZyOd1KcMvPI6t2SyGVxKY0QFWFii0RYTeH0t2I9U9W_u67YSkwg9pwCuYweEH3dmIs6-KhGPbIIkyVQgHLEoTejRtzQTKWum5Uy9whuYinziJ0sJ_4Jdbos5VTT43DbpNhAdBsHIAwgQx0Zl9P_HSRB0SM2RSHmZXNXNMVztpO3twv_ubwCgVsDCL88yoLcxMek-Rv-MXkLvFmhHONrFUH4vfKak5I31652RF_Sc4ovgJH2OP87h7oS_y5ptgFtms31YX7fXFs8G1H6zfg0xQV3MJsChw6ET5irnGbOIpb9j7CETgWUQPy2UqtMmf_25GtJz71RFjRlqMRPJckrqw6BYRc_DisQfGsJiWOWSvIE_HUFKRKH20n9wLAfKj-0m4xMctuztbroGZLBCntU0VntcBpOhKe6dI_SWITGbilUYlFguAJJoGKmxXRiIpaAxM9VdXHtibWZMViIVG6iU17y0S_2heWOG8AqMQdyUsWC76ZfvbsqDSYqu9fSxEaAVelRmZmMuZ9E5GKkn_MvrCU4W792pevRe9UsHSRgoR4MzTyISu6KVmru59rEc_xJpY2rcQhFEgTjLPkg0WiwSHEDy7GvF89C0Sih_SK5I6gwJJXOvxOXl-vxtn8GZi-mqiZ6wTYJylwwk5TzDCuNB0LSnqza_AZeiL5jGs0pkfh0iv",
+      "summary": []
+    },
+    {
+      "id": "rs_0986c279f8d0a44f006a6df0fbbacc8195af8619fcb528469f",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfEOxVG6M5nHEmUQxJPl9GjaUsS2yoaM4yvA-4jkcVRkArNb7Kygz27dGEzQS8gKECeBIccWZUJv0LfgSSgwAdiv6ASopvqQkKQdoAjDHIlBpgDb3KGMlmzc3Hh22nZzu0o1GF5jJKb5lgcKvFQkJXSkGHVbJIt5hsrMxtlnsJM7U1SrIHtmnqZUDji47DtmcKtY7zsx77WwxPHBCgu_jn64qpZXe3dWVg1o6Wq71ih4-d3ZVW1qYDyiyFejVTpHeHAZ1GDi64DyM7aoSUxLMtuqzBN2-6G2-ugEfYBSqa67OF6U2rxB3SZCPO1dWp9X-UXkjYb0SupU8qUP9xyyQvwMyiC8A2np2vp6rGizETDbnLv0p99LiTqeDW-5MKUGft5eNtBgtnqR595D8SdBVnZaNE5hPfpc2HXzxx0OtlNcGa8SFFkuHq5B8_cdY2TCpklttz1p_YjvMYyJpfuzQMJmUU8Kf7Z4tK-gSTmnHOBx46CN0hgTEGYt3LAoAVfoA6m2VSUvZ2mym2gkqvL1CqvScNS1D2-zOrBISnC9eFqATvIdHh5sU4Jf8kcTUJoTQ11y0-0zbOYJdT-cBE3caBYALnU0mxhJ5P20TjrQ7dsskDMGUz1YjRmS5qjqcsKhI3T6Ud4Xn13-Ba3l6Cn3qRTL-2zisJvB4YPAQXaYwJuHGjH8CJPO0YNttE5VmCHH7IaUIWaoJERXvKhjvxhAXP_-Q84oN0kDb8hCPjuek3n6mW9fYBbybjyg20m_l8hM7X7KCvLqYiKrCdxMXM9CWi2hYgLZeUkyjDEYcfUrIEKVQOgZ4nLyvBfo1tp8KaA1X1_ie1l0DPVSD8L3O5pUZ5PQGHuWit-kkFhhLdhUMr6je4QIizvqa46dHDLhyMwJ8VMEJPDNovI0Xke0CrUzTdjOYAFKWckzeih8n_kkfN2k-pJ_CSoykHqPv6kwEpqdAwHROJrKWgH_BdRyjEQzAwpWaEJuSaNWRL-pNi6yf_oH8x5nPWLGWlojr8O56WWEykrki6_Nsosctcq8BfxHFNk8S09TlnpIDrM1GP1R4Bv_tVFQ-WY3jCN3vP9hFi13jPelgwQNhsWq4eHUAW5m87pL3ss8Xt6M3e4KFs0FU0Oqbi1MZeuhtaCQFWnI4P_eoF5vvL9DAGkyFOE4RWyVV-LttmW_QS6nMSikFtE_-gh8IP9oZ0-krsHpSAELRsodrFPOhQgb0sToPiuRXMPUnn3IHJRd9AwGP5GGnRnY3e-3AQM-mS1rbiZPysISwD5BBQbzCtHJOYqncjUPE5SV0H0yAdrmHKcNJjj-hF6aKuDGpEqs2am8SswJnA-AWaZgYq0WUHK0AVKJcbTllhimjDPQigyOPrm3DV4KC-nPmogLoVmFahDiYHf0Jd10R90G94KHqnh7nhzDS7DpdnyNJlh9dVVSm2PFKDHzT1MQSuu79Efcqr1Q08pWEiCaRXLvCBkGP3yuyA33K3_cXf5h1jifbMH6daRK1TR8LIluC1NLlfViRaV1Pl3Jhnln4vTE8ZalU3EMzGztOLsY8yX2EqMLbWbXrcZZHYSaq4btW3RCVRgG-NKMj4h9-zbN-ybe1wgI0zUyuNnPt8F8JIUt8h2M0M8JBN2yVIJhL3M6rCRC1FY4ODhuZwYgFRp4520ev01zZMRCrDHzA_0yMjM4Vb2qql5BYxzs_CcZbfG9n4ndYRyTZvWcmWEIlI1v26JSFbt7o7vm444Sad8Gk5rMRt21m-GdojnARAkCc125ODIHJ3XjyHIUSM2aygBkPr_y-YhMWkjYH26Bq4qmNWVdbT1Ymyx3IG9Xf6muJikWthDqVAcHAO21NtC1DCKGOLFZVUlBjvGBKj3sT5oIbezbndIuL2bbokTjMcoZ1F856vO4RbvBLgzH1krTeRsaCy_1xEd8IpmSbxdf7a1onKIk5DiEFeAlUDKpEBDay5DfSZTS-F-cr9td6fE18JIYW9s7HNSm5mnerp5B6lQI7BdnOZc7SVxJtyNhGYP-HKs0ctzrPHOwa9PGlNbUcimO3FOXGbShkOM7vdhCeTaRwb9C-II2D5RGOlABb920jIJ86bu4_tvyFSSJ1C0Nllu0O9pSUoE5_UkJ_SJbo-ZMPd-mg3oXuiiGmyfztuqRrs8PwdAz3bwhilQ_9cA6coQrgBEfUQlCzIpI0-9-qw9Uo-cw4izKmeadOIGCbx9CLLUbQdTjVkt4P5xOvUH_FHPCvihRXcq9aS0pwX-5vOWu0N_8b82hNA==",
+      "summary": []
+    },
+    {
+      "id": "msg_0986c279f8d0a44f006a6df0ffc93081959c29358b63d7b17b",
+      "type": "message",
+      "status": "completed",
+      "content": [
+        {
+          "type": "output_text",
+          "annotations": [],
+          "logprobs": [],
+          "text": "{\"finalists\":[{\"sourceCandidateId\":\"c06\",\"page1Text\":\"Na stablu moj čupavi prijatelj počiva,\\nsretan se među granama skriva.\\nGljivasto te volim, kažem ti glasno,\\njer paziš na mene — to mi je krasno!\",\"page2Text\":\"Mnogo ruku ima gljivlja družina,\\ndrže se i vrte, složna skupina.\\nGljivasto vas volim, kažem vam glasno,\\njer dižete me s tla — to mi je krasno!\",\"refrainPage1\":\"Gljivasto te volim, kažem ti glasno,\",\"refrainPage2\":\"Gljivasto vas volim, kažem vam glasno,\",\"rank\":1,\"recommendedFinalist\":true,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"počiva\",\"skriva\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"družina\",\"skupina\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Najprirodniji ritam, jasna radnja i razigrana gljivasta dosjetka.\",\"weakness\":\"Riječ „krasno” blago je književna, ali djeci razumljiva.\",\"qualityNote\":\"Najskladniji spoj vjernosti, rime i tečnog čitanja naglas.\"},{\"sourceCandidateId\":\"c03\",\"page1Text\":\"Moj čupavi prijatelj na stablu počiva,\\nsretan se među granama skriva.\\nGljivasto te volim — to kažem glasno,\\njer paziš na mene, a to je baš krasno!\",\"page2Text\":\"Ruku mnogo ima gljivlja družina,\\ndrže se i vrte, složna skupina.\\nGljivasto vas volim — to kažem glasno,\\njer dižete me s tla, a to je baš krasno!\",\"refrainPage1\":\"Gljivasto te volim — to kažem glasno,\",\"refrainPage2\":\"Gljivasto vas volim — to kažem glasno,\",\"rank\":2,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"počiva\",\"skriva\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"družina\",\"skupina\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Topao ton, čiste rime i vrlo dosljedan pripjev.\",\"weakness\":\"Završni su stihovi malo dulji od ostalih.\",\"qualityNote\":\"Vrlo čitka i vjerna inačica s blagim ritmičkim viškom.\"},{\"sourceCandidateId\":\"c01\",\"page1Text\":\"Na stablu se odmara čupavi drug moj,\\nsretan među granama, prijatelj je moj.\\nBaš te gljivasto volim, kažem ti glasno,\\njer na mene paziš — to mi je krasno!\",\"page2Text\":\"Ruku bezbroj pruža gljivlja družina,\\ndrže se i vrte, složna skupina.\\nBaš vas gljivasto volim, kažem vam glasno,\\njer me dižete s tla — to mi je krasno!\",\"refrainPage1\":\"Baš te gljivasto volim, kažem ti glasno,\",\"refrainPage2\":\"Baš vas gljivasto volim, kažem vam glasno,\",\"rank\":3,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"moj\",\"moj\"],\"valid\":false,\"problem\":\"Ponavljanje iste riječi nije prava rima.\"},{\"page\":1,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"družina\",\"skupina\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Živahan pripjev i jasno očuvani odnosi među likovima.\",\"weakness\":\"Prvi dvostih završava ponovljenom riječju umjesto punom rimom.\",\"qualityNote\":\"Dobro se čita naglas, ali početna je rima slabija od ostalih.\"}]}"
+        }
+      ],
+      "phase": "final_answer",
+      "role": "assistant"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "presence_penalty": 0,
+  "previous_response_id": null,
+  "prompt_cache_key": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+    "context": "all_turns",
+    "effort": "low",
+    "mode": "standard",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "store": true,
+  "temperature": 1,
+  "text": {
+    "format": {
+      "type": "json_schema",
+      "description": null,
+      "name": "priority_language_editorial",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "finalists": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "sourceCandidateId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20
+                },
+                "page1Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "page2Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "refrainPage1": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320
+                },
+                "refrainPage2": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320
+                },
+                "rank": {
+                  "type": "integer",
+                  "enum": [
+                    1,
+                    2,
+                    3
+                  ]
+                },
+                "recommendedFinalist": {
+                  "type": "boolean"
+                },
+                "naturalnessPass": {
+                  "type": "boolean"
+                },
+                "fidelityPass": {
+                  "type": "boolean"
+                },
+                "readAloudPass": {
+                  "type": "boolean"
+                },
+                "rhymePass": {
+                  "type": "boolean"
+                },
+                "refrainConsistencyPass": {
+                  "type": "boolean"
+                },
+                "rhymePairs": {
+                  "type": "array",
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "page": {
+                        "type": "integer",
+                        "enum": [
+                          1,
+                          2
+                        ]
+                      },
+                      "words": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        }
+                      },
+                      "valid": {
+                        "type": "boolean"
+                      },
+                      "problem": {
+                        "type": "string",
+                        "maxLength": 180
+                      }
+                    },
+                    "required": [
+                      "page",
+                      "words",
+                      "valid",
+                      "problem"
+                    ]
+                  }
+                },
+                "strength": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "weakness": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "qualityNote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                }
+              },
+              "required": [
+                "sourceCandidateId",
+                "page1Text",
+                "page2Text",
+                "refrainPage1",
+                "refrainPage2",
+                "rank",
+                "recommendedFinalist",
+                "naturalnessPass",
+                "fidelityPass",
+                "readAloudPass",
+                "rhymePass",
+                "refrainConsistencyPass",
+                "rhymePairs",
+                "strength",
+                "weakness",
+                "qualityNote"
+              ]
+            }
+          }
+        },
+        "required": [
+          "finalists"
+        ]
+      },
+      "strict": true
+    },
+    "verbosity": "medium"
+  },
+  "tool_choice": "auto",
+  "tool_usage": {
+    "image_gen": {
+      "input_tokens": 0,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "output_tokens": 0,
+      "output_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "total_tokens": 0
+    },
+    "web_search": {
+      "num_requests": 0
+    }
+  },
+  "tools": [],
+  "top_logprobs": 0,
+  "top_p": 0.98,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 2231,
+    "input_tokens_details": {
+      "cache_write_tokens": 2228,
+      "cached_tokens": 0
+    },
+    "output_tokens": 3459,
+    "output_tokens_details": {
+      "reasoning_tokens": 2309
+    },
+    "total_tokens": 5690
+  },
+  "user": null,
+  "metadata": {},
+  "output_text": "{\"finalists\":[{\"sourceCandidateId\":\"c06\",\"page1Text\":\"Na stablu moj čupavi prijatelj počiva,\\nsretan se među granama skriva.\\nGljivasto te volim, kažem ti glasno,\\njer paziš na mene — to mi je krasno!\",\"page2Text\":\"Mnogo ruku ima gljivlja družina,\\ndrže se i vrte, složna skupina.\\nGljivasto vas volim, kažem vam glasno,\\njer dižete me s tla — to mi je krasno!\",\"refrainPage1\":\"Gljivasto te volim, kažem ti glasno,\",\"refrainPage2\":\"Gljivasto vas volim, kažem vam glasno,\",\"rank\":1,\"recommendedFinalist\":true,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"počiva\",\"skriva\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"družina\",\"skupina\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Najprirodniji ritam, jasna radnja i razigrana gljivasta dosjetka.\",\"weakness\":\"Riječ „krasno” blago je književna, ali djeci razumljiva.\",\"qualityNote\":\"Najskladniji spoj vjernosti, rime i tečnog čitanja naglas.\"},{\"sourceCandidateId\":\"c03\",\"page1Text\":\"Moj čupavi prijatelj na stablu počiva,\\nsretan se među granama skriva.\\nGljivasto te volim — to kažem glasno,\\njer paziš na mene, a to je baš krasno!\",\"page2Text\":\"Ruku mnogo ima gljivlja družina,\\ndrže se i vrte, složna skupina.\\nGljivasto vas volim — to kažem glasno,\\njer dižete me s tla, a to je baš krasno!\",\"refrainPage1\":\"Gljivasto te volim — to kažem glasno,\",\"refrainPage2\":\"Gljivasto vas volim — to kažem glasno,\",\"rank\":2,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"počiva\",\"skriva\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"družina\",\"skupina\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Topao ton, čiste rime i vrlo dosljedan pripjev.\",\"weakness\":\"Završni su stihovi malo dulji od ostalih.\",\"qualityNote\":\"Vrlo čitka i vjerna inačica s blagim ritmičkim viškom.\"},{\"sourceCandidateId\":\"c01\",\"page1Text\":\"Na stablu se odmara čupavi drug moj,\\nsretan među granama, prijatelj je moj.\\nBaš te gljivasto volim, kažem ti glasno,\\njer na mene paziš — to mi je krasno!\",\"page2Text\":\"Ruku bezbroj pruža gljivlja družina,\\ndrže se i vrte, složna skupina.\\nBaš vas gljivasto volim, kažem vam glasno,\\njer me dižete s tla — to mi je krasno!\",\"refrainPage1\":\"Baš te gljivasto volim, kažem ti glasno,\",\"refrainPage2\":\"Baš vas gljivasto volim, kažem vam glasno,\",\"rank\":3,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"moj\",\"moj\"],\"valid\":false,\"problem\":\"Ponavljanje iste riječi nije prava rima.\"},{\"page\":1,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"družina\",\"skupina\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"glasno\",\"krasno\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Živahan pripjev i jasno očuvani odnosi među likovima.\",\"weakness\":\"Prvi dvostih završava ponovljenom riječju umjesto punom rimom.\",\"qualityNote\":\"Dobro se čita naglas, ali početna je rima slabija od ostalih.\"}]}"
+}

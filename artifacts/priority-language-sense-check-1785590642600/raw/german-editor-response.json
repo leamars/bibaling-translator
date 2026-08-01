@@ -1,0 +1,257 @@
+{
+  "id": "resp_098a0232690eb01e006a6df37303f48190a49711ca4a4af4dc",
+  "object": "response",
+  "created_at": 1785590643,
+  "status": "completed",
+  "background": false,
+  "billing": {
+    "payer": "developer"
+  },
+  "completed_at": 1785590676,
+  "error": null,
+  "frequency_penalty": 0,
+  "incomplete_details": null,
+  "instructions": null,
+  "max_output_tokens": 3500,
+  "max_tool_calls": null,
+  "model": "gpt-5.6-sol",
+  "moderation": null,
+  "output": [
+    {
+      "id": "rs_098a0232690eb01e006a6df37464408190a0deb2e118593d62",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfOVJx0ueoamNlLSWE7rm3ja8ueJZqm327WA8XP36hvdE4le2RdEejO5BY0d4foVClgfwdFQQD_kHmQiOxvYcKGZGO344fOE9Cy0c4DTtjulLSB3Bn_9hspbwlNQJbxJ3Xb7PXOrwYCYqqYsw4J9_5jd67nNmG0RSMPxm7z4sZ6g2oDpuoF38jgvQ4oUCVY5-nDkG4Zv0J_lzJdsMoN8-GR_doLtQ3H8HAUJqrUmJMoKqyAdm8J6RSCaEBRv4Xw04JF0kLPLp1r4wawMKYsKKbG9lVex1CQqZLjwpB0nNtTkowkIrRBRzd7LccjUgdrqowJWNyzkWPDaBcU3V_Ftx9EE5UqSuEWOJ3_CZgxCEsyJY2jq1wgx6y4qvPtbyt4KZEw38q1YFJ704GLFEAiC8GB7VmjwuQNgF8VnElsbIdMM-xE35dmCM5CW0MfdkfzEuh7Dyvaougsx2omD7a-4nNFcaPT7kGiQ2hnFOckp6f8m4IYBOnuwi6b6FBpegByNAyELa-bPpzT1XRN8rlRPkL_44DLxjmCcheAroidIC13w69Avkaz70U3Xc8rITNk84sEDbuTyP3ZPP1wlnD-GXYoRu3-dVO0_n5M3D6joDV0RoCFgVlbc3ZGRjeSZjq_gmDo7ULZifoSg-TB4P-MtdILAUvAneoczI2qxVV4i7nXTqS_Tg8TrjXVwFroGYUS11pqAc_ge1Ipb4wbXrAf89BQsnAoVEahcUsdKApcq67FZ7_nq8_w44VVA57Mio798jyzVfx_1s6jG59BHGYZ0MAPxd9UOXW7WroeAQUyEO37V-imDI_hFmfKRjW-eOS0_L0wlCv5UfJj5EC-SYwkU_krmU2u9ilGuobBFEjxnTojqcEA2xpwdblbB10NIu5aViN3n9XvrCDEIbxr2NBUD9llI-YFdemQ_FMlEpBR9qdGv-UhmY8oVKLKBoZ2rU4UT0xQoO2tlCiiuRjSXfnnclsOJMSBk0VcJz9iYNPxCTDRW4ZtRHIqVyLgA1M_1kdmjrzZrV2HHvM3aFWa4Min4Se7XFkMF8VK8a8cXjyr8EHrUreL5aVD7fihxPLpxdaPPs9Wc5ZjsA4NGttU4ATFSwBMT0WvbBnVmx7tvGAIYM6Iip-j7ukHflsFy0ksZmKXt1mBWzUCStNmhEyG7gGx2mwjRf9W3q7JxePpsMBVyrePUpbaJRraxnhbRzAd4TqRq6NhLH3ZQDCY7CiwPi808n3eweB1vjmeLcvnj4Sdk9iaiIFsOgVHz8roab3xj1-anqegI3NPsa65neeaA3CJmkDiAmzjK0HcSxlU75jZTgkPW35coNZSD75UpBNFQxnXBXSVDLLMYoAg9vxjof4_ga62H_hXCgIkpF4owNXO713Dr17fN1jDwsTh0UiUVnjLCOxmQgQA4MtQW65QUtYaL9DJwYEwXFlyqNyyeaFWSLspQyFAct2dj236sHc0hKfOheKlx7fUuu4YGazNeos2GhRFvCZ-JSUd97V9qM0luv73nWCdR0mx5WnbQcIbibpYNarTjBoN2jXsOmcKamNlV_uiB3uAzQoYBBwJ0bOucjBDlTHiiAyFXCFxk_MpzFs59F1caAueeDfNpmhsyMFo_IdPm5lGLe5JZ1VxUa1zLxoqsmT9q4BDVKvrH_BWU27awjMtpR0947FMwwSmplyxwLb1wZy07BreN0X2n48rpJZB43LsfvmpEnG-Mk5kAjFmK_PtKIJBjrBVzQB3yOJf3NuHE2iBu930-WE6CSWyhSArdptZkBigyFaO--AxKX39EUrm6iTdaUjZC-up0HY8VguZx00F275iK0IGiBDZLaL71HHtAKuLtaNfxoY7lAp104OfHRjoxxiAKR123N_yQ8xTZV-6skGBMJrCQAJAp0_-8m73viHADSr06e7Xe-2jG8s3E8cT1SzzHWwN2qOgPLb30haUKfIqYSRBI46sZb7AUwqI8gjEPx6HG267er3DZdU5l76eafLubOR6fa2modF5zPgxM48DgJaO5iEcxyeKz6_9GnQufReLnfHsNcr6JYFqPApSv3ZFibmwKjKXWKzerZSg_YDE6VpwUITyjCuLo6XsUb7NLqkbbcdiufeOG1lsN4aqn79L71XQ6SpbTnuKdAjh4ADXHqFjC029i7apAvQnrwKGxk2LBmAfbY0gkqX3bFFEXXbvLcxMtWNzZhfiWFcJGM2uOW2QHg_vLCdbXTGFg3NvxCM1NYawY10baveDSftBftT2wjjGfWdELq7WXZEHG942pacXLDh0R3JUisyf1DIIxAmbCrpxAYMpBXFQ2Mi7Jcaixe1xu1mzJNAO1qrZWRHhzJYOPjBYngnVVdaU9lori8ylaNOG70riLNmBdZr_PPgbFSSmRMbZfBG-gvLbzMIH7h0wf0xdcgNag8I1xYtnlMRWgkp_AJvCxyQbr-opKOBSfXM95C8yE8ET5BY5BhrcMsNCTvwXeQDks_89-NZEuKfHtHhha-lVDGcWGSkaAtObxOD5GKeoxL3qJeQCqeRaC2CuARsIyb7K6QLeT24hAzi5ntQM3Ox_fgqV0oS8L8uWp_GShMg1qbbQwhkQIyKHqUn1Wwzm7SR1ZE3HlLDV-cV9ynA_lcSF9qKKhT-cZCAMzS4n-Mat9z9iwFAMx5mgT4SyZUWskOR-Kll2IXaoqVwlyUYB3D8ZCjHPMG6d9JjJClqDBEIzzz6joXbyDAPwc2Z5LvjXl8Jv5_ve3L_qEWYWn2ZB9Z4P1JFuiImvxEwf6LFQEk6bU-9ryD1CD83lyGSMu4zD8RY_LX_AX8KwOgtX4IU-aNjWGf2PuEm8ie-0LGbP1Z7NGNWsreSvRszX8cnlJn5DOpxTo1-1zCF6jngxpB-ajaMtb5hKFO7ucdP41LplXUd3rV5hLoRK0Fksdjye259uTbO1f7HwML-HrhRhQeQBDaAa53K48gqmAa8Q8Ef0aOVANCSjHm6j8cea4bpQOHSxffHK-mt0fUkKPS7xRYZFViw1odplsCJW3C46QqGxjACy8oaImUKOEpzhc_lhSmUegX6NtNmnKO0M7LWuW5RMcjZ2GcSoDGfhE6ASNhC3zYhgFojta5xJq8w8GQnBKSkVonJoRtMY_ECWQK7jyymNn6imIrd0EcEqJFgKK_rfa4mEq1m1BshIwBLcAeG5dhMQRvogh7VcfiAfVwMI_iLV6ap6Ky3204YYOKrKmYfkzfg8zDbeXsS5jkTaPrOfQPNDmZussP-mlJc_ty-FLuW1vqxVGdWvrqTNRm4D5UiDx3AMEZRRWK-Koezp0x2w6DAmipe4mhYeu3W7ATaEUWJPmmk9W1bx66gpq1YQigDra2UVhIO__lbfuGXLjsoIUBDTZZOPdngSKDMUiYiqOQJkLLQQFXHFoMl77FVTj8DQ5FDuXlBgpfl0yNkJ6n2-UOr4-jnL4rAyKgPVv4GwGkm51yeb0b9E_n55kHcwtt4a8DeCIohm6H2-R74NPCsk9higix_-4Vm6AxGhiolSaaYkjuqIC7TkBQxemq-f4CAkJ8aj2xgdknj1Up5oledH7MOKljN8f5I7nRe_BDu8sCDnZjG8QM4en-ZunRq697YhHpJKaLwFdsXCKWEoDW1wYEoaAZ7UG57ZTDD7GqXtrNPbLbrJ7g_79xCKf7hIe026ovyrAZIxp_mii7uSl8XHzYtoQRR49Q80=",
+      "summary": []
+    },
+    {
+      "id": "rs_098a0232690eb01e006a6df37edfb08190bfe8134cbba969e1",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfOVtYQBndPpxveWeKFjlFCvycUuweFRl5VBisTmj2uy_gGxkLkuW6XlclwV9-lJm7-olbN2pbR1vY3dMC29seXn8zvOm7VBqZZn4RPYpCxLo3x-7Bricj76HCa7O0_y0lhl2XZwHqp_s0Ltwrfj5eLYRPFygF-XB5BbBJPKR_psBSqD3idw5QqQMF6pkdckv4LKpeXKHN5djpdKPL_TZDk1BVLzFAd4ovUxYYidnjhHQxrbSqDZttbdW8nUcooz7c-FdJv-lNtt6L3qKC19PcTstEdrRAAiOsxyxaBHjXFGL_cGKuipGC-wvDlXxqWrN2V8salpmPnxz3otOU8QNo2o-uv2xXusZlNlDQ9pB_QvgLjhg8HCh8T0_uuh0t3ZdyMCxTGZUo5lboz6dzjPU2xltdjiZJA3ULT7TRrpndDui9Galwun5LL0FvLoS708Q2f1CHoNfdCoqHR28BIQtQBIWA4u4m8wmS5dr4T2JPdxBJYemlfavjseJZtRwjOqUjuU2n09xu95Fc4_Nk2VSRm4I9hR6KK_jEHRQPzIWGy5AD50JEX8cwfDWavYTirx8xKORugULNUzRVQt3VMBNhu6Cbo6V6tvXz1UyW-Lw8xBkT2B8ccpWTO23opV0b6izRDb7aKIw9ICN4sUExT-QBZiVUSXnftNRV5Ir0I2hsfL8Kn-5BLIUkfk2gQKgqqVR7a_aQ6rkHZkA_s4UkR6lzSJ2ovzWna5ip3RV7gHUlq0nBqFPiC_3LSp7yt5y7-fDx-bp2ksJovdUVhlo_I6zUkBjLWN_fxZZaNdPxkQzZH22S113XbSeHUSiq1QSUy3kAPJyiz8IocCfvn_A2-lOsrSKpDXaRz4o0oQC_hUcdBW72xP8pZLd2R7hYugJ02Be_ilr0gLeu_gcTvV8pnsKWQ3sDH2xRo6-xDErKrAqeqCwp0bIO_BygmfeWqEkH1TNylrIw79NmV0TpcaQwbWF-2ocVGA8qIvtqdeXaXQCo2ZK0CQ4YIk1Vsl6BULYaD0hfKxhugjllRC31muoMbCm9oUXoHuo7_4YmAodSNTNrby-zkRyxt5gqHEe7Cdwo9qQ2CiifFPvy22WrtOJYvyqKQWXkuzp06lR2xlVRIbH_sRKa60n7WlQt7OY7a_L-MzIpU0WDxou5U-1HVsYuWHzG0QLLEKlYM5gJpWu91WPljym3py3CpkGX-u_WpE_Dzav0MfQLGevdYN__BsMaw03AMO-9-08mjoKd5v27ZwY7RLlEiqkG8Z-QaLGqUi4pmdBDkiSIxx4R81Sz-lxny7Ta4E61jpM472RseK-WAyhHiohdwO0oXxbLN3Pe3SwpvAc3lBX8cJWzXdm7gf7fkwzXER6OubTmqxlUEKqKMOz1LXHwuQaZU6f40z0CmJA27Zj4ZaZQSDqUvYonFg9DSgIWQQlab6U4GLLQXrMATn5GvlM8W0ayGfOBOqZiLdkGG289LgWWGCqCd9Iql6suFgR8EmjE_scVirI138TpushzsAhgMMt8U7DR8u9DEcg6JySlcuICWPWZDL6QhS2h21_lYhAV7J_u4xMSYO2iOQ5532_Uceh989HYt4p2p9LIm7gzQ1BPJmIwp68CEYTmnrR8npomhHNAI2mCd343iSWmtefUK51SdHxJpvd_yvb4Cp0WSHG-0HITERW7OOu8wFAUDxm9tNdoMCzFJOwqWjjLFjgVNw-9OlU6ec9m7Rmx8tmQEtvfBtVvVNkMkpiLw-1uc2EroqbJenbn5n58njv16eojzoOAuC6LFuXHVQo5-fkYHkKIVfbsKOmZOaK2hWxnmwQfz2iKZuHSVAZHtFsyNErmgzRn-esVn-8bhujbkTUQgAgFtmpOX4AiZjPQ6TCp4Z1ocAyF2CBY-ydnctbTB2DYYtJ01oMlTp_pXaOfYtiW08kDN04Zqj0wD9cmY1QIF0ZD9DAkQ0da3X8pJWLeLz1e4OdRNoziPOJq8b6mqZQc8MebpaCdoMlVz-0rq35dVwOsEDiIs6JM4eJrnC462P_vvCPcqO2WQIqkWHLz_qOS2o_kZIJ57AjQEK-o6gAZC3vmfEpKl6KpnNi6nhF9F0Bh_iealdLSBXdI0xtM68QXKFfai6uICTpww35odmernJskN8Eh1RLHbR3odSX-VW8lk1UGWzx-I_1vcCRFItQJFNTgQYP52xFOvLyYGUSIEBz4LSEAFcFafXjI3c614NAbtXvJxbOSINGTcIT8anJv7HeI_1WZbIVuqkCyMOSVDRgatliNoYaV99hm8FMs_s2qnyN0l4-Ucmi8owNZWOrCXH26LrIdNwo7yzOblIWUlyZ2XYSqMs3Ukzm-8qOIGlYGA7Bd06lQTpk7lFxpgCp_Yq9JkOZxHWyc4wtq9UfLguu7BDoT9C4CvsY7qsDIX9PCKbYnnlErfB_FTOKNEqfG6n1mjBsmi8ZratlqZdoybcRi-4TzZLbjpTJcTHLCrWWI2StVamjgoHEgaeyDsmlPMhhMVQ_I1s54G7oO1CNMhX0J2w5vNpthrZ-R5dg_Q_L8T0sKblC1iL1cXnvcKaqmLcQZ5cc2ehHWCjC85AXbho2Qe-LZan2cxHYuDkgzYZzW_Og-aMjKYXXshm2G21MaQhqSvVgc35JKPjf37YMwjQcohqI4jXhh3m5NwaY8K3ZHolwsVIPgF3GiGDFtYoTLZffK-e9XL3HW6JZ6_2QNNDS6gSD1V9kdtB1cb5nOdHhRUnWCIBXZ8-9p6wBmkaDZrQaDL3Rn2I55jdhBjyJ5MwkJ0mOc83UE2t5n_0GAyJ33Dc14oNpA_9sFfkBg9mJ0drhivUbaz0N2Zl1uwBGOogr-Ba5zCdiK_ACQ2pt63WnA_IpSId5oJaPs-Fg2k6aQ1seq7uNRKEEDi6q9zeMuHLaITNr_uCNIsud6pwhJUxz-LfrKvGQyPNhOJs0ePdMrlP4S_IEp_3wCydYKt4YptpRHG-KsMz92o7PX9RBaC2n99s7ydQi-fl25EuSKzi8lJUMkak5GGH54Qv1aKCRksVqWtlB3C2ph19pqR84FGbWkvQFdyhaYUX2yI0F2Ea-AIvJR0HGP_q2EKvW28zczz8Tfw1kEgjgQRDdAUlDmaSVt7xjR7oryws_9v3tkYe35_4OxuG3334HsEX8ZldIpYLtGDXW8Okz1FGqHwVBq6kk4ETZpfGCD0fBs6W2LCzsxfsrXn-p8u-3SPaJ190Ss9WNoNCU8Z8j3TSijyfe3YmP2MgwbcgMzxvTmKSUC2CjSIc5f8bJtcawPB7611Yxv0TjdqMpUO0v94URLuejC6jDew5tz4kDINm7Md84ib1wAs6c5Le0m19fYcmRG59eeEl6T_RakoEDOLtI8ynt_tODFTOkBDhzkK0pqsKq0tMrk_Bc_jrLjplXEJR1nzVwmddSBkwKfSwnpnwZAc42U8EH4wCjvWkhD2u4aEF_RAn6yXbRT1rVh3vPGu3hb_xP62QmQwYzyDN6Z2rsExRhkhmFiozVTyk4isKKf70r9bGxa95KwKGlk_SgjDmQc6V5WYoKR1EWgcyQ9cYhVd1N8k0FMuangQCnBeL1AHl5UVFf1bqVDyrAhfR7WeAoXF405_Lpd8ofUWnBlwIhbtQYztBE1VFM6IDNFUCl_6Qlg8Kt8R8WgsP6DJOWNSMMpC93JzG6Hixh7n-w4wDqtCL27e01E9pZZ0FpBcIGPUVuRYuUNVjpmScuoHA-uk3cun0YDDdadoKp8naMJQ1G6ncB30b_7BiPNNZjHxIg9el4F5yXWslINe23tGkMnu-VH4ppb9rRA==",
+      "summary": []
+    },
+    {
+      "id": "msg_098a0232690eb01e006a6df389bb4481909b0e2ce3f679457e",
+      "type": "message",
+      "status": "completed",
+      "content": [
+        {
+          "type": "output_text",
+          "annotations": [],
+          "logprobs": [],
+          "text": "{\"finalists\":[{\"sourceCandidateId\":\"c06\",\"page1Text\":\"Mein froher Freund mit Zottelfell\\nruht oben im Baum, weiß und hell.\\nVon Stiel bis Hut lieb ich dich sehr,\\ndu passt auf mich auf – was will ich mehr?\",\"page2Text\":\"Die Pilzfreunde fassen sich an\\nund drehen mich, so schnell man kann.\\nVon Stiel bis Hut lieb ich euch sehr,\\nihr hebt mich hoch – was will ich mehr?\",\"refrainPage1\":\"Von Stiel bis Hut lieb ich dich sehr,\\ndu passt auf mich auf – was will ich mehr?\",\"refrainPage2\":\"Von Stiel bis Hut lieb ich euch sehr,\\nihr hebt mich hoch – was will ich mehr?\",\"rank\":1,\"recommendedFinalist\":true,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"Zottelfell\",\"hell\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"sehr\",\"mehr\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"an\",\"kann\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"sehr\",\"mehr\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Sehr flüssig, kindgerecht und bildtreu; der Pilzwortwitz trägt auf beiden Seiten.\",\"weakness\":\"„Was will ich mehr?“ ist etwas freier als der englische Ausruf.\",\"qualityNote\":\"Die stärkste Verbindung aus natürlichem Vortrag, klaren Reimen und einheitlichem Refrain.\"},{\"sourceCandidateId\":\"c05\",\"page1Text\":\"Mein froher Zottelfreund im Baum\\nruht dort mit weißem Zottelflaum.\\nMein Pilzherz liebt dich, das ist klar,\\ndu passt auf mich auf – wie wunderbar!\",\"page2Text\":\"Die Pilzfreunde reichen sich die Hände\\nund drehen mich im Kreis ohne Ende.\\nMein Pilzherz liebt euch, das ist klar,\\nihr hebt mich hoch – wie wunderbar!\",\"refrainPage1\":\"Mein Pilzherz liebt dich, das ist klar,\\ndu passt auf mich auf – wie wunderbar!\",\"refrainPage2\":\"Mein Pilzherz liebt euch, das ist klar,\\nihr hebt mich hoch – wie wunderbar!\",\"rank\":2,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"Baum\",\"Zottelflaum\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"klar\",\"wunderbar\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"Hände\",\"Ende\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"klar\",\"wunderbar\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Warmer Ton, deutlicher Pilzwortwitz und eine klare Darstellung des Kreisens.\",\"weakness\":\"„Zottelflaum“ ist verständlich, klingt aber etwas weniger alltäglich.\",\"qualityNote\":\"Ein stimmiger, gut vorlesbarer Reimtext mit sauberem Seitenübergang.\"},{\"sourceCandidateId\":\"c03\",\"page1Text\":\"Mein froher Zottelfreund sitzt da,\\nim Baum, ganz kuschelig und nah.\\nVon Stiel bis Hut lieb ich dich sehr,\\ndu passt auf mich auf – was will ich mehr?\",\"page2Text\":\"Mit vielen Händen, Hand in Hand,\\ndreht ihr mich munter und rasant.\\nVon Stiel bis Hut lieb ich euch sehr,\\nihr hebt mich hoch – was will ich mehr?\",\"refrainPage1\":\"Von Stiel bis Hut lieb ich dich sehr,\\ndu passt auf mich auf – was will ich mehr?\",\"refrainPage2\":\"Von Stiel bis Hut lieb ich euch sehr,\\nihr hebt mich hoch – was will ich mehr?\",\"rank\":3,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"da\",\"nah\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"sehr\",\"mehr\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"Hand\",\"rasant\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"sehr\",\"mehr\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Lebendige direkte Ansprache und ein besonders leicht wiederholbarer Refrain.\",\"weakness\":\"„Munter und rasant“ ist klanglich kräftiger als die sanfte erste Seite.\",\"qualityNote\":\"Natürlich lesbar und bildtreu, mit klar hörbaren Reimen.\"}]}"
+        }
+      ],
+      "phase": "final_answer",
+      "role": "assistant"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "presence_penalty": 0,
+  "previous_response_id": null,
+  "prompt_cache_key": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+    "context": "all_turns",
+    "effort": "low",
+    "mode": "standard",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "store": true,
+  "temperature": 1,
+  "text": {
+    "format": {
+      "type": "json_schema",
+      "description": null,
+      "name": "priority_language_editorial",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "finalists": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "sourceCandidateId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20
+                },
+                "page1Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "page2Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "refrainPage1": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320
+                },
+                "refrainPage2": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320
+                },
+                "rank": {
+                  "type": "integer",
+                  "enum": [
+                    1,
+                    2,
+                    3
+                  ]
+                },
+                "recommendedFinalist": {
+                  "type": "boolean"
+                },
+                "naturalnessPass": {
+                  "type": "boolean"
+                },
+                "fidelityPass": {
+                  "type": "boolean"
+                },
+                "readAloudPass": {
+                  "type": "boolean"
+                },
+                "rhymePass": {
+                  "type": "boolean"
+                },
+                "refrainConsistencyPass": {
+                  "type": "boolean"
+                },
+                "rhymePairs": {
+                  "type": "array",
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "page": {
+                        "type": "integer",
+                        "enum": [
+                          1,
+                          2
+                        ]
+                      },
+                      "words": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        }
+                      },
+                      "valid": {
+                        "type": "boolean"
+                      },
+                      "problem": {
+                        "type": "string",
+                        "maxLength": 180
+                      }
+                    },
+                    "required": [
+                      "page",
+                      "words",
+                      "valid",
+                      "problem"
+                    ]
+                  }
+                },
+                "strength": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "weakness": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "qualityNote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                }
+              },
+              "required": [
+                "sourceCandidateId",
+                "page1Text",
+                "page2Text",
+                "refrainPage1",
+                "refrainPage2",
+                "rank",
+                "recommendedFinalist",
+                "naturalnessPass",
+                "fidelityPass",
+                "readAloudPass",
+                "rhymePass",
+                "refrainConsistencyPass",
+                "rhymePairs",
+                "strength",
+                "weakness",
+                "qualityNote"
+              ]
+            }
+          }
+        },
+        "required": [
+          "finalists"
+        ]
+      },
+      "strict": true
+    },
+    "verbosity": "medium"
+  },
+  "tool_choice": "auto",
+  "tool_usage": {
+    "image_gen": {
+      "input_tokens": 0,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "output_tokens": 0,
+      "output_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "total_tokens": 0
+    },
+    "web_search": {
+      "num_requests": 0
+    }
+  },
+  "tools": [],
+  "top_logprobs": 0,
+  "top_p": 0.98,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 2120,
+    "input_tokens_details": {
+      "cache_write_tokens": 2117,
+      "cached_tokens": 0
+    },
+    "output_tokens": 2124,
+    "output_tokens_details": {
+      "reasoning_tokens": 1034
+    },
+    "total_tokens": 4244
+  },
+  "user": null,
+  "metadata": {},
+  "output_text": "{\"finalists\":[{\"sourceCandidateId\":\"c06\",\"page1Text\":\"Mein froher Freund mit Zottelfell\\nruht oben im Baum, weiß und hell.\\nVon Stiel bis Hut lieb ich dich sehr,\\ndu passt auf mich auf – was will ich mehr?\",\"page2Text\":\"Die Pilzfreunde fassen sich an\\nund drehen mich, so schnell man kann.\\nVon Stiel bis Hut lieb ich euch sehr,\\nihr hebt mich hoch – was will ich mehr?\",\"refrainPage1\":\"Von Stiel bis Hut lieb ich dich sehr,\\ndu passt auf mich auf – was will ich mehr?\",\"refrainPage2\":\"Von Stiel bis Hut lieb ich euch sehr,\\nihr hebt mich hoch – was will ich mehr?\",\"rank\":1,\"recommendedFinalist\":true,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"Zottelfell\",\"hell\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"sehr\",\"mehr\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"an\",\"kann\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"sehr\",\"mehr\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Sehr flüssig, kindgerecht und bildtreu; der Pilzwortwitz trägt auf beiden Seiten.\",\"weakness\":\"„Was will ich mehr?“ ist etwas freier als der englische Ausruf.\",\"qualityNote\":\"Die stärkste Verbindung aus natürlichem Vortrag, klaren Reimen und einheitlichem Refrain.\"},{\"sourceCandidateId\":\"c05\",\"page1Text\":\"Mein froher Zottelfreund im Baum\\nruht dort mit weißem Zottelflaum.\\nMein Pilzherz liebt dich, das ist klar,\\ndu passt auf mich auf – wie wunderbar!\",\"page2Text\":\"Die Pilzfreunde reichen sich die Hände\\nund drehen mich im Kreis ohne Ende.\\nMein Pilzherz liebt euch, das ist klar,\\nihr hebt mich hoch – wie wunderbar!\",\"refrainPage1\":\"Mein Pilzherz liebt dich, das ist klar,\\ndu passt auf mich auf – wie wunderbar!\",\"refrainPage2\":\"Mein Pilzherz liebt euch, das ist klar,\\nihr hebt mich hoch – wie wunderbar!\",\"rank\":2,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"Baum\",\"Zottelflaum\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"klar\",\"wunderbar\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"Hände\",\"Ende\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"klar\",\"wunderbar\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Warmer Ton, deutlicher Pilzwortwitz und eine klare Darstellung des Kreisens.\",\"weakness\":\"„Zottelflaum“ ist verständlich, klingt aber etwas weniger alltäglich.\",\"qualityNote\":\"Ein stimmiger, gut vorlesbarer Reimtext mit sauberem Seitenübergang.\"},{\"sourceCandidateId\":\"c03\",\"page1Text\":\"Mein froher Zottelfreund sitzt da,\\nim Baum, ganz kuschelig und nah.\\nVon Stiel bis Hut lieb ich dich sehr,\\ndu passt auf mich auf – was will ich mehr?\",\"page2Text\":\"Mit vielen Händen, Hand in Hand,\\ndreht ihr mich munter und rasant.\\nVon Stiel bis Hut lieb ich euch sehr,\\nihr hebt mich hoch – was will ich mehr?\",\"refrainPage1\":\"Von Stiel bis Hut lieb ich dich sehr,\\ndu passt auf mich auf – was will ich mehr?\",\"refrainPage2\":\"Von Stiel bis Hut lieb ich euch sehr,\\nihr hebt mich hoch – was will ich mehr?\",\"rank\":3,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"da\",\"nah\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"sehr\",\"mehr\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"Hand\",\"rasant\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"sehr\",\"mehr\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Lebendige direkte Ansprache und ein besonders leicht wiederholbarer Refrain.\",\"weakness\":\"„Munter und rasant“ ist klanglich kräftiger als die sanfte erste Seite.\",\"qualityNote\":\"Natürlich lesbar und bildtreu, mit klar hörbaren Reimen.\"}]}"
+}

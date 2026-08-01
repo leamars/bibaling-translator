@@ -1,0 +1,278 @@
+{
+  "id": "resp_0140590f8b665bda006a6df13dbaf0819090e8e534f3689f4c",
+  "object": "response",
+  "created_at": 1785590077,
+  "status": "completed",
+  "background": false,
+  "billing": {
+    "payer": "developer"
+  },
+  "completed_at": 1785590134,
+  "error": null,
+  "frequency_penalty": 0,
+  "incomplete_details": null,
+  "instructions": null,
+  "max_output_tokens": 3500,
+  "max_tool_calls": null,
+  "model": "gpt-5.6-sol",
+  "moderation": null,
+  "output": [
+    {
+      "id": "rs_0140590f8b665bda006a6df13ee794819092b81cb224b00f8f",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfF2qnpmA0tB02oISABL8TJNXZBM_qEA5Lg2tOGX0LV5f6ezzkGfBXI5vKrMB8e3dXr2lPJcJ8xfCuA91iqv7kfrHBOVN8s6d3tGLLZwXsKkiv5-KN0LJ0dxwQeQxi2hH1po8FxWcMmT7lb90QT5KsdrINAOHo-9rzeOGZvbWukfl44fQVsZHgBeNOKMjR0wckDREkGWfmfiDe9dgq2CEsMycBzWzmRtxHhMsGrLTY4pxgK2axszncdxqe9CFAc6JFTaIj_VJ6tkgFQt5jmolQr_gixRqzX7dhOlgLdSnuKvUbTAz_a9i-ppwi2bvlzpDLgyUGmPLVEJqBU6SCtGFpUsH_fTJtEQGK-wZJ_dZIZWUxaJ-dTqUtmoR00m_er4hiwJ3CA_TecxNpXG4AcRYt2jAUfDlCGS_fbbUXQLW9oap58rkE-MxttR70OT8sx5QfU3Kf80oxxX-0OMskYCO8C1QU2MaOMwH0lnBnwyDdJR3LxuPDpDwtPiM2iPWqH2OiaqiG78i52j2HOwXMChk1GJ330mUDX0-7566nqi76FYhX9v1fP2DTJ_XuLHeXrPxVfDgWcV3LmTrk1u3kjabFxJrhCMqJzSWKCzPWop3mU_an3JugHQQq25jxtQVtL3jC-7q-6X2srSzkT9M5yFmNN8YhJGf48oYdANGt5XHmoMi8EsBsvPqgk40D21oD6KeEju7BaFDVWXmTRhX-vLd2zMNaQWViyo2VBHaJSfpbgW7YuFLz8f4l5EkmsyqyGGiM3_WzHMF5VkaimvV_ab61js3PX5u6Oqx3_5Mc88OM57hCrjWC4-ASv6-TUbo1T12KuD5Vxo8K77sArnpXV8wP00YGUa8MyM_R3JHT8VI4iz3S2xG9vP06NpyjlKuVBsKMVC0P33dSI35nBvh11TSMYlFETn4G2eqlBvwfmgHnU8TTM9aI3YBFEgpxhC0p29SCrY7dsMjfeh8u2Ro7wxZnH4hzFfzXsbPTKaWPsMIJPlL72dL2NGPPj2LBWg_6BYiXMOBpObBLpvoooq6zeKJwvJbdne1r4YxmLSNDylsX1znYFjxIIAMg8KbhBdMs1Sjgnn5ZarnF28DUIfVHVq0ePwlxTum3dNZHtu-qagHT37rcaTb4G5cFYTQUFtRJ-WN7yq_JcjKQQfbouyr9R3e3rxPbS8nhhS7TJlFwel4j9lhjTP85LlmJzLC89iUt0UOdpxcLVFAmC5sz6Y_FS45uztmFGMch4qG6taDF32ukfhsib2cMOEvH2s_bXMkG2DBmkYQQvgMeCOtfSsVQFbOqK32VGOIAvB1K03tnVokKw9Aw2OP3sWTtdqX_dWRgu2-LYvjqP2v71-2l_ejwFmEiuUEONUHrIIIKJH4OYqQpgnylHlTrp2rpkfiEEy1qM59FIK6UdQXOZaNDxBVaKG-PExMnJ1Qtz5CsXT6iQx9H5Bsb6ibuIHwkHKz3bJyYm7Tbq-xe0JKmM9IO1L8cBISxMa4Jca3KeNx5Ey8HOaza_vv-rMYKDjePHdP1fzdCL7yFfVnUaIc3TX2hIqSjW4wvL2PsPIKxHeh67nflZpyrirF0e2VELM_3ByWd-cEdp41DemwhIUvTADGH5XC1yVsR3jevdsUxPoiFlmDigoZIIHG4tb3ZKCuHDLmGnmejSiZ-I8mJUeInXDuvCRTxPA6bdBW_t0iPF5Qf-BxfQBn7xBZmgSSKo7SYqxlv4e39PhmBKVP1JXLTWFNezy0ppJX7AclBcf8fElgkgsY0AW80fJUgTi6nRYzhuc0Ar8vR7M4kuoSzqDBNqoB-yKZAbt8ugX6V1E8eYFJaeG2HhWS9TRrlRZD_cZQ6G3YT7zGejqA8Fv13Ju92Pb4Um6n59E97FqLU0tFHaTHYJbxtcWrM52nMtH5cLpdvma6lshgreGhacVwg9NoEbko-GegrJRh6MrRvwIBxF1fG2LRQPX6Pe3VfV_Y6H4KWJdfZ7jbFptIn2Nr2TggklAN7I_ewyMbiXXZAZXiYyHbYgnop-jwfBIX-zMGEeEpDzCXb_j0XBP9ISG49G-r7loZs0ifa9PLcguJ4UXdCz09nQ9Gr79aKwU54TGlNezvRlxY-m3NTRI3wKMH8ePJzvxdfGBYzBgWGRpWFOtUJwUnWqAZPmv8UZW0R68RB_7T5FLkmlnK_0q_PFVfmilo9nSWyewjgIWKGhC3cvjBqxl5ypCFh-fge6DH_vEJnbQWj-IW0gLWtY8GttE3ooCfdRpzxELNhZpKsMZvaNXUUgBfvPeTFpLRtG7hh9yKtXXHiE2FfGySmgTbDGESAjDgDzo8wakn0-NLQzHO9spXE-xx7yEd_T9iX2wQn2g9-9D1q5SkNBxQSGfcPDBI7nsiKhum-FRsoEahD0rhCdk49si59mjB4dBwkj80mnh4s7a1cg9L1Vv3ctbf3XlkzkHQXCDVo90Xy6iItXflVQwN5J_fublN8Vf_9BxjjrqUVddiK7R2zRYF2mXJUk6tHAvJgSwr85wVHgGU5cKHR11ma_bwi-BJMQ_toyizVNM8NUMWQNGOUl0mChr6eN9RFFdFAv0CZgk2K0Tb2s_DaOhKWyMIyBkrvY4yzYB4vfkHndJc_4eu7QDnpqCf-JF4A14m4fL_Gk-v6CBekdy7s0YIlEzwFA99VR2DLPqq1RIGHYUUgv5FZr-sS2pNBLbcaq1aFEKi5GTCcC5PIkfBbh5cHR1_3G-ms9nZKehlEqmg1fBuU7OCQvism3cqGkv1QwghRaJaAPEBI_8YzwUhF3sv4nF6ej095BeOphhn99ze4Zr1i96ZXduoLQBtURs12nkhCMkHNNW5LG0EcnWoFmWL7DO_RYi0Xm4O6Swqo3VGp_0Qpf21H43TFEXRabGeqya8pQ6QGiKx6usTFNDsmrj5odEUSbeO3rcSQSq8rSGQtn_V88CqUtB7fwE3BpH-IIvqbzPZRerT72nyFNYf3Ak507gRV6J2Y2r50b2_0WvfdK3gOd3x2nNRIZT6B4VEDMj9D5ZYLtsyOYpgY_Z82s3sgayIBU22KbdQswHNRWiIQz6GAU0CUp8ihRqRQ0I1wsSxCOCpoiOvjTtoL-xoq0Vm5EcV5VFlg7QJXgLl0Pc0Te_vO-Fl16SdSd0ETjA1Xmq2qozyq1_zKbQBQpEg3V8glGBE5ggt8NVslFj5rBbWAZABsZAPp_pXyftwoWlk63_A_SQH5Qy0CULQg46rgjBssmhnSYXKzkUbxO8_4EFIC-6k6Q3MgTjZic7Z-88via4-TG3KXTDN6tJiET9lv95DLWlNWyu5l7F0jHkRgAH_LFZ9xrOF4Pk2jT9InJ7jBMb2eaYd00O0ZAe2ZzT8qy4oxlgMjgCT8cpdUcD5bOkMGlghcPyVMHKBQEigaejBXhYBfC2U--VDPRQ45z9SD1g3hytqbZ40pFDRWRX-rBVBYoqhvHhjyCb1xlKIEKHsoFqwB5Ln3oRLqMk4WVGgvwtuA7nGUB-B5J3qumaOGsy1Qj1V-hiDo__QOQgY4IH91fLzdlOBzSzlpgHegMhfo3GX0kt3LXNPLpJZ0PqhsSmVVNYcD-hUrKfaG7NIlWetNPqIWVhpTPYk3DTqdRXrNp0ngbZEVk_ZWiWM6INJET4Rp9E0sGAgdAlQkOUSBQcl-AsgW0d5TjAu_slfIEnWVLYRmiSMB0BihVSFZ6MwsAYt9TPjuCmOEkZJoWefa1_RnRsKmvtUoG1jhhwvIXqGvlPAXouImZ3bPz7uIO33zrHZQOpTVP4v4RgckMZY6AcyiJz_5xBLl_K5MTfZKefbZkJy2-2q54sQBrjRDYJY9lmbJr8n6-_4nBK9UVIRDraZ0Egn58DOCJt_EWbWBOqZEDrvjwVR5pTxjf6fX8beW1PlChgyS6_St9m4wO71RurXXgbBN-hD3NCRYKESEfR1U9gc4jf0EShCFO_WnxYWeWhb5zgMefi9z_b8WGrA_oCoeFP18MFIA1F4i85fEm4uC-x3HdOF0Gikng6uVlCCNke-kpswTkKBTlEeT3D1yIjxIq6xOp81Tz_DX-4Lydq6E_dM1XZHyuGwAvAXiLPUqK5FdsXt8J2XVQ0Qo3GcJOHKUCnZfRLmRWzEwcxHvZpMjwBK-EsvPZBouU-O6sJ4LuNbkNnD08BXbngAmYLA40pT1McgdJKHoKoO_gJ5x6TsTYruFXa1bZ4WIDVfdSYAgH3H_pJPIgFlHXdtBdUjKXZzIqEypE3FtVuG7v5kt00_A==",
+      "summary": []
+    },
+    {
+      "id": "rs_0140590f8b665bda006a6df148695481909ce95b1b04a668e6",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfF2Wil_UixDNfbQEKPFsG2GbLVfOXE-xzL9hVRuUlnHNC2hdaq3Clamqexc7vn9ThWLmL1B2MSnSRGB903OdMd7LYy7CKl3BMyNBdfH91cnwonJ-3Vjclw-nApXXn_IaqwuQp5wH5He53bK9YEKBG01afUretq61mGUtDhzgRo7voU8I1aiAeRy1RVpjYRlv7IFAWrpdnSmHXg_i6Vnp4_HZsKuNd8U7e5EOatnSPqJWt6KSqIs6lRFzPPoTk253jAuwTuUb1lhoRC604XBKrefbEUt2EagzM_yKvMo3138Qis-KuDIr9nYJ1LKDTd6HxG0UMvCe_ORpwl8o7b50wpynpLCj-Orm0tFLjYhYusjCsEX1HgjByHx32CLrFXWbUewo7qRx_78beFwdCaN-aZj1pZiqy-H5sWcsdYVhXfcwSM-lbmnDbBi1q-BP0ZuW7YTANKCnmsnNIMOG_21Ho4QDuI5P2BfiINMiXu6FwZRtyvNHHLEvG3sXLbsXGv4HmA27epAhxUxHOz71mGKYheinEbxDZEx-ry43RXfksoieGIfoXgDWRaLzDVt7d2MFD1iZhx7dMXpk0YdmkntkI928UDwSOYXrW3mSm9PrZIoo9ss8aJiesfq0G31O9Xtg_e_i4Tu85zEC3FmAwxVKnn5VRoe3Ao7joWvj78-eSrXAAXtNp4YseU8howYF24OsmKqPY4CMV9Gzct10xyc5r2MTJ2deKpATdJ4PLaKK3DPx_3HWPeWpNLOhweJzwVa7i0_AOlM2eixC0FR4qjgkfsOqYAVhO9GvUEOPDwMbyGzT-dBUlNCMQ04-3measGAbOjoYnCc56a03mVhrhCGVaCqrhWmLOAQ7bOCNQM6V4jEJwP8XUmqEUNqfhiqON89javKQY7T2_f6Iv0bj_w9FdgLyNGuI6EqOtxlH3i0gUtcPBgO97TbS5oC-wPuvtdor3r6dNwPafKkuR8VFk-iCnjSvDmehMFhcPjPgaSdSSAdDlUoDatVctYX1k7_MPo6oYiUGJ5zub9xG6ukhjwyfF8B6oXITV4Y26VmE4-c0_VARmjcyUmy4zK5YulL6_oEoE0OqjAN0wEQmEWN9_lfoXBiZc-sOQVGQI4BNODdweSDyZAs_x4J_3d-IR7hszbZz_kHqF8FQovIljwK_r1Ekfb5iSOnVVt9qJx-frTWpd7GRZ2AgqGL2_un1vJBdsgGslzI-ZSo97yLekJDSLyKkAp0poUb_x7uMWw8t8e_abTf9bQV5xogSF7Psk8EagfY7XtIF9oSt2UezH55z3CzGMg86lW4VMxpeXx_CQBaGbbXK0-on5REWJPcLnmKGRS2iUbhnrtToPI4x9tubYU6n2afKA5jXkC4hLC9IKmNlvwEXXFICHNB7yzTabhPiRU-kl3LEcFTHG_GZJfo6hgVXfQQdwEoDvxQLzR6sPzby9cslCGDY-5lmB6oDiN6K8vOnjGggIdwBqsS87UPxqr0qy6nImoVKqcPgHwi6YqYUFyLzHsPQ14V5FF9pmT7rATVK4EuVei2_UpW8SU6XgrBCAfPnAV4iVd9LNUrdjvrYKAVrYoXhdyA02P9JPL8iQbDpXtsgcxZ1w2cmj-roUo9bNX7h1seBsEDqlcfz63J7Gef0_CWmidYFyp34NGTQL1_3i17GSzaQWTniR39KzLAiRQ4wUIUzApBD2YRBpY03-1Vq-doZLxw9M29DeSD2S6-U46TZ8R2tvp9B6C7itXNhoRNp9wIMP6gcvCsaiGSdyryveupP4-K5W_hyQFIcPJs8gkf8YIzR5N-4vqIwwyTq0S7d_M1j5AUPIVFKaVF3Sy9_XezHkxIqFDUtmjWlA6E-XPw9Xmx3PypRw2wwZ3XAYTWCuGO9iihTYJqMAQlRBG3ADM1PQRrnCZbwH2mbmv43kRGHNNIA2yfKLvCqm-pvDEb-zPNCfe36-JgxzMUQ1DBf98bO8aSxjewAjyIII_LTZSWZwaF3ZxTwOez42XQlbtTRYyQNhUVN9jCdOgsHg3Yk-dHi1cY7qoOoHDm1HAg8wGi8eflUrO1VhT8cScPEmUnLzT6dETuHrMVmrIXcX_eQmnHfcfZa9gD219DXx-IQpSBafw_sqgA2wW-t155l0cjE7bnsz1wScTldt7zRCFTQ3_Qr9HTJ9VaN4XYzINkeytgwOOdDTVvdK7CYYaUTcNCuXzWE7_Lzyho8Bisv-rvAmB3H6N20jtYxdt35zdtYWRLqm3_Of-uoW3CDaKdSt3JZwLW9GZ2mAVn265TnZLmHWxg0Jzx9431Ifsxhu563uYHIZRHuBTE7kcQ7Q-lEn_nEbguZsOG7KiIrsWKZQcqMOL3C7C-981wqGBkErE1qjk_6PbrzXwYsekABP2TksbPFNpCWO1dv35kdBzBBfbbjpfOWrBsAIItl4hX7nTVqkhcMsDDAbxCTbnAjrDvWIC41huOhyzb4hFlVAC9wB4GFTccPaB5MZLqx2a35I6Z9f10H0JYhk5yaPm7n5LIuK2VpqUpfKs27KXL1gQFSNM4iTW9ZRyz5VXENIbaMc4x2nbGZSr-lvHqoLxnN-VE8vi4bEwOZVMSTZc9yosyqHXo6tJq8AiaF5p5uKjiFjHb-TkVzKRfKjU9CPobYmTbLC33Q0foLS9Ui8BdkVPibpTjrGw--ES-slvHxOi4yosZ8QCLTAxGjzzY_vnjYm2c442qLUM2bG787-uRvfSELH3nnvdYjJhm8sC7_c4Z9IR3Q9cCiErpczP-LHapua23gDx5O2UPssCY2tDxcgDXXMEdpCNKULvsdwAiv9VvcG9FblcHBfk_XW1JTjB2iajq3zxMMlOSI9ZJkcgNT9zGouUTemKqJkZAv3tATjk3mHtwgixNouT6IcPD_gB7cuqy8YspRFwEU_nCUIrah2EwyHV1ckb8YiQN9RL6E3XVhEybPVIL06Olurt5pvW8I-7SmZDtTheYlG90v9qTGQsD6mgS-O7kftHO6Wl5H5USce-yFhVSWrKuDiKjcIJgyHWNTck2WbAXwJVHTqM75EBu4GMJxNdtyqVD0OQHjsAeAA5bUBzl8s3dF7zZMs4knEvgpvOFaJgVx2w94fNvmvBHiIEBe8s2PNlYg0V-oYeUzdHjLXp0ETrry3NnkPOCAogtG813ZLkEjq_nTB5LL3PZC0cWKkYn3iLFFlJRVumyA1VxTPiBJ4mAFi9KocucnYAod9XmD26iv55wYHWc3kuWUH2nn7uAxMXd1FH4p9FL0h3fMq0_aNu5ho43lCXdT7SYPSrEZs7mStqzgC8F1NILXbCRos0wObzX6_-6N_shiwk3lkgwk7ZCw5aVsnXRAGvBTBf7MJI36MCcpK6y6RiftYFN22TaOdkK3AZHjK39F78yMABMdxY8l38JUrS2tf-6gVEfC1-zczywN7NCLHL5DpJsfOeJc2JVolsnG_bKNerC79yH9d4wGYWK3XWgOHqlCnuTN4V-nbWp9Ws18i5pI3GTodf6Sd9kOoDSa_vvow0D6CsDbtnL0S0AK63AfMKiFyIpM6FgtXuk0FsRkSku7jls4YjKccx8GszrSmF4ZaVpjm1PW5U2r8PMBaQ8oSTmJ0lDS_Kxiz_6xBUY5iZtmmnHvrXb95CcpLei624vow01Tw4cbzDcPh0_goMrK7MVV_lB_fovAAoxMy525O3eLZWzX1IV4vHF4DfFvaVRKzR7uBtEAaXBKb5Whtag7-Kj46lP8BeFVHshJzAyz7mtxTvmm0yRkQkq96pO3X8riII_8LOZUvsRMgwrblEyhX49aLt5HGNkx89AJBB4OiKehJwT0Kyo5gfu3hX7n_xiB8bmLoxgb3UF_CZop5nfzoN1o07hkWnS-NrQYVjanX-RvyxIUyYl0BAcrk35Q0Rd587ewAWv",
+      "summary": []
+    },
+    {
+      "id": "rs_0140590f8b665bda006a6df1515e7881908953644cb7365e6e",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfF2H8EGEFMa-FtQchSIEDxHVuo6KBC3ngDKUxkA3hqg9CHc1wPm_8pCU9KlSL9unBzOZJkYA1bo9G4DJMwRo7JgatdyBDRH2F3YpSROqYbBqY2_qwP0q9pAet56uwXa_4RW4YXvb_mAM2qNWrcj00Rxii3uacE75sdCc8sapdBkYfv5QRh3L0VVVNS5Zg9mi1fKf00SmwLZJL3fUd1EfLouAyicf49B1Gtd9b_-OFKU7Xt5ZmcdfqpbkKmHCA_89cMEzxE0ks5bcRpeYZeu_ixfJ7NgEf-wsHoQaRsqKoYnsLUGWZQPhfq3p8yqQkvJoQ1UeeBjMxWJDOtSuHsuByw_OH6Rp3YkYH5YWfdRGwr8D3X9_mAaksBc1RZOsk0suZiNHsOOh99QSuPPjwTUbddNI21AFqiDA9UHeF0_qwBPl29fkyNW6MU2qtw2y8DSQGCA0JQmzJPduYDh-OtxzsdjYflosKqV0Wv5iI0tWHWSfzMXcCSkHzI5faEbsI4YntmFbgrSIgg-3UgwXJWs4IP8-Vjy5sxjEItXwbwZdIaJKKRYNkl5lT8fVe-LiGxWPAgXo7FcQdzWPYVxDRHMZd2qL2cu8aL8K8hVlDX0kXDiPj7m3MnPcm8lnS0QfraYRIXx5zirA9bSR6rciBAPSf7qymmzoKQKtvJIFUyj3QhLqH6hw2v0WmxemdYxvZBCMOI1hcmnH_aFS5GyZv-HWFbox5DLpz_ZsO_S-8sbJ7WtGUlkcO0rPHM4nMUbzJvBIekIsPLWMMnnqEizEWedN7ZrQo38zaqdrpFmJ4qVqQGSKxySMauB1mLAozwRTCI66cn_ErS6waiv2VBvZp_pNsdUbdsjf0jk0RZcgszg3GfMKcjHYzOVFf9dtHTpo_ikgvEDX9Y8znVOUnzNdQlVCDzJt8hpiA3CParRGrmdjrG3cE45g7CIbsG39i7VibVdgtCSx7TM2PokBI4CMo1kS6v4HdE-kZi-LqKetMSXZOS64aOP3a77e1qLH3UcA5u6R62GKhAY_1pdD8hEtreqrmiQyB9xZAorEMoSKYejK1FcbSCLQg5qevV0IY1G4xDIm14ozOSCl770wTWsWcjZV87zHO6CNXqo9MjgcIoyTnZQrEk554I44nTBNlvyJ23RePl2MP1c-GWrPecAY8a0i9xALD249WzXOxyVJmR4hj2LTgqyVZur2xlypsNAUSBaHK_8KY6wn7nZk0fD99MdcGNH5zvoqCAoDCxe-8_Gpl4WqY4kDJuPDxvKMQhbrmRqITdj14EmrxTzm67KvFVwlLyDIx8fcis7kvgYVH3-nG8KKyezGQ2Sxb659rhOPLcU8U2fgQ64EdX-LrNxHLFF3c0htQe3wfNgbJxgl7KIhxK1cYLxd0eQGBqY5DbAEFwNaabMNJv9owDrD1QAg7M183hKHHrJXH-raAfyT9Bnv8gFyVlN37uGsJik4xFQ5cJEviWTa7fAXwZCqeRceeTlTtQiLFzcRYpI4sPDdRazJLB4unX6ivt5bYhJIOsTEdX3sIbFkEgTZgQhgygNE9nyZkqJBSUTSKzETYxcOr-MeRkY06k-f8jJiw8n380QoLyR6RLCcjtOTYDczEOp9zgExYC9u3S6I7OxCWoGAYG1rWViIt45Ok7-LAKGityUsG4qnkqaC3w7ViPF3znJDYFH4j0eH70yBMCMhe0tG-m9UClWdm0mNS2wR6n47P-wi3ZbvUdamUIh3aeZ-p9JflJVgmPgty1YpFsAMJDQ4_2dTKAcA8iq9-BSLsI82qO543h1_Z8LgI4bpymm_o1goipQvw0wg8oz0jfie44cpeKbWy4Mh5n-ymwXg3iQ7g3r3e5k2vDIJCk4Al96qiQThlMe0J8xgApgBwNKZnZxcbizxQYWLv7gBkY1zhsVPoQAlISidtd0Z2RyYHmfhKXRy6qqPo1xzybun-H8gbWW1ovUTwUXlRB2Ww_Wz0cUPLIuXcsa-JIBz4MT1zk49_gCmcEeAdQlwPhl06d-ZVP687Q47uTikhI6ij_tdk62zFsnQcII9RRAs-2imiAMaVlLe1qF5V_cEKNYlzenXjDwlw5XGWb2O0V4cT-olFKNrb_U10oarSs8kHSJUaYP8EzZ1_7iL9mCpGXPZro7yCwnmr0RA_BI4AxVB0ej-ZY3mtF08pk4dpA9dN96k-0CgN8wm3lM_GMd_EkBrk1mBOOrqKI5nZdqh3pqygmRbKBoUaFqNEwuUu6Ko440jcMybqBE8zP8zC291zKRNmykNEZjAuhYpvrdJ6Vn-lhiMtaLSmS3sYt55dFnWyCptn7e9g0kaDbIpuMq12e8cJQLEevBVb8Z2tFGmL_49P4bC-ZA1V_m0i4dGqTsTQIw8EUwaLe6TbmlzZISLHIuLGR6_mRzhSRGkXPCjJW5JlclmGfoKW25z3xcktkLmBpdKAETKnJEEKwsRLVc4eIo0khtFbk6p21rpRffR_t67HzgZO3o5HDDEeYirESmCz5thW8cJBDYnzIVwktELhkQJNXtRfF9ElbS35UyryLeqdXdZA4upXWjjkTx1WoEjBnjFbOia8SQ2oF24HHaN-hJfvExQKzja-gbtb1i2iezfPLb1uhhdy13rkblL-cjLw0UtUYJppSTNUSMdqKMKotUmpmNxaK78BMUZc0stqsKF7TsksxAfYWrO0YT9G73VJe1h7EVr_0b6xHBHLFGoy1I-ZYofc9TYVcmBE-BO_ieSAexX88oPjZYeXn5b095F7IGZU64VXW2D-gZJyCssuI9s24M6jomuTa16q9_hGRX1ir7U-cEwntfqumfm4EIc4c7t-tAIn3OsAWuBMEeXIbuXHShlAZe3T46Sq7qM-WDF_oF9aK9XjoVq7e56JziwOGdKN7sQwGdp7q-5Mdgmm1nSE19dRvQufTm0QZ3-uqchytSoCZCEvD7bH5KjUcW-WRAWLn4WhB1EAQi6I15fGjk5uRsr4Q3rz0CQRRJm2pTkAacseFeBVzASP72xNXMj0rl_IPuAXEMyHf0tP-CJBgK3VG5zFcNIUA2wUvQ7Cc6A3LneWItyCbmOpWq8YNCW9BuplBZYPVjIPkljKV8hP03fWcnp_GMiIX3BkllLE9j4Ky1sUNV5dfIxIoIOOJO6n1wQ2AwYEp8UYYHHc2Xgq1HfVXzfo2AoIPKE5NKFajknu4Ha919L7nnJpVFh_hew8pOlErsIVAXGeqXC1EIzHrXeUtNqm22bwscq6_g_vQtGkuIQSNIhHqLvSDEk6PcJvCYfg9hym9iuB6WJFP8u1EPOF1BoI0vVC5NGqZxoaHzI7vbmhlxk_a0HHbVK6reWxAWUnr6gbP1F0mmLef64rFUIb4VWfIAb1ebdUAAUXCZscYItEzoJitIUYWdrbuAADGFTfRhrBNaH12aNdZaV7Ulu9YtlpI86BfiBSmMKHw2GToH8_Zzl7jsOUyiz_bMDyd2gPVM6PR1RxBJx6_spi51q_vQZSSoSJFtMIUk9mXK6lReQvStoSjkRWtWnx_xqNvtXXzlJz7fXUS8cw4wSBVyE73LgMJCotgpITUxaqW2dpsXTI-g1ze6QT6uRNYwh-sn81j8LLXOmtGoXQq-vLoQ_9qRkyasx1Pspx4H26OT3t5UvYMW4BFC2N5EDQO5epdNC0H_kj2E72aiqQFASEnVnxsi9K-GQoXDx_-IhXnRwa0TZu7KjrSYTUV2q-Keo_X_tzg2VgMdetONF96RqDx3fzRPeyS8LB-cu1mKfZjo2PKXYpnSGVgsRMGy6rxny1VyixKhQbdPxoz1tcRQQEAsKlTF4HVgPOb-sEnu41muH7qvdqwlv1uUIw9JZ-H3QgqAfXyQT-Xkn5mdeEcT6Tj-StmF4PTSOsvOHfQbo2glx-UzC6YPEwsPDEW-46TLFqkAR-JvWHnqizaD90tXS2WBb4LIHRJ7vYditmRKKQ7a4_eTRxD2v3B_YmlVNo365EyolhgNGUAjXxOdF8RBS1aC9NXtr3i17M1TAudrhSJXr7MHAKpggcPM4IxlaIVi",
+      "summary": []
+    },
+    {
+      "id": "rs_0140590f8b665bda006a6df15aaa0081909c1064289650172d",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfF2_Zw_MEMdGzVcdK8WytcVDYK3NXx_W0uuQxNiSbOVZDFQySeoeatZhS6oQGxKmVr4eANeq_F8s2n2aNb7pLCGgDx-qxkLW7RVZJKjfHQdXXGGdYWzg60VtAgn-aea6n4HvlEfZSDL5qfEwVwHFsMh5Juq0mxXmDJMZVmV5fxKbq0JD8skUl87zBtlXJoBNyTOZ9jZXIL-0zYZJktot9HkGfLZn30CjSk88vr44HFeJzd6dv5zjr7iJWNQqWkWhgYLNe2gducs5KKd-YgoqSIVcZpWAw7VvOtO3_igIx7zO-jw_cgzy2xEGWII2KLznfzJgBecq_1pX5OyFra6dWpaVu9UC2pslHQWqGnQ0K1QRZy1GYZyWMkib2S2K5OLwuKJ10gqcdK5kcHIjHvuqkmajdPZNUZ3Akmv1H1IfN0QDS-YUHafnQieEY5FLpNJxHZqXnYl2eKXTz_0dO1aQ1y6Z-xj9rbJhhCUhC5HGHkbP1fzjdG-oawFuKxAPx7Zi9gp3Eueg-ep9pFJwnWDFMNExvmqagi2uiy24OfK7huuOhmz1l5ggjDkZlIrtAeTVC2cxL_n-IKNxj1F0DrFyZOebAyfu2xVljfQM2oMhMfr23FtGauKy5wgxfV_ETSB3Dg1Knd38B-s2_fOy_RKYvJ8ip1d3w-Ch2eM-NZ8ebG7aSPp7EEq121tFiOhFWkNgfqLmVqVEIv580pIpbcsTwDM_zSgUeiirgoVM4siv6q_-nmT12DE34GLVftVWXZv7m7wL6YnUZWlZw6KrGEEV1MhFjkx7WT2bNrXilixpQ2Tevq5SQT3lmezcFVwtW4zgvfY39wyD4kk8ohtFktREU8a-jhcrrKh58aqPk0sLPZUThNpWdYQgWTP3pmaoCVxA6ex8yLGJj-_j5hdCVLLUxITSWX68_fKcRD83ocytHr8rMKvMbze8WWmipWXRaYDlNPkv1U-qUfsKFRxr5oxyJX9cBkhwqH8hRI74f8-h_GlcopXlHFS7rv8zvhnnEWp9hsbaUJgRanvILrfLuLkAqnZo7haBjEZbx2D3VUkecp4WaZBNpgiK5apRdctVzAu2BQOdJlCJqZoDwaJJQ-ilhagFCwyshiUE9XOa0SKbdFrbAhh_2hUgrjW-kbbtF43YWtijCJDTGIZJ4mp5llRv7FXiOUeUweDGJJHsZMjrOC27YhkXKBfGirtYzGjJIebJ0cAD9MSVaRgS6gIKfMK84mpbobhfNEG813xDfq8IcbjpbjVdRiTy1PtGR-plbimS3skagdXnYRc0qO9aUJF7rZnArxaKETkwycWTGGqaFqvEorZRXXYa4gDkgxsdqlD1lh3_YKIgcX1JkLSgdz7IN3jKb25J6hM4ogmGLUwoV4tU_XB9e8vZ-5eHQcaD_Z6cbmK-ya7Xq_2LdZ00tPT-MMTtznRa0ZugSTHf4sqfJOzt8EKp2cYuZSTczuk61did4T0s--9aDYAQ-h-fs5kOjdC64QtgFhHBdmiKySxiezgduJaRQ5kebgRlanemgJ2WUrS2mQsnkkhqhw1ZL9l-4jpd-jkF1e9Ht5Y6avMdtk9JTyG4KB99bbOTLQSJoKizZ_KXRnpi6GPiZ5-IHPnkG1hH7ghpq_Z2OhQzfVk1hm0Lp5vtQQmbuhpNPORDJPRJozxyWYh94azk5sRL_DpQ3n8lIl3T3XIlvK82yLi0qjHKSCMA37BOFI3Sftoango0s6nz38G5Q-5riTP5d1pHgJELHU_YLkMs9INTVOB7u3ot5E4koWdQgWCl2Gfd5PUCJchgn0ox7jxX3N6yqus_HpTjypJItHz3ppGYX393mRxa3YGiOE3Ycz4E3-RAvgZgs8EO-8DuAijE-fkMxNgfvEq9a82gcmQdkO6O0r68YPsuY7KhZzn7du0leNJ7x1gax6EMUhTUTRPnTHintVDKzlpodbBBdRpJyTIvTeG8D7_Q8qNafJ7zlQkSaibv5OVMIGeVVuOGQ8zXWfazw4DRwsUoHrF-pdA0Mkjt5ySfEJR_pu5mKAu8qTXWb-yTFjfDeNc0thniboJ-A1W5DDWlDYBSeBpFeZWNqdxkriCTyTiCxShYsNg_Ts88r1QTp4xBVoagTFFIRc0IEq6mXGxOC-IYJNLatiJ52gu4YcpCjevhAb_1MuqFkcE0kg0V0f9-l3xPXL6VPy_oWN-uzPUFkbjGdCvFpfkz_U8ZRd1m4GV83VC20CpViTrArjmxrL8Qc5ZNjDMZ8-z07gG5f8sktKccsRZCVFIHP4V8rwFZnvl0-Uv5lQUGPpTSJtdA0QhTlMxFfL-fs77xdAMZSoRAzExKq-LKikfcXpGusBrbeDZy8JXwxr8rnFjk9oCCKqMHvJm7ntf4V8CgeBWxaG6RDh7mFEz5ieeZfk-c9GzphlEzjQDB-eArfbxOje9pYB---MzPq9UgwVQHSYd_x0y7FwbUnvLI87L8z3rj-gx3RDRp1kvIQwnqQhLkh4HXry-veXymNRrdpjPT2W58hmDm6mu6B5uNP1RaP8zOm3lL-4gzSbEMnE25MofQjzoEwzCehZQ13jyHlWmM0_Stt4LH3YkbdkmtNB3uS8iFBcFjG3e2RmicuD8-EMebfaT0hea6fGtww1AIQ6Donywq_jpXgr-d4VAaQ1C7zwmYUv5q1HCakFSfh_QObrXa09v8LRB6s4kwBtWFpGpHuwqB3errStkjqNPcdri5W5jRgcfrL4piwci1lDKJPh_OgSOnVTFAfRLHVHEC3t97LE11OPWaF3GRVeATfRJys1zRaVxmXWay8nqEd1QuhALspD5QEnHENesFR6jGO-jjxjS8-ZGewaJZt6_ct0whCzVdrYSjlaqAYP_yqNLMnGyfI2Xxv8-cJumnGKPgLL0GHO1LnvWMlZVxgy4E8CpNa6Grkl2L-XUxdr5zBUatHVxIWeuZhNqXSLxN9bT-LkOqscXL8G_u8esLlwj2EjJTdIROdwcr2KtnOieIeetbTlJ3g5n66DTTk34TWwnuwFRLUYsyXUN3UkSmfMOsotc6VZx6tIeIpAy9ayLrGM64BtEHR4UOa4iAblj6NYWbC1BcRJZmaSR30OaOvGMLzHtjHSlxl14LQ1faBYGkJDmXKTG83Hd5SlwWYZCgUSe9LPVHaXu3lgQcGW9rvzKYuMNjVjQkkDRjPtXqYZznBcGrFZ7qolsR6n_EaSqJbPdy_n2im1xZ8SRsC7xpqAhXC-v2P4r-NXTS4uLRnZeMmsqM5EWXaCViiHFjl5wF-2q_ayJ4vP1JmY8VyevzyXdBQ8Lcygi2mgF9Iyk2GSgMWksVP7QYfXx_tuROeP7spNOpzQBjxjnVlfXJVh2GRfAYDbKbxWjJGo5WQ2fqrtiWekwS2QWU98uuYfCmojADm-YvhrAgzzqDMcUN8ir711bJAHOcM5Qk-4czjeLK-k55uWSHqbVKcAXbUwjpeolca9X--nvQMwP5Ivptco_mdE3hRgCkVSLGcfbDBxLey9kx62uxrhDYqy45b7cvbVPtqXYteSZm6DL-IMVZGTO-Jqv15MKBvpTQn7vzHMjDcXhZukRLp7yoeKawhpfatI-9l8yDXntm5D_Xhc20bDocvaipa65FPyB1ZXj-CE_TvmkIyncfgP1lIPZq18HTyvL_pr50Ey8CPC_U2WQWsUxAT6OY9jDy0TJ_03sLbYuoQ_ocp8mcb2SOB5j-i4br6VAM14IuuDKOS25kx1cUdXUiXAKfR_0VGFTURBBiNqhNbzDDXpYlHM2eDPhvBWv6SdVDqiebgfeEc7OGbg4wLeY3AIKFbgjnVJm8du4bI69NVe8pPnlMu6oCkPI4A59z1DQhyhjD5QbZmqStZpoBlib-Myw06WBCBoBxhMDJmXUvoiGj-5nL7Aawl-zzLc5Np2VE9mfCKLBY9xPDWhLvxytnQ==",
+      "summary": []
+    },
+    {
+      "id": "rs_0140590f8b665bda006a6df164dbac81908ecabee0318feaa9",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfF2GatNhXckRSe3stfHk8wp8dGUw6SzRBjXQWqEFLyTeOM2ytFwcYD41ClJToW23dGdP8EEW_VYIZZkSlrzL3us8M2AkMTNT3dlbQ9KdJMECqwlYoDDvpug_wiz4A7CBe31bI0_ytz-VD16K6rjCrSoEJD8AGGok-QHsqZtlTJJ6Q5SAa2d-50HnwslaesXRgyT6rFa5J8LAa8Qz4lgTvCfS9I36W43zh8dJiEsFSjAtLNzkz5OsiFlxDh3AFFe8i9141mD8yrAgKYLRAJwo9xPmwtrHuTHQHvNOCeHoH1a5pu7c6qEwW8eyTrIDU4TIUyOaRlYW1G2NBwf3mo6uzZ2kTqL24uQ4jJLG4YmiYeDvze_Wcmgf74yccXOtbl9yYINmmpIol2RUB1O6CeowwCCwUg-dUiu5m33CkhbFfx74PTKTa8yxIThQeb3MSF0ANROnllHU4nGttJIFo68kGbjp62fBOkCqOm3fH4t-evZ9Fio1vGOLrIRkhjnfnaHzEOKuUbn7142AW4g0rlXu74ngDEKx-d1sZd63CuOjxLL6TfK4Z_Mbwo_QGcxVLHOYcTcUMgnLj3BuL7-uaMhWefWv4CKgKcYvlGgbQY7v4SbaGjTUB4q_LjZ89UoSvxnYM4w1DzyUuX0NlHggXqw4VCaaMeXAgNntM17AwxB23_WSvgnMLsaSDch1lf5u0LvJHDLjlOYPcdNFmSLo3Vr0nsdNzibg_pk1ux3iKdB_oPqhD2K8Ep5DxB-UNZGZEJyzhOymquQ-WITyhdfhMil7Y0AD5fxwrVeFVZq-P35bBI8plyFv0z64GcxHjVdfwMhEeqvKkBvM4pXQPQjNrY_A2UwtN-5BCj9TbEeLGKaJx4M4XRGgpk-9ZUYa58y3FrInaEVc378onBf_sQpzxRpy7sFgLKzXl8bOjIgjp8NHkRGpCzJImXWzYhUp4eHByJcg2E_HC641w3HoG26ebUSkCNR2xTTFHX2U83thVFzAWk0nh-sSL0KPwRzTAaHwwCTTqqFfXrbLELF0ND553e4i1IY5Pzqy7y20mKCWCC1-p-o2-zmZ_0EtXAlLFDW4BAWTEf-UQhSSk0seoxbJ9RY5uYjDgM7kcozohN6to1a9FaV1GAxuR1tPoS5lDp0toX0JMHTuKm5M3RpXHOXA_G-GwHTYJWYOG3E2i5chEwSSP60KSQ7YOeOeUwQfEifdZiHPYBUTrcNPkK3hDY2CAym3dl7ayZKBuNoqUeQTGp9u8hEA9u-1r8t5o9U87r7LF8WlgfUssIHEKNqbqyC_RZH5o3faXTCXPanp0ZkEpr8gS5GcEjF9s735335rnO7azB6LdmEHRMfJQbT14wG-UQN7XVGls2Sh8ypdySKLi6qnXUhXuRLA9xNYafQvGPPteDgb03hFtLKmj5Knt2HylEdIEriF-TXRMJZ1f4gJj1sZzkLhJ1kvYtTvrjwWn_NvH1vmb63_-RVzBMqrOINhx4vQeBpGImj9iu41CLCQT2Mzw-0ZKvnmPBrf_sqVsJ0AFOOHij8dAZoVXH5XP2015IqsJdmfurR51R0CrOtlsQYsCcW-Vuq4sf_XmOPSkPR-j5zDf5aL827z5G3yfk3d1Kctu2vuKwMxeOwwZsYQ7ri1j_22A_8d_kZ8rKFxqGRD0X4KL-Ki3pJ2BYs7TgdXSAYDfGN6YviE_2vKyOIa-In4cgQHVo3LX17Ceo7XLZcb8IDS1jn8TtyJtc89ng5d_LDVb-hpB6sctAP8fPDbZK77eYqgjIiBkFelKceIuntjyoxZo_AgRKqIMR-D4NOELRfoyDOXg5F7MxkJa4w5deRHYSEZVmf3Eq3OetIX3R_Ml-Eb3_ghe2_m4QWjWgU3Jfddq2GeQDlfbeOEVtiX9oDINmeJGE23mIHXFUHrYRf8k9wUd6Yw8CVy3TV117vBy-fyqGB__r4mZy60VJgBnK8KgmvqHMrCfSugwlBvZzKbsT_HUIY0mLAvo4wZ-2c3BkahJGvnSJQ0MQhw1RX0deZ0Xms5iswskCbB95itswg4ZyF_QyztZu_75GfqmjvsBgJciwQfORIolwWYwm8lwnrjD4PeCbRy-vPphyMwo31VVOpc9878aKEMIE0e12Tgq9Gj6AMkMKlsXIdZ7BPLqNYx8vLwZequHCzLWQlIXEQzxEcN-uV",
+      "summary": []
+    },
+    {
+      "id": "msg_0140590f8b665bda006a6df169070c819088a1d50e7931db19",
+      "type": "message",
+      "status": "completed",
+      "content": [
+        {
+          "type": "output_text",
+          "annotations": [],
+          "logprobs": [],
+          "text": "{\"finalists\":[{\"sourceCandidateId\":\"c01\",\"page1Text\":\"Чупави, весели друже мој,\\nодмараш на грани тој.\\nПечуркасто много те волим ја,\\nјер ме чуваш — то се зна.\",\"page2Text\":\"Ови другари имају руку без броја,\\nдрже се и врте — дружина моја.\\nПечуркасто много вас волим ја,\\nјер ме подижете високо са тла!\",\"refrainPage1\":\"Печуркасто много те волим ја,\",\"refrainPage2\":\"Печуркасто много вас волим ја,\",\"rank\":1,\"recommendedFinalist\":true,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"тој\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"ја\",\"зна\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"броја\",\"моја\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"ја\",\"тла\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Најприроднији спој топлине, јасне радње, разиграног рефрена и течне риме.\",\"weakness\":\"Израз „дружина моја“ благо наглашава припадност групи.\",\"qualityNote\":\"Најбоље звучи наглас и верно прати обе илустрације.\"},{\"sourceCandidateId\":\"c05\",\"page1Text\":\"Весели, чупави друже мој,\\nугнездио си се на грани тој.\\nБаш те волим печуркасто много,\\nјер ме чуваш — то ми је драго.\",\"page2Text\":\"Руку је много у кругу том,\\nдрже се и врте у колу свом.\\nБаш вас волим печуркасто много,\\nјер ме дижете с тла — баш ми је драго!\",\"refrainPage1\":\"Баш те волим печуркасто много,\",\"refrainPage2\":\"Баш вас волим печуркасто много,\",\"rank\":2,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"тој\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"много\",\"драго\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"том\",\"свом\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"много\",\"драго\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Топао, разговорни тон и веома уједначен рефрен.\",\"weakness\":\"Понављање речи „драго“ чини завршетке мање разноврсним.\",\"qualityNote\":\"Течно и певљиво, уз јасно очувану игру речи.\"},{\"sourceCandidateId\":\"c04\",\"page1Text\":\"Чупави друже, весели мој,\\nсместио си се на грани тој.\\nБаш те волим — печурка то зна,\\nјер ме чуваш с високих грана.\",\"page2Text\":\"Печурке имају руку без броја,\\\\nдрже се и врте — дружина моја.\\nБаш вас волим — печурка то зна,\\nјер ме подижете високо са тла!\",\"refrainPage1\":\"Баш те волим — печурка то зна,\",\"refrainPage2\":\"Баш вас волим — печурка то зна,\",\"rank\":3,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"тој\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"зна\",\"грана\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"броја\",\"моја\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"зна\",\"тла\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Једноставне речи, јасне слике и лако памтљив рефрен.\",\"weakness\":\"Треће лице у рефрену звучи нешто мање непосредно.\",\"qualityNote\":\"Читљива и верна верзија, али мање присна од прва два избора.\"}]}"
+        }
+      ],
+      "phase": "final_answer",
+      "role": "assistant"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "presence_penalty": 0,
+  "previous_response_id": null,
+  "prompt_cache_key": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+    "context": "all_turns",
+    "effort": "low",
+    "mode": "standard",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "store": true,
+  "temperature": 1,
+  "text": {
+    "format": {
+      "type": "json_schema",
+      "description": null,
+      "name": "priority_language_editorial",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "finalists": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "sourceCandidateId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20
+                },
+                "page1Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "page2Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "refrainPage1": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320
+                },
+                "refrainPage2": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320
+                },
+                "rank": {
+                  "type": "integer",
+                  "enum": [
+                    1,
+                    2,
+                    3
+                  ]
+                },
+                "recommendedFinalist": {
+                  "type": "boolean"
+                },
+                "naturalnessPass": {
+                  "type": "boolean"
+                },
+                "fidelityPass": {
+                  "type": "boolean"
+                },
+                "readAloudPass": {
+                  "type": "boolean"
+                },
+                "rhymePass": {
+                  "type": "boolean"
+                },
+                "refrainConsistencyPass": {
+                  "type": "boolean"
+                },
+                "rhymePairs": {
+                  "type": "array",
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "page": {
+                        "type": "integer",
+                        "enum": [
+                          1,
+                          2
+                        ]
+                      },
+                      "words": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        }
+                      },
+                      "valid": {
+                        "type": "boolean"
+                      },
+                      "problem": {
+                        "type": "string",
+                        "maxLength": 180
+                      }
+                    },
+                    "required": [
+                      "page",
+                      "words",
+                      "valid",
+                      "problem"
+                    ]
+                  }
+                },
+                "strength": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "weakness": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "qualityNote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                }
+              },
+              "required": [
+                "sourceCandidateId",
+                "page1Text",
+                "page2Text",
+                "refrainPage1",
+                "refrainPage2",
+                "rank",
+                "recommendedFinalist",
+                "naturalnessPass",
+                "fidelityPass",
+                "readAloudPass",
+                "rhymePass",
+                "refrainConsistencyPass",
+                "rhymePairs",
+                "strength",
+                "weakness",
+                "qualityNote"
+              ]
+            }
+          }
+        },
+        "required": [
+          "finalists"
+        ]
+      },
+      "strict": true
+    },
+    "verbosity": "medium"
+  },
+  "tool_choice": "auto",
+  "tool_usage": {
+    "image_gen": {
+      "input_tokens": 0,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "output_tokens": 0,
+      "output_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "total_tokens": 0
+    },
+    "web_search": {
+      "num_requests": 0
+    }
+  },
+  "tools": [],
+  "top_logprobs": 0,
+  "top_p": 0.98,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 2213,
+    "input_tokens_details": {
+      "cache_write_tokens": 2210,
+      "cached_tokens": 0
+    },
+    "output_tokens": 3373,
+    "output_tokens_details": {
+      "reasoning_tokens": 2276
+    },
+    "total_tokens": 5586
+  },
+  "user": null,
+  "metadata": {},
+  "output_text": "{\"finalists\":[{\"sourceCandidateId\":\"c01\",\"page1Text\":\"Чупави, весели друже мој,\\nодмараш на грани тој.\\nПечуркасто много те волим ја,\\nјер ме чуваш — то се зна.\",\"page2Text\":\"Ови другари имају руку без броја,\\nдрже се и врте — дружина моја.\\nПечуркасто много вас волим ја,\\nјер ме подижете високо са тла!\",\"refrainPage1\":\"Печуркасто много те волим ја,\",\"refrainPage2\":\"Печуркасто много вас волим ја,\",\"rank\":1,\"recommendedFinalist\":true,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"тој\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"ја\",\"зна\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"броја\",\"моја\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"ја\",\"тла\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Најприроднији спој топлине, јасне радње, разиграног рефрена и течне риме.\",\"weakness\":\"Израз „дружина моја“ благо наглашава припадност групи.\",\"qualityNote\":\"Најбоље звучи наглас и верно прати обе илустрације.\"},{\"sourceCandidateId\":\"c05\",\"page1Text\":\"Весели, чупави друже мој,\\nугнездио си се на грани тој.\\nБаш те волим печуркасто много,\\nјер ме чуваш — то ми је драго.\",\"page2Text\":\"Руку је много у кругу том,\\nдрже се и врте у колу свом.\\nБаш вас волим печуркасто много,\\nјер ме дижете с тла — баш ми је драго!\",\"refrainPage1\":\"Баш те волим печуркасто много,\",\"refrainPage2\":\"Баш вас волим печуркасто много,\",\"rank\":2,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"тој\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"много\",\"драго\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"том\",\"свом\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"много\",\"драго\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Топао, разговорни тон и веома уједначен рефрен.\",\"weakness\":\"Понављање речи „драго“ чини завршетке мање разноврсним.\",\"qualityNote\":\"Течно и певљиво, уз јасно очувану игру речи.\"},{\"sourceCandidateId\":\"c04\",\"page1Text\":\"Чупави друже, весели мој,\\nсместио си се на грани тој.\\nБаш те волим — печурка то зна,\\nјер ме чуваш с високих грана.\",\"page2Text\":\"Печурке имају руку без броја,\\\\nдрже се и врте — дружина моја.\\nБаш вас волим — печурка то зна,\\nјер ме подижете високо са тла!\",\"refrainPage1\":\"Баш те волим — печурка то зна,\",\"refrainPage2\":\"Баш вас волим — печурка то зна,\",\"rank\":3,\"recommendedFinalist\":false,\"naturalnessPass\":true,\"fidelityPass\":true,\"readAloudPass\":true,\"rhymePass\":true,\"refrainConsistencyPass\":true,\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"тој\"],\"valid\":true,\"problem\":\"\"},{\"page\":1,\"words\":[\"зна\",\"грана\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"броја\",\"моја\"],\"valid\":true,\"problem\":\"\"},{\"page\":2,\"words\":[\"зна\",\"тла\"],\"valid\":true,\"problem\":\"\"}],\"strength\":\"Једноставне речи, јасне слике и лако памтљив рефрен.\",\"weakness\":\"Треће лице у рефрену звучи нешто мање непосредно.\",\"qualityNote\":\"Читљива и верна верзија, али мање присна од прва два избора.\"}]}"
+}

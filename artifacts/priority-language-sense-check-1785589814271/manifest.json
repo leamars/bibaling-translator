@@ -1,0 +1,62 @@
+{
+  "status": "completed",
+  "completedAt": "2026-08-01T13:15:34.998Z",
+  "model": "gpt-5.6-sol",
+  "reasoningEffort": "low",
+  "automaticRetries": 0,
+  "maximumCalls": 8,
+  "maximumEstimatedCostUsd": 1.16,
+  "actual": {
+    "calls": 6,
+    "latencyMs": 320711,
+    "inputTokens": 8996,
+    "cachedInputTokens": 0,
+    "outputTokens": 18307,
+    "reasoningTokens": 11033,
+    "estimatedCostUsd": 0.59419
+  },
+  "results": [
+    {
+      "key": "german",
+      "label": "German",
+      "status": "failed",
+      "error": "[\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      0,\n      \"rhymePairs\",\n      0,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      0,\n      \"rhymePairs\",\n      1,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      0,\n      \"rhymePairs\",\n      2,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      0,\n      \"rhymePairs\",\n      3,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      1,\n      \"rhymePairs\",\n      0,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      1,\n      \"rhymePairs\",\n      1,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      1,\n      \"rhymePairs\",\n      2,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      1,\n      \"rhymePairs\",\n      3,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      2,\n      \"rhymePairs\",\n      0,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      2,\n      \"rhymePairs\",\n      1,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      2,\n      \"rhymePairs\",\n      2,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      2,\n      \"rhymePairs\",\n      3,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      3,\n      \"rhymePairs\",\n      0,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      3,\n      \"rhymePairs\",\n      1,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      3,\n      \"rhymePairs\",\n      2,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      3,\n      \"rhymePairs\",\n      3,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      4,\n      \"rhymePairs\",\n      0,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      4,\n      \"rhymePairs\",\n      1,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      4,\n      \"rhymePairs\",\n      2,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      4,\n      \"rhymePairs\",\n      3,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      5,\n      \"rhymePairs\",\n      0,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      5,\n      \"rhymePairs\",\n      1,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      5,\n      \"rhymePairs\",\n      2,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"candidates\",\n      5,\n      \"rhymePairs\",\n      3,\n      \"words\"\n    ],\n    \"message\": \"Required\"\n  }\n]"
+    },
+    {
+      "key": "spanish-spain",
+      "label": "Spanish — Spain",
+      "status": "completed",
+      "recommendation": "c04"
+    },
+    {
+      "key": "italian",
+      "label": "Italian",
+      "status": "failed",
+      "error": "italian drafting incomplete: max_output_tokens"
+    },
+    {
+      "key": "croatian",
+      "label": "Croatian",
+      "status": "completed",
+      "recommendation": "c06"
+    },
+    {
+      "key": "serbian-cyrillic",
+      "label": "Serbian — Cyrillic",
+      "status": "completed",
+      "recommendation": "c01"
+    },
+    {
+      "key": "serbian-latin",
+      "label": "Serbian — Latin",
+      "status": "completed_from_cyrillic",
+      "scriptChecks": {
+        "source": "serbian-cyrillic",
+        "paidCalls": 0,
+        "finalistCountMatches": true,
+        "lineCountsPreserved": true,
+        "cyrillicContainsLatinLetters": true
+      }
+    }
+  ]
+}

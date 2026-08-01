@@ -1,0 +1,230 @@
+[
+  {
+    "id": "c01",
+    "strategy": "Warm, direct rhyme with a playful coined mushroom adverb",
+    "page1Text": "Na stablu se smjestio prijatelj moj,\nčupav i sretan, pravi junak svoj.\nGljivasti te volim baš,\njer na mene dobro paziš, znaš!",
+    "page2Text": "Gljivani ruku imaju bez broja,\ndrže se i vrte — družina je to moja.\nGljivasti vas volim baš,\njer me sa zemlje dižete, znaš!",
+    "refrainPage1": "Gljivasti te volim baš,",
+    "refrainPage2": "Gljivasti vas volim baš,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "moj",
+          "svoj"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "baš",
+          "znaš"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "broja",
+          "moja"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "baš",
+          "znaš"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c02",
+    "strategy": "Gentle lyrical phrasing with the refrain built around a mushroom-sized measure",
+    "page1Text": "Moj čupavi prijatelj na stablu sniva,\nsretan se među granama skriva.\nVolim te za cijeli klobuk, znaj,\njer me čuvaš, prijatelju, znaj!",
+    "page2Text": "Mnogo ruku ima družina ova,\ndrže se i vrte, uvijek iznova.\nVolim vas za cijeli klobuk, znaj,\ndižete me sa zemlje u taj zagrljaj!",
+    "refrainPage1": "Volim te za cijeli klobuk, znaj,",
+    "refrainPage2": "Volim vas za cijeli klobuk, znaj,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "sniva",
+          "skriva"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "znaj",
+          "znaj"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "ova",
+          "iznova"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "znaj",
+          "zagrljaj"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c03",
+    "strategy": "Bouncy spoken rhythm using a cap-full mushroom pun",
+    "page1Text": "Čupavi moj prijatelj sretan je sav,\nna stablu se smjestio, mekan i prav.\nPun klobuk ljubavi za tebe imam ja,\njer odozgo paziš na mene s granâ.",
+    "page2Text": "Ovi gljivani imaju ruku sto,\ndrže se i vrte — veselo je to.\nPun klobuk ljubavi za vas imam ja,\ndok me vaše ruke podižu sa tla.",
+    "refrainPage1": "Pun klobuk ljubavi za tebe imam ja,",
+    "refrainPage2": "Pun klobuk ljubavi za vas imam ja,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "sav",
+          "prav"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "ja",
+          "granâ"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "sto",
+          "to"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "ja",
+          "tla"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c04",
+    "strategy": "Compact read-aloud cadence with an affectionate mushroom-style refrain",
+    "page1Text": "Moj sretni, čupavi drug gore počiva,\nmeđu granama stabla udobno prebiva.\nBaš te gljivarski volim, mili moj,\njer bdiješ nada mnom, prijatelju moj!",
+    "page2Text": "Mnogo ruku ima gljivlja družina,\ndrže se i vrte usred svojeg kruga fina.\nBaš vas gljivarski volim, mili moji,\ndižete me s tla dok krug se spoji!",
+    "refrainPage1": "Baš te gljivarski volim, mili moj,",
+    "refrainPage2": "Baš vas gljivarski volim, mili moji,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "počiva",
+          "prebiva"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "moj",
+          "moj"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "družina",
+          "fina"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "moji",
+          "spoji"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c05",
+    "strategy": "Clear child-friendly couplets with a whole-cap expression of love",
+    "page1Text": "Na stablu odmara čupavi drug moj,\nsretan i drag, baš poseban soj.\nVolim te koliko klobuk mi je velik,\njer me čuvaš, prijatelju čupav i velik!",
+    "page2Text": "Gljivani imaju mnogo ruku svi,\ndrže se i vrte, jedan, dva i tri.\nVolim vas koliko klobuk mi je velik,\nsa zemlje me diže vaš krug velik!",
+    "refrainPage1": "Volim te koliko klobuk mi je velik,",
+    "refrainPage2": "Volim vas koliko klobuk mi je velik,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "moj",
+          "soj"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "velik",
+          "velik"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "svi",
+          "tri"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "velik",
+          "velik"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c06",
+    "strategy": "Animated oral rhyme with a playful mushroom-degree construction",
+    "page1Text": "Čupavi prijatelj na stablu je sretan,\nmeđu granama smješten, mekan i spretan.\nVolim te gljivasto, do neba baš,\njer me odozgo brižno čuvaš, znaš!",
+    "page2Text": "Gljivani imaju ručica bez kraja,\ndrže se i vrte, ruka ruku spaja.\nVolim vas gljivasto, do neba baš,\njer me sa zemlje podižete, znaš!",
+    "refrainPage1": "Volim te gljivasto, do neba baš,",
+    "refrainPage2": "Volim vas gljivasto, do neba baš,",
+    "rhymePairs": [
+      {
+        "page": 1,
+        "words": [
+          "sretan",
+          "spretan"
+        ]
+      },
+      {
+        "page": 1,
+        "words": [
+          "baš",
+          "znaš"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "kraja",
+          "spaja"
+        ]
+      },
+      {
+        "page": 2,
+        "words": [
+          "baš",
+          "znaš"
+        ]
+      }
+    ]
+  }
+]

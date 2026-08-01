@@ -1,0 +1,30 @@
+{
+  "maximum": {
+    "perCall": 0.145,
+    "total": 1.16
+  },
+  "actual": {
+    "calls": 1,
+    "latencyMs": 34478,
+    "inputTokens": 2120,
+    "cachedInputTokens": 0,
+    "outputTokens": 2124,
+    "reasoningTokens": 1034,
+    "estimatedCostUsd": 0.07432
+  },
+  "calls": [
+    {
+      "action": "priority-language.german.editor",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_098a0232690eb01e006a6df37303f48190a49711ca4a4af4dc",
+      "responseStatus": "completed",
+      "latencyMs": 34478,
+      "inputTokens": 2120,
+      "cachedInputTokens": 0,
+      "outputTokens": 2124,
+      "reasoningTokens": 1034,
+      "estimatedCostUsd": 0.07432
+    }
+  ]
+}

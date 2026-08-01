@@ -1,0 +1,169 @@
+{
+  "finalists": [
+    {
+      "sourceCandidateId": "c04",
+      "page1Text": "Quiero a mi amigo, feliz y peludo,\nque, acurrucado en el árbol, me cuida mucho.\n¡Amor sincero; lo firma este champiñón compañero!",
+      "page2Text": "Estos amigos tienen muchas manos;\nse agarran y giran, todos enlazados.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me alzáis del suelo!",
+      "refrainPage1": "¡Amor sincero; lo firma este champiñón compañero!",
+      "refrainPage2": "¡Amor sincero; lo firma este champiñón compañero!",
+      "rank": 1,
+      "recommendedFinalist": true,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "peludo",
+            "mucho"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "manos",
+            "enlazados"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "compañero",
+            "suelo"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "compañero",
+            "suelo"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Claro, cariñoso y muy fácil de leer en voz alta.",
+      "weakness": "La rima de la primera página es asonante y discreta.",
+      "qualityNote": "Conserva todos los detalles esenciales con el ritmo más natural de los tres."
+    },
+    {
+      "sourceCandidateId": "c02",
+      "page1Text": "En el árbol se acurruca mi amigo peludo;\nestá feliz, vela por mí y yo lo quiero mucho.\n¡Amor sincero; lo firma este champiñón compañero!",
+      "page2Text": "Muchas manos tiene esta pandilla;\nse agarran y dan vueltas en una rueda sencilla.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me levantáis del suelo!",
+      "refrainPage1": "¡Amor sincero; lo firma este champiñón compañero!",
+      "refrainPage2": "¡Amor sincero; lo firma este champiñón compañero!",
+      "rank": 2,
+      "recommendedFinalist": false,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "peludo",
+            "mucho"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "pandilla",
+            "sencilla"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "compañero",
+            "suelo"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "compañero",
+            "suelo"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "La segunda página tiene una rima clara y un movimiento alegre.",
+      "weakness": "La primera página es algo más larga y menos ágil.",
+      "qualityNote": "Versión cálida y fiel, con una cadencia especialmente juguetona al girar."
+    },
+    {
+      "sourceCandidateId": "c03",
+      "page1Text": "Mi amigo feliz, de pelo alborotado,\nse acurruca en el árbol y me cuida desde lo alto.\n¡Amor sincero; lo firma este champiñón compañero!",
+      "page2Text": "Con sus muchas manos, estos amigos\nse agarran, giran y me alzan unidos.\n¡Amor sincero; lo firma este champiñón compañero!\n¡Me hacéis despegar del suelo!",
+      "refrainPage1": "¡Amor sincero; lo firma este champiñón compañero!",
+      "refrainPage2": "¡Amor sincero; lo firma este champiñón compañero!",
+      "rank": 3,
+      "recommendedFinalist": false,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "alborotado",
+            "alto"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "amigos",
+            "unidos"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "compañero",
+            "suelo"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "compañero",
+            "suelo"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Evoca con precisión la altura del árbol y el giro colectivo.",
+      "weakness": "«Despegar» resulta un poco más enfático que «alzar».",
+      "qualityNote": "Opción musical y visualmente fiel, aunque algo menos sencilla que la ganadora."
+    }
+  ]
+}

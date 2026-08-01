@@ -1,0 +1,209 @@
+{
+  "id": "resp_021a92dc3d563f82006a6df10e666481909fa20b5a17101c6e",
+  "object": "response",
+  "created_at": 1785590030,
+  "status": "completed",
+  "background": false,
+  "billing": {
+    "payer": "developer"
+  },
+  "completed_at": 1785590077,
+  "error": null,
+  "frequency_penalty": 0,
+  "incomplete_details": null,
+  "instructions": null,
+  "max_output_tokens": 3500,
+  "max_tool_calls": null,
+  "model": "gpt-5.6-sol",
+  "moderation": null,
+  "output": [
+    {
+      "id": "rs_021a92dc3d563f82006a6df10ef8208190ae536b997cbbf112",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfE9HklMM_OK-z2CoGjJSIOdGUZ9cCwKGqxwn92xR2vhCEurxEtg9GUtvuy16yW5kZ34rT8nQCvnyzEaEsuw5KKQnu0mIua16EROCfDF4oyVxlGH5-4akVKejYfiYrT_qC0oCT50W8fbpA1tem1eVIM4W03tP5Mw72Eso3s-BBxW0vPd9uQe0jt5qT8UvI9wRIPm9E3eYH7iuTPZpSU-Z7JcJMkhWLJ5HBBWX4RGEY78lxkFX61YT-vI0KkNrYnksQtvECb8RVM1mZl0kbbljzXx6v4V9_FtKfYZUJO_hNZAAAVUnXuU37ZiG0km4KAQn9GCUTo_pg6vp40SYNUJCTgqRORP9qPxHJLWd0-Jgb0U8dR76ko14MiPIqoVSNyn1igfBEoti8xVvBGw8Oa8m0OTzqfd0SXS2_LOp0W89weQjbN8EMRYXbZcn9TZiiU6RG5mICW1R3xJKfZE4mZDO4xHiXT-i_7dEXhaEBcUhJV7fzQ7KyQCLS_ayYINoBjY_sJrVnEn46RQ18wbOqH1btkEr3tHVQ_yNMJ71F34HRi88-09EY4S1AIJ-U2v_JPkeOzxbzC3K1cNVefpoIfL5eQadeNcXmx_Q_sLcFrz3O143T6PUJzdJ6f1MHGbVrd8JOeTZQxjth_SHgO23snRp-Thkg1wn8lKoZ6HoQC2xQ_LzRvtbC2d49NJkVrkIoDFJGk45KO7WikdQvLNKwaWk0rKH7FUbSTidScpoQREhsYG7TvZfCxGalofWHsbloULf_-1XTWWYxLeBu3Zz_PHAHS-JdRh_sCHqXs3VNGQgJffqaFQRF3Cw3CK4Iiscu1oQRIEBK1m8afD8XPgwpQV4Ajf74AxmNwg501eVtIlzWPc2lvfGENpwpNTthwL-iHhzEopWzTMeQQPra73BPQUSaTDSBhp-PI5MQBzgo2sEgM9huS8PXbPRSYrG18-lay899_EiHtdglqUZd9b-CAQwVk_kCR6Q-Ka96Df9C_Z0Xeofm4zpIZ4zb7WAnCXRZMcemeKoLmedvQESZw79cJyz3Qw4gYBCmYc4YnXlZhEGN8wrCHzJ-JN0rzzBwdNLnb5x_IlFpPwWzCGFmEwHUwiNKhpf_Qibef7RpeuOzBFVC_cTKmMxqBG8zhPJR6JlZazKg1IeLtgYyljU_9LMoaHCOKs6Lh9qDwyZXgTTyK1pfY2YEHsXP4_sWFfIDeJSoD9GMNy7jIYcKnRYRP58T6bLJfmXBq8Vq_86gkBjPbLZwUcwFpZsUgUd32fAxzp6D_rIwf56WWBYK-5EfWTx57Et7ZOv3Lj5JYt84RtmpzSuOMoX7iUA9yGwJIXvy76eEVw9pJsvniU7BqQu5Hj9Gq_RcBqREcs5sg3YPi0d7J9T4Rx7zPoSkKkWTVA8ochQXHDsNDUAgvwBn6XsVVrm9qlYZC5f3qVtCO77uM0muWd00GTy8b86sPoQO5MPp6GupXQvDT7tfnviEbGNaq2bBnW100kgwYiNF0232YaS0y-VbhgFupcUXQ-0j6HofQjakAjxhW73yt8cxMrQnoyqqgF9GYyzk1xkMkws1oPfe5pH8wmdqbODeqw0azCobnd2TkyeEganq2cgw1A0zpE-_vdhFTJZ-ctweNXV3Ol3fhe_eFM1-hUNkr9HQMk6vfhMAU24xZO3uN5EoPHUkyLsHvTSbAo_3_Qr6QqBbXVnlDLLjz1Mgjq0Ha18ckdTYTYEqbWtwLFI6mcONSKJnJStb7pQX4ceQgpouteFKOZxvbgEMOuZ2CuWUawRL1y6Vl8BqfPqF-uBp4MnxIgV9ArX-5zeTbhGe6-ouXsEf_G7uHhEDmZq8wBAocA1_LLCGIHP8sEgGJe8npHNbmANHyOJD7KixbzN303c-U2Xo5VT5i0f4wdot3cqNPig30MDW_KeQje0Aa93JKUD2HeR-qbkr0tzfrm2zGANOHsnfr7VN9KmMrGLhBS7OhCvORxhvV-tAbYx-oa3iRH3Hl3kQUm7HktQeeRdU74JjwP_DPor4zw3ZIdhXsbVDbTsrSEkB7CKCGZfYLkqpCFtxVBICo1QwUkHxFk4OJUIsVUFZDSmsEQJqdVrJOEvJwPpz07gRXmZSQE00qZ2l-QBMk75JDf6F3i6qtxPThO8iZwhdTJt97mMzB9q4646oaLZ9skn0InpDvObpjLSOshS-rP-mEx9KXlolcgMM8LtLip8i30KKG3Oledg9JnhlqcywlE4J7EaA6oFeX_0gmPj5pF5ISFHaLpEuQEKUfZIMf3hvEb-t0oPMFODl-93Z9M6GdnYVFzj1Hfdoh4wT9HVJVzoGzzd2r9et3lHLojL2UjecJ9J8TFjz9PlQcfNQTlBKCQCh6k1YysowmqUgszGE9e7ahoaS069kdrKQaZAa2ieJuej598tZYo-6cQek-vC4SYq3LQUQGeRMCDdqZRIzoZPd27kiuIaeqvDdo-8TGC9XjuRK9IGx4_o9OBBhIVM6TkA2A2vKlFnCbzlIo8TrBTh-tsZ9JMDakQDvub_IexR4A-pOix4NE0mKi9YrcGpcWydCIPL8X2MPmDU9jKyYQtQO_Zh3bv0WGfN46SeTyIrcgt5KxS9REJgIFP9fLyOWbuu_cGYaldxZpExFhelUCj_X5es3FyWI9EwWjP7CO4csJeD4ICeCQGfw4fxk4qzXbeuviOBAIYfrsKBaR1GzDehfLXqEkWBa_3eWAdYGHUBmf8Ov-qdr9Vd6nYZ3pkPjjd3a_Ps7xqfCR5uTKUbf1GNaG-sPrOpWFK7p4UfiBSwqeUR9bWiNlUENn3bl9XZCkcAOtes7sm6c48z0x8E9jrqDUuw21BFTYvQ_1ATLZs-z9JW9jB8V2JRGZOsszA2k1uK7TZ3mlq9Z_Shik4WAd2GBP6omHQtgz2pzXSfjH0G7fpRDhTHYjrN8roHwWBcc8TeN7ZUIAPC5mYjx9J1exi4guEa4yeZ3D7xrhmOOMYSeZPPamYBMV9AOKTyn2awkteCQAYCmfEz3u12033r7Mq2JmwhM6DZbTraBBhewysvveyUzClOwL0GBVOREOI7ZBGW7_x_hzm5_OF2Oom6pYdl8FzMMnIJs5bK7NkksI5BcBLblRMmK0ck5QY7VmwtDRDOk_naFxRotD8hW5qKlCMtKNJsm_p8oy-QeS2qD_efCQN0Ns17oiwfji8DH65L7AgNPB0blDWhIswHjE0BLzDWKLZfKgsMcoczDFCpzoBWa-CyCv-HJPQwv2ps7GeW7shX-qELyF0AJ1Wa5H7z5F-rJFYTjFyN6IKe18sfFQhrndt9qR18U70uMzL080Dv4vD8VkwN1c3nhu71ezHZ6pB5yw6T_kjYUYCHt8I1T1wZeBKh-jen5r1wNtd1qC-TXp0hObCtsg60XO5kfJpkKIsXI7jlRWdK56lU_g6Rh2GK7v_LJKBWySCMRQfu14I5L3kGbNMQW42y2GMzlFC3R-zj896I9KLCXrHzNjRD7E7X1YQpeL4KVHcpeHGGJTT9ek1VX7mFms1ltRfOR1nfKTAsQWc_7QuD-AMZRyIquKmJGeJkAWcbNhitZOD-JnO7cnygK96Ab1hDBoSqDuiqSEY5ArKnwlUjVUoWMMSOUiZtfBSaw5xzNtY4xf_1YnY78bLLUFdFHl9ucTvmZTWmuTOvjCUsEJ4dH3nqWMAPShIrAVqAkTMdNbyM7zQkawH3ItkdNEBpdnUWRZXTCWB150V9o2hKFEyq8HqACkUpgBsJoas4a7333BHGSlwTFaPfdewfu0ziXlLcvE06Put_AK-whGkKznN10Pygu2awnSNWRpJPu3ypOkyyQJepKifhIaV8AoTt0P12Dy36Un9h-jUvANNVmAvlLDek15fT6YYZT6eBG7pc1DYh_fhLj7-_UKcLBDm7u3QCw8nshZA1t0jq-tNWq6BaKkJyuBlL5yH2pHcSTYHw1sbR984Nlwcr3N6OZZwVTalztgUq6hqyp1rSKEGNuPAKE79VNIraofOUxwh08-7SO1OlZwPJ2bw4OYaZzto3zhvAReTJO2i7AkvBiaGJl3WKce8aHuYcXLshif8dHeSWAAhjHk=",
+      "summary": []
+    },
+    {
+      "id": "rs_021a92dc3d563f82006a6df11a1be88190a2e07e133205d842",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfE9YYbkCfZxgBypLRNnOvVRjDCyByOU_aVwMWO-8bj9ktSCVozI54buQC0shcwKC4NUJa70Rbm2dDNVv9s7wtZexjjQ0jQB35phv99w2c5FHO3pP04YkTVs8YhGnqGwobT_bSSPM9pZFAfyHZu8IqeJo8wFn11Wig3oKjgh0JKgKvDL4D8g3C4lbqt-F3MDGR6gNnMlQQXJ3yRURK8cAgsAqdIX_ScYwCJE4hrPGUMjQFCod7xemI5wbxhSSyIv03a6tRV4kGoHQIg5OwCiLR6t4H7pYg59E1v8YstXYT3T5SDkLJmI3C8l55DaVdS9haPzoh4SxGk1KdMmx_fv4U5THdIlMNIRcr0Mbdzvv7gMBxSSxVofwf7IcqtvdkEVvRFy1SyxlUk_rGf-n0iU2fEVRgjKXNr8vs6T8mcbSido0Hcido1qx_M6VRcUPm8M51c7oT76fHsNHp5-3HuQ3fgIx_ereGR4Y6XEiIRw8YCPH0hc2qDnimPB5XKoY306Stl_jf30NRLXxkNBJWYh1pkhrAbXWWPtISMIlmT_dU14U-avTqrzQ3VZwx2rUbb24bwHzc8V-whZjTJ1Eet79d6Gt-22xbG03cUOCZv-knQ3P0FAFMr_QaXv_P87fkNFgrptjGhaOjff7bQaZLhft7TrnZxQ-9AESjXYzryUt1BdxmP4c7V-8WdHPPfNuO08NPhxlDCQ_B-neE-y4_hyG6We6kzdrVRMb7EY1odk9hT4VGjJcMREQbbWIe7kfXCAJ2ErHHUe83hyYQ4mrZbehOg6ZyhZzrNtVsL71R67CC8HkStPB8JVGnOTl7y90c7xxB7Zif5PDwMt4HY98FtuHX0Qd7qcTdavFe97dQaSTF_0W-CXdDoKSf3xIR5QEzeuQHdsq3BQWLJQfq-osYpR3x6Chg3fLiE9hbPnhYykmIVz3elGar6DnqtyoK65XczqIvjTImHVbrNKzpJuOvY8wmNG56DLY-8Lh_9N7RSwERlc-DG0SafjQ041Oki8T154gsW2cGWHjkWjnRBru86RR0k_ObULuuqK8S3rp98EGg7JMG-ur-V2rvDv9-ssCNnJOI8HFGgmWkyo6WtC5n9H7A7vEq7b2myWoMuIsIY2GU9jiy_DQQHcHJvvauWMcWfSFyC1klqnFJ3HkE4dNo9ekLHG5h525Ynnlb7pyfS5KhDR3k-DQu-vg45GDSKku1ug8BKAhUOyTYQKonxEQVLtwQYW_xUBjqQXC1M9T53suaeQ9z3L6l9MILPCk-IGE6GtZSy9xK92-QmDC-QypDQSjyrCP_m3Fn52oN7GwnGkMSbJmcXgh8vaRZH5fOd-hHlXxf-kJ4NXh6vmJrnM_zaD4N31TWIajxMvBEwHX76n2JENwhanNbIEn9UYFfkoNn-v7lfc1KVUrVKkhehIftq4YPtSjoBCSD63TKSL-X8dHIF5_ilnkafKyh0tPOGS4_lIGjA_h0Gefar61FCwuydFzhtNz8RmV3zpQBy-MRlQZDAPDgz9hVruQL09aXI7PCv7Jct04qA1_QMuGfxuSD5TqcGr8ROjafkjt6L30kT10x4fB312-uE-BdnOI3BznzsGi0UzANf42B1FyuYGGzQ20ugX0c9leb6YP_EW6l69ixcVNjJ8IXaIXaCpJyEVDGNg8Fp77c1RlBaqrpUm6Ofs_v2bp4O9yG5OSqWmXGsA8-c6oWMiXc9An06HoV7mcuSa4gjIbsucyuGZ41OBY9WGwOG0zGq3T1rkykL52kHRY1rz54Izxxd4EMWjFryocvWxxUa9tEFSGrhE596q95NpU5yFQ5i4OMY-QQbh7gGzmMeadThc64d8bNIoNhh4hLqOF1HnXh--R7NGTty3gai3ryuWxrvwYy67JxMsH0eJxMI4WBR20hrF_yf3V1-SzygRE3fLRdhJB4fqMczkyvfdw-8ejIEToHyhYzIddQ4DGXOgtTrZMzXyuQ5qKAcWrACY4rjOI6eus9ML42g4535UyfOFFZYH8Fx7DwMNFbHbP807-rv45H3_83h-s0tykcvEDDYiPTE2cz-5GdPXgC4j4nbkFxV8oYPkV9-UrIVcNj7Pcr3IOU7x7uQr_bLeA4t0fXRryhY45wF8_cL8hhMW9YjznqKziyJNbXQh5Uda7vHjXAry2kOS4Gqx_TLGaoVn93Qe8cLC5LohUw_ODPr35T7bZ70IlS0mu0OSzjyIgxaFXTnBeSK7k_ZJ1LK2rtqx4-eoUIVaqVWEZAVExXr5w_2W8HpAFSw-aj9QDnIF7GY8lkx-zq8cb6jQdxeUuEwiDUfbTkl5YohfyZfaOKVb-oWASBk-do_01tYv_qFQ140NxkUULxk2cVo7Z0NlrGhDOqHe1rf9ksFtee6dDp24JeahrvO8X5WBueMW_vmbk1VOwTxxkRm1CPISjiowksb3EUpldMEQfICeR2Cy-_LzIxfI3mMcopumS8TyyWBlgH8pE-gbG-C58TInbZmDHrWRwb6NFv8OpNFz7SMI4yRRYWZGvStnEt9wwo8xIt2znpQEayd23sd8fZJ0y_LEs1gNyyb7wj61k3H4pV49Jyr69jQUDtm39Kj99FXyL_DBisCFO3gWPaK2CiAtG5c6LpS-gwanyP3K_0LUmbBykOToEwXDvErLNSBvjal1v4Sz6lAlFbGd3dIMk2XGyr9dpAw9-VSdKLZ2NtvYU9NnKxHHJix8y3yXxNqjpiHfifPD19mM7LSiKtWaYKnq-31QzTu6M4Vh0c5Z3TdxGb8OlEMxZVoNpwKIyubk4SmHCY9MOLCyDbrZYjuHPAqcK5nFbFZo-v1Crb4nSfLJ23H_sdhGPRWe1-guJ6EwNGkq-nR7czfGC2xFL6JCMaA6Pn0jg1o-55i9vNwOR9FEsL5UZfgoVyhgAjIIc_36RzClyW1QW-ur_rqSkdl8GyHZi0PIs5aVVx6nbu4ZJgKZD5qWwOvvk-D8wwrRP5BToHsyBH-yM31W9qKq7I5nm6N1cbUBaAcVbdOXQd3Ri5NfNzhBEvAEZM7D50Kq8k1rYdWUpbsjjVSKi8H_jFL8Y-sJRjepvRXQzarCAGzf-AfNOz_T1ZQ6-3isrFf8tUYxYooujIUBWir7j_tAsCt5e1PB-IIvfDAKrquE6zv2ux5oRu-21vj3ulTbQk5Es4NqsinU76bjPU7m_Jr7cSFC38wHYj0U4ybVJLEDU7mIGP-6QkE48g5IICU3Z6gqyTiWSy1x2Z8SZwBVakcKP1JqLLD9X6I5pkPlqGK1tE9B7g_J302v3rp2b3MY6ifqhWE03fQT3qhrvaXRN8aL2CD6Su9r1Nmw5ePGfc5j3X7oHW776SXVhFGm9SHvu4tB0j1Av0QGjkltHhiqC4QkWbMWxgcQV25Wf5aZO8xRY3lX1FcYKD_Y0varlAAYWPbj2gNkJKozNoAy67ipsBP29esFbAN0gCvV7Swm2FLu3Su6LT-ElthbyN95N-k3yEB2VSTIU3Y7ik7KfzLc7rPulSss9oBrJMDGLL73pojwpJGvycg3NisdlppNixBAO6uoWfpAxrd4GdrkxDCu0PyQNeYFOuCKHnag-nLbOm23Ny2UV30r-Y86GgqgNWzYKAvPDwuNVaag3TTu5L9w7DET2hCBX8WoNyBx09tZK8mAzugPGv7ktOFuSmTOcYWVT0SMzYH_uryCCK1D7mDKWo3GVCTtjGg_c_pbavtqXXRx6ZF8gkViuLhilESG90peXYDfa2kwZv4ffCrIyuffuPsyKUOnswckSc6euL7QQoEqKhCJTP6vQaQMNh53j_QCsDLqAYQzjb77YhE1ywU97hCF06kFGRK05j_yrpyRK9M0m3kEjuvVQIlXZ_haUvBXeyI67nV6F3NFyAONC3o87LYVgqe7Df-zAJBCUHkAtTPjGOJlGInE8rAJjZwoMhEIVxxbRXJwxsmf6pc-SdAb3sBZwCEqrW3ITo_SP6XdQL1mqN_JO2r9PAxBTgwZUyiXD7VCkuLcsLsfevr8nBwt9uUSATg2EBbcHm7IvOK4l3w8zgGtb8dD1Uco9RXew1Ywuc2dqmt-HJTbhR_kQahq8uTqdRa76h9KPfZAY0p83G263JBGzDIY3R_Pgxr_AE-JS1wfnyRtU-HEsC4R8ZOPwg8=",
+      "summary": []
+    },
+    {
+      "id": "rs_021a92dc3d563f82006a6df126a3a88190a38ae2f55e0990a6",
+      "type": "reasoning",
+      "content": [],
+      "encrypted_content": "gAAAAABqbfE9FGe0A40bCK2avQZLk7mgm1kF4TeSJfyHYoVvtnlTqwByJuT7vp2Lia7ytZ85ni_FVbO3ONOtlM9GPxBA7FtsHRgiNQzAOzgQPUZ4ocirEbkm3peVnC2Xjo0m5R6BHXmm1dIpLthjOUjvAgjTcKLrhXvH32gx4opYdphk122zzfAIKH1GI2ntrabPTNHFzcXlq4MIyn9DR6rNahTKmWn_kY5NdQNg2KD-Tmfu8NI10F8jW1MCkEW5ff35gxHiHIYi_nBHbfaoJF5E1UTuL4GgbarlMQ9UsOYOs13lkRrxQ1phlPLxYVCU0GMhBiyqV3IIF-BpnnnuEGWgrAbJc4UsroLwVCHa4q7iZ7emGJuz51vixK4k2XNsFQJvZi0SdC98V-4cDuliWMTH02EzHot_Yhk0dbo6bgIGJwsqRcMQaxKNnKaTBm7UGtxaGb44B0haduSJRjIih68ZwVZVbeRAL_76HgUXitiUTfSHfCCQvWQAhty7ovU0ie55EG3ueSUwtKpt02EchbihlQYfUPO_6WZ6uo4UGdAZzmyPsZcOjGZ3LVuFq99UMI-W41_HV9r8c1WmbZ86P6KpE9baEC8Te5nDATPPuNQKgm5yvIWb-XCkDjCPkJyBXw3RBP8tuits1t5x8jrnib8GTOqgZbx_USxmN4tQ2CbihdNGNu-YHt1IM0OocW_2Vq8mrO8parJ8FDwjEOrMYc7mGOFQw2eMrsszus8X0hdgP-fYPyyCDqzmYqFS44hgVs_HRMSr3tbrOfwCxGV3OrVYQT8ZCqrnioCvU0RN5qzTvb_McegaBwKenAQt_F5V6l4PwtxpPEoL3OeJqnSwybrc7gxj3qVPTjuTKE96GcrCjcg2A37R3VlP0duWEGNaNjq5vwAagtCpct87GJnexgsUTAHUii9EpJ5FrLr_uamenOAYXds4WhlaKjEoJ3pNnPOdyq50EbyQwCL2pl_V_th8Q1KVoIU1kx6RCipIhWbdBmauUxXUUIw-53GA9Y_rQhFtOw4yOYDOHwCrTbR7VgqENXv2twmUUxCWveP8d3ZA1BDSdDrct4tZVhuImjxwSJqhOSNzB79pg2ROxT91a5PAMg7i0eydH4VzH6Qm0Yc6GcvwSjWalLCGWFHBmx6e6HCJJAs8VqYPh576_7TRJYHxVanrhYhYarsLyH0DN3qr8QLmdXa5KCBN1Ujx21-41gG6HXHTZN2X6fS-gcuMIr-OIrVii6crATzG4vAT59BEWYp9wXXjYnmC9YwgfnCGTyxTVsmys1LvFpp72UKvrKfxQhoT-BG9vNTvTeKkbeIWG7FA25N3JUSDehOw87B7NUwmZ4ZH0ve1zCATcINvRK33HEp6wc5N9JoFN5wAKvWdYmU-R3f00ua_foWR5CML6fo3a371K64Ucu4bxGCWAVllnqTckmNSBMUsNTjrpBPoE-_713jzyEZo8zy7dUne9XuE0Hd0OLiM1F7xx-XUocGX_haBvBzJjXMmWljwZWof3JlIxG3Tdnu2YNNcm8FPZm2Lzs54QVbjIo0csh7b9BWxrDFRweqVXzAxNkjYmuP8KgIn9bADGTDCLTCmy4tMlVzLqJTRPPhF_q5II9ER8Zg2TjbOtxP7kskSNBLklvX5vir1I3gitdqGwxcYaKmrnx35AE20UTAovd4Z-MNEQTh9tXUQ3uNoaVHK7GTdTCcZWTHdWOoAyjCXSCSUH-FVa4xXpsFn88z5CeQBYXpaPbrFmH14y0NWxeKFjnAfe0gDXtCC7ajOvqdkwOxkfKbjq_BL56niC4p09box7sIsZL7WKx8B9NCcOhsxdaHPxDswlG_fcIjBdGNDCXJvaUkP37cQ4xuJML0TehLRLLiVBs1yacN-t7PmZQSfsEGayDJvS-gljk8yA1avDnCQQz9vSR3N84Bi3KwwQMCliC4H0Cahj3TEkCl6SNyy7PZ5nVPhnkIdY2Pni8qIXLXNuxOrLOTBOm6x4G_Nbm1rq8KMcb48QFG-PMU3Oi5hPEH5419BfBjU1GtZ-gD2uglGZoEV2DfmsgFhPbrQY-1melAmhUBllXTGxUAewtFjbdS4hTjo2goSSMy2ADPSo_4xqkn0M9sK-_wTkv8nWhlw9XfF_6D7kXyGEPbDT2fBPPKqWaDKcWCRjDwg6fiP5J8COBYNImjpahw7a3R_Go2RxixIbrFphhwGklbShNuCyJTsnO3HOPhU1wyuh5pOaa4kUiMkOiBfm4yDao4uKWaQlYiTl-KmE8iWI6gAUtAxZfOoCxEMqSRVTOly_cs=",
+      "summary": []
+    },
+    {
+      "id": "msg_021a92dc3d563f82006a6df12baebc8190ac33880cfd2d9562",
+      "type": "message",
+      "status": "completed",
+      "content": [
+        {
+          "type": "output_text",
+          "annotations": [],
+          "logprobs": [],
+          "text": "{\"candidates\":[{\"id\":\"c01\",\"strategy\":\"Warm paired couplets with a compact playful refrain\",\"page1Text\":\"Мој весели, чупави друже,\\nна дрвету гране те окруже.\\nБаш те волим печуркасто јако,\\nјер на мене пазиш тако.\",\"page2Text\":\"Другари печурке руку имају без броја,\\nдрже се и врте, дружина је то моја.\\nБаш вас волим печуркасто јако,\\nдок ме са тла подижете тако!\",\"refrainPage1\":\"Баш те волим печуркасто јако,\",\"refrainPage2\":\"Баш вас волим печуркасто јако,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"друже\",\"окруже\"]},{\"page\":1,\"words\":[\"јако\",\"тако\"]},{\"page\":2,\"words\":[\"броја\",\"моја\"]},{\"page\":2,\"words\":[\"јако\",\"тако\"]}]},{\"id\":\"c02\",\"strategy\":\"Gentle lyrical phrasing with alternating rhyme\",\"page1Text\":\"Волим те, друже чупави мој,\\nпечуркасто много — ти добро знаш.\\nНа дрвету почиваш, весео сав,\\nи одозго на мене пазиш баш.\",\"page2Text\":\"Много руку има печуркасти круг,\\nпечуркасто много — ви добро знате.\\nТу се врти уз друга друг,\\nа мене са земље подижете!\",\"refrainPage1\":\"Печуркасто много — ти добро знаш.\",\"refrainPage2\":\"Печуркасто много — ви добро знате.\",\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"сав\"]},{\"page\":1,\"words\":[\"знаш\",\"баш\"]},{\"page\":2,\"words\":[\"круг\",\"друг\"]},{\"page\":2,\"words\":[\"знате\",\"подижете\"]}]},{\"id\":\"c03\",\"strategy\":\"Bouncy spoken rhythm with clear direct address\",\"page1Text\":\"Весели друже, чупав и бео,\\nна дрвету почиваш ти.\\nПечуркасто те волим целог,\\nјер увек пазиш на мене ти.\",\"page2Text\":\"Другари имају руку много,\\nпа се држе и врте сви.\\nПечуркасто вас волим строго,\\nјер ме са земље дижете ви!\",\"refrainPage1\":\"Печуркасто те волим целог,\",\"refrainPage2\":\"Печуркасто вас волим строго,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"бео\",\"целог\"]},{\"page\":1,\"words\":[\"ти\",\"ти\"]},{\"page\":2,\"words\":[\"много\",\"строго\"]},{\"page\":2,\"words\":[\"сви\",\"ви\"]}]},{\"id\":\"c04\",\"strategy\":\"Simple child-friendly diction with strong couplet endings\",\"page1Text\":\"Чупави друже, весели мој,\\nна дрвету одмараш свој.\\nБаш те волим, печурка зна,\\nјер ме чуваш одозго свагда.\",\"page2Text\":\"Печурке имају руку без краја,\\nдрже се, врте — другарска граја.\\nБаш вас волим, печурка зна,\\nјер ме дижете високо са тла!\",\"refrainPage1\":\"Баш те волим, печурка зна,\",\"refrainPage2\":\"Баш вас волим, печурка зна,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"свој\"]},{\"page\":1,\"words\":[\"зна\",\"свагда\"]},{\"page\":2,\"words\":[\"краја\",\"граја\"]},{\"page\":2,\"words\":[\"зна\",\"тла\"]}]},{\"id\":\"c05\",\"strategy\":\"Conversational rhyme with the mushroom pun foregrounded\",\"page1Text\":\"На дрвету, чупави друже,\\nодмараш док те гране окруже.\\nВолим те баш печуркасто,\\nјер ме чуваш пријатељски, стално.\",\"page2Text\":\"Руку је много у кругу том,\\nдрже се и врте у колу свом.\\nВолим вас баш печуркасто,\\\\nдок ме са тла дижете складно!\",\"refrainPage1\":\"Волим те баш печуркасто,\",\"refrainPage2\":\"Волим вас баш печуркасто,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"друже\",\"окруже\"]},{\"page\":1,\"words\":[\"печуркасто\",\"стално\"]},{\"page\":2,\"words\":[\"том\",\"свом\"]},{\"page\":2,\"words\":[\"печуркасто\",\"складно\"]}]},{\"id\":\"c06\",\"strategy\":\"Compact chant-like verse with cross-rhyme movement\",\"page1Text\":\"Весели, чупави друже мој,\\nпечуркасто те волим, знај.\\nНа дрвету почиваш свој,\\nи пазиш на мене, знај.\",\"page2Text\":\"Руку без броја има тај круг,\\nпечуркасто вас волим, знајте.\\nДржи се и врти уз друга друг,\\nпа ме са земље подижите!\",\"refrainPage1\":\"Печуркасто те волим, знај.\",\"refrainPage2\":\"Печуркасто вас волим, знајте.\",\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"свој\"]},{\"page\":1,\"words\":[\"знај\",\"знај\"]},{\"page\":2,\"words\":[\"круг\",\"друг\"]},{\"page\":2,\"words\":[\"знајте\",\"подижите\"]}]}]}"
+        }
+      ],
+      "phase": "final_answer",
+      "role": "assistant"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "presence_penalty": 0,
+  "previous_response_id": null,
+  "prompt_cache_key": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+    "context": "all_turns",
+    "effort": "low",
+    "mode": "standard",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "store": true,
+  "temperature": 1,
+  "text": {
+    "format": {
+      "type": "json_schema",
+      "description": null,
+      "name": "priority_language_paired_drafts",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "type": "array",
+            "minItems": 6,
+            "maxItems": 6,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^c0[1-6]$"
+                },
+                "strategy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "page1Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "page2Text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "refrainPage1": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320
+                },
+                "refrainPage2": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 320
+                },
+                "rhymePairs": {
+                  "type": "array",
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "page": {
+                        "type": "integer",
+                        "enum": [
+                          1,
+                          2
+                        ]
+                      },
+                      "words": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        }
+                      }
+                    },
+                    "required": [
+                      "page",
+                      "words"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "strategy",
+                "page1Text",
+                "page2Text",
+                "refrainPage1",
+                "refrainPage2",
+                "rhymePairs"
+              ]
+            }
+          }
+        },
+        "required": [
+          "candidates"
+        ]
+      },
+      "strict": true
+    },
+    "verbosity": "medium"
+  },
+  "tool_choice": "auto",
+  "tool_usage": {
+    "image_gen": {
+      "input_tokens": 0,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "output_tokens": 0,
+      "output_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "total_tokens": 0
+    },
+    "web_search": {
+      "num_requests": 0
+    }
+  },
+  "tools": [],
+  "top_logprobs": 0,
+  "top_p": 0.98,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 803,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cached_tokens": 0
+    },
+    "output_tokens": 2551,
+    "output_tokens_details": {
+      "reasoning_tokens": 1234
+    },
+    "total_tokens": 3354
+  },
+  "user": null,
+  "metadata": {},
+  "output_text": "{\"candidates\":[{\"id\":\"c01\",\"strategy\":\"Warm paired couplets with a compact playful refrain\",\"page1Text\":\"Мој весели, чупави друже,\\nна дрвету гране те окруже.\\nБаш те волим печуркасто јако,\\nјер на мене пазиш тако.\",\"page2Text\":\"Другари печурке руку имају без броја,\\nдрже се и врте, дружина је то моја.\\nБаш вас волим печуркасто јако,\\nдок ме са тла подижете тако!\",\"refrainPage1\":\"Баш те волим печуркасто јако,\",\"refrainPage2\":\"Баш вас волим печуркасто јако,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"друже\",\"окруже\"]},{\"page\":1,\"words\":[\"јако\",\"тако\"]},{\"page\":2,\"words\":[\"броја\",\"моја\"]},{\"page\":2,\"words\":[\"јако\",\"тако\"]}]},{\"id\":\"c02\",\"strategy\":\"Gentle lyrical phrasing with alternating rhyme\",\"page1Text\":\"Волим те, друже чупави мој,\\nпечуркасто много — ти добро знаш.\\nНа дрвету почиваш, весео сав,\\nи одозго на мене пазиш баш.\",\"page2Text\":\"Много руку има печуркасти круг,\\nпечуркасто много — ви добро знате.\\nТу се врти уз друга друг,\\nа мене са земље подижете!\",\"refrainPage1\":\"Печуркасто много — ти добро знаш.\",\"refrainPage2\":\"Печуркасто много — ви добро знате.\",\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"сав\"]},{\"page\":1,\"words\":[\"знаш\",\"баш\"]},{\"page\":2,\"words\":[\"круг\",\"друг\"]},{\"page\":2,\"words\":[\"знате\",\"подижете\"]}]},{\"id\":\"c03\",\"strategy\":\"Bouncy spoken rhythm with clear direct address\",\"page1Text\":\"Весели друже, чупав и бео,\\nна дрвету почиваш ти.\\nПечуркасто те волим целог,\\nјер увек пазиш на мене ти.\",\"page2Text\":\"Другари имају руку много,\\nпа се држе и врте сви.\\nПечуркасто вас волим строго,\\nјер ме са земље дижете ви!\",\"refrainPage1\":\"Печуркасто те волим целог,\",\"refrainPage2\":\"Печуркасто вас волим строго,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"бео\",\"целог\"]},{\"page\":1,\"words\":[\"ти\",\"ти\"]},{\"page\":2,\"words\":[\"много\",\"строго\"]},{\"page\":2,\"words\":[\"сви\",\"ви\"]}]},{\"id\":\"c04\",\"strategy\":\"Simple child-friendly diction with strong couplet endings\",\"page1Text\":\"Чупави друже, весели мој,\\nна дрвету одмараш свој.\\nБаш те волим, печурка зна,\\nјер ме чуваш одозго свагда.\",\"page2Text\":\"Печурке имају руку без краја,\\nдрже се, врте — другарска граја.\\nБаш вас волим, печурка зна,\\nјер ме дижете високо са тла!\",\"refrainPage1\":\"Баш те волим, печурка зна,\",\"refrainPage2\":\"Баш вас волим, печурка зна,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"свој\"]},{\"page\":1,\"words\":[\"зна\",\"свагда\"]},{\"page\":2,\"words\":[\"краја\",\"граја\"]},{\"page\":2,\"words\":[\"зна\",\"тла\"]}]},{\"id\":\"c05\",\"strategy\":\"Conversational rhyme with the mushroom pun foregrounded\",\"page1Text\":\"На дрвету, чупави друже,\\nодмараш док те гране окруже.\\nВолим те баш печуркасто,\\nјер ме чуваш пријатељски, стално.\",\"page2Text\":\"Руку је много у кругу том,\\nдрже се и врте у колу свом.\\nВолим вас баш печуркасто,\\\\nдок ме са тла дижете складно!\",\"refrainPage1\":\"Волим те баш печуркасто,\",\"refrainPage2\":\"Волим вас баш печуркасто,\",\"rhymePairs\":[{\"page\":1,\"words\":[\"друже\",\"окруже\"]},{\"page\":1,\"words\":[\"печуркасто\",\"стално\"]},{\"page\":2,\"words\":[\"том\",\"свом\"]},{\"page\":2,\"words\":[\"печуркасто\",\"складно\"]}]},{\"id\":\"c06\",\"strategy\":\"Compact chant-like verse with cross-rhyme movement\",\"page1Text\":\"Весели, чупави друже мој,\\nпечуркасто те волим, знај.\\nНа дрвету почиваш свој,\\nи пазиш на мене, знај.\",\"page2Text\":\"Руку без броја има тај круг,\\nпечуркасто вас волим, знајте.\\nДржи се и врти уз друга друг,\\nпа ме са земље подижите!\",\"refrainPage1\":\"Печуркасто те волим, знај.\",\"refrainPage2\":\"Печуркасто вас волим, знајте.\",\"rhymePairs\":[{\"page\":1,\"words\":[\"мој\",\"свој\"]},{\"page\":1,\"words\":[\"знај\",\"знај\"]},{\"page\":2,\"words\":[\"круг\",\"друг\"]},{\"page\":2,\"words\":[\"знајте\",\"подижите\"]}]}]}"
+}

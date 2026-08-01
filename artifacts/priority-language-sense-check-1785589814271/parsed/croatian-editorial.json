@@ -1,0 +1,169 @@
+{
+  "finalists": [
+    {
+      "sourceCandidateId": "c06",
+      "page1Text": "Na stablu moj čupavi prijatelj počiva,\nsretan se među granama skriva.\nGljivasto te volim, kažem ti glasno,\njer paziš na mene — to mi je krasno!",
+      "page2Text": "Mnogo ruku ima gljivlja družina,\ndrže se i vrte, složna skupina.\nGljivasto vas volim, kažem vam glasno,\njer dižete me s tla — to mi je krasno!",
+      "refrainPage1": "Gljivasto te volim, kažem ti glasno,",
+      "refrainPage2": "Gljivasto vas volim, kažem vam glasno,",
+      "rank": 1,
+      "recommendedFinalist": true,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "počiva",
+            "skriva"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 1,
+          "words": [
+            "glasno",
+            "krasno"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "družina",
+            "skupina"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "glasno",
+            "krasno"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Najprirodniji ritam, jasna radnja i razigrana gljivasta dosjetka.",
+      "weakness": "Riječ „krasno” blago je književna, ali djeci razumljiva.",
+      "qualityNote": "Najskladniji spoj vjernosti, rime i tečnog čitanja naglas."
+    },
+    {
+      "sourceCandidateId": "c03",
+      "page1Text": "Moj čupavi prijatelj na stablu počiva,\nsretan se među granama skriva.\nGljivasto te volim — to kažem glasno,\njer paziš na mene, a to je baš krasno!",
+      "page2Text": "Ruku mnogo ima gljivlja družina,\ndrže se i vrte, složna skupina.\nGljivasto vas volim — to kažem glasno,\njer dižete me s tla, a to je baš krasno!",
+      "refrainPage1": "Gljivasto te volim — to kažem glasno,",
+      "refrainPage2": "Gljivasto vas volim — to kažem glasno,",
+      "rank": 2,
+      "recommendedFinalist": false,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "počiva",
+            "skriva"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 1,
+          "words": [
+            "glasno",
+            "krasno"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "družina",
+            "skupina"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "glasno",
+            "krasno"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Topao ton, čiste rime i vrlo dosljedan pripjev.",
+      "weakness": "Završni su stihovi malo dulji od ostalih.",
+      "qualityNote": "Vrlo čitka i vjerna inačica s blagim ritmičkim viškom."
+    },
+    {
+      "sourceCandidateId": "c01",
+      "page1Text": "Na stablu se odmara čupavi drug moj,\nsretan među granama, prijatelj je moj.\nBaš te gljivasto volim, kažem ti glasno,\njer na mene paziš — to mi je krasno!",
+      "page2Text": "Ruku bezbroj pruža gljivlja družina,\ndrže se i vrte, složna skupina.\nBaš vas gljivasto volim, kažem vam glasno,\njer me dižete s tla — to mi je krasno!",
+      "refrainPage1": "Baš te gljivasto volim, kažem ti glasno,",
+      "refrainPage2": "Baš vas gljivasto volim, kažem vam glasno,",
+      "rank": 3,
+      "recommendedFinalist": false,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "moj",
+            "moj"
+          ],
+          "valid": false,
+          "problem": "Ponavljanje iste riječi nije prava rima."
+        },
+        {
+          "page": 1,
+          "words": [
+            "glasno",
+            "krasno"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "družina",
+            "skupina"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "glasno",
+            "krasno"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Živahan pripjev i jasno očuvani odnosi među likovima.",
+      "weakness": "Prvi dvostih završava ponovljenom riječju umjesto punom rimom.",
+      "qualityNote": "Dobro se čita naglas, ali početna je rima slabija od ostalih."
+    }
+  ]
+}

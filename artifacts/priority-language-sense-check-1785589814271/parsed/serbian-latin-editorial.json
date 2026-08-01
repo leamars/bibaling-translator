@@ -1,0 +1,176 @@
+{
+  "finalists": [
+    {
+      "sourceCandidateId": "c01",
+      "page1Text": "Čupavi, veseli druže moj,\nodmaraš na grani toj.\nPečurkasto mnogo te volim ja,\njer me čuvaš — to se zna.",
+      "page2Text": "Ovi drugari imaju ruku bez broja,\ndrže se i vrte — družina moja.\nPečurkasto mnogo vas volim ja,\njer me podižete visoko sa tla!",
+      "refrainPage1": "Pečurkasto mnogo te volim ja,",
+      "refrainPage2": "Pečurkasto mnogo vas volim ja,",
+      "rank": 1,
+      "recommendedFinalist": true,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "moj",
+            "toj"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 1,
+          "words": [
+            "ja",
+            "zna"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "broja",
+            "moja"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "ja",
+            "tla"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Најприроднији спој топлине, јасне радње, разиграног рефрена и течне риме.",
+      "weakness": "Израз „дружина моја“ благо наглашава припадност групи.",
+      "qualityNote": "Најбоље звучи наглас и верно прати обе илустрације."
+    },
+    {
+      "sourceCandidateId": "c05",
+      "page1Text": "Veseli, čupavi druže moj,\nugnezdio si se na grani toj.\nBaš te volim pečurkasto mnogo,\njer me čuvaš — to mi je drago.",
+      "page2Text": "Ruku je mnogo u krugu tom,\ndrže se i vrte u kolu svom.\nBaš vas volim pečurkasto mnogo,\njer me dižete s tla — baš mi je drago!",
+      "refrainPage1": "Baš te volim pečurkasto mnogo,",
+      "refrainPage2": "Baš vas volim pečurkasto mnogo,",
+      "rank": 2,
+      "recommendedFinalist": false,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "moj",
+            "toj"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 1,
+          "words": [
+            "mnogo",
+            "drago"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "tom",
+            "svom"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "mnogo",
+            "drago"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Топао, разговорни тон и веома уједначен рефрен.",
+      "weakness": "Понављање речи „драго“ чини завршетке мање разноврсним.",
+      "qualityNote": "Течно и певљиво, уз јасно очувану игру речи."
+    },
+    {
+      "sourceCandidateId": "c04",
+      "page1Text": "Čupavi druže, veseli moj,\nsmestio si se na grani toj.\nBaš te volim — pečurka to zna,\njer me čuvaš s visokih grana.",
+      "page2Text": "Pečurke imaju ruku bez broja,\\ndrže se i vrte — družina moja.\nBaš vas volim — pečurka to zna,\njer me podižete visoko sa tla!",
+      "refrainPage1": "Baš te volim — pečurka to zna,",
+      "refrainPage2": "Baš vas volim — pečurka to zna,",
+      "rank": 3,
+      "recommendedFinalist": false,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "moj",
+            "toj"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 1,
+          "words": [
+            "zna",
+            "grana"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "broja",
+            "moja"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "zna",
+            "tla"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Једноставне речи, јасне слике и лако памтљив рефрен.",
+      "weakness": "Треће лице у рефрену звучи нешто мање непосредно.",
+      "qualityNote": "Читљива и верна верзија, али мање присна од прва два избора."
+    }
+  ],
+  "scriptChecks": {
+    "source": "serbian-cyrillic",
+    "paidCalls": 0,
+    "finalistCountMatches": true,
+    "lineCountsPreserved": true,
+    "cyrillicContainsLatinLetters": true
+  }
+}

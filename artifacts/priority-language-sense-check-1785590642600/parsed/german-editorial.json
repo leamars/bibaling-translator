@@ -1,0 +1,169 @@
+{
+  "finalists": [
+    {
+      "sourceCandidateId": "c06",
+      "page1Text": "Mein froher Freund mit Zottelfell\nruht oben im Baum, weiß und hell.\nVon Stiel bis Hut lieb ich dich sehr,\ndu passt auf mich auf – was will ich mehr?",
+      "page2Text": "Die Pilzfreunde fassen sich an\nund drehen mich, so schnell man kann.\nVon Stiel bis Hut lieb ich euch sehr,\nihr hebt mich hoch – was will ich mehr?",
+      "refrainPage1": "Von Stiel bis Hut lieb ich dich sehr,\ndu passt auf mich auf – was will ich mehr?",
+      "refrainPage2": "Von Stiel bis Hut lieb ich euch sehr,\nihr hebt mich hoch – was will ich mehr?",
+      "rank": 1,
+      "recommendedFinalist": true,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "Zottelfell",
+            "hell"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 1,
+          "words": [
+            "sehr",
+            "mehr"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "an",
+            "kann"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "sehr",
+            "mehr"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Sehr flüssig, kindgerecht und bildtreu; der Pilzwortwitz trägt auf beiden Seiten.",
+      "weakness": "„Was will ich mehr?“ ist etwas freier als der englische Ausruf.",
+      "qualityNote": "Die stärkste Verbindung aus natürlichem Vortrag, klaren Reimen und einheitlichem Refrain."
+    },
+    {
+      "sourceCandidateId": "c05",
+      "page1Text": "Mein froher Zottelfreund im Baum\nruht dort mit weißem Zottelflaum.\nMein Pilzherz liebt dich, das ist klar,\ndu passt auf mich auf – wie wunderbar!",
+      "page2Text": "Die Pilzfreunde reichen sich die Hände\nund drehen mich im Kreis ohne Ende.\nMein Pilzherz liebt euch, das ist klar,\nihr hebt mich hoch – wie wunderbar!",
+      "refrainPage1": "Mein Pilzherz liebt dich, das ist klar,\ndu passt auf mich auf – wie wunderbar!",
+      "refrainPage2": "Mein Pilzherz liebt euch, das ist klar,\nihr hebt mich hoch – wie wunderbar!",
+      "rank": 2,
+      "recommendedFinalist": false,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "Baum",
+            "Zottelflaum"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 1,
+          "words": [
+            "klar",
+            "wunderbar"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "Hände",
+            "Ende"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "klar",
+            "wunderbar"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Warmer Ton, deutlicher Pilzwortwitz und eine klare Darstellung des Kreisens.",
+      "weakness": "„Zottelflaum“ ist verständlich, klingt aber etwas weniger alltäglich.",
+      "qualityNote": "Ein stimmiger, gut vorlesbarer Reimtext mit sauberem Seitenübergang."
+    },
+    {
+      "sourceCandidateId": "c03",
+      "page1Text": "Mein froher Zottelfreund sitzt da,\nim Baum, ganz kuschelig und nah.\nVon Stiel bis Hut lieb ich dich sehr,\ndu passt auf mich auf – was will ich mehr?",
+      "page2Text": "Mit vielen Händen, Hand in Hand,\ndreht ihr mich munter und rasant.\nVon Stiel bis Hut lieb ich euch sehr,\nihr hebt mich hoch – was will ich mehr?",
+      "refrainPage1": "Von Stiel bis Hut lieb ich dich sehr,\ndu passt auf mich auf – was will ich mehr?",
+      "refrainPage2": "Von Stiel bis Hut lieb ich euch sehr,\nihr hebt mich hoch – was will ich mehr?",
+      "rank": 3,
+      "recommendedFinalist": false,
+      "naturalnessPass": true,
+      "fidelityPass": true,
+      "readAloudPass": true,
+      "rhymePass": true,
+      "refrainConsistencyPass": true,
+      "rhymePairs": [
+        {
+          "page": 1,
+          "words": [
+            "da",
+            "nah"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 1,
+          "words": [
+            "sehr",
+            "mehr"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "Hand",
+            "rasant"
+          ],
+          "valid": true,
+          "problem": ""
+        },
+        {
+          "page": 2,
+          "words": [
+            "sehr",
+            "mehr"
+          ],
+          "valid": true,
+          "problem": ""
+        }
+      ],
+      "strength": "Lebendige direkte Ansprache und ein besonders leicht wiederholbarer Refrain.",
+      "weakness": "„Munter und rasant“ ist klanglich kräftiger als die sanfte erste Seite.",
+      "qualityNote": "Natürlich lesbar und bildtreu, mit klar hörbaren Reimen."
+    }
+  ]
+}

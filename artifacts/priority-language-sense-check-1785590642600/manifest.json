@@ -1,0 +1,26 @@
+{
+  "status": "completed",
+  "completedAt": "2026-08-01T13:24:37.085Z",
+  "model": "gpt-5.6-sol",
+  "reasoningEffort": "low",
+  "automaticRetries": 0,
+  "maximumCalls": 8,
+  "maximumEstimatedCostUsd": 1.16,
+  "actual": {
+    "calls": 1,
+    "latencyMs": 34478,
+    "inputTokens": 2120,
+    "cachedInputTokens": 0,
+    "outputTokens": 2124,
+    "reasoningTokens": 1034,
+    "estimatedCostUsd": 0.07432
+  },
+  "results": [
+    {
+      "key": "german",
+      "label": "German",
+      "status": "completed",
+      "recommendation": "c06"
+    }
+  ]
+}

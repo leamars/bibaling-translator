@@ -1,0 +1,96 @@
+{
+  "maximum": {
+    "perCall": 0.145,
+    "total": 1.16
+  },
+  "actual": {
+    "calls": 6,
+    "latencyMs": 320711,
+    "inputTokens": 8996,
+    "cachedInputTokens": 0,
+    "outputTokens": 18307,
+    "reasoningTokens": 11033,
+    "estimatedCostUsd": 0.59419
+  },
+  "calls": [
+    {
+      "action": "priority-language.spanish-spain.editor",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_05e745db9248ca1b006a6df03748688190934e8599702ea169",
+      "responseStatus": "completed",
+      "latencyMs": 40286,
+      "inputTokens": 2174,
+      "cachedInputTokens": 0,
+      "outputTokens": 2566,
+      "reasoningTokens": 1527,
+      "estimatedCostUsd": 0.08785
+    },
+    {
+      "action": "priority-language.italian.draft",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_0d95e04da8db8667006a6df05ec4e88195a321d82ea4777f8c",
+      "responseStatus": "incomplete",
+      "incompleteReason": "max_output_tokens",
+      "latencyMs": 60127,
+      "inputTokens": 790,
+      "cachedInputTokens": 0,
+      "outputTokens": 3500,
+      "reasoningTokens": 2182,
+      "estimatedCostUsd": 0.10895
+    },
+    {
+      "action": "priority-language.croatian.draft",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_07fb0b6f504f35df006a6df09af1408190b6bb368f0cfeb15c",
+      "responseStatus": "completed",
+      "latencyMs": 54280,
+      "inputTokens": 785,
+      "cachedInputTokens": 0,
+      "outputTokens": 2858,
+      "reasoningTokens": 1505,
+      "estimatedCostUsd": 0.089665
+    },
+    {
+      "action": "priority-language.croatian.editor",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_0986c279f8d0a44f006a6df0d1347081959b88d8510c075e59",
+      "responseStatus": "completed",
+      "latencyMs": 61213,
+      "inputTokens": 2231,
+      "cachedInputTokens": 0,
+      "outputTokens": 3459,
+      "reasoningTokens": 2309,
+      "estimatedCostUsd": 0.114925
+    },
+    {
+      "action": "priority-language.serbian-cyrillic.draft",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_021a92dc3d563f82006a6df10e666481909fa20b5a17101c6e",
+      "responseStatus": "completed",
+      "latencyMs": 47328,
+      "inputTokens": 803,
+      "cachedInputTokens": 0,
+      "outputTokens": 2551,
+      "reasoningTokens": 1234,
+      "estimatedCostUsd": 0.080545
+    },
+    {
+      "action": "priority-language.serbian-cyrillic.editor",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "low",
+      "responseId": "resp_0140590f8b665bda006a6df13dbaf0819090e8e534f3689f4c",
+      "responseStatus": "completed",
+      "latencyMs": 57477,
+      "inputTokens": 2213,
+      "cachedInputTokens": 0,
+      "outputTokens": 3373,
+      "reasoningTokens": 2276,
+      "estimatedCostUsd": 0.112255
+    }
+  ]
+}
