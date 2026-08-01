@@ -1,72 +1,133 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  directionsEvaluationPrompt,
+  directionsGenerationPrompt,
   translationEvaluationPrompt,
   translationGenerationPrompt
 } from "../app/api/translation-prompts.ts";
 
-const base = {
-  spreadNumber: 1,
-  source: "I really love you oh-so-MUSH for watching over me.",
-  visualContext: "A mushroom watches over a friend.",
-  priority: "rhythm" as const,
-  freedom: "natural" as const,
-  bookForm: "refrain_verse" as const,
-  sourceRhyme: "sustained" as const,
-  direction: {
-    name: "Mushroom refrain",
-    refrain: "A parent-approved refrain.",
-    approach: "Recurring affection",
-    genderDependency: "None"
-  }
-};
+const source = "My bright red kite climbs over the hill. Come fly with me!";
+const refrain = "Come fly with me!";
 
-function renderedPrompts(targetLanguage: "sl" | "hr") {
-  const language = { targetLanguage };
+function refrainLabPrompts(targetLanguage: "sl" | "hr") {
+  const common = {
+    texts: [source, `The kite dips toward the trees. ${refrain}`, `It lands beside us. ${refrain}`],
+    visualContexts: ["A red kite rises.", "The kite passes trees.", "Two children catch it."],
+    priority: "rhythm" as const,
+    freedom: "natural" as const,
+    targetLanguage
+  };
   return {
-    draft: translationGenerationPrompt({ ...base, ...language }),
+    draft: directionsGenerationPrompt(common),
+    editorial: directionsEvaluationPrompt({
+      ...common,
+      directionsJson: JSON.stringify({ candidates: [] })
+    })
+  };
+}
+
+function pagePrompts(bookForm: "refrain_verse" | "prose_story", targetLanguage: "sl" | "hr") {
+  const direction = bookForm === "refrain_verse"
+    ? {
+        name: "Flying refrain",
+        refrain: "Poleti z menoj!",
+        approach: "A compact recurring invitation.",
+        genderDependency: "None"
+      }
+    : undefined;
+  const common = {
+    spreadNumber: 1,
+    source,
+    visualContext: "A child flies a red kite over a grassy hill.",
+    priority: bookForm === "prose_story" ? "meaning" as const : "rhythm" as const,
+    freedom: "natural" as const,
+    bookForm,
+    sourceRhyme: bookForm === "prose_story" ? "none" as const : "sustained" as const,
+    direction,
+    targetLanguage
+  };
+  return {
+    draft: translationGenerationPrompt(common),
     editorial: translationEvaluationPrompt({
-      ...base,
-      ...language,
+      ...common,
       candidatesJson: JSON.stringify({ candidates: [] })
     })
   };
 }
 
-test("production drafting prompts require mechanism-level candidate diversity", () => {
+test("Refrain Lab drafting and editorial prompts require mechanism-level diversity", () => {
   for (const targetLanguage of ["sl", "hr"] as const) {
-    const { draft } = renderedPrompts(targetLanguage);
-    assert.match(draft, /at least four materially different refrain, wordplay, or literary mechanisms/i);
+    const { draft, editorial } = refrainLabPrompts(targetLanguage);
+    assert.match(draft, /at least four materially different, source-grounded refrain or wordplay mechanisms/i);
     assert.match(draft, /No more than two candidates may use the same coined adjective\/adverb mechanism/i);
     assert.match(draft, /strategy label must name the actual linguistic mechanism/i);
-    assert.match(draft, /mushroom-part imagery/);
-    assert.match(draft, /natural target-language idiom/);
-    assert.match(draft, /affectionate refrain without mushroom coinage/);
-    assert.match(draft, /sound-based wordplay/);
-    assert.match(draft, /compact call-and-response/);
-    assert.match(draft, /source-grounded semantic pun/);
-  }
-});
-
-test("production prompts do not count three surface rewrites as meaningful diversity", () => {
-  for (const targetLanguage of ["sl", "hr"] as const) {
-    const { draft, editorial } = renderedPrompts(targetLanguage);
-    for (const prompt of [draft, editorial]) {
-      assert.match(prompt, /Synonym swaps, reordered clauses, and small intensifier additions/i);
-      assert.match(prompt, /do not (?:count as|establish) mechanism-level diversity|do not count as materially different mechanisms/i);
-    }
+    assert.match(draft, /Synonym swaps, reordered clauses, and small intensifier additions/i);
     assert.match(editorial, /three surface rewrites of one central joke/i);
-    assert.match(editorial, /CANDIDATE_DIVERSITY_WARNING:/);
+    assert.match(editorial, /materially different mechanisms/i);
   }
 });
 
-test("production editorial prompts keep translation quality above variety", () => {
+test("page generation protects a locked refrain and varies only non-locked writing", () => {
   for (const targetLanguage of ["sl", "hr"] as const) {
-    const { draft, editorial } = renderedPrompts(targetLanguage);
-    assert.match(draft, /Translation quality remains the first requirement/i);
-    assert.match(editorial, /Translation quality outranks diversity/i);
-    assert.match(editorial, /Never promote an awkward, less faithful, less natural, or otherwise lower-quality text solely to create variety/i);
-    assert.match(editorial, /If three strong distinct mechanisms do not exist, return the strongest qualifying texts/i);
-    assert.match(editorial, /Do not pretend they are meaningfully different/i);
+    const { draft, editorial } = pagePrompts("refrain_verse", targetLanguage);
+    for (const prompt of [draft, editorial]) {
+      assert.match(prompt, /approved refrain is locked text|exact approved refrain/i);
+      assert.match(prompt, /must never alter, paraphrase, or replace it|Never create diversity by changing or paraphrasing its wording/i);
+      assert.match(prompt, /natural sentence shape/);
+      assert.match(prompt, /pacing and line division/);
+      assert.doesNotMatch(prompt, /at least four materially different/);
+      assert.doesNotMatch(prompt, /different refrain mechanisms/);
+    }
+  }
+});
+
+test("prose uses source-grounded approaches without demanding literary invention", () => {
+  for (const targetLanguage of ["sl", "hr"] as const) {
+    const { draft, editorial } = pagePrompts("prose_story", targetLanguage);
+    assert.match(draft, /source-grounded translation approaches/i);
+    assert.match(draft, /Do not demand or invent wordplay, refrain mechanisms, puns, imagery, rhyme, or literary devices absent from the source/i);
+    assert.match(editorial, /do not invent a refrain, pun, image, or literary device absent from the source/i);
+    assert.doesNotMatch(draft, /at least four materially different/);
+  }
+});
+
+test("unrelated multilingual sources receive no mushroom-specific diversity examples", () => {
+  const prompts = [
+    ...Object.values(refrainLabPrompts("hr")),
+    ...Object.values(pagePrompts("refrain_verse", "hr")),
+    ...Object.values(pagePrompts("prose_story", "hr"))
+  ];
+  for (const prompt of prompts) {
+    assert.doesNotMatch(prompt, /mushroom-ly|mushroom-part imagery|mushroom adjective|gljivasto/i);
+  }
+});
+
+test("quality remains more important than diversity", () => {
+  for (const targetLanguage of ["sl", "hr"] as const) {
+    const prompts = [
+      ...Object.values(refrainLabPrompts(targetLanguage)),
+      ...Object.values(pagePrompts("refrain_verse", targetLanguage))
+    ];
+    assert.ok(prompts.some((prompt) => /Translation quality remains the first requirement/i.test(prompt)));
+    assert.ok(prompts.some((prompt) => /Translation quality outranks diversity/i.test(prompt)));
+    for (const prompt of prompts.filter((item) => /FINALIST DIVERSITY/i.test(item))) {
+      assert.match(prompt, /Never promote an awkward, less faithful, less natural, or otherwise lower-quality text solely to create variety/i);
+    }
+  }
+});
+
+test("a diversity warning is appended to qualityNote without replacing substantive weakness", () => {
+  for (const targetLanguage of ["sl", "hr"] as const) {
+    const editorialPrompts = [
+      refrainLabPrompts(targetLanguage).editorial,
+      pagePrompts("refrain_verse", targetLanguage).editorial
+    ];
+    for (const prompt of editorialPrompts) {
+      assert.match(prompt, /CANDIDATE_DIVERSITY_WARNING:/);
+      assert.match(prompt, /qualityNote/);
+      assert.match(prompt, /Preserve each finalist's substantive weakness unchanged|preserving the finalist's substantive weakness unchanged/i);
+      assert.doesNotMatch(prompt, /prefix .* in the weakness/i);
+    }
   }
 });

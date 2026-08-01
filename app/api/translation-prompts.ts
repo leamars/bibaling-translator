@@ -125,23 +125,49 @@ Approach: ${direction.approach}
 Gender dependency: ${direction.genderDependency}`;
 }
 
-function privateCandidateMechanismContract() {
-  return `CANDIDATE MECHANISM DIVERSITY
-- Across the six private candidates, use at least four materially different refrain, wordplay, or literary mechanisms.
-- No more than two candidates may use the same coined adjective/adverb mechanism (for example, a construction equivalent to “I love you mushroom-ly”).
+function refrainCandidateMechanismContract() {
+  return `REFRAIN-LAB MECHANISM DIVERSITY
+- Across the private candidate pool, use at least four materially different, source-grounded refrain or wordplay mechanisms.
+- No more than two candidates may use the same coined adjective/adverb mechanism.
 - Each short English strategy label must name the actual linguistic mechanism used in that candidate, not its mood or a generic claim of creativity.
-- Useful mechanism families include mushroom-part imagery, a natural target-language idiom, an affectionate refrain without mushroom coinage, sound-based wordplay, compact call-and-response, and a source-grounded semantic pun. Use only mechanisms that fit the source and selected book form.
+- Useful mechanism families include source-grounded concrete imagery, a natural target-language idiom, sound-based wordplay, compact call-and-response, an affectionate declaration, a source-grounded semantic pun, and faithful plain-language treatment when a pun would sound forced. Use only mechanisms the source genuinely supports.
 - Synonym swaps, reordered clauses, and small intensifier additions such as “really” or “very” are surface rewrites of one mechanism. They do not count as materially different mechanisms.
 - Translation quality remains the first requirement. Never introduce awkward language, weaker fidelity, forced rhyme, or unsupported invention merely to increase variety.`;
 }
 
-function editorialMechanismDiversityContract() {
-  return `FINALIST MECHANISM DIVERSITY
+function refrainEditorialMechanismDiversityContract() {
+  return `REFRAIN-LAB FINALIST DIVERSITY
 - Verify the mechanism in the actual candidate text; do not trust a strategy label that overstates the difference.
 - When multiple publication-quality mechanisms exist, the three finalists must represent materially different mechanisms rather than three surface rewrites of one central joke.
 - Synonym swaps, reordered clauses, and small intensifier additions do not establish mechanism-level diversity.
 - Translation quality outranks diversity. Never promote an awkward, less faithful, less natural, or otherwise lower-quality text solely to create variety.
-- If three strong distinct mechanisms do not exist, return the strongest qualifying texts even when their mechanisms overlap. Do not pretend they are meaningfully different. Put the exact prefix “CANDIDATE_DIVERSITY_WARNING:” in the weakness of each finalist whose mechanism materially overlaps another finalist.`;
+- If three strong distinct mechanisms do not exist, return the strongest qualifying texts even when their mechanisms overlap. Do not pretend they are meaningfully different. Append the exact prefix “CANDIDATE_DIVERSITY_WARNING:” and a concise explanation to qualityNote. Preserve each finalist's substantive weakness unchanged.`;
+}
+
+function pageCandidateApproachContract(bookForm: BookForm) {
+  const lockedRefrain = bookForm === "refrain_verse"
+    ? `- The approved refrain is locked text. Preserve it exactly and identically wherever required. Candidate diversity must never alter, paraphrase, or replace it.
+- Vary only the non-locked page writing: natural sentence shape, pacing and line division, compression versus fuller phrasing, source-grounded image emphasis, child-friendly cadence, and handling of dialogue or humor.`
+    : `- Use materially different source-grounded translation approaches only where the source supports them: natural sentence shape, pacing and line division, compression versus fuller phrasing, source-grounded image emphasis, child-friendly cadence, and handling of dialogue or humor.`;
+  const noInvention = bookForm === "prose_story"
+    ? "- This is prose. Do not demand or invent wordplay, refrain mechanisms, puns, imagery, rhyme, or literary devices absent from the source."
+    : "- Do not invent puns, imagery, refrains, or literary devices absent from the source merely to make candidates look different.";
+  return `PAGE-CANDIDATE APPROACH DIVERSITY
+${lockedRefrain}
+${noInvention}
+- Synonym swaps and reordered clauses alone are not meaningful variation.
+- Translation quality remains the first requirement. Never weaken naturalness, fidelity, or read-aloud flow for variety.`;
+}
+
+function pageEditorialApproachContract(bookForm: BookForm) {
+  const lockedRefrain = bookForm === "refrain_verse"
+    ? "- Preserve the exact approved refrain identically in every finalist. Never create diversity by changing or paraphrasing its wording. Compare only the non-locked parts of the page."
+    : "- Compare source-grounded translation approaches in the page text; do not invent a refrain, pun, image, or literary device absent from the source.";
+  return `PAGE-FINALIST APPROACH DIVERSITY
+${lockedRefrain}
+- Prefer meaningful differences in natural sentence shape, pacing and line division, compression versus fuller phrasing, source-grounded image emphasis, child-friendly cadence, and handling of dialogue or humor.
+- Translation quality outranks diversity. Never promote an awkward, less faithful, less natural, or otherwise lower-quality text solely to create variety.
+- If three strong distinct approaches do not exist, return the strongest qualifying texts. Append “CANDIDATE_DIVERSITY_WARNING:” and a concise explanation to qualityNote while preserving the finalist's substantive weakness unchanged.`;
 }
 
 function comparativeEditorialContract(language: string, rhymeRequired: boolean) {
@@ -260,6 +286,7 @@ Each private draft must include only:
 Every refrain must stay within the supplied source-relative budget. Do not write analysis, scores, keeps/changes documentation, alternatives within a field, or private deliberation. Use the required \`candidates\` response schema.
 
 Treat creative range as a parent-facing requirement, not an invitation to expand semantic scope. Make the five compact candidates differ through concise word choice, cadence, phonetic rhyme strategy, clause order, tone, and sound pattern—not extra lines, explanations, imagery, actions, or characters. Use question-and-answer only when the supplied source budget explicitly permits multiple sentences because the source itself uses that form.
+${refrainCandidateMechanismContract()}
 The strategies must differ materially in rhythm, syntax, rhyme treatment, tone, or sound—not merely swap words and never by becoming longer.
 Every field must commit to one complete proposal. Never use slashes, multiple alternatives inside one field, ellipses, fill-in-the-blank forms, unfinished phrases such as "Rada te imam, ker …", or meta-instructions that the parent would have to complete. A direction may describe flexible placement, but its displayed refrain/device must be exact, complete Slovenian wording. Make the named rhyme scheme agree with the structure you describe.
 When the source uses collective address such as "you all", a plural book-level refrain is faithful even on a spread that foregrounds one friend. Keep scene-specific singular details in the surrounding verse.
@@ -328,6 +355,7 @@ Editorial process (perform privately; do not return analysis or scores):
 - the server may send only two or more private candidates that passed deterministic rules. Treat survivors as inspiration. If an assigned construction is missing, independently write it from the authoritative source; never derive two finalists from the same seed;
 - use a different non-negative sourceCandidateIndex for each finalist developed from a survivor. When only two survivors are supplied, independently create exactly one missing assigned construction from the source, set its sourceCandidateIndex to -1, and do not reuse either seed's wording, opening, clause order, or rhyme pair;
 - ensure the set has visibly different openings, clause order, phrase inventory, repetition pattern, rhyme pairs, and structural form; sharing the same declaration with small changes does not count;
+${refrainEditorialMechanismDiversityContract()}
 - when quality is equal, prefer the set with greater imaginative range for the parent;
 - keep every final refrain within the exact source-relative word, character, sentence, clause, and line budgets above;
 - substantially shorten overlong survivors before returning them; never select one merely to fill three slots;
@@ -388,7 +416,7 @@ Candidate requirements:
 - no unsupported invention, filler, slash forms, placeholders, English syntax, or unresolved gender;
 - apply rhyme only when the locked book form and source rhyme require it: ${requiresRhyme({ bookForm: args.bookForm ?? "refrain_verse", sourceRhyme: args.sourceRhyme ?? "sustained", priority: args.priority }) ? "rhyme is required" : "rhyme is not required and must not be invented"}.
 
-${privateCandidateMechanismContract()}
+${pageCandidateApproachContract(args.bookForm ?? "refrain_verse")}
 
 Give every candidate a stable id c01 through c06 and a short English strategy label. Do not expose reasoning.
 ${args.rejectionFeedback ? `\nPREVIOUS EVALUATOR REJECTIONS — create new candidates that repair these failures:\n${args.rejectionFeedback}` : ""}`;
@@ -442,7 +470,7 @@ Editorial process:
 - preserve the exact locked refrain whenever it is used;
 - output only the three finalists in the required schema, with a short English strategy label and the source candidate id each finalist developed from.
 
-${editorialMechanismDiversityContract()}
+${pageEditorialApproachContract(args.bookForm ?? "refrain_verse")}
 
 ${leanPageEditorialContract({
   language: "Slovenian",
@@ -596,6 +624,8 @@ LIMITS
 ${args.parentFeedback ? `\nPARENT FEEDBACK\n${args.parentFeedback}` : ""}
 ${args.previousRefrains?.length ? `\nDO NOT REPEAT\n${args.previousRefrains.map((item) => `- ${item}`).join("\n")}` : ""}
 
+${refrainCandidateMechanismContract()}
+
 Return only the required candidates schema. Keep English names and approach labels short; every refrain must be solely in ${language}.`;
 }
 
@@ -625,6 +655,8 @@ HARD LIMITS
 
 Privately verify fidelity, native grammar, natural read-aloud flow, concise repeatability, and spoken rhyme when required. Return exactly one finalist with construction "couplet", exactly one with construction "playful_hook", and exactly one with construction "lyrical_refrain". The three options must differ visibly in opening, syntax, rhythm, and rhyme pair.
 
+${refrainEditorialMechanismDiversityContract()}
+
 ${comparativeEditorialContract(language, args.priority === "rhythm")}
 
 Labels/descriptions may be English; refrain text must be ${language}.`;
@@ -647,7 +679,7 @@ ${args.visualContext ? `\nVISUAL CONTEXT\n${args.visualContext}` : ""}
 ${args.approvedSpread1 ? `\nAPPROVED PAGE 1 VOICE — imitate, never rewrite\n${args.approvedSpread1}` : ""}
 ${args.approvedSpread1Note ? `\nPARENT EDIT NOTE — apply as binding editorial evidence\n${args.approvedSpread1Note}` : ""}
 
-${privateCandidateMechanismContract()}
+${pageCandidateApproachContract(args.bookForm ?? "refrain_verse")}
 
 Return complete reader-facing ${language} text, never notes or fragments. Preserve exact approved refrain wording only for refrain_verse. Give candidates ids c01–c06 and short English strategy labels. Return only the required schema.`;
 }
@@ -672,7 +704,7 @@ ${args.approvedSpread1Note ? `\nPARENT EDIT NOTE\n${args.approvedSpread1Note}` :
 PRIVATE CANDIDATES
 ${args.candidatesJson}
 
-${editorialMechanismDiversityContract()}
+${pageEditorialApproachContract(args.bookForm ?? "refrain_verse")}
 
 For each returned text, set every schema pass field true only after the text itself passes fidelity, native ${language} grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement.
 
