@@ -72,9 +72,9 @@ mi alzate da terra: che divertente!
 
 **Quality note:** Versione fedele e musicale, con un neologismo ben comprensibile.
 
-**Human rating:** ____________________
+**Human rating:** Pretty good
 
-**Human comments:**
+**Human comments:** Somewhat complicated to say aloud.
 
 
 
@@ -102,17 +102,16 @@ mi alzate da terra: è fenomenale!
 
 **Quality note:** Solida alternativa, naturale e pienamente coerente con le illustrazioni.
 
-**Human rating:** ____________________
+**Human rating:** Preferred
 
-**Human comments:**
+**Human comments:** Also pretty good and slightly better than Finalist 2.
 
 
 
 ## Human conclusion
 
-Preferred finalist: ____________________
+Preferred finalist: **Finalist 3**
 
-Overall status: PASS / NEEDS_TARGETED_TUNING / MOVE_TO_EXPERIMENTAL
+Overall status: **Pending Lea's explicit status decision**
 
-Comments:
-
+Comments: Finalists 2 and 3 are both good. Finalist 3 is preferred; Finalist 2 is more complicated to say aloud.

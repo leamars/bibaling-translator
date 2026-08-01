@@ -1,0 +1,23 @@
+{
+  "language": "Italian",
+  "fixture": "mushroom-two-page-refrain",
+  "conclusion": {
+    "type": "preferred_candidate",
+    "preferredFinalist": 3,
+    "overallStatus": null
+  },
+  "candidateFeedback": [
+    {
+      "finalist": 2,
+      "assessment": "pretty good",
+      "comment": "Somewhat complicated to say aloud."
+    },
+    {
+      "finalist": 3,
+      "assessment": "preferred",
+      "comment": "Also pretty good and slightly better than Finalist 2."
+    }
+  ],
+  "unratedFinalists": [1],
+  "source": "Lea's direct review feedback"
+}
