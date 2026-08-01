@@ -25,12 +25,13 @@ import {
   type Priority
 } from "../translation-prompts";
 import {
-  deterministicViolations
+  deterministicViolations,
+  failedFullBookGates
 } from "../translation-quality";
 import {
-  leanPageEditorialJsonSchema,
-  leanPageEditorialResultSchema,
-  resolveLeanPageDecision
+  productionPageEditorialJsonSchema,
+  productionPageEditorialResultSchema,
+  resolveProductionPageResult
 } from "../page-editorial-contract.ts";
 import { verifyLeadReceipt } from "../leads/receipt";
 import {
@@ -148,17 +149,17 @@ const candidateJsonSchema = {
 } as const;
 
 function editorialJsonSchema() {
-  return leanPageEditorialJsonSchema;
+  return productionPageEditorialJsonSchema;
 }
 
 const fullBookItemSchema = z.object({
   spread: z.number().int().positive(),
   text: z.string().min(1),
-  fidelityPass: z.literal(true).optional(),
-  grammarPass: z.literal(true).optional(),
-  readAloudPass: z.literal(true).optional(),
-  directionPass: z.literal(true).optional(),
-  rhymePass: z.literal(true).optional()
+  fidelityPass: z.boolean().optional(),
+  grammarPass: z.boolean().optional(),
+  readAloudPass: z.boolean().optional(),
+  directionPass: z.boolean().optional(),
+  rhymePass: z.boolean().optional()
 });
 
 function fullBookJsonSchema(spreadCount: number, editorial: boolean) {
@@ -291,16 +292,18 @@ async function generatePassingOptions(args: PipelineArgs) {
         text: { format: { type: "json_schema", name: "translation_editorial_finalists", strict: true, schema: editorialJsonSchema() } }
       }
     });
-    const edited = leanPageEditorialResultSchema.parse(JSON.parse(evaluationResponse.output_text));
+    const edited = productionPageEditorialResultSchema.parse(JSON.parse(evaluationResponse.output_text));
+    // Hard gates: reader-facing text only — banned content, placeholders,
+    // meta-commentary, duplicates. Editorial bookkeeping never hard-fails.
     const textEligible = edited.finalists.filter((candidate) =>
-      deterministicViolations(candidate.evaluatedText, { targetLanguage: args.targetLanguage }).length === 0
+      deterministicViolations(candidate.text, { targetLanguage: args.targetLanguage }).length === 0
     );
     if (textEligible.length !== 3 || new Set(
-      textEligible.map((candidate) => candidate.evaluatedText.trim().toLocaleLowerCase(args.targetLanguage))
+      textEligible.map((candidate) => candidate.text.trim().toLocaleLowerCase(args.targetLanguage))
     ).size !== 3) {
       throw Object.assign(
-        new Error("The editorial comparison contained malformed or duplicate finalist text."),
-        { code: "COMPARATIVE_CONTRACT_INVALID" }
+        new Error("The editorial response contained malformed or duplicate finalist text."),
+        { code: "FINAL_TEXT_INVALID" }
       );
     }
     const rhymeRequired = requiresRhyme({
@@ -308,29 +311,28 @@ async function generatePassingOptions(args: PipelineArgs) {
       sourceRhyme: args.sourceRhyme,
       priority: args.priority
     });
-    const selection = resolveLeanPageDecision({
+    const selection = resolveProductionPageResult({
       result: edited,
       rhymeRequired,
       sourceCandidates: survivors
     });
     if (!selection.ok) {
+      // Translation-level rejection: the editor judged every finalist to fail
+      // at least one of its own quality gates.
       throw Object.assign(new Error(selection.error.message), selection.error);
     }
-    if (selection.outcome === "no_qualifying_finalist") {
-      throw Object.assign(
-        new Error("No finalist met every minimum eligibility requirement."),
-        { code: "NO_QUALIFYING_FINALIST" }
-      );
-    }
-    const selectedIds = new Set(selection.finalists.map((finalist) => finalist.sourceCandidateId));
-    return [...edited.finalists]
-      .sort((first, second) => first.rank - second.rank)
-      .map((finalist) => ({
-        strategy: survivors.find((candidate) => candidate.id === finalist.sourceCandidateId)?.strategy || "Editorial finalist",
-        text: finalist.evaluatedText,
-        rank: finalist.rank,
-        recommendedFinalist: selectedIds.has(finalist.sourceCandidateId),
+    if (selection.warnings.length > 0) {
+      console.warn("editorial_metadata_warnings", JSON.stringify({
+        action: `spread${args.spreadNumber}.evaluate`,
+        warnings: selection.warnings
       }));
+    }
+    return selection.finalists.map((finalist) => ({
+      strategy: survivors.find((candidate) => candidate.id === finalist.sourceCandidateId)?.strategy || "Editorial finalist",
+      text: finalist.text,
+      rank: finalist.rank,
+      recommendedFinalist: finalist === selection.recommended,
+    }));
 }
 
 async function generateFullBook(args: {
@@ -403,11 +405,11 @@ async function generateFullBook(args: {
   });
   const final = z.object({
     spreads: z.array(fullBookItemSchema.extend({
-      fidelityPass: z.literal(true),
-      grammarPass: z.literal(true),
-      readAloudPass: z.literal(true),
-      directionPass: z.literal(true),
-      rhymePass: z.literal(true)
+      fidelityPass: z.boolean(),
+      grammarPass: z.boolean(),
+      readAloudPass: z.boolean(),
+      directionPass: z.boolean(),
+      rhymePass: z.boolean()
     })).length(input.spreads.length)
   }).parse(JSON.parse(editorialResponse.output_text));
   const expected = new Set(input.spreads.map((spread) => spread.spread));
@@ -416,6 +418,18 @@ async function generateFullBook(args: {
     !expected.has(spread.spread) || deterministicViolations(spread.text, { targetLanguage: input.targetLanguage }).length > 0
   )) {
     throw new Error("The full-book editorial response did not contain one valid translation for every spread.");
+  }
+  const failedGates = failedFullBookGates(final.spreads, requiresRhyme({
+    bookForm: input.bookForm,
+    sourceRhyme: input.sourceRhyme,
+    priority: input.priority
+  }));
+  if (failedGates.length > 0) {
+    throw new Error(
+      `The final editorial pass reported failed quality gates: ${failedGates
+        .map((item) => `spread ${item.spread} (${item.failed.join(", ")})`)
+        .join("; ")}.`
+    );
   }
   return final.spreads.map(({ spread, text }) => ({ spread, text }));
 }

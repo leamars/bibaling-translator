@@ -6,7 +6,8 @@ import {
   fullBookEditorialPrompt,
   fullBookGenerationPrompt
 } from "../api/translation-prompts";
-import type { BookForm, SourceRhyme } from "../api/book-form-contract.ts";
+import { requiresRhyme, type BookForm, type SourceRhyme } from "../api/book-form-contract.ts";
+import { failedFullBookGates } from "../api/translation-quality.ts";
 import type { DirectionBrief, Freedom, Priority } from "../api/translation-prompts";
 import {
   languageSelectionLabel,
@@ -44,11 +45,11 @@ const draftSchema = z.object({
 const finalItemSchema = z.object({
   spread: z.number().int().positive(),
   text: z.string().min(1),
-  fidelityPass: z.literal(true),
-  grammarPass: z.literal(true),
-  readAloudPass: z.literal(true),
-  directionPass: z.literal(true),
-  rhymePass: z.literal(true)
+  fidelityPass: z.boolean(),
+  grammarPass: z.boolean(),
+  readAloudPass: z.boolean(),
+  directionPass: z.boolean(),
+  rhymePass: z.boolean()
 });
 
 function fullBookJsonSchema(count: number, editorial: boolean) {
@@ -187,6 +188,20 @@ export async function finalEditorialStep(input: WorkflowDeliveryInput, drafts: T
   const actual = new Set(parsed.spreads.map((page) => page.spread));
   if (actual.size !== expected.size || parsed.spreads.some((page) => !expected.has(page.spread))) {
     throw new FatalError("Final editorial output did not contain every page exactly once.");
+  }
+  const failedGates = failedFullBookGates(parsed.spreads, requiresRhyme({
+    bookForm: input.bookForm,
+    sourceRhyme: input.sourceRhyme,
+    priority: input.priority
+  }));
+  if (failedGates.length > 0) {
+    // Translation-level rejection reported by the editorial pass itself; a
+    // retry regenerates rather than shipping text the editor judged failing.
+    throw new Error(
+      `The final editorial pass reported failed quality gates: ${failedGates
+        .map((item) => `page ${item.spread} (${item.failed.join(", ")})`)
+        .join("; ")}.`
+    );
   }
   return parsed.spreads
     .sort((a, b) => a.spread - b.spread)

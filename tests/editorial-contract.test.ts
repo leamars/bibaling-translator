@@ -204,7 +204,7 @@ test("non-rhyming fixtures are not penalized for lacking rhyme", () => {
   if (selection.ok) assert.equal(selection.finalist.rank, 1);
 });
 
-test("Refrain Lab retains the detailed contract while page editing uses the lean contract", () => {
+test("Refrain Lab and page editing both use the compact production contract", () => {
   const refrainPrompt = directionsEvaluationPrompt({
     texts: ["We love you so much."],
     visualContexts: ["A mushroom with friends."],
@@ -227,25 +227,32 @@ test("Refrain Lab retains the detailed contract while page editing uses the lean
   });
   assert.match(refrainPrompt, /unique ranks 1, 2, and 3/);
   assert.match(refrainPrompt, /recommendedFinalist=true for exactly one finalist/);
-  assert.match(refrainPrompt, /winnerComparisons for alternative ranks 2 and 3/);
-  assert.match(pagePrompt, /LEAN PAGE EDITORIAL CONTRACT/);
+  assert.match(refrainPrompt, /strength: one specific material strength/);
+  assert.match(pagePrompt, /PAGE EDITORIAL CONTRACT/);
   assert.match(pagePrompt, /unique ranks 1, 2, and 3/);
-  assert.match(pagePrompt, /equivalent_group/);
-  assert.match(pagePrompt, /no_qualifying_finalist/);
+  assert.match(pagePrompt, /do not disguise that failure/);
   assert.match(pagePrompt, /natural contemporary Spanish/);
   assert.match(pagePrompt, /Rhyme is not required/);
   assert.match(pagePrompt, /Do not penalize its absence/);
+  // Production prompts no longer request the deep audit paperwork.
+  for (const prompt of [refrainPrompt, pagePrompt]) {
+    assert.doesNotMatch(prompt, /winnerComparisons|comparativeAssessment|appliedEdits|concernFindings|equivalent_group/);
+  }
 });
 
-test("production Refrain Lab and page routes use their reviewed editorial contracts", async () => {
+test("production Refrain Lab and page routes use the compact production contract", async () => {
   const [directionsRoute, translationsRoute] = await Promise.all([
     readFile(new URL("../app/api/directions/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8")
   ]);
-  assert.match(directionsRoute, /comparativeJsonProperties/);
-  assert.match(directionsRoute, /winnerComparisonsJsonSchema/);
-  assert.match(directionsRoute, /validateDirectionEditorialResult/);
-  assert.match(translationsRoute, /leanPageEditorialJsonSchema/);
-  assert.match(translationsRoute, /resolveLeanPageDecision/);
+  assert.match(directionsRoute, /productionFinalistJsonProperties/);
+  assert.match(directionsRoute, /validateProductionDirectionResult/);
+  assert.match(directionsRoute, /selectProductionRecommendedDirection/);
+  assert.match(translationsRoute, /productionPageEditorialJsonSchema/);
+  assert.match(translationsRoute, /resolveProductionPageResult/);
+  // Deep audit shapes stay confined to the live-evaluation harness.
+  for (const route of [directionsRoute, translationsRoute]) {
+    assert.doesNotMatch(route, /winnerComparisons|comparativeJsonProperties|leanPageEditorialJsonSchema|resolveLeanPageDecision/);
+  }
   assert.doesNotMatch(translationsRoute, /\.find\(allPasses\)|finalists\[0\]/);
 });

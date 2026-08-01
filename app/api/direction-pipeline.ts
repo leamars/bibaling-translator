@@ -8,6 +8,9 @@ import { deterministicViolations } from "./translation-quality.ts";
 import type { TargetLanguage } from "../languages/language-config.ts";
 import {
   comparativeFinalistFields,
+  finalistMetadataWarnings,
+  normalizeRecommendedFinalist,
+  productionFinalistFields,
   selectRecommendedFinalist,
   validateComparativeEditorialResult,
   winnerComparisonsSchema
@@ -88,7 +91,7 @@ export const privateCandidatesSchema = z.object({
   candidates: z.array(privateCandidateSchema).length(DIRECTION_PIPELINE_CONFIG.drafting.candidateCount)
 });
 
-export const editorialOptionSchema = z.object({
+const directionStructuralFields = {
   sourceCandidateIndex: z.number().int().min(-1).max(DIRECTION_PIPELINE_CONFIG.drafting.candidateCount - 1),
   label: z.string().trim().min(1).max(40),
   refrain: z.string().trim().min(1).max(320),
@@ -103,7 +106,23 @@ export const editorialOptionSchema = z.object({
   grammarPass: z.boolean(),
   readAloudPass: z.boolean(),
   directionPass: z.boolean(),
-  rhymePass: z.boolean(),
+  rhymePass: z.boolean()
+} as const;
+
+// Compact production shape: parent-facing routes request only what the
+// pipeline selects and displays, plus one strength/weakness/note for logs.
+export const productionDirectionOptionSchema = z.object({
+  ...directionStructuralFields,
+  ...productionFinalistFields
+});
+export const productionDirectionResultSchema = z.object({
+  options: z.array(productionDirectionOptionSchema).length(DIRECTION_PIPELINE_CONFIG.editorial.optionCount)
+});
+export type ProductionDirectionResult = z.infer<typeof productionDirectionResultSchema>;
+
+// Deep audit shape — retained for the live-evaluation harness under scripts/.
+export const editorialOptionSchema = z.object({
+  ...directionStructuralFields,
   ...comparativeFinalistFields
 });
 export const editorialOptionsSchema = z.object({
@@ -257,6 +276,18 @@ export function editorialBudgetViolations(
     : budget.maximumClauseCount;
   return refrainBudgetViolations(option.refrain, { ...budget, maximumClauseCount });
 }
+
+// ---------------------------------------------------------------------------
+// LINGUISTIC HEURISTICS — WARNING-ONLY.
+//
+// Everything from here through finalDirectionSetViolations judges linguistic
+// quality with spelling-level tools (shared suffixes, token overlap, clause
+// signatures). Spelling overlap is not proof that two words rhyme or fail to
+// rhyme, and none of these can judge stress in the target language. They feed
+// qualityWarnings for diagnostics and human review; they must never hard-
+// reject a candidate. Hard rejection is reserved for deterministic,
+// language-independent failures (unmistakableTextFailures below).
+// ---------------------------------------------------------------------------
 
 function nearDuplicate(first: string, second: string) {
   if (first === second) return true;
@@ -445,14 +476,17 @@ export function validateFinalEditorialSet(
   if (options.length !== DIRECTION_PIPELINE_CONFIG.editorial.optionCount) {
     hardFailures.push(validationIssue("WRONG_FINAL_COUNT", "editor must return exactly three refrains"));
   }
+  // Construction labels are internal diversity bookkeeping, not parent-facing
+  // text. An imperfect mix is a diagnostic warning, never a reason to discard
+  // three usable refrains.
   const requiredConstructions = new Set(["couplet", "playful_hook", "lyrical_refrain"]);
   if (
     new Set(options.map((option) => option.construction)).size !== 3 ||
     options.some((option) => !requiredConstructions.has(option.construction))
   ) {
-    hardFailures.push(validationIssue(
+    qualityWarnings.push(validationIssue(
       "CONSTRUCTION_SCHEMA_INVARIANT",
-      "response must contain exactly one couplet, one playful_hook, and one lyrical_refrain"
+      "response does not contain exactly one couplet, one playful_hook, and one lyrical_refrain"
     ));
   }
   const seen = new Set<string>();
@@ -471,6 +505,51 @@ export function validateFinalEditorialSet(
   return { hardFailures, qualityWarnings };
 }
 
+/**
+ * Production validation for the compact directions result.
+ * Hard failures cover only unusable parent-facing text (wrong count, empty,
+ * banned content, placeholders, exact duplicates, gross overlength) plus
+ * "no option passes its own quality gates". Every metadata imperfection —
+ * construction mix, rhyme-pair bookkeeping, ranks, recommendation flags,
+ * generic assessments — is routed to qualityWarnings.
+ */
+export function validateProductionDirectionResult(
+  result: ProductionDirectionResult,
+  budget: RefrainBudget,
+  requireRhyme: boolean,
+  availableSeedCount: number,
+  targetLanguage: TargetLanguage = "sl"
+): ValidationDiagnostics {
+  const diagnostics = validateFinalEditorialSet(
+    result.options,
+    budget,
+    requireRhyme,
+    availableSeedCount,
+    targetLanguage
+  );
+  diagnostics.qualityWarnings.push(
+    ...finalistMetadataWarnings(result.options, requireRhyme)
+      .map((warning) => validationIssue(warning.code, warning.message, warning.finalistIndex))
+  );
+  return diagnostics;
+}
+
+/**
+ * Production recommendation: resolved deterministically. Only a result in
+ * which no option passes its quality gates fails.
+ */
+export function selectProductionRecommendedDirection(
+  result: ProductionDirectionResult,
+  requireRhyme: boolean
+) {
+  return normalizeRecommendedFinalist({
+    finalists: result.options,
+    rhymeRequired: requireRhyme
+  });
+}
+
+// Deep audit validation — retained for the live-evaluation harness under
+// scripts/; production routes use validateProductionDirectionResult above.
 export function validateDirectionEditorialResult(
   result: z.infer<typeof editorialOptionsSchema>,
   budget: RefrainBudget,
