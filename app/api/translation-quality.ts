@@ -45,6 +45,32 @@ export function deterministicViolations(
   return violations;
 }
 
+export const FULL_BOOK_GATES = [
+  "fidelityPass",
+  "grammarPass",
+  "readAloudPass",
+  "directionPass",
+  "rhymePass"
+] as const;
+
+/**
+ * An explicitly failed quality gate concerns the translation itself and
+ * remains a hard failure — but it must be reported as such, not surface as an
+ * opaque schema-parse error. `rhymePass=false` only counts when the approved
+ * book form actually requires rhyme.
+ */
+export function failedFullBookGates(
+  spreads: Array<Partial<Record<typeof FULL_BOOK_GATES[number], boolean>> & { spread: number }>,
+  rhymeRequired: boolean
+) {
+  return spreads.flatMap((item) => {
+    const failed = FULL_BOOK_GATES.filter((gate) =>
+      (gate !== "rhymePass" || rhymeRequired) && item[gate] === false
+    );
+    return failed.length > 0 ? [{ spread: item.spread, failed }] : [];
+  });
+}
+
 export type DeclaredRhymePair = {
   firstLine: number;
   secondLine: number;
@@ -64,8 +90,10 @@ function longestSharedSuffix(first: string, second: string) {
   return length;
 }
 
-// Conservative structural check only: it rejects missing pairs, repeated end
-// words, and obvious spelling-level non-rhymes. It cannot judge Slovenian stress.
+// DIAGNOSTIC-ONLY (live-evaluation harness and tests). Spelling overlap is not
+// proof that two words rhyme or fail to rhyme, so this heuristic must never
+// hard-reject a candidate in production. Rhyme quality is judged by the
+// editorial model and, ultimately, the native-speaking parent.
 export function declaredRhymeViolations(text: string, pairs: DeclaredRhymePair[]) {
   const lines = text.split("\n").map((line) => line.trim()).filter(Boolean);
   const violations: string[] = [];
@@ -83,6 +111,7 @@ export function declaredRhymeViolations(text: string, pairs: DeclaredRhymePair[]
   return violations;
 }
 
+// DIAGNOSTIC-ONLY (live-evaluation harness and tests); not a production gate.
 export function structuralDiversityViolations(structureIds: string[], selectedIds: string[]) {
   const selected = selectedIds.map((id) => structureIds[Number(id.slice(1)) - 1]).filter(Boolean);
   return new Set(selected).size === selectedIds.length

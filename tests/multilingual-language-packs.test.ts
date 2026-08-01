@@ -206,8 +206,14 @@ test("multilingual Refrain Lab prompt and validator share the three-construction
     validateFinalEditorialSet(valid, budget, true, 5, "es").hardFailures.length,
     0
   );
+  // An imperfect construction mix is diversity bookkeeping: it warns for
+  // diagnostics but never discards three usable refrains.
+  const imperfectMix = validateFinalEditorialSet(duplicateAndMissing, budget, true, 5, "es");
+  assert.equal(
+    imperfectMix.hardFailures.some((issue) => issue.code === "CONSTRUCTION_SCHEMA_INVARIANT"),
+    false
+  );
   assert.ok(
-    validateFinalEditorialSet(duplicateAndMissing, budget, true, 5, "es")
-      .hardFailures.some((issue) => issue.code === "CONSTRUCTION_SCHEMA_INVARIANT")
+    imperfectMix.qualityWarnings.some((issue) => issue.code === "CONSTRUCTION_SCHEMA_INVARIANT")
   );
 });

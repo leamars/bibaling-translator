@@ -1,5 +1,130 @@
 import { z } from "zod";
-import { RHYME_CLASSIFICATIONS } from "./editorial-contract.ts";
+import {
+  RHYME_CLASSIFICATIONS,
+  normalizeRecommendedFinalist,
+  productionFinalistFields,
+  productionFinalistJsonProperties,
+  productionFinalistJsonRequired,
+  type EditorialMetadataWarning
+} from "./editorial-contract.ts";
+
+// ---------------------------------------------------------------------------
+// PRODUCTION PAGE CONTRACT (compact)
+//
+// Parent-facing routes request only what the pipeline selects and displays.
+// The deep lean contract below is retained for the live-evaluation harness
+// under scripts/ and is not used by production routes.
+// ---------------------------------------------------------------------------
+
+export const productionPageFinalistSchema = z.object({
+  sourceCandidateId: z.string().trim().min(1).max(40),
+  text: z.string().trim().min(1).max(2_000),
+  fidelityPass: z.boolean(),
+  grammarPass: z.boolean(),
+  readAloudPass: z.boolean(),
+  directionPass: z.boolean(),
+  rhymePass: z.boolean(),
+  ...productionFinalistFields
+});
+export type ProductionPageFinalist = z.infer<typeof productionPageFinalistSchema>;
+
+export const productionPageEditorialResultSchema = z.object({
+  finalists: z.array(productionPageFinalistSchema).length(3)
+});
+export type ProductionPageEditorialResult = z.infer<typeof productionPageEditorialResultSchema>;
+
+export const productionPageEditorialJsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    finalists: {
+      type: "array",
+      minItems: 3,
+      maxItems: 3,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          sourceCandidateId: { type: "string", minLength: 1, maxLength: 40 },
+          text: { type: "string", minLength: 1, maxLength: 2_000 },
+          fidelityPass: { type: "boolean" },
+          grammarPass: { type: "boolean" },
+          readAloudPass: { type: "boolean" },
+          directionPass: { type: "boolean" },
+          rhymePass: { type: "boolean" },
+          ...productionFinalistJsonProperties
+        },
+        required: [
+          "sourceCandidateId",
+          "text",
+          "fidelityPass",
+          "grammarPass",
+          "readAloudPass",
+          "directionPass",
+          "rhymePass",
+          ...productionFinalistJsonRequired
+        ]
+      }
+    }
+  },
+  required: ["finalists"]
+} as const;
+
+/**
+ * Resolve the production page result.
+ * Hard failure only when no finalist passes its own quality gates — a
+ * judgment about the translations themselves. Provenance and recommendation
+ * bookkeeping issues become warnings, and the recommendation is normalized
+ * deterministically.
+ */
+export function resolveProductionPageResult(args: {
+  result: ProductionPageEditorialResult;
+  rhymeRequired: boolean;
+  sourceCandidates: Array<{ id: string; text: string }>;
+}) {
+  const knownIds = new Set(args.sourceCandidates.map((candidate) => candidate.id));
+  const provenanceWarnings: EditorialMetadataWarning[] = [];
+  const seenIds = new Set<string>();
+  for (const [finalistIndex, finalist] of args.result.finalists.entries()) {
+    if (!knownIds.has(finalist.sourceCandidateId)) {
+      provenanceWarnings.push({
+        code: "SOURCE_PROVENANCE_UNKNOWN",
+        message: `finalist references unknown source candidate ${finalist.sourceCandidateId}`,
+        finalistIndex
+      });
+    }
+    if (seenIds.has(finalist.sourceCandidateId)) {
+      provenanceWarnings.push({
+        code: "SOURCE_PROVENANCE_REUSED",
+        message: "multiple finalists reference the same source candidate",
+        finalistIndex
+      });
+    }
+    seenIds.add(finalist.sourceCandidateId);
+  }
+  const selection = normalizeRecommendedFinalist({
+    finalists: args.result.finalists,
+    rhymeRequired: args.rhymeRequired
+  });
+  if (!selection.ok) {
+    return {
+      ok: false as const,
+      error: selection.error,
+      warnings: [...provenanceWarnings, ...selection.warnings]
+    };
+  }
+  return {
+    ok: true as const,
+    finalists: [...args.result.finalists].sort((first, second) => first.rank - second.rank),
+    recommended: selection.finalist,
+    warnings: [...provenanceWarnings, ...selection.warnings]
+  };
+}
+
+// ---------------------------------------------------------------------------
+// LIVE-EVALUATION AUDIT CONTRACT (deep lean contract) — retained for
+// scripts/; not used by production routes.
+// ---------------------------------------------------------------------------
 
 const conciseText = z.string().trim().min(8).max(180);
 const operationSchema = z.enum([

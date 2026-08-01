@@ -303,10 +303,12 @@ test("page prompt requests the lean contract and required-edit policy", () => {
       text: "Move the forest line before the refrain."
     }]
   });
-  assert.match(prompt, /LEAN PAGE EDITORIAL CONTRACT/);
-  assert.match(prompt, /Minor optional polish belongs only in weaknesses or optionalEdits/);
-  assert.match(prompt, /Never silently alter a draft/);
-  assert.match(prompt, /equivalent_group/);
-  assert.match(prompt, /no_qualifying_finalist/);
+  assert.match(prompt, /PAGE EDITORIAL CONTRACT/);
+  assert.match(prompt, /unique ranks 1, 2, and 3/);
+  assert.match(prompt, /An unresolved substantive issue must make the relevant pass field false/);
+  assert.match(prompt, /do not disguise that failure/);
+  assert.match(prompt, /one concise material strength/);
   assert.match(prompt, /line-order/);
+  // The compact production contract no longer requests audit paperwork.
+  assert.doesNotMatch(prompt, /appliedEdits|requiredEdits|concernFindings|winnerComparisons|equivalent_group/);
 });

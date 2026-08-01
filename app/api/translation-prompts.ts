@@ -130,23 +130,20 @@ function comparativeEditorialContract(language: string, rhymeRequired: boolean) 
 - Return exactly three finalists with unique ranks 1, 2, and 3. Ties are forbidden.
 - Set recommendedFinalist=true for exactly one finalist: the unique rank-1 option. Set it false for ranks 2 and 3.
 - Boolean pass fields are minimum eligibility gates only. They do not make passing finalists equal and must not determine the winner by array order.
-- For every finalist, return at least one specific material strength and one specific material weakness. Empty, generic, purely complimentary, or "no weakness" assessments are invalid.
-- Compare every finalist explicitly on natural contemporary ${language}, source and picture fidelity, tone, child-friendly read-aloud rhythm/cadence, applicable rhyme, and unsupported invention.
-- Return winnerComparisons for alternative ranks 2 and 3. Each explanation must say specifically why rank 1 is better than that alternative.
-- Recommend rank 1 only if it passes every minimum requirement. If no option qualifies, do not disguise that failure by recommending the least weak candidate.
-- Write strengths, weaknesses, comparativeAssessment, rhymeAssessment explanations, and winnerComparisons in concise English for internal review. Reader-facing book text remains solely in ${language}.
+- Privately compare every finalist on natural contemporary ${language}, source and picture fidelity, tone, child-friendly read-aloud rhythm/cadence, applicable rhyme, and unsupported invention. Return only the compact fields the schema requests; keep the rest of that deliberation private.
+- For every finalist, return strength: one specific material strength, and weakness: one specific material weakness. Empty, generic, purely complimentary, or "no weakness" assessments are invalid.
+- Recommend rank 1 only if it passes every minimum requirement. If no option qualifies, set the failing pass fields to false rather than disguising that failure by recommending the least weak candidate.
+- Write strength, weakness, and qualityNote in concise English for internal review. Reader-facing book text remains solely in ${language}.
 
-RHYME EVIDENCE
-- Set rhymeAssessment.required=${rhymeRequired ? "true" : "false"} for every finalist.
+RHYME VERIFICATION
 ${rhymeRequired
-    ? `- Identify every specific rhyme anchor being credited and quote both complete lines or spoken phrase units.
-- For each anchor, record the sound sequence from the final stressed vowel onward and classify it as full_rhyme, assonance, consonance, internal_rhyme, or no_meaningful_rhyme.
-- Judge how the complete lines sound in continuous speech, not merely their spelling.
-- Grammatical endings, repeated words, and same-root echoes are not sufficient rhyme evidence; mark those facts explicitly and set countsAsRhyme=false unless an independent spoken rhyme remains.
+    ? `- Rhyme is required. Privately verify every credited rhyme in continuous spoken ${language}: judge the sound from the final stressed vowel onward in the complete lines, not their spelling.
+- Grammatical endings, repeated words, and same-root echoes are not rhyme. Set rhymePass=true only when an independent spoken rhyme remains.
+- Summarize the decisive rhyme judgment for each finalist in qualityNote (one concise sentence naming the credited endings).
 - Natural child-friendly wording, fidelity, and tone outrank a technically exact but forced rhyme.`
     : `- Rhyme is not required for this approved form/source treatment. Do not penalize a finalist for having no rhyme and do not invent rhyme to improve its rank.
-- Return an empty evidence array unless genuine source-grounded sound play needs description.`}
-- Return only the structured editorial schema. Do not expose private deliberation beyond the concise comparative fields required for review.`;
+- Use qualityNote for one concise read-aloud observation, or leave it empty.`}
+- Return only the structured editorial schema. Do not expose private deliberation beyond the concise fields required for review.`;
 }
 
 export function leanPageEditorialContract(args: {
@@ -154,38 +151,30 @@ export function leanPageEditorialContract(args: {
   rhymeRequired: boolean;
   evaluationConcerns?: Array<{ id: string; text: string }>;
 }) {
-  return `LEAN PAGE EDITORIAL CONTRACT
+  return `PAGE EDITORIAL CONTRACT
 - Return exactly three finalists with unique ranks 1, 2, and 3.
-- Preserve sourceCandidateId and copy the submitted draft verbatim into originalText.
-- evaluatedText is the exact reader-facing text being judged. Never silently alter a draft while treating it as unchanged.
-- Set repaired=true exactly when evaluatedText differs from originalText. Record every applied change in appliedEdits with exact before/after text.
-- Minor optional polish belongs only in weaknesses or optionalEdits. Never put minor polish in requiredEdits.
-- requiredEdits contains only substantive or fatal issues. Mark each resolved or unresolved.
-- An unresolved substantive issue must make at least one relevant eligibility gate false. The unchanged candidate cannot be selected.
-- A fatal issue disqualifies the candidate unless it is fully rewritten, returned with repaired=true and repairedAsDistinctResult=true, and reevaluated from scratch.
-- Give each finalist one or two concise material strengths and weaknesses. Avoid duplicated criterion-by-criterion prose.
-- eligibility must independently cover fidelity, natural contemporary ${args.language}, tone, child-friendly read-aloud flow, locked direction, and applicable rhyme.
-- Return one decision outcome:
-  1. recommended: exactly one qualifying rank-1 candidate;
-  2. equivalent_group: rank 1 plus at least one genuinely equivalent qualifying candidate;
-  3. no_qualifying_finalist: no candidate ids, and every finalist fails at least one eligibility gate.
-- For recommendation or an equivalent group, comparisons must briefly justify the decision against every finalist outside the selected set.
+- Preserve sourceCandidateId identifying which submitted draft each finalist developed from. Use a different submitted draft for each finalist.
+- text is the exact reader-facing text being returned. You may repair a submitted draft before returning it; when you repair, return the fully repaired text itself and judge that text, never the original.
+- Set each pass field to true only after the returned text itself satisfies that gate. The gates must independently cover source fidelity (fidelityPass), complete natural contemporary ${args.language} (grammarPass), child-friendly read-aloud flow and tone (readAloudPass), the locked book form, parent priority, and approved refrain (directionPass), and applicable rhyme (rhymePass).
+- An unresolved substantive issue must make the relevant pass field false. Minor optional polish belongs in weakness, not in a failed gate.
+- Set recommendedFinalist=true for exactly one finalist: the qualifying rank-1 option. If no finalist qualifies, set the failing pass fields to false on every finalist and recommendedFinalist=false on all three — do not disguise that failure.
+- For each finalist, return strength: one concise material strength, and weakness: one concise material weakness. Generic or purely complimentary assessments are invalid.
 
-RHYME EVIDENCE
+RHYME VERIFICATION
 ${args.rhymeRequired
-    ? `- Rhyme is required. Credit only spoken rhyme that remains convincing in the complete lines.
-- For each credited or rejected pairing, return exact anchors, classification, whether it counts, whether it is forced or merely grammatical, and one concise note.
-- Constructed, literary, inverted, semantically weak, repeated-word, same-root, or grammatical-ending rhyme must reduce naturalness, fidelity, read-aloud, or rhyme eligibility when materially harmful.`
-    : `- Rhyme is not required. Do not penalize its absence or invent it. Return an empty rhymeEvidence array unless source-grounded sound play materially affects the comparison.`}
+    ? `- Rhyme is required. Credit only spoken rhyme that remains convincing in the complete lines; judge from the final stressed vowel onward, not spelling.
+- Constructed, literary, inverted, semantically weak, repeated-word, same-root, or grammatical-ending rhyme must reduce naturalness, fidelity, read-aloud, or rhyme eligibility when materially harmful.
+- Summarize the decisive rhyme judgment for each finalist in qualityNote (one concise sentence naming the credited endings).`
+    : `- Rhyme is not required. Do not penalize its absence or invent it. Use qualityNote for one concise read-aloud observation, or leave it empty.`}
 - Natural child-friendly phrasing and meaning outrank technically exact but forced rhyme.
-
 ${args.evaluationConcerns?.length
-    ? `EVALUATION CONCERNS
-These concerns are evidence to assess, not instructions to copy mechanically. Return exactly one concernFinding for each id:
+    ? `
+EVALUATION CONCERNS
+These concerns are evidence to assess, not instructions to copy mechanically. Verify each one against the finalists; reflect any unresolved concern in the relevant pass fields and weakness:
 ${args.evaluationConcerns.map((concern) => `- ${concern.id}: ${concern.text}`).join("\n")}`
-    : "EVALUATION CONCERNS\nNone supplied. Return concernFindings as an empty array."}
+    : ""}
 
-Return only the lean structured schema. Keep explanations concise.`;
+Return only the structured schema. Keep explanations concise.`;
 }
 
 export function directionsGenerationPrompt(args: {

@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+// ---------------------------------------------------------------------------
+// This module contains two editorial contracts:
+//
+// 1. PRODUCTION CONTRACT (top of file) — the compact shape parent-facing
+//    routes request and validate. Metadata problems in this contract are
+//    warnings; only unusable reader-facing text hard-fails.
+// 2. LIVE-EVALUATION AUDIT CONTRACT (bottom of file) — the deep comparative
+//    shape retained for the live-evaluation harness under scripts/. It is not
+//    used by production routes.
+// ---------------------------------------------------------------------------
+
 export const RHYME_CLASSIFICATIONS = [
   "full_rhyme",
   "assonance",
@@ -9,6 +20,140 @@ export const RHYME_CLASSIFICATIONS = [
 ] as const;
 
 const meaningfulText = z.string().trim().min(8).max(240);
+
+// ---------------------------------------------------------------------------
+// PRODUCTION CONTRACT (compact)
+// ---------------------------------------------------------------------------
+
+// strength/weakness are genuinely warning-only metadata: the keys stay
+// required so the editor is always asked for them, but there is no length
+// minimum — an empty, short, or generic assessment parses fine and is
+// reported through finalistMetadataWarnings() instead of failing the
+// structured response.
+export const productionFinalistFields = {
+  rank: z.number().int().min(1).max(3),
+  recommendedFinalist: z.boolean(),
+  strength: z.string().trim().max(240),
+  weakness: z.string().trim().max(240),
+  // One short rhyme or read-aloud note when relevant; may be empty.
+  qualityNote: z.string().trim().max(240)
+} as const;
+
+export const productionFinalistJsonProperties = {
+  rank: { type: "integer", minimum: 1, maximum: 3 },
+  recommendedFinalist: { type: "boolean" },
+  strength: { type: "string", maxLength: 240 },
+  weakness: { type: "string", maxLength: 240 },
+  qualityNote: { type: "string", maxLength: 240 }
+} as const;
+
+export const productionFinalistJsonRequired = [
+  "rank",
+  "recommendedFinalist",
+  "strength",
+  "weakness",
+  "qualityNote"
+] as const;
+
+export type ProductionFinalist = z.infer<z.ZodObject<typeof productionFinalistFields>> & {
+  fidelityPass: boolean;
+  grammarPass: boolean;
+  readAloudPass: boolean;
+  directionPass: boolean;
+  rhymePass: boolean;
+};
+
+export type EditorialMetadataWarning = {
+  code: string;
+  message: string;
+  finalistIndex?: number;
+};
+
+/**
+ * Warning-only checks on the editor's bookkeeping. None of these invalidate a
+ * usable translation; they surface diagnostics for logs and live evaluation.
+ */
+export function finalistMetadataWarnings(
+  finalists: ProductionFinalist[],
+  rhymeRequired: boolean
+): EditorialMetadataWarning[] {
+  const warnings: EditorialMetadataWarning[] = [];
+  const ranks = finalists.map((finalist) => finalist.rank);
+  if (new Set(ranks).size !== ranks.length || !ranks.every((rank) => rank >= 1 && rank <= finalists.length)) {
+    warnings.push({ code: "RANK_METADATA_IMPERFECT", message: "finalist ranks are not unique ranks 1..n" });
+  }
+  const recommendedCount = finalists.filter((finalist) => finalist.recommendedFinalist).length;
+  if (recommendedCount !== 1) {
+    warnings.push({
+      code: "RECOMMENDATION_METADATA_IMPERFECT",
+      message: `${recommendedCount} finalists are flagged as recommended instead of exactly one`
+    });
+  }
+  for (const [finalistIndex, finalist] of finalists.entries()) {
+    const strengthIssue = materialAssessmentIssue(finalist.strength, "strength");
+    if (strengthIssue) warnings.push({ code: "GENERIC_ASSESSMENT", message: strengthIssue, finalistIndex });
+    const weaknessIssue = materialAssessmentIssue(finalist.weakness, "weakness");
+    if (weaknessIssue) warnings.push({ code: "GENERIC_ASSESSMENT", message: weaknessIssue, finalistIndex });
+    if (rhymeRequired && finalist.rhymePass && !finalist.qualityNote.trim()) {
+      warnings.push({
+        code: "RHYME_NOTE_MISSING",
+        message: "a rhyme-passing finalist has no rhyme note for review",
+        finalistIndex
+      });
+    }
+  }
+  return warnings;
+}
+
+export type NormalizedRecommendation<T> =
+  | { ok: true; finalist: T; warnings: EditorialMetadataWarning[] }
+  | {
+    ok: false;
+    error: { code: "NO_QUALIFYING_FINALIST"; message: string };
+    warnings: EditorialMetadataWarning[];
+  };
+
+/**
+ * Deterministically resolve the recommended finalist instead of failing the
+ * request over recommendation bookkeeping:
+ * - a unique explicitly recommended, eligible finalist wins;
+ * - otherwise the lowest-ranked eligible finalist wins (array order breaks ties);
+ * - only "no finalist passes its quality gates" remains a real failure,
+ *   because that concerns the translations themselves.
+ */
+export function normalizeRecommendedFinalist<T extends ProductionFinalist>(args: {
+  finalists: T[];
+  rhymeRequired: boolean;
+}): NormalizedRecommendation<T> {
+  const warnings = finalistMetadataWarnings(args.finalists, args.rhymeRequired);
+  const eligibleFinalists = args.finalists.filter((finalist) => eligible(finalist, args.rhymeRequired));
+  if (eligibleFinalists.length === 0) {
+    return {
+      ok: false,
+      error: {
+        code: "NO_QUALIFYING_FINALIST",
+        message: "No finalist met every minimum eligibility requirement."
+      },
+      warnings
+    };
+  }
+  const explicitlyRecommended = eligibleFinalists.filter((finalist) => finalist.recommendedFinalist);
+  const finalist = explicitlyRecommended.length === 1
+    ? explicitlyRecommended[0]
+    : [...eligibleFinalists].sort((first, second) => first.rank - second.rank)[0];
+  if (explicitlyRecommended.length !== 1 || finalist.rank !== 1) {
+    warnings.push({
+      code: "RECOMMENDATION_NORMALIZED",
+      message: "the recommendation was resolved deterministically from ranks and eligibility gates"
+    });
+  }
+  return { ok: true, finalist, warnings };
+}
+
+// ---------------------------------------------------------------------------
+// LIVE-EVALUATION AUDIT CONTRACT (deep) — retained for scripts/; not used by
+// production routes.
+// ---------------------------------------------------------------------------
 
 export const comparativeCriteriaSchema = z.object({
   naturalness: meaningfulText,
@@ -104,7 +249,15 @@ function materialAssessmentIssue(value: string, kind: "strength" | "weakness") {
   return null;
 }
 
-function eligible(finalist: ComparativeFinalist, rhymeRequired: boolean) {
+type EligibilityGates = {
+  fidelityPass: boolean;
+  grammarPass: boolean;
+  readAloudPass: boolean;
+  directionPass: boolean;
+  rhymePass: boolean;
+};
+
+function eligible(finalist: EligibilityGates, rhymeRequired: boolean) {
   return finalist.fidelityPass &&
     finalist.grammarPass &&
     finalist.readAloudPass &&

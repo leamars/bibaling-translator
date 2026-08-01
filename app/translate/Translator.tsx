@@ -13,10 +13,10 @@ import {
   type SourceRhyme
 } from "../api/book-form-contract.ts";
 import {
-  experimentalLanguages,
-  featuredLanguages,
   languageConfig,
+  languageSelectorGroups,
   resolveLanguageSelection,
+  selectorValueFor,
   type TargetLanguage
 } from "../languages/language-config.ts";
 
@@ -1101,12 +1101,12 @@ export default function Translator() {
                 <label id="target-language-label" htmlFor="target-language">Translate into</label>
                 <select
                   id="target-language"
-                  value={targetLanguage}
+                  value={selectorValueFor(targetLanguage, regionalVariant)}
                   onChange={(event) => {
-                    const next = event.target.value as TargetLanguage;
-                    const config = languageConfig(next);
-                    setTargetLanguage(next);
-                    setRegionalVariant(config.defaultVariant);
+                    const [nextCode, nextVariant] = event.target.value.split(":") as [TargetLanguage, string | undefined];
+                    const config = languageConfig(nextCode);
+                    setTargetLanguage(nextCode);
+                    setRegionalVariant(nextVariant || config.defaultVariant);
                     setLanguageFeedback("");
                     setLanguageFeedbackSaved(false);
                     setPriority("");
@@ -1116,32 +1116,16 @@ export default function Translator() {
                     setLockedDirection(null);
                   }}
                 >
-                  <optgroup label="Reviewed and evaluation languages">
-                    {featuredLanguages.map((option) => (
-                      <option key={option.code} value={option.code}>{option.name} · {option.autonym}</option>
-                    ))}
-                  </optgroup>
-                  <optgroup label="Experimental languages">
-                    {experimentalLanguages.map((option) => (
-                      <option key={option.code} value={option.code}>{option.name} · {option.autonym}</option>
+                  {languageSelectorGroups().primary.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label} · {option.autonym}</option>
+                  ))}
+                  <optgroup label="Experimental">
+                    {languageSelectorGroups().experimental.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label} · {option.autonym}</option>
                     ))}
                   </optgroup>
                 </select>
               </div>
-              {language.config.variants?.length ? (
-                <div>
-                  <label htmlFor="regional-variant">Regional version</label>
-                  <select
-                    id="regional-variant"
-                    value={regionalVariant || language.config.defaultVariant}
-                    onChange={(event) => setRegionalVariant(event.target.value)}
-                  >
-                    {language.config.variants.map((variant) => (
-                      <option value={variant.code} key={variant.code}>{variant.label}</option>
-                    ))}
-                  </select>
-                </div>
-              ) : null}
               <p>
                 {experimentalLanguage
                   ? `${language.config.name} is experimental. You’ll have an easy way to tell us what needs improvement.`

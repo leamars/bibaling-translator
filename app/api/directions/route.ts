@@ -9,19 +9,19 @@ import {
   classifyStageFailure,
   deriveRefrainBudget,
   directionDraftCacheKey,
-  editorialOptionsSchema,
   parentMessageFor,
   parseCompletedOutput,
   privateCandidatesSchema,
+  productionDirectionResultSchema,
   resolveDirectionDraft,
-  validateDirectionEditorialResult,
+  selectProductionRecommendedDirection,
+  validateProductionDirectionResult,
   validatePrivateCandidates,
   type CachedDirectionDraft
 } from "../direction-pipeline";
 import {
-  comparativeJsonProperties,
-  comparativeJsonRequired,
-  winnerComparisonsJsonSchema
+  productionFinalistJsonProperties,
+  productionFinalistJsonRequired
 } from "../editorial-contract.ts";
 import {
   MAX_ACTION_COST_USD,
@@ -132,18 +132,17 @@ function editorialJsonSchema(maximumRefrainCharacters: number) {
           readAloudPass: { type: "boolean" },
           directionPass: { type: "boolean" },
           rhymePass: { type: "boolean" },
-          ...comparativeJsonProperties
+          ...productionFinalistJsonProperties
         },
         required: [
           "sourceCandidateIndex", "label", "refrain", "description", "genderDependency",
           "construction", "rhymePairs", "fidelityPass", "grammarPass", "readAloudPass",
-          "directionPass", "rhymePass", ...comparativeJsonRequired
+          "directionPass", "rhymePass", ...productionFinalistJsonRequired
         ]
       }
-    },
-    winnerComparisons: winnerComparisonsJsonSchema
+    }
   },
-  required: ["options", "winnerComparisons"]
+  required: ["options"]
   } as const;
 }
 
@@ -287,18 +286,21 @@ async function editCandidates(args: {
         }
       }
     });
-    const parsed = parseCompletedOutput(response, "editor", editorialOptionsSchema);
-    const validation = validateDirectionEditorialResult(
+    const parsed = parseCompletedOutput(response, "editor", productionDirectionResultSchema);
+    const rhymeRequired = args.input.priority === "rhythm";
+    const validation = validateProductionDirectionResult(
       parsed,
       refrainBudget,
-      args.input.priority === "rhythm",
+      rhymeRequired,
       args.candidates.length,
       args.input.targetLanguage
     );
     if (validation.hardFailures.length > 0) {
+      // Hard failures are text-level only: wrong count, empty/banned/duplicate
+      // text, gross overlength. Metadata imperfections are warnings below.
       throw new DirectionPipelineError(
         "FINAL_SET_INVALID",
-        "The completed editorial response violated a hard final-set invariant.",
+        "The completed editorial response contained unusable refrain text.",
         {
           rawEditorialOptions: parsed.options,
           validation,
@@ -306,10 +308,29 @@ async function editCandidates(args: {
         }
       );
     }
-    if (validation.qualityWarnings.length > 0) {
+    const selection = selectProductionRecommendedDirection(parsed, rhymeRequired);
+    if (!selection.ok) {
+      // Translation-level failure: the editor judged that no refrain passes
+      // its own quality gates. This is a real quality rejection, not paperwork.
+      throw new DirectionPipelineError(
+        "FINAL_SET_INVALID",
+        selection.error.message,
+        {
+          rawEditorialOptions: parsed.options,
+          validation,
+          selectionWarnings: selection.warnings,
+          usage
+        }
+      );
+    }
+    const warnings = [
+      ...validation.qualityWarnings,
+      ...selection.warnings.map((warning) => ({ code: warning.code, message: warning.message }))
+    ];
+    if (warnings.length > 0) {
       console.warn("direction_quality_warnings", JSON.stringify({
         stage: "editor",
-        warnings: validation.qualityWarnings
+        warnings
       }));
     }
     args.progress("editing_completed", { usage });
@@ -322,7 +343,7 @@ async function editCandidates(args: {
         genderDependency: option.genderDependency
       })),
       editorialOptions: rankedOptions,
-      recommendedDirectionIndex: rankedOptions.findIndex((option) => option.recommendedFinalist),
+      recommendedDirectionIndex: rankedOptions.indexOf(selection.finalist),
       validation
     };
   } catch (error) {

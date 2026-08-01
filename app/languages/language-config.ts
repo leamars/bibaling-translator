@@ -1,10 +1,14 @@
 import { z } from "zod";
 
+// European target languages only. The identifiers "hy" (Armenian),
+// "az" (Azerbaijani), "ka" (Georgian), and "tr" (Turkish) were removed when
+// the product scope was restricted to European languages; a request carrying
+// one of them now fails schema validation as an unsupported language.
 export const TARGET_LANGUAGE_CODES = [
   "sl", "es", "de", "it", "hr", "sr",
-  "sq", "hy", "az", "eu", "be", "bs", "bg", "ca", "cs", "da", "nl", "et",
-  "fi", "fr", "gl", "ka", "el", "hu", "is", "ga", "lv", "lt", "lb", "mk",
-  "mt", "cnr", "no", "pl", "pt", "ro", "ru", "sk", "sv", "tr", "uk", "cy"
+  "sq", "eu", "be", "bs", "bg", "ca", "cs", "da", "nl", "et",
+  "fi", "fr", "gl", "el", "hu", "is", "ga", "lv", "lt", "lb", "mk",
+  "mt", "cnr", "no", "pl", "pt", "ro", "ru", "sk", "sv", "uk", "cy"
 ] as const;
 
 export type TargetLanguage = typeof TARGET_LANGUAGE_CODES[number];
@@ -15,6 +19,9 @@ export type RegionalVariant = {
   label: string;
   languageTag: string;
   guidance: string;
+  // Legacy variants stay resolvable so previously issued receipts and saved
+  // identifiers keep parsing, but they are never offered as new selections.
+  legacy?: boolean;
 };
 
 export type LanguageConfig = {
@@ -46,7 +53,7 @@ export const LANGUAGE_CONFIGS: Record<TargetLanguage, LanguageConfig> = {
     defaultVariant: "es-ES",
     variants: [
       { code: "es-ES", label: "Spain", languageTag: "es-ES", guidance: "Use contemporary Spanish as naturally spoken in Spain; use vosotros only where the source relationship supports it." },
-      { code: "es-419", label: "Latin America", languageTag: "es-419", guidance: "Use broadly natural Latin American Spanish and ustedes rather than vosotros; avoid narrow country-specific slang." }
+      { code: "es-419", label: "Latin America", languageTag: "es-419", guidance: "Use broadly natural Latin American Spanish and ustedes rather than vosotros; avoid narrow country-specific slang.", legacy: true }
     ]
   },
   de: {
@@ -86,8 +93,6 @@ Reject marked word order used only for rhyme, mishandled separable verbs, dense 
     editorialGuidance: "Edit as a native standard Serbian children's-book editor. Keep the selected script consistent and do not drift into Croatian, Bosnian, or Slovenian forms."
   },
   sq: { code: "sq", name: "Albanian", autonym: "shqip", languageTag: "sq-AL", status: "experimental", ...neutral("Albanian") },
-  hy: { code: "hy", name: "Armenian", autonym: "հայերեն", languageTag: "hy-AM", status: "experimental", ...neutral("Armenian") },
-  az: { code: "az", name: "Azerbaijani", autonym: "azərbaycanca", languageTag: "az-AZ", status: "experimental", ...neutral("Azerbaijani") },
   eu: { code: "eu", name: "Basque", autonym: "euskara", languageTag: "eu-ES", status: "experimental", ...neutral("Basque") },
   be: { code: "be", name: "Belarusian", autonym: "беларуская", languageTag: "be-BY", status: "experimental", ...neutral("Belarusian") },
   bs: { code: "bs", name: "Bosnian", autonym: "bosanski", languageTag: "bs-BA", status: "experimental", ...neutral("Bosnian") },
@@ -100,7 +105,6 @@ Reject marked word order used only for rhyme, mishandled separable verbs, dense 
   fi: { code: "fi", name: "Finnish", autonym: "suomi", languageTag: "fi-FI", status: "experimental", ...neutral("Finnish") },
   fr: { code: "fr", name: "French", autonym: "français", languageTag: "fr-FR", status: "experimental", ...neutral("French") },
   gl: { code: "gl", name: "Galician", autonym: "galego", languageTag: "gl-ES", status: "experimental", ...neutral("Galician") },
-  ka: { code: "ka", name: "Georgian", autonym: "ქართული", languageTag: "ka-GE", status: "experimental", ...neutral("Georgian") },
   el: { code: "el", name: "Greek", autonym: "ελληνικά", languageTag: "el-GR", status: "experimental", ...neutral("Greek") },
   hu: { code: "hu", name: "Hungarian", autonym: "magyar", languageTag: "hu-HU", status: "experimental", ...neutral("Hungarian") },
   is: { code: "is", name: "Icelandic", autonym: "íslenska", languageTag: "is-IS", status: "experimental", ...neutral("Icelandic") },
@@ -118,14 +122,13 @@ Reject marked word order used only for rhyme, mishandled separable verbs, dense 
     ...neutral("Portuguese"), defaultVariant: "pt-PT",
     variants: [
       { code: "pt-PT", label: "Portugal", languageTag: "pt-PT", guidance: "Use contemporary European Portuguese." },
-      { code: "pt-BR", label: "Brazil", languageTag: "pt-BR", guidance: "Use contemporary Brazilian Portuguese." }
+      { code: "pt-BR", label: "Brazil", languageTag: "pt-BR", guidance: "Use contemporary Brazilian Portuguese.", legacy: true }
     ]
   },
   ro: { code: "ro", name: "Romanian", autonym: "română", languageTag: "ro-RO", status: "experimental", ...neutral("Romanian") },
   ru: { code: "ru", name: "Russian", autonym: "русский", languageTag: "ru-RU", status: "experimental", ...neutral("Russian") },
   sk: { code: "sk", name: "Slovak", autonym: "slovenčina", languageTag: "sk-SK", status: "experimental", ...neutral("Slovak") },
   sv: { code: "sv", name: "Swedish", autonym: "svenska", languageTag: "sv-SE", status: "experimental", ...neutral("Swedish") },
-  tr: { code: "tr", name: "Turkish", autonym: "Türkçe", languageTag: "tr-TR", status: "experimental", ...neutral("Turkish") },
   uk: { code: "uk", name: "Ukrainian", autonym: "українська", languageTag: "uk-UA", status: "experimental", ...neutral("Ukrainian") },
   cy: { code: "cy", name: "Welsh", autonym: "Cymraeg", languageTag: "cy-GB", status: "experimental", ...neutral("Welsh") }
 };
@@ -160,10 +163,67 @@ export function languageSelectionLabel(targetLanguage: TargetLanguage, regionalV
   return variant ? `${config.name} · ${variant.label}` : config.name;
 }
 
-export const featuredLanguages = TARGET_LANGUAGE_CODES
-  .map((code) => LANGUAGE_CONFIGS[code])
-  .filter((config) => config.status !== "experimental");
+// ---------------------------------------------------------------------------
+// Language selector model: exactly two visual groups.
+// The first group carries no heading and holds the strongest-supported
+// selections; the second is headed "Experimental". Regional and script
+// variants that matter are baked into the first group's entries, so the
+// selector needs no separate variant control. Legacy variants (es-419, pt-BR)
+// stay resolvable but are never listed.
+// ---------------------------------------------------------------------------
 
-export const experimentalLanguages = TARGET_LANGUAGE_CODES
-  .map((code) => LANGUAGE_CONFIGS[code])
-  .filter((config) => config.status === "experimental");
+export type LanguageSelectorEntry = {
+  /** Stable option value: "sl" or "es:es-ES" for variant-bearing entries. */
+  value: string;
+  code: TargetLanguage;
+  regionalVariant?: string;
+  label: string;
+  autonym: string;
+};
+
+export function selectorEntry(code: TargetLanguage, regionalVariant?: string, autonymOverride?: string): LanguageSelectorEntry {
+  const { config, variant } = resolveLanguageSelection(code, regionalVariant);
+  return {
+    value: variant ? `${code}:${variant.code}` : code,
+    code,
+    ...(variant ? { regionalVariant: variant.code } : {}),
+    label: variant ? `${config.name} — ${variant.label}` : config.name,
+    autonym: autonymOverride ?? config.autonym
+  };
+}
+
+const PRIMARY_SELECTOR_ENTRIES: LanguageSelectorEntry[] = [
+  selectorEntry("sl"),
+  selectorEntry("de"),
+  selectorEntry("es", "es-ES", "español"),
+  selectorEntry("it"),
+  selectorEntry("hr"),
+  selectorEntry("sr", "sr-Latn", "srpski"),
+  selectorEntry("sr", "sr-Cyrl", "српски")
+];
+
+const PRIMARY_CODES = new Set(PRIMARY_SELECTOR_ENTRIES.map((entry) => entry.code));
+
+export function languageSelectorGroups(): {
+  primary: LanguageSelectorEntry[];
+  experimental: LanguageSelectorEntry[];
+} {
+  return {
+    primary: PRIMARY_SELECTOR_ENTRIES,
+    experimental: TARGET_LANGUAGE_CODES
+      .filter((code) => !PRIMARY_CODES.has(code))
+      .map((code) => selectorEntry(code))
+  };
+}
+
+/** The selector value for a given saved selection, tolerating legacy variants. */
+export function selectorValueFor(targetLanguage: TargetLanguage, regionalVariant?: string) {
+  const groups = languageSelectorGroups();
+  const entries = [...groups.primary, ...groups.experimental];
+  const exact = entries.find((entry) =>
+    entry.code === targetLanguage && (entry.regionalVariant ?? undefined) === (regionalVariant || undefined)
+  );
+  if (exact) return exact.value;
+  // Legacy or unlisted variant: fall back to the first entry for the language.
+  return entries.find((entry) => entry.code === targetLanguage)?.value ?? targetLanguage;
+}
