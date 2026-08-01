@@ -1,0 +1,26 @@
+{
+  "language": "Croatian",
+  "fixture": "mushroom-two-page-refrain",
+  "conclusion": {
+    "type": "equivalent_group",
+    "equivalentFinalists": [1, 2],
+    "overallStatus": null
+  },
+  "candidateFeedback": [
+    {
+      "finalist": 1,
+      "assessment": "good",
+      "comment": "Liked, but future options should explore refrain strategies beyond ‘gljivasto vas volim’."
+    },
+    {
+      "finalist": 2,
+      "assessment": "good",
+      "comment": "Liked, but the refrain is not meaningfully different from Finalist 1."
+    }
+  ],
+  "setLevelFeedback": [
+    "Explore genuinely different refrain ideas instead of repeatedly using ‘gljivasto vas volim’."
+  ],
+  "unratedFinalists": [3],
+  "source": "Lea's direct review feedback"
+}

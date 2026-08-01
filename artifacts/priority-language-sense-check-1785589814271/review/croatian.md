@@ -42,9 +42,9 @@ jer dižete me s tla — to mi je krasno!
 
 **Quality note:** Najskladniji spoj vjernosti, rime i tečnog čitanja naglas.
 
-**Human rating:** ____________________
+**Human rating:** Good — effectively equivalent with Finalist 2
 
-**Human comments:**
+**Human comments:** Lea likes this version, but wants future options to explore refrain strategies beyond “gljivasto vas volim.”
 
 
 
@@ -72,9 +72,9 @@ jer dižete me s tla, a to je baš krasno!
 
 **Quality note:** Vrlo čitka i vjerna inačica s blagim ritmičkim viškom.
 
-**Human rating:** ____________________
+**Human rating:** Good — effectively equivalent with Finalist 1
 
-**Human comments:**
+**Human comments:** Lea likes this version, but its refrain is not meaningfully different from Finalist 1.
 
 
 
@@ -110,9 +110,8 @@ jer me dižete s tla — to mi je krasno!
 
 ## Human conclusion
 
-Preferred finalist: ____________________
+Preferred finalist: **Finalists 1 and 2 are effectively equivalent**
 
-Overall status: PASS / NEEDS_TARGETED_TUNING / MOVE_TO_EXPERIMENTAL
+Overall status: **Pending Lea's explicit status decision**
 
-Comments:
-
+Comments: Both are good. The generated set should explore genuinely different refrain ideas instead of repeatedly using “gljivasto vas volim.”
