@@ -219,6 +219,7 @@ export default function Translator() {
     [spreads]
   );
   const experimentalLanguage = language.config.status === "experimental";
+  const deliveryRecipient = email.trim() || "the email address you entered";
 
   useEffect(() => {
     spreadsRef.current = spreads;
@@ -1204,7 +1205,7 @@ export default function Translator() {
         </div>
       </div>
 
-      <section className="workshop">
+      <section className={deliveryJob.status === "idle" ? "workshop" : "workshop workshop-finale"}>
         {step === 1 && (
           <>
             <h1>Add three photos from your book.</h1>
@@ -1770,31 +1771,56 @@ export default function Translator() {
         )}
 
         {step === 12 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
-          <>
-            <h1>{deliveryJob.status === "completed" ? "Your translation is on its way." : deliveryJob.status === "failed" ? "We couldn’t finish your book." : "We’re finishing your book."}</h1>
-            <p className="lead">
-              {deliveryJob.status === "completed"
-                ? `We sent the completed translation to ${email.trim()}.`
-                : deliveryJob.status === "failed"
-                ? "Your photos and approved pages are still here. Try starting the delivery again."
-                : `We’re translating each remaining page, checking the whole book, and will email it to ${email.trim()}. You can safely close this page.`}
-            </p>
-            <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
-            <div className="approved-grid">
-              {spreads.filter((spread) => spread.voiceSample && spread.approvedText).map((spread, index) => (
-                <article className="approved-card" key={spread.id}>
-                  <button className="zoomable-image-button" type="button" aria-label={`Open approved sample ${index + 1} photo at full size`} onClick={() => setExpandedImage({ src: spread.preview, alt: `Approved sample ${index + 1}` })}>
-                    <img src={spread.preview} alt="" />
-                  </button>
-                  <label>Approved voice sample</label>
-                  <p>{spread.approvedText}</p>
-                  {spread.parentNote && <p className="parent-edit-note"><strong>Parent’s note</strong>{spread.parentNote}</p>}
-                </article>
-              ))}
+          <div className={`delivery-finale delivery-${deliveryJob.status}`} aria-live="polite">
+            <img
+              className="delivery-illustration"
+              src="/illustrations/book-translation-on-its-way.png"
+              alt=""
+            />
+            <div className="delivery-finale-copy">
+              <span className="delivery-kicker">
+                {deliveryJob.status === "completed"
+                  ? "Book complete"
+                  : deliveryJob.status === "failed"
+                    ? "Almost there"
+                    : "The final chapter"}
+              </span>
+              <h1>
+                {deliveryJob.status === "completed"
+                  ? "Your translation is on its way!"
+                  : deliveryJob.status === "failed"
+                    ? "We couldn’t send your translation."
+                    : "Your translation is being sent."}
+              </h1>
+              <p className="lead">
+                {deliveryJob.status === "completed"
+                  ? `We sent the completed ${language.config.name} translation to ${deliveryRecipient}.`
+                  : deliveryJob.status === "failed"
+                    ? "Your approved work is still here, so you can try sending the book again."
+                    : `We’re finishing the last pages and will email the complete ${language.config.name} translation to ${deliveryRecipient}.`}
+              </p>
+              {deliveryJob.status === "processing" && (
+                <div className="delivery-status" role="status" aria-live="polite">
+                  <span className="delivery-spinner" aria-hidden="true" />
+                  <span>You can safely close this page—we’ll take it from here.</span>
+                </div>
+              )}
+              {deliveryJob.status === "completed" && (
+                <p className="delivery-celebration">You did it—your family has a new story to read together.</p>
+              )}
+              {deliveryJob.error && (
+                <GenerationError
+                  title="The email didn’t make it out."
+                  message={deliveryJob.error}
+                  retry={() => {
+                    sessionStorage.removeItem("bibaling_delivery_job");
+                    setDeliveryJob({ token: "", status: "idle", error: null });
+                    setStep(10);
+                  }}
+                />
+              )}
             </div>
-            {deliveryJob.status === "processing" && <ProgressLog messages={languageLoadingMessages(fullBookLoadingMessages, language.config.name)} />}
-            {deliveryJob.error && <GenerationError message={deliveryJob.error} retry={() => setStep(10)} />}
-          </>
+          </div>
         )}
       </section>
       {expandedImage && (

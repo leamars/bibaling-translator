@@ -228,6 +228,18 @@ textarea:disabled { color: var(--muted); background: #f5f6f3; cursor: wait; }
 .gate-page-image::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 35%, rgba(25,26,23,.72)); }
 .gate-page-image span { position: absolute; z-index: 1; right: 14px; bottom: 14px; left: 14px; color: white; font-size: 12px; font-weight: 800; letter-spacing: .07em; text-align: left; text-transform: uppercase; }
 .full-book-draft .parent-edit-note { grid-column: 3; }
+.workshop-finale { width: min(780px, calc(100% - 40px)); padding-top: 40px; padding-bottom: 96px; }
+.delivery-finale { display: grid; justify-items: center; text-align: center; }
+.delivery-illustration { display: block; width: min(620px, 100%); height: auto; margin: 0 auto 8px; }
+.delivery-finale-copy { display: grid; justify-items: center; width: 100%; }
+.delivery-finale h1 { max-width: 680px; }
+.delivery-finale .lead { max-width: 610px; margin-bottom: 20px; }
+.delivery-kicker { margin-bottom: 12px; color: var(--forest); font-size: 10px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+.delivery-status { display: inline-flex; align-items: center; gap: 10px; padding: 11px 16px; border-radius: 999px; color: var(--forest); background: var(--forest-soft); font-size: 12.6px; font-weight: 700; }
+.delivery-spinner { width: 15px; height: 15px; border: 2px solid rgba(36,79,67,.22); border-top-color: var(--forest); border-radius: 50%; animation: delivery-spin .9s linear infinite; }
+.delivery-celebration { margin: 0; color: var(--forest); font: 650 17px/1.45 Georgia, serif; }
+.delivery-finale .generation-error { width: min(540px, 100%); margin-bottom: 0; text-align: left; }
+@keyframes delivery-spin { to { transform: rotate(360deg); } }
 @media (max-width: 700px) {
   .language-choice { grid-template-columns: 1fr; }
   .language-choice p { grid-column: auto; }
@@ -252,6 +264,12 @@ textarea:disabled { color: var(--muted); background: #f5f6f3; cursor: wait; }
   .gate-page-image img { min-height: 150px; max-height: 190px; }
   .full-book-draft .parent-edit-note { grid-column: 1; }
   .book-order { grid-template-columns: 1fr 1fr; }
+  .workshop-finale { padding-top: 28px; padding-bottom: 72px; }
+  .delivery-illustration { width: min(520px, 112%); max-width: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .delivery-spinner { animation: none; }
 }
 
 /* Public site */

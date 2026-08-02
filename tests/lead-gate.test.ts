@@ -175,6 +175,11 @@ test("the workshop precedes the gate; Page 4 is revealed before Page 5 is interr
   );
   assert.ok(captureEmail.indexOf('trackFunnelEventOnce("generate_lead"') < captureEmail.indexOf('trackFunnelEventOnce("remaining_translation_started"'));
   assert.match(deliveryScreen, /You can safely close this page/);
+  assert.match(deliveryScreen, /book-translation-on-its-way\.png/);
+  assert.match(deliveryScreen, /Your translation is being sent\./);
+  assert.match(deliveryScreen, /Your translation is on its way!/);
+  assert.match(deliveryScreen, /your family has a new story to read together/);
+  assert.doesNotMatch(deliveryScreen, /<VoiceBrief|approved-grid|Approved voice sample/);
   assert.doesNotMatch(deliveryScreen, /OptionList|patternOptions|Save finished draft|Add the rest of the book/);
   assert.match(page, /emailRequest\.loading/);
   assert.match(page, /emailRequest\.error/);
