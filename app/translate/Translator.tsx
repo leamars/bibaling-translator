@@ -42,6 +42,12 @@ type Spread = {
   visualContext: string;
   error: string | null;
   status: "waiting" | "reading" | "done" | "error";
+  // The first three uploads are voice samples. Their approved translations
+  // stay attached to the photos when the complete book is reordered later.
+  voiceSample?: boolean;
+  sampleNumber?: number;
+  approvedText?: string | null;
+  parentNote?: string;
 };
 
 type Direction = {
@@ -63,6 +69,9 @@ type DirectionProgress = { active: number; completedThrough: number; rejectedCou
 type DirectionStreamResult = {
   runs: Array<{ label: string; directions: Omit<Direction, "modelLabel">[] }>;
 };
+
+const INITIAL_SAMPLE_LIMIT = 3;
+const MAX_BOOK_PAGES = 40;
 
 const priorities = [
   ["rhythm", "Rhyme and read-aloud rhythm", "Make it musical and satisfying to say."],
@@ -170,6 +179,7 @@ export default function Translator() {
   const [approvedNotes, setApprovedNotes] = useState<Record<number, string>>({});
   const [request, setRequest] = useState<RequestState>({ loading: false, error: null });
   const [directionProgress, setDirectionProgress] = useState<DirectionProgress>({ active: 0, completedThrough: -1, rejectedCount: 0 });
+  const [draggedPage, setDraggedPage] = useState<string | null>(null);
   const [mockMode, setMockMode] = useState(false);
   const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null);
   // Page 4 is the last complete preview. Page 5 begins loading before the
@@ -199,12 +209,17 @@ export default function Translator() {
     () => resolveLanguageSelection(targetLanguage, regionalVariant),
     [targetLanguage, regionalVariant]
   );
+  const sampleSpreads = useMemo(
+    () => spreads
+      .filter((spread) => spread.voiceSample)
+      .sort((first, second) => (first.sampleNumber ?? 0) - (second.sampleNumber ?? 0))
+      .slice(0, INITIAL_SAMPLE_LIMIT),
+    [spreads]
+  );
   const experimentalLanguage = language.config.status === "experimental";
 
-  const progress = useMemo(() => {
-    const position = workshopProgress(bookForm, step);
-    return `${position.current} of ${position.total}`;
-  }, [bookForm, step]);
+  const progressPosition = useMemo(() => workshopProgress(bookForm, step), [bookForm, step]);
+  const progress = `${progressPosition.current} of ${progressPosition.total}`;
 
   useEffect(() => {
     setMockMode(document.cookie.split(";").some((part) => part.trim() === "bibaling_mock_mode=true"));
@@ -216,7 +231,7 @@ export default function Translator() {
   }, []);
 
   useEffect(() => {
-    if (step !== 10 || teaser.status !== "ready") return;
+    if (step !== 11 || teaser.status !== "ready") return;
     const timeout = window.setTimeout(() => setEmailGateVisible(true), 1_800);
     return () => window.clearTimeout(timeout);
   }, [step, teaser.status]);
@@ -250,18 +265,28 @@ export default function Translator() {
       setBookFormConfirmed(snapshot.bookFormConfirmed);
       setBookFormExplanation(snapshot.bookFormExplanation);
       setSourceRhyme(snapshot.sourceRhyme);
-      setSpreads(snapshot.spreads.map((spread) => ({
-        id: spread.id,
-        preview: spread.thumbnail,
-        thumbnail: spread.thumbnail,
-        text: spread.text,
-        uncertainty: spread.uncertainty,
-        visualContext: spread.visualContext,
-        // A page killed mid-read has no full-resolution photo anymore; ask
-        // for a replacement instead of re-reading the thumbnail.
-        error: spread.status === "done" ? spread.error : spread.status === "error" ? spread.error : "We lost this photo when the page closed. Replace it to read the text again.",
-        status: spread.status === "done" || spread.status === "error" ? spread.status : "error"
-      })));
+      const hasSavedVoiceSamples = snapshot.spreads.some((spread) => spread.voiceSample);
+      setSpreads(snapshot.spreads.map((spread, index) => {
+        const inferredVoiceSample = !hasSavedVoiceSamples && index < INITIAL_SAMPLE_LIMIT;
+        const voiceSample = Boolean(spread.voiceSample || inferredVoiceSample);
+        const sampleNumber = spread.sampleNumber ?? (voiceSample ? index + 1 : undefined);
+        return {
+          id: spread.id,
+          preview: spread.thumbnail,
+          thumbnail: spread.thumbnail,
+          text: spread.text,
+          uncertainty: spread.uncertainty,
+          visualContext: spread.visualContext,
+          // A page killed mid-read has no full-resolution photo anymore; ask
+          // for a replacement instead of re-reading the thumbnail.
+          error: spread.status === "done" ? spread.error : spread.status === "error" ? spread.error : "We lost this photo when the page closed. Replace it to read the text again.",
+          status: spread.status === "done" || spread.status === "error" ? spread.status : "error",
+          voiceSample,
+          sampleNumber,
+          approvedText: spread.approvedText ?? (sampleNumber ? snapshot.approvedDrafts[String(sampleNumber)] ?? null : null),
+          parentNote: spread.parentNote ?? (sampleNumber ? snapshot.approvedNotes[String(sampleNumber)] : undefined)
+        };
+      }));
       setDirections(snapshot.directions);
       setSelectedDirection(snapshot.selectedDirection);
       setShownRefrains(snapshot.shownRefrains);
@@ -281,11 +306,11 @@ export default function Translator() {
       // email itself is deliberately never persisted, so otherwise land on
       // the gate and let the parent re-enter it.
       const jobToken = sessionStorage.getItem("bibaling_delivery_job");
-      if (normalizedStep === 11 && jobToken) {
+      if (normalizedStep === 12 && jobToken) {
         setDeliveryJob({ token: jobToken, status: "processing", error: null });
-        setStep(11);
+        setStep(12);
       } else {
-        setStep(Math.min(normalizedStep, 10));
+        setStep(Math.min(normalizedStep, 11));
       }
     };
     restore();
@@ -320,7 +345,11 @@ export default function Translator() {
           uncertainty: spread.uncertainty,
           visualContext: spread.visualContext,
           error: spread.error,
-          status: spread.status
+          status: spread.status,
+          voiceSample: spread.voiceSample,
+          sampleNumber: spread.sampleNumber,
+          approvedText: spread.approvedText,
+          parentNote: spread.parentNote
         })),
         directions,
         selectedDirection,
@@ -444,6 +473,7 @@ export default function Translator() {
     setApprovedNotes({});
     setRequest({ loading: false, error: null });
     setDirectionProgress({ active: 0, completedThrough: -1, rejectedCount: 0 });
+    setDraggedPage(null);
     setExpandedImage(null);
     setTeaser({ status: "idle", page: null });
     setEmailGateVisible(false);
@@ -468,10 +498,7 @@ export default function Translator() {
     const sources = [
       "A small friend watches over me. I love you all.",
       "These friends hold hands and spin around. I love you all.",
-      "My bright friend makes the whole forest glow. I love you all.",
-      "The friends wander down a mossy path.",
-      "A tiny lantern glows beside the stream.",
-      "Everyone curls up safely at home."
+      "My bright friend makes the whole forest glow. I love you all."
     ];
     setSpreads(sources.map((text, index) => ({
       id: crypto.randomUUID(),
@@ -482,7 +509,10 @@ export default function Translator() {
       uncertainty: null,
       visualContext: "A mock picture-book page.",
       error: null,
-      status: "done" as const
+      status: "done" as const,
+      voiceSample: true,
+      sampleNumber: index + 1,
+      approvedText: null
     })));
   }
 
@@ -495,8 +525,8 @@ export default function Translator() {
     setRequest({ loading: true, error: null });
     try {
       const result = await postJson<BookFormAnalysis>("/api/book-form", {
-        texts: spreads.slice(0, 3).map((spread) => spread.text),
-        visualContexts: spreads.slice(0, 3).map((spread) => spread.visualContext),
+        texts: sampleSpreads.map((spread) => spread.text),
+        visualContexts: sampleSpreads.map((spread) => spread.visualContext),
         targetLanguage,
         regionalVariant
       }, controller.signal);
@@ -559,7 +589,7 @@ export default function Translator() {
   }
 
   async function addFile(file?: File, replaceId?: string) {
-    if (!file || !file.type.startsWith("image/") || (!replaceId && spreads.length >= 40)) return;
+    if (!file || !file.type.startsWith("image/") || (!replaceId && spreads.length >= MAX_BOOK_PAGES)) return;
     const preview = await fileToDataUrl(file);
     const thumbnail = await thumbnailFromDataUrl(preview);
     const id = replaceId ?? crypto.randomUUID();
@@ -567,21 +597,28 @@ export default function Translator() {
       id, file, preview, thumbnail, text: "", uncertainty: null, visualContext: "", error: null, status: "waiting"
     };
     setSpreads((current) => replaceId
-      ? current.map((spread) => spread.id === replaceId ? nextSpread : spread)
+      ? current.map((spread) => spread.id === replaceId ? {
+          ...nextSpread,
+          voiceSample: spread.voiceSample,
+          sampleNumber: spread.sampleNumber,
+          approvedText: spread.approvedText,
+          parentNote: spread.parentNote
+        } : spread)
       : [...current, nextSpread]
     );
     void readSpread(id, preview);
   }
 
-  async function addFiles(files?: FileList | File[]) {
+  async function addFiles(files?: FileList | File[], maximumPages = INITIAL_SAMPLE_LIMIT, voiceSample = true) {
     if (!files) return;
-    const available = Math.max(0, 40 - spreads.length);
+    const available = Math.max(0, maximumPages - spreads.length);
     const images = Array.from(files)
       .filter((file) => file.type.startsWith("image/"))
       .slice(0, available);
     if (images.length === 0) return;
 
-    const additions = await Promise.all(images.map(async (file) => {
+    const existingSampleCount = spreads.filter((spread) => spread.voiceSample).length;
+    const additions = await Promise.all(images.map(async (file, index) => {
       const preview = await fileToDataUrl(file);
       return {
       id: crypto.randomUUID(),
@@ -592,22 +629,73 @@ export default function Translator() {
       uncertainty: null,
       visualContext: "",
       error: null,
-      status: "waiting" as const
+      status: "waiting" as const,
+      voiceSample,
+      sampleNumber: voiceSample ? existingSampleCount + index + 1 : undefined,
+      approvedText: null
       };
     }));
-    setSpreads((current) => [...current, ...additions].slice(0, 40));
+    setSpreads((current) => [...current, ...additions].slice(0, maximumPages));
     additions.forEach((spread) => void readSpread(spread.id, spread.preview));
   }
 
-  function chooseFile(event: ChangeEvent<HTMLInputElement>, replaceId?: string) {
+  function chooseFile(
+    event: ChangeEvent<HTMLInputElement>,
+    replaceId?: string,
+    maximumPages = INITIAL_SAMPLE_LIMIT,
+    voiceSample = true
+  ) {
     if (replaceId) void addFile(event.target.files?.[0], replaceId);
-    else void addFiles(event.target.files ?? undefined);
+    else void addFiles(event.target.files ?? undefined, maximumPages, voiceSample);
     event.target.value = "";
   }
 
-  function drop(event: DragEvent<HTMLLabelElement>) {
+  function drop(event: DragEvent<HTMLLabelElement>, maximumPages = INITIAL_SAMPLE_LIMIT, voiceSample = true) {
     event.preventDefault();
-    void addFiles(event.dataTransfer.files);
+    void addFiles(event.dataTransfer.files, maximumPages, voiceSample);
+  }
+
+  function startRestOfBook() {
+    setSpreads((current) => {
+      const markedSamples = current.map((spread) => {
+        if (!spread.voiceSample || !spread.sampleNumber) return spread;
+        return {
+          ...spread,
+          approvedText: approvedDrafts[spread.sampleNumber] ?? null,
+          parentNote: approvedNotes[spread.sampleNumber] ?? undefined
+        };
+      });
+      if (!mockMode || markedSamples.length > INITIAL_SAMPLE_LIMIT) return markedSamples;
+      const mockRemainder = [4, 5, 6].map((number) => ({
+        id: crypto.randomUUID(),
+        file: new File(["mock"], `mock-page-${number}.png`, { type: "image/png" }),
+        preview: mockPreview(number),
+        thumbnail: "",
+        text: `Mock English source for page ${number}. The friends continue their adventure.`,
+        uncertainty: null,
+        visualContext: "A mock picture-book page continuing the friends’ adventure.",
+        error: null,
+        status: "done" as const,
+        voiceSample: false,
+        sampleNumber: undefined,
+        approvedText: null
+      }));
+      return [...markedSamples, ...mockRemainder];
+    });
+    setStep(10);
+  }
+
+  function moveBookPage(fromId: string, toId: string) {
+    if (fromId === toId) return;
+    setSpreads((current) => {
+      const from = current.findIndex((spread) => spread.id === fromId);
+      const to = current.findIndex((spread) => spread.id === toId);
+      if (from < 0 || to < 0) return current;
+      const next = [...current];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
   }
 
   async function generateDirections(freshDraft = false) {
@@ -624,8 +712,8 @@ export default function Translator() {
         headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
         signal: controller.signal,
         body: JSON.stringify({
-          visualContexts: spreads.slice(0, 3).map((spread) => spread.visualContext),
-          texts: spreads.slice(0, 3).map((spread) => spread.text),
+          visualContexts: sampleSpreads.map((spread) => spread.visualContext),
+          texts: sampleSpreads.map((spread) => spread.text),
           priority,
           freedom,
           parentFeedback: directionFeedback.trim() || undefined,
@@ -752,8 +840,8 @@ export default function Translator() {
     try {
       const result = await postJson<{ runs: Array<{ label: string; options: GeneratedOption[] }> }>("/api/translations", {
         mode: "spread1",
-        visualContext: spreads[0].visualContext,
-        source: spreads[0].text,
+        visualContext: sampleSpreads[0].visualContext,
+        source: sampleSpreads[0].text,
         priority,
         freedom,
         bookForm,
@@ -833,8 +921,8 @@ export default function Translator() {
     try {
       const result = await postJson<{ runs: Array<{ label: string; spreads: Array<{ spread: number; options: GeneratedOption[] }> }> }>("/api/translations", {
         mode: "pattern",
-        visualContexts: [spreads[1].visualContext, spreads[2].visualContext],
-        sources: [spreads[1].text, spreads[2].text],
+        visualContexts: [sampleSpreads[1].visualContext, sampleSpreads[2].visualContext],
+        sources: [sampleSpreads[1].text, sampleSpreads[2].text],
         priority,
         freedom,
         bookForm,
@@ -912,11 +1000,23 @@ export default function Translator() {
   // A failed Page 4 preview must never block the funnel.
   async function startTeaser() {
     if (!bookForm || (bookForm === "refrain_verse" && !lockedDirection)) return;
-    setStep(10);
+    setStep(11);
     setEmailGateVisible(false);
     if (spreads.length <= 3) {
       setTeaser({ status: "skipped", page: null });
       setEmailGateVisible(true);
+      return;
+    }
+    const approvedVoice = spreads.flatMap((spread, index) =>
+      spread.voiceSample && spread.approvedText?.trim() ? [{
+        spread: index + 1,
+        text: spread.approvedText.trim(),
+        ...(spread.parentNote ? { parentNote: spread.parentNote } : {})
+      }] : []
+    );
+    const fourthPage = spreads[3];
+    if (fourthPage.voiceSample && fourthPage.approvedText?.trim()) {
+      setTeaser({ status: "ready", page: { page: 4, text: fourthPage.approvedText.trim() } });
       return;
     }
     teaserAbort.current?.abort();
@@ -926,7 +1026,7 @@ export default function Translator() {
     try {
       const result = await postJson<{ spread: number; text: string }>("/api/translations", {
         mode: "preview",
-        spread: { spread: 4, visualContext: spreads[3].visualContext, source: spreads[3].text },
+        spread: { spread: 4, visualContext: fourthPage.visualContext, source: fourthPage.text },
         priority,
         freedom,
         bookForm,
@@ -934,11 +1034,7 @@ export default function Translator() {
         targetLanguage,
         regionalVariant,
         ...(lockedDirection ? { direction: lockedDirection } : {}),
-        approvedVoice: [1, 2, 3].map((number) => ({
-          spread: number,
-          text: approvedDrafts[number],
-          ...(approvedNotes[number] ? { parentNote: approvedNotes[number] } : {})
-        }))
+        approvedVoice
       }, controller.signal);
       setTeaser({ status: "ready", page: { page: result.spread, text: compactGeneratedText(result.text) } });
     } catch (error) {
@@ -954,10 +1050,17 @@ export default function Translator() {
 
   async function captureEmail(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const approvedVoice = spreads.flatMap((spread, index) =>
+      spread.voiceSample && spread.approvedText?.trim() ? [{
+        page: index + 1,
+        text: spread.approvedText.trim(),
+        ...(spread.parentNote ? { parentNote: spread.parentNote } : {})
+      }] : []
+    );
     if (
       !bookForm ||
       emailRequest.loading ||
-      [1, 2, 3].some((number) => !approvedDrafts[number]?.trim())
+      approvedVoice.length !== INITIAL_SAMPLE_LIMIT
     ) return;
     setEmailRequest({ loading: true, error: null });
     setAnalyticsConsent(analyticsConsent);
@@ -999,17 +1102,13 @@ export default function Translator() {
         targetLanguage,
         regionalVariant,
         ...(lockedDirection ? { direction: lockedDirection } : {}),
-        approvedPages: [1, 2, 3].map((number) => ({
-          page: number,
-          text: approvedDrafts[number],
-          ...(approvedNotes[number] ? { parentNote: approvedNotes[number] } : {})
-        })),
+        approvedPages: approvedVoice,
         previewPages: teaser.page ? [{ page: teaser.page.page, text: teaser.page.text }] : []
       });
       sessionStorage.setItem("bibaling_delivery_job", delivery.jobToken);
       setDeliveryJob({ token: delivery.jobToken, status: "processing", error: null });
       setEmailRequest({ loading: false, error: null });
-      setStep(11);
+      setStep(12);
       trackFunnelEventOnce("remaining_translation_started", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
     } catch (error) {
       setEmailRequest({
@@ -1040,15 +1139,15 @@ export default function Translator() {
           <button className={mockMode ? "mock-toggle active" : "mock-toggle"} type="button" onClick={toggleMockMode}>
             Mock mode {mockMode ? "on" : "off"}
           </button>
-          <div className="progress"><span>{progress}</span><i><b style={{ width: `${step / 10 * 100}%` }} /></i></div>
+          <div className="progress"><span>{progress}</span><i><b style={{ width: `${progressPosition.current / progressPosition.total * 100}%` }} /></i></div>
         </div>
       </div>
 
       <section className="workshop">
         {step === 1 && (
           <>
-            <h1>Add every page from your book.</h1>
-            <p className="lead">Photograph the English book in reading order.</p>
+            <h1>Add three photos from your book.</h1>
+            <p className="lead">Choose any three clear samples. They don’t need to be in order—you’ll arrange the whole book later.</p>
             <div className="upload-onboarding">
               <figure className="photo-guide">
                 <img src="/photo-guide.png" alt="A phone photographing an entire open picture book, with both facing pages fully visible." />
@@ -1058,18 +1157,19 @@ export default function Translator() {
                 </figcaption>
               </figure>
               <div className={spreads.length ? "uploads" : "uploads empty"}>
-                {spreads.map((spread, index) => (
+                {sampleSpreads.map((spread, index) => (
                   <label className="photo" key={spread.id}>
-                    <img src={spread.preview} alt={`Book page ${index + 1}`} />
+                    <img src={spread.preview} alt={`Book sample ${index + 1}`} />
                     <input type="file" accept="image/*" onChange={(event) => chooseFile(event, spread.id)} />
                     <span>Replace</span>
                   </label>
                 ))}
-                {spreads.length < 40 && (
-                  <label className="drop" onDrop={drop} onDragOver={(event) => event.preventDefault()}>
+                {spreads.length < INITIAL_SAMPLE_LIMIT && (
+                  <label className="drop" onDrop={(event) => drop(event, INITIAL_SAMPLE_LIMIT, true)} onDragOver={(event) => event.preventDefault()}>
                     <input type="file" accept="image/*" multiple onChange={(event) => chooseFile(event)} />
                     <strong>+</strong>
-                    <span>{spreads.length ? "Add more book photos" : "Add all book photos"}</span>
+                    <span>{spreads.length ? "Add the remaining samples" : "Add three sample photos"}</span>
+                    {spreads.length > 0 && <small>Drop photos or click to choose multiple images</small>}
                   </label>
                 )}
               </div>
@@ -1077,9 +1177,9 @@ export default function Translator() {
             <nav className="forward-only">
               <button
                 className="primary"
-                disabled={spreads.length < 3}
+                disabled={sampleSpreads.length !== INITIAL_SAMPLE_LIMIT}
                 onClick={() => {
-                  trackFunnelEventOnce("all_photos_uploaded", { languagePair: language.languagePair, targetLanguage, regionalVariant });
+                  trackFunnelEventOnce("sample_pages_uploaded", { languagePair: language.languagePair, targetLanguage, regionalVariant });
                   setStep(2);
                 }}
               >
@@ -1094,18 +1194,18 @@ export default function Translator() {
             <h1>Did we read these correctly?</h1>
             <p className="lead">If we got something wrong, edit it directly.</p>
             <div className="transcriptions">
-              {spreads.map((spread, index) => (
+              {sampleSpreads.map((spread, index) => (
                 <article className={spread.status === "reading" ? "transcription is-reading" : "transcription"} key={spread.id} aria-busy={spread.status === "reading"}>
                   <button
                     className="zoomable-image-button"
                     type="button"
-                    aria-label={`Open Page ${index + 1} photo at full size`}
-                    onClick={() => setExpandedImage({ src: spread.preview, alt: `Book page ${index + 1}` })}
+                    aria-label={`Open Sample ${index + 1} photo at full size`}
+                    onClick={() => setExpandedImage({ src: spread.preview, alt: `Book sample ${index + 1}` })}
                   >
                     <img src={spread.preview} alt="" />
                   </button>
                   <div>
-                    <label htmlFor={`text-${index}`}>Page {index + 1}</label>
+                    <label htmlFor={`text-${index}`}>Sample {index + 1}</label>
                     {spread.status === "reading" ? (
                       <div className="direction-progress-log transcription-progress" role="status">
                         <RotatingThinkingLine messages={readingLoadingMessages} />
@@ -1132,7 +1232,7 @@ export default function Translator() {
             </div>
             <nav>
               <button className="secondary" onClick={() => setStep(1)}>Back</button>
-              <button className="primary" disabled={spreads.some((spread) => !spread.text.trim())} onClick={() => void analyzeBookForm()}>Looks right</button>
+              <button className="primary" disabled={sampleSpreads.some((spread) => !spread.text.trim())} onClick={() => void analyzeBookForm()}>Looks right</button>
             </nav>
           </>
         )}
@@ -1352,7 +1452,7 @@ export default function Translator() {
             <h1>Let’s test the voice on one full page.</h1>
             <p className="lead">Choose and edit the strongest {language.config.name} version.</p>
             <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
-            <Source spread={spreads[0]} number={1} onExpand={setExpandedImage} />
+            <Source spread={sampleSpreads[0]} number={1} onExpand={setExpandedImage} label="Sample" />
             {request.loading && <ProgressLog messages={languageLoadingMessages(translationLoadingMessages, language.config.name)} />}
             {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} onNote={updateSpread1Note} />}
             {!request.loading && experimentalLanguage && spread1Options.length > 0 && (
@@ -1386,20 +1486,20 @@ export default function Translator() {
         {step === 8 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
             <h1>Does this voice work on every page?</h1>
-            <p className="lead">Choose one version for each page. Use Page 1 as your guide.</p>
+            <p className="lead">Choose one version for each sample. Use Sample 1 as your guide.</p>
             <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
             <article className="approved-card voice-reference">
-              <button className="zoomable-image-button" type="button" aria-label="Open approved Page 1 photo at full size" onClick={() => setExpandedImage({ src: spreads[0].preview, alt: "Approved Page 1" })}>
-                <img src={spreads[0].preview} alt="" />
+              <button className="zoomable-image-button" type="button" aria-label="Open approved Sample 1 photo at full size" onClick={() => setExpandedImage({ src: sampleSpreads[0].preview, alt: "Approved Sample 1" })}>
+                <img src={sampleSpreads[0].preview} alt="" />
               </button>
-              <label>Approved Page 1 · voice reference</label>
+              <label>Approved Sample 1 · voice reference</label>
               <p>{approvedSpread1}</p>
               {approvedNotes[1] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[1]}</p>}
             </article>
             {request.loading && <ProgressLog messages={languageLoadingMessages(patternLoadingMessages, language.config.name)} />}
             {!request.loading && [2, 3].map((number) => (
               <section className="pattern-section" key={number}>
-                <Source spread={spreads[number - 1]} number={number} onExpand={setExpandedImage} />
+                <Source spread={sampleSpreads[number - 1]} number={number} onExpand={setExpandedImage} label="Sample" />
                 <OptionList
                   options={patternOptions[number] || []}
                   selection={patternSelections[number]}
@@ -1425,10 +1525,10 @@ export default function Translator() {
             <div className="approved-grid">
               {[1, 2, 3].map((number) => (
                 <article className="approved-card" key={number}>
-                  <button className="zoomable-image-button" type="button" aria-label={`Open Page ${number} photo at full size`} onClick={() => setExpandedImage({ src: spreads[number - 1].preview, alt: `Page ${number}` })}>
-                    <img src={spreads[number - 1].preview} alt="" />
+                  <button className="zoomable-image-button" type="button" aria-label={`Open Sample ${number} photo at full size`} onClick={() => setExpandedImage({ src: sampleSpreads[number - 1].preview, alt: `Sample ${number}` })}>
+                    <img src={sampleSpreads[number - 1].preview} alt="" />
                   </button>
-                  <label>Page {number}</label>
+                  <label>Sample {number}</label>
                   <textarea value={approvedDrafts[number] || ""} onChange={(event) => setApprovedDrafts((current) => ({ ...current, [number]: event.target.value }))} />
                   {approvedNotes[number] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[number]}</p>}
                 </article>
@@ -1436,14 +1536,89 @@ export default function Translator() {
             </div>
             <nav>
               <button className="secondary" onClick={() => setStep(8)}>Back</button>
-              <button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={() => void startTeaser()}>
-                {spreads.length > 3 ? "Write the next page" : "Finish my book"}
-              </button>
+              <button className="primary" disabled={[1, 2, 3].some((number) => !approvedDrafts[number]?.trim())} onClick={startRestOfBook}>Add the rest of the book</button>
             </nav>
           </>
         )}
 
         {step === 10 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
+          <>
+            <h1>Arrange the whole book.</h1>
+            <p className="lead">Add the remaining photos, then drag every photo into reading order.</p>
+            {spreads.length < MAX_BOOK_PAGES && (
+              <label
+                className="rest-drop"
+                onDrop={(event) => drop(event, MAX_BOOK_PAGES, false)}
+                onDragOver={(event) => event.preventDefault()}
+              >
+                <input type="file" accept="image/*" multiple onChange={(event) => chooseFile(event, undefined, MAX_BOOK_PAGES, false)} />
+                <strong>+</strong>
+                <span>Drop all remaining book photos here</span>
+                <small>You can select several photos at once.</small>
+              </label>
+            )}
+            <div className="order-heading">
+              <div><strong>Book order</strong><small>{spreads.length} photos · drag to rearrange</small></div>
+            </div>
+            <div className="book-order">
+              {spreads.map((spread, index) => (
+                <article
+                  className={draggedPage === spread.id ? "page-order-card dragging" : "page-order-card"}
+                  key={spread.id}
+                  draggable
+                  onDragStart={(event) => {
+                    event.dataTransfer.effectAllowed = "move";
+                    event.dataTransfer.setData("text/plain", spread.id);
+                    setDraggedPage(spread.id);
+                  }}
+                  onDragEnd={() => setDraggedPage(null)}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDragEnter={(event) => {
+                    event.preventDefault();
+                    if (draggedPage && draggedPage !== spread.id) moveBookPage(draggedPage, spread.id);
+                  }}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    setDraggedPage(null);
+                  }}
+                >
+                  <div className="page-number">{index + 1}</div>
+                  <img src={spread.preview} alt={`Book page ${index + 1}`} />
+                  <div className="page-order-meta">
+                    <strong>{spread.file?.name || `Book photo ${index + 1}`}</strong>
+                    <small>
+                      {spread.status === "reading"
+                        ? "Reading text…"
+                        : spread.status === "error"
+                          ? "Couldn’t read this photo"
+                          : spread.voiceSample
+                            ? "Approved voice sample"
+                            : "New page"}
+                    </small>
+                    {spread.status === "error" && (
+                      <button className="retry" type="button" onClick={() => void readSpread(spread.id, spread.preview)}>Try again</button>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+            <nav>
+              <button className="secondary" onClick={() => setStep(9)}>Back</button>
+              <button
+                className="primary"
+                disabled={spreads.length <= INITIAL_SAMPLE_LIMIT || spreads.some((spread) => spread.status === "reading" || !spread.text.trim())}
+                onClick={() => {
+                  trackFunnelEventOnce("all_photos_uploaded", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
+                  void startTeaser();
+                }}
+              >
+                Translate Page 4
+              </button>
+            </nav>
+          </>
+        )}
+
+        {step === 11 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
             <h1>Now let’s keep going, one page at a time.</h1>
             <p className="lead">
@@ -1518,12 +1693,12 @@ export default function Translator() {
               </div>
             )}
             <nav>
-              <button className="secondary" disabled={emailRequest.loading} onClick={() => setStep(9)}>Back</button>
+              <button className="secondary" disabled={emailRequest.loading} onClick={() => setStep(10)}>Back</button>
             </nav>
           </>
         )}
 
-        {step === 11 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
+        {step === 12 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
             <h1>{deliveryJob.status === "completed" ? "Your translation is on its way." : deliveryJob.status === "failed" ? "We couldn’t finish your book." : "We’re finishing your book."}</h1>
             <p className="lead">
@@ -1535,14 +1710,14 @@ export default function Translator() {
             </p>
             <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
             <div className="approved-grid">
-              {[1, 2, 3].map((number) => (
-                <article className="approved-card" key={number}>
-                  <button className="zoomable-image-button" type="button" aria-label={`Open approved Page ${number} photo at full size`} onClick={() => setExpandedImage({ src: spreads[number - 1].preview, alt: `Approved Page ${number}` })}>
-                    <img src={spreads[number - 1].preview} alt="" />
+              {spreads.filter((spread) => spread.voiceSample && spread.approvedText).map((spread, index) => (
+                <article className="approved-card" key={spread.id}>
+                  <button className="zoomable-image-button" type="button" aria-label={`Open approved sample ${index + 1} photo at full size`} onClick={() => setExpandedImage({ src: spread.preview, alt: `Approved sample ${index + 1}` })}>
+                    <img src={spread.preview} alt="" />
                   </button>
-                  <label>Approved Page {number}</label>
-                  <p>{approvedDrafts[number]}</p>
-                  {approvedNotes[number] && <p className="parent-edit-note"><strong>Parent’s note</strong>{approvedNotes[number]}</p>}
+                  <label>Approved voice sample</label>
+                  <p>{spread.approvedText}</p>
+                  {spread.parentNote && <p className="parent-edit-note"><strong>Parent’s note</strong>{spread.parentNote}</p>}
                 </article>
               ))}
             </div>
@@ -1783,18 +1958,20 @@ function VoiceBrief({
 function Source({
   spread,
   number,
-  onExpand
+  onExpand,
+  label = "Page"
 }: {
   spread: Spread;
   number: number;
   onExpand: (image: { src: string; alt: string }) => void;
+  label?: string;
 }) {
   return (
     <article className="source-card">
-      <button className="zoomable-image-button" type="button" aria-label={`Open Page ${number} photo at full size`} onClick={() => onExpand({ src: spread.preview, alt: `Page ${number}` })}>
+      <button className="zoomable-image-button" type="button" aria-label={`Open ${label} ${number} photo at full size`} onClick={() => onExpand({ src: spread.preview, alt: `${label} ${number}` })}>
         <img src={spread.preview} alt="" />
       </button>
-      <div><span>English source · Page {number}</span><p>{spread.text}</p></div>
+      <div><span>English source · {label} {number}</span><p>{spread.text}</p></div>
     </article>
   );
 }

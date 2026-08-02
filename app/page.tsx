@@ -29,9 +29,9 @@ export default function LandingPage() {
         <h2>Start with the voice. Then carry it through the book.</h2>
         <div className="steps-grid">
           {[
-            ["01", "Photograph the whole book.", "Add every page in reading order. We read the words, and you correct anything we missed."],
+            ["01", "Start with three samples.", "Choose any three clear book photos. They do not need to be in order; you will arrange the complete book later."],
             ["02", "Choose the voice that feels right.", "Compare options in your family’s language, edit the strongest one, and tell us what felt off."],
-            ["03", "See it carry into the book.", "Approve the first three pages, see Page 4 completed, then provide an email as Page 5 begins so we can finish and send the complete book."]
+            ["03", "See it carry into the book.", "Approve the three samples, add and arrange the rest, then see Page 4 completed before the email ask interrupts Page 5."]
           ].map(([number, title, text]) => (
             <article className="feature-card" key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p></article>
           ))}
@@ -71,7 +71,7 @@ export default function LandingPage() {
         <h2>Before you photograph the first page</h2>
         <details><summary>Which languages work today?</summary><p>Slovenian is the reviewed reference language. Spanish, German, Italian, Croatian, and Serbian are prioritized for evaluation, with more European languages available experimentally.</p></details>
         <details><summary>Can I correct the translation?</summary><p>Yes. You correct the extracted English, then choose and edit the Page 1 voice in your selected language before the rest of the book is translated.</p></details>
-        <details><summary>When do you ask for email?</summary><p>Only after you upload the whole book, shape its voice across the first three pages, and see the completed Page 4 translation. Page 5 begins next; we use the address to finish the remaining pages and send the complete translation.</p></details>
+        <details><summary>When do you ask for email?</summary><p>Only after you shape the voice across three samples, upload and arrange the complete book, and see the completed Page 4 translation. Page 5 begins next; we use the address to finish the remaining pages and send the complete translation.</p></details>
         <details><summary>Is the output guaranteed to be perfect?</summary><p>No. Machine-assisted translations can contain errors. A parent should review every page before using it.</p></details>
       </section>
 
