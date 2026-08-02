@@ -121,8 +121,8 @@ test("the translator hydrates before saving, skips mock mode, and clears on deli
   // A restored delivery screen requires the resumable job token; otherwise the
   // parent lands on the gate to re-enter their email (which is never saved).
   assert.match(page, /const normalizedStep = normalizeRestoredStep\(snapshot\);/);
-  assert.match(page, /normalizedStep === 11 && jobToken/);
-  assert.match(page, /setStep\(Math\.min\(normalizedStep, 10\)\)/);
+  assert.match(page, /normalizedStep === 12 && jobToken/);
+  assert.match(page, /setStep\(Math\.min\(normalizedStep, 11\)\)/);
   // A finished delivery clears the saved workshop.
   assert.match(page, /sessionStorage\.removeItem\("bibaling_delivery_job"\);\s*\n\s*clearWorkshopSnapshot\(\);/);
   // Photos restored from a snapshot cannot be re-read: they become
@@ -181,12 +181,12 @@ test("a refresh during pattern generation restores to the Page 1 workshop", () =
 
 test("a refresh during the Page 4 teaser keeps the gate step and restores the teaser at rest", () => {
   const restored = parseWorkshopSnapshot(JSON.stringify(snapshot({
-    step: 10,
+    step: 11,
     teaser: { status: "writing", page: null }
   })));
   assert.ok(restored);
   assert.deepEqual(restored?.teaser, { status: "idle", page: null });
-  assert.equal(normalizeRestoredStep(restored!), 10);
+  assert.equal(normalizeRestoredStep(restored!), 11);
 });
 
 test("later steps without approved workshop pages fall back to the latest supported step", () => {
