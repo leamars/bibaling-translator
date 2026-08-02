@@ -185,7 +185,7 @@ export default function Translator() {
   // Page 4 is the last complete preview. Page 5 begins loading before the
   // email gate interrupts it, so the workshop still feels page-by-page.
   const [teaser, setTeaser] = useState<{
-    status: "idle" | "writing" | "ready" | "unavailable" | "skipped";
+    status: "idle" | "reading" | "writing" | "ready" | "unavailable" | "skipped";
     page: { page: number; text: string } | null;
   }>({ status: "idle", page: null });
   const [emailGateVisible, setEmailGateVisible] = useState(false);
@@ -203,6 +203,8 @@ export default function Translator() {
   const directionsAbort = useRef<AbortController | null>(null);
   const translationAbort = useRef<AbortController | null>(null);
   const teaserAbort = useRef<AbortController | null>(null);
+  const spreadReadTasks = useRef<Map<string, Promise<void>>>(new Map());
+  const spreadsRef = useRef<Spread[]>([]);
   const hydrated = useRef(false);
   const classifierAbort = useRef<AbortController | null>(null);
   const language = useMemo(
@@ -217,6 +219,10 @@ export default function Translator() {
     [spreads]
   );
   const experimentalLanguage = language.config.status === "experimental";
+
+  useEffect(() => {
+    spreadsRef.current = spreads;
+  }, [spreads]);
 
   const progressPosition = useMemo(() => workshopProgress(bookForm, step), [bookForm, step]);
   const progress = `${progressPosition.current} of ${progressPosition.total}`;
@@ -558,9 +564,13 @@ export default function Translator() {
   }
 
   async function readSpread(id: string, image: string) {
-    setSpreads((current) => current.map((spread) =>
-      spread.id === id ? { ...spread, error: null, status: "reading" } : spread
-    ));
+    setSpreads((current) => {
+      const next = current.map((spread) =>
+        spread.id === id ? { ...spread, error: null, status: "reading" as const } : spread
+      );
+      spreadsRef.current = next;
+      return next;
+    });
     try {
       let result: { text: string; uncertainty: string | null; visualContext: string } | null = null;
       for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -574,18 +584,37 @@ export default function Translator() {
         }
       }
       if (!result) throw new Error("We couldn’t read this page.");
-      setSpreads((current) => current.map((spread) =>
-        spread.id === id
-          ? { ...spread, text: compactGeneratedText(result.text), uncertainty: result.uncertainty, visualContext: result.visualContext, error: null, status: "done" }
-          : spread
-      ));
+      setSpreads((current) => {
+        const next = current.map((spread) =>
+          spread.id === id
+            ? { ...spread, text: compactGeneratedText(result.text), uncertainty: result.uncertainty, visualContext: result.visualContext, error: null, status: "done" as const }
+            : spread
+        );
+        spreadsRef.current = next;
+        return next;
+      });
     } catch (error) {
-      setSpreads((current) => current.map((spread) =>
-        spread.id === id
-          ? { ...spread, error: error instanceof Error ? error.message : "We couldn’t read this page.", status: "error" }
-          : spread
-      ));
+      setSpreads((current) => {
+        const next = current.map((spread) =>
+          spread.id === id
+            ? { ...spread, error: error instanceof Error ? error.message : "We couldn’t read this page.", status: "error" as const }
+            : spread
+        );
+        spreadsRef.current = next;
+        return next;
+      });
     }
+  }
+
+  function prefetchSpreadText(id: string, image: string) {
+    const active = spreadReadTasks.current.get(id);
+    if (active) return active;
+    const task = readSpread(id, image);
+    spreadReadTasks.current.set(id, task);
+    void task.finally(() => {
+      if (spreadReadTasks.current.get(id) === task) spreadReadTasks.current.delete(id);
+    });
+    return task;
   }
 
   async function addFile(file?: File, replaceId?: string) {
@@ -606,7 +635,7 @@ export default function Translator() {
         } : spread)
       : [...current, nextSpread]
     );
-    void readSpread(id, preview);
+    void prefetchSpreadText(id, preview);
   }
 
   async function addFiles(files?: FileList | File[], maximumPages = INITIAL_SAMPLE_LIMIT, voiceSample = true) {
@@ -636,7 +665,7 @@ export default function Translator() {
       };
     }));
     setSpreads((current) => [...current, ...additions].slice(0, maximumPages));
-    additions.forEach((spread) => void readSpread(spread.id, spread.preview));
+    additions.forEach((spread) => void prefetchSpreadText(spread.id, spread.preview));
   }
 
   function chooseFile(
@@ -829,7 +858,7 @@ export default function Translator() {
     setCustomRefrain("");
   }
 
-  async function writeSpread1(direction?: Direction) {
+  async function writeSpread1(direction?: Direction, previousOptions: string[] = []) {
     if (!bookForm || (bookForm === "refrain_verse" && !direction)) return;
     trackFunnelEventOnce("first_page_generation_started", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
     const controller = new AbortController();
@@ -848,6 +877,7 @@ export default function Translator() {
         sourceRhyme,
         targetLanguage,
         regionalVariant,
+        ...(previousOptions.length > 0 ? { previousOptions } : {}),
         ...(direction ? { direction } : {})
       }, controller.signal);
       setSpread1Options(result.runs.flatMap((run) =>
@@ -874,6 +904,18 @@ export default function Translator() {
   async function lockDirectionAndWriteSpread1() {
     if (selectedDirection === null) return;
     await writeSpread1({ ...directions[selectedDirection] });
+  }
+
+  async function rerollSpread1() {
+    const previousOptions = spread1Options.map((option) => option.text.trim()).filter(Boolean);
+    if (previousOptions.length === 0) return;
+    trackFunnelEventOnce("first_page_translation_rerolled", {
+      bookForm: bookForm ?? undefined,
+      languagePair: language.languagePair,
+      targetLanguage,
+      regionalVariant
+    });
+    await writeSpread1(lockedDirection ?? undefined, previousOptions);
   }
 
   function updateSpread1Option(index: number, text: string) {
@@ -1014,7 +1056,17 @@ export default function Translator() {
         ...(spread.parentNote ? { parentNote: spread.parentNote } : {})
       }] : []
     );
-    const fourthPage = spreads[3];
+    let fourthPage = spreads[3];
+    if (fourthPage.status === "waiting" || fourthPage.status === "reading") {
+      setTeaser({ status: "reading", page: null });
+      await prefetchSpreadText(fourthPage.id, fourthPage.preview);
+      fourthPage = spreadsRef.current.find((spread) => spread.id === fourthPage.id) ?? fourthPage;
+    }
+    if (!fourthPage.text.trim()) {
+      setTeaser({ status: "unavailable", page: null });
+      setEmailGateVisible(true);
+      return;
+    }
     if (fourthPage.voiceSample && fourthPage.approvedText?.trim()) {
       setTeaser({ status: "ready", page: { page: 4, text: fourthPage.approvedText.trim() } });
       return;
@@ -1066,7 +1118,7 @@ export default function Translator() {
     setAnalyticsConsent(analyticsConsent);
     const params = new URLSearchParams(window.location.search);
     try {
-      const result = await postJson<{ receipt: string }>("/api/leads", {
+      const leadRequest = postJson<{ receipt: string }>("/api/leads", {
         email,
         marketingConsent,
         capturedAt: new Date().toISOString(),
@@ -1084,13 +1136,22 @@ export default function Translator() {
         regionalVariant,
         bookForm
       });
+      const [result] = await Promise.all([
+        leadRequest,
+        Promise.all(Array.from(spreadReadTasks.current.values()))
+      ]);
+      const deliverySpreads = spreadsRef.current;
+      const unreadPage = deliverySpreads.findIndex((spread) => !spread.text.trim());
+      if (unreadPage >= 0) {
+        throw new Error(`We couldn’t finish reading Page ${unreadPage + 1}. Go back, try that photo again, then resubmit your email.`);
+      }
       setLeadReceipt(result.receipt);
       setEmailCaptured(true);
       trackFunnelEventOnce("generate_lead", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
       const delivery = await postJson<{ jobToken: string; status: "processing" }>("/api/delivery", {
         leadReceipt: result.receipt,
         recipientEmail: email,
-        pages: spreads.map((spread, index) => ({
+        pages: deliverySpreads.map((spread, index) => ({
           page: index + 1,
           sourceText: spread.text.trim(),
           visualContext: spread.visualContext
@@ -1455,6 +1516,13 @@ export default function Translator() {
             <Source spread={sampleSpreads[0]} number={1} onExpand={setExpandedImage} label="Sample" />
             {request.loading && <ProgressLog messages={languageLoadingMessages(translationLoadingMessages, language.config.name)} />}
             {!request.loading && <OptionList options={spread1Options} selection={spread1Selection} onSelect={setSpread1Selection} onEdit={updateSpread1Option} onNote={updateSpread1Note} />}
+            {!request.loading && spread1Options.length > 0 && (
+              <div className="translation-reroll">
+                <button className="secondary" type="button" onClick={() => void rerollSpread1()}>
+                  Re-roll three new options
+                </button>
+              </div>
+            )}
             {!request.loading && experimentalLanguage && spread1Options.length > 0 && (
               <aside className="language-feedback">
                 <label htmlFor="language-feedback">What should sound better in this {language.config.name} version?</label>
@@ -1587,16 +1655,14 @@ export default function Translator() {
                   <div className="page-order-meta">
                     <strong>{spread.file?.name || `Book photo ${index + 1}`}</strong>
                     <small>
-                      {spread.status === "reading"
-                        ? "Reading text…"
-                        : spread.status === "error"
+                      {spread.status === "error"
                           ? "Couldn’t read this photo"
                           : spread.voiceSample
                             ? "Approved voice sample"
                             : "New page"}
                     </small>
                     {spread.status === "error" && (
-                      <button className="retry" type="button" onClick={() => void readSpread(spread.id, spread.preview)}>Try again</button>
+                      <button className="retry" type="button" onClick={() => void prefetchSpreadText(spread.id, spread.preview)}>Try again</button>
                     )}
                   </div>
                 </article>
@@ -1606,13 +1672,13 @@ export default function Translator() {
               <button className="secondary" onClick={() => setStep(9)}>Back</button>
               <button
                 className="primary"
-                disabled={spreads.length <= INITIAL_SAMPLE_LIMIT || spreads.some((spread) => spread.status === "reading" || !spread.text.trim())}
+                disabled={spreads.length <= INITIAL_SAMPLE_LIMIT || spreads.some((spread) => spread.status === "error" || (spread.status === "done" && !spread.text.trim()))}
                 onClick={() => {
                   trackFunnelEventOnce("all_photos_uploaded", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
                   void startTeaser();
                 }}
               >
-                Translate Page 4
+                Translate the full book
               </button>
             </nav>
           </>
@@ -1622,20 +1688,25 @@ export default function Translator() {
           <>
             <h1>Now let’s keep going, one page at a time.</h1>
             <p className="lead">
-              {teaser.status === "writing"
-                ? "Your approved voice is carrying into the next page."
+              {teaser.status === "reading"
+                ? "We’re reading Page 4 before carrying your approved voice into it."
+                : teaser.status === "writing"
+                  ? "Your approved voice is carrying into the next page."
                 : teaser.status === "ready"
                   ? "Page 4 is ready. Here comes the next one."
                   : "We’ll translate every remaining page, check the whole book, and email it to you."}
             </p>
             <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
             {spreads.length > 3 && (
-              <article className="approved-card voice-reference teaser-card" aria-busy={teaser.status === "writing"}>
-                <button className="zoomable-image-button" type="button" aria-label="Open Page 4 photo at full size" onClick={() => setExpandedImage({ src: spreads[3].preview, alt: "Page 4" })}>
+              <article className="approved-card voice-reference teaser-card" aria-busy={teaser.status === "reading" || teaser.status === "writing"}>
+                <button className={teaser.status === "reading" ? "zoomable-image-button image-is-reading" : "zoomable-image-button"} type="button" aria-label="Open Page 4 photo at full size" disabled={teaser.status === "reading"} onClick={() => setExpandedImage({ src: spreads[3].preview, alt: "Page 4" })}>
                   <img src={spreads[3].preview} alt="" />
+                  {teaser.status === "reading" && <span className="photo-reading-loader" aria-hidden="true"><i /></span>}
                 </button>
-                <label>{teaser.status === "ready" ? "Page 4 · written in your voice" : "Page 4"}</label>
-                {teaser.status === "writing"
+                <label>{teaser.status === "reading" ? "Page 4 · reading the text" : teaser.status === "ready" ? "Page 4 · written in your voice" : "Page 4"}</label>
+                {teaser.status === "reading"
+                  ? <p className="reading-page-copy">Reading the words on this page…</p>
+                  : teaser.status === "writing"
                   ? <ProgressLog messages={languageLoadingMessages(teaserLoadingMessages, language.config.name)} />
                   : teaser.status === "ready" && teaser.page
                     ? <p className="approved-translation">{teaser.page.text}</p>
@@ -1651,7 +1722,7 @@ export default function Translator() {
                 <ProgressLog messages={languageLoadingMessages(nextPageLoadingMessages, language.config.name)} />
               </article>
             )}
-            {teaser.status !== "writing" && emailGateVisible && !emailCaptured && (
+            {teaser.status !== "reading" && teaser.status !== "writing" && emailGateVisible && !emailCaptured && (
               <div className={spreads.length > 4 ? "page-gate-row" : undefined}>
                 {spreads.length > 4 && (
                   <button className="zoomable-image-button gate-page-image" type="button" aria-label="Open Page 5 photo at full size" onClick={() => setExpandedImage({ src: spreads[4].preview, alt: "Page 5" })}>

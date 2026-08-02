@@ -67,6 +67,7 @@ const bodySchema = z.discriminatedUnion("mode", [
     bookForm: z.enum(BOOK_FORMS),
     sourceRhyme: z.enum(SOURCE_RHYME),
     direction: directionSchema.optional(),
+    previousOptions: z.array(z.string().min(1).max(4_000)).max(3).optional(),
     ...languageFields
   }),
   // The workshop happens before email capture, so pattern testing carries no
@@ -209,6 +210,7 @@ type PipelineArgs = {
   direction?: DirectionBrief;
   approvedSpread1?: string;
   approvedSpread1Note?: string;
+  previousOptions?: string[];
   targetLanguage: TargetLanguage;
   regionalVariant?: string;
   requestSignal: AbortSignal;
@@ -216,6 +218,9 @@ type PipelineArgs = {
 
 async function generatePassingOptions(args: PipelineArgs) {
   const requestTimeoutMs = args.spreadNumber === 1 && !args.approvedSpread1 ? 120_000 : 90_000;
+  const previousOptionTexts = new Set(
+    (args.previousOptions || []).map((option) => option.trim().toLocaleLowerCase(args.targetLanguage))
+  );
   const { response: generationResponse } = await controlledResponse({
     client: args.client,
     requestSignal: args.requestSignal,
@@ -242,6 +247,7 @@ async function generatePassingOptions(args: PipelineArgs) {
                 direction: args.direction,
                 approvedSpread1: args.approvedSpread1,
                 approvedSpread1Note: args.approvedSpread1Note,
+                previousOptions: args.previousOptions,
                 targetLanguage: args.targetLanguage,
                 regionalVariant: args.regionalVariant
               })
@@ -252,9 +258,11 @@ async function generatePassingOptions(args: PipelineArgs) {
       }
     });
     const pool = candidatePoolSchema.parse(JSON.parse(generationResponse.output_text));
-    const survivors = pool.candidates.filter((candidate) =>
-      deterministicViolations(candidate.text, { targetLanguage: args.targetLanguage }).length === 0
-    );
+    const survivors = pool.candidates.filter((candidate) => {
+      const normalized = candidate.text.trim().toLocaleLowerCase(args.targetLanguage);
+      return deterministicViolations(candidate.text, { targetLanguage: args.targetLanguage }).length === 0 &&
+        !previousOptionTexts.has(normalized);
+    });
     if (survivors.length < 3) {
       throw new Error(`Only ${survivors.length} translations survived deterministic quality checks.`);
     }
@@ -285,6 +293,7 @@ async function generatePassingOptions(args: PipelineArgs) {
                 direction: args.direction,
                 approvedSpread1: args.approvedSpread1,
                 approvedSpread1Note: args.approvedSpread1Note,
+                previousOptions: args.previousOptions,
                 candidatesJson: JSON.stringify(survivors),
                 targetLanguage: args.targetLanguage,
                 regionalVariant: args.regionalVariant
@@ -298,9 +307,11 @@ async function generatePassingOptions(args: PipelineArgs) {
     const edited = productionPageEditorialResultSchema.parse(JSON.parse(evaluationResponse.output_text));
     // Hard gates: reader-facing text only — banned content, placeholders,
     // meta-commentary, duplicates. Editorial bookkeeping never hard-fails.
-    const textEligible = edited.finalists.filter((candidate) =>
-      deterministicViolations(candidate.text, { targetLanguage: args.targetLanguage }).length === 0
-    );
+    const textEligible = edited.finalists.filter((candidate) => {
+      const normalized = candidate.text.trim().toLocaleLowerCase(args.targetLanguage);
+      return deterministicViolations(candidate.text, { targetLanguage: args.targetLanguage }).length === 0 &&
+        !previousOptionTexts.has(normalized);
+    });
     if (textEligible.length !== 3 || new Set(
       textEligible.map((candidate) => candidate.text.trim().toLocaleLowerCase(args.targetLanguage))
     ).size !== 3) {
@@ -495,6 +506,7 @@ export async function POST(request: Request) {
           bookForm: input.bookForm,
           sourceRhyme: input.sourceRhyme,
           direction: input.direction,
+          previousOptions: input.previousOptions,
           targetLanguage: input.targetLanguage,
           regionalVariant: input.regionalVariant,
           requestSignal: request.signal

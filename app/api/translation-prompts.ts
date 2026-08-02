@@ -342,6 +342,7 @@ export function translationGenerationPrompt(args: {
   direction?: DirectionBrief;
   approvedSpread1?: string;
   approvedSpread1Note?: string;
+  previousOptions?: string[];
   rejectionFeedback?: string;
 } & LanguageSelection) {
   if (!isReviewedSlovenian(args)) return multilingualTranslationGenerationPrompt(args);
@@ -359,6 +360,7 @@ ${freedomContract(args.freedom, args.bookForm ?? "refrain_verse")}
 ${args.approvedSpread1 ? `\nAPPROVED SPREAD 1 VOICE REFERENCE — imitate its voice, never silently rewrite it:\n${args.approvedSpread1}` : ""}
 ${args.approvedSpread1Note ? `\nPARENT'S EDIT NOTE ON THE GENERATED SPREAD 1 DRAFT\n${args.approvedSpread1Note}\nTreat this as binding editorial evidence about what to avoid or improve in later spreads. Do not quote the note in book text.` : ""}
 ${args.visualContext ? `\nESSENTIAL VISUAL CONTEXT FROM THE ONE-TIME IMAGE ANALYSIS\n${args.visualContext}` : ""}
+${args.previousOptions?.length ? `\nPREVIOUSLY SHOWN TRANSLATIONS — the parent asked for a fresh set. Do not repeat or lightly reword any of these:\n${args.previousOptions.map((option) => `- ${option}`).join("\n")}` : ""}
 
 Candidate requirements:
 - complete Slovenian text for this spread, not notes or fragments;
@@ -384,6 +386,7 @@ export function translationEvaluationPrompt(args: {
   direction?: DirectionBrief;
   approvedSpread1?: string;
   approvedSpread1Note?: string;
+  previousOptions?: string[];
   candidatesJson: string;
   evaluationConcerns?: Array<{ id: string; text: string }>;
 } & LanguageSelection) {
@@ -404,6 +407,7 @@ ${args.visualContext ? `\nESSENTIAL VISUAL CONTEXT FROM THE ONE-TIME IMAGE ANALY
 
 CANDIDATES
 ${args.candidatesJson}
+${args.previousOptions?.length ? `\nPREVIOUSLY SHOWN TRANSLATIONS — none may return unchanged or as a light rewording:\n${args.previousOptions.map((option) => `- ${option}`).join("\n")}` : ""}
 
 For every prospective finalist, separately verify:
 - fidelityPass: source event, emotional beat, visible details, no invented meaning or filler;
@@ -623,6 +627,7 @@ ${args.source}
 ${args.visualContext ? `\nVISUAL CONTEXT\n${args.visualContext}` : ""}
 ${args.approvedSpread1 ? `\nAPPROVED PAGE 1 VOICE — imitate, never rewrite\n${args.approvedSpread1}` : ""}
 ${args.approvedSpread1Note ? `\nPARENT EDIT NOTE — apply as binding editorial evidence\n${args.approvedSpread1Note}` : ""}
+${args.previousOptions?.length ? `\nPREVIOUSLY SHOWN TRANSLATIONS — the parent asked for a fresh set. Do not repeat or lightly reword any of these:\n${args.previousOptions.map((option) => `- ${option}`).join("\n")}` : ""}
 
 Return complete reader-facing ${language} text, never notes or fragments. Preserve exact approved refrain wording only for refrain_verse. Give candidates ids c01–c06 and short English strategy labels. Return only the required schema.`;
 }
@@ -646,6 +651,7 @@ ${args.approvedSpread1Note ? `\nPARENT EDIT NOTE\n${args.approvedSpread1Note}` :
 
 PRIVATE CANDIDATES
 ${args.candidatesJson}
+${args.previousOptions?.length ? `\nPREVIOUSLY SHOWN TRANSLATIONS — none may return unchanged or as a light rewording:\n${args.previousOptions.map((option) => `- ${option}`).join("\n")}` : ""}
 
 For each returned text, set every schema pass field true only after the text itself passes fidelity, native ${language} grammar, child-friendly read-aloud flow, locked-form compliance, and the applicable spoken-rhyme requirement.
 
