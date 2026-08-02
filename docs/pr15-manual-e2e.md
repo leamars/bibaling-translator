@@ -71,7 +71,7 @@ choice is later changed to allowed.
 ## Common steps for all three routes
 
 1. Open `/translate` and pass Vercel SSO.
-   - Expected: the translator opens at **Add every page from your book**.
+   - Expected: the translator opens at **Add three photos from your book**.
 2. Choose **No thanks** if the analytics preference is shown.
    - Expected: no GA4 events are sent.
 3. Turn **Mock mode on**.

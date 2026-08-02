@@ -137,7 +137,7 @@ test("mock evaluation covers six languages and six literary fixtures", async () 
 
 test("language selection follows OCR confirmation and precedes translation priorities", async () => {
   const translator = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
-  const uploadHeading = translator.indexOf("Add every page from your book.");
+  const uploadHeading = translator.indexOf("Add three photos from your book.");
   const ocrHeading = translator.indexOf("Did we read these correctly?");
   const languageHeading = translator.indexOf("What language should we translate this book into?");
   const priorityHeading = translator.indexOf("What matters most for this book?");

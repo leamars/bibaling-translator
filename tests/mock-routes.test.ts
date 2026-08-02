@@ -106,7 +106,7 @@ test("the Page 4 preview is mocked, bounded, quality-gated, and preserves parent
   // The interactive full-book mode is gone: delivery is the only whole-book path.
   assert.doesNotMatch(route, /fullbook/);
   // Parent notes flow into the teaser call and the durable delivery input.
-  assert.match(page, /parentNote: approvedNotes\[number\]/);
+  assert.match(page, /parentNote: spread\.parentNote/);
   assert.match(workflow, /parentNote: page\.parentNote/);
 });
 
