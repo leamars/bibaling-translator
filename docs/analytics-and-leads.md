@@ -1,6 +1,6 @@
 # Analytics, lead capture, and durable delivery
 
-Parents upload and correct the complete book, confirm its form and voice settings, and receive Page 1 translation options before the email gate appears. A selected, non-empty Page 1 translation and successful Resend capture start a durable Vercel Workflow. The browser does not expose the remaining translation; the final page-ordered book is sent transactionally through Resend.
+Parents upload and correct the complete book, confirm its form and voice settings, approve Pages 1–3, and see the completed Page 4 translation. Page 5 then begins loading before the email gate takes its place. A valid email submission starts a durable Vercel Workflow. A Resend Contacts enrichment failure is logged but does not block transactional delivery; the final page-ordered book is sent through Resend Email.
 
 ## Resend
 

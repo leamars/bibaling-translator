@@ -71,12 +71,25 @@ test("translation routes allow an unavailable optional visual summary", async ()
 
 test("upload-time OCR failures stay per-page and recoverable", async () => {
   const source = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
-  // Every page is read at upload; one unreadable photo never discards the
-  // successful reads around it, and each failed page offers its own retry.
+  // Every page is prefetched at upload; one unreadable photo never discards
+  // the successful reads around it, and each failed page offers its own retry.
   assert.match(source, /status: "error"/);
   assert.match(source, /spread\.status === "error"/);
-  assert.match(source, /onClick=\{\(\) => void readSpread\(spread\.id, spread\.preview\)\}>Try again<\/button>/);
+  assert.match(source, /onClick=\{\(\) => void prefetchSpreadText\(spread\.id, spread\.preview\)\}>Try again<\/button>/);
   assert.match(source, /Type or paste the English text here/);
+});
+
+test("remaining-page OCR prefetch stays invisible until the full-book CTA", async () => {
+  const source = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
+  const arrangeScreen = source.slice(source.indexOf("{step === 10"), source.indexOf("{step === 11"));
+  const teaserScreen = source.slice(source.indexOf("{step === 11"), source.indexOf("{step === 12"));
+  assert.match(source, /prefetchSpreadText/);
+  assert.match(source, /Promise\.all\(Array\.from\(spreadReadTasks\.current\.values\(\)\)\)/);
+  assert.match(source, /pages: deliverySpreads\.map/);
+  assert.doesNotMatch(arrangeScreen, /Reading text/);
+  assert.match(teaserScreen, /image-is-reading/);
+  assert.match(teaserScreen, /photo-reading-loader/);
+  assert.match(teaserScreen, /Reading the words on this page/);
 });
 
 test("direction generation streams genuine progress and propagates cancellation", async () => {
@@ -106,7 +119,7 @@ test("the Page 4 preview is mocked, bounded, quality-gated, and preserves parent
   // The interactive full-book mode is gone: delivery is the only whole-book path.
   assert.doesNotMatch(route, /fullbook/);
   // Parent notes flow into the teaser call and the durable delivery input.
-  assert.match(page, /parentNote: approvedNotes\[number\]/);
+  assert.match(page, /parentNote: spread\.parentNote/);
   assert.match(workflow, /parentNote: page\.parentNote/);
 });
 

@@ -39,13 +39,17 @@ const savedSpreadSchema = z.object({
   uncertainty: z.string().nullable(),
   visualContext: z.string(),
   error: z.string().nullable(),
-  status: z.enum(["waiting", "reading", "done", "error"])
+  status: z.enum(["waiting", "reading", "done", "error"]),
+  voiceSample: z.boolean().optional(),
+  sampleNumber: z.number().int().min(1).max(3).optional(),
+  approvedText: z.string().nullable().optional(),
+  parentNote: z.string().optional()
 });
 
 export const workshopSnapshotSchema = z.object({
   version: z.literal(SNAPSHOT_VERSION),
   savedAt: z.number().int().positive(),
-  step: z.number().int().min(1).max(11),
+  step: z.number().int().min(1).max(12),
   targetLanguage: targetLanguageSchema,
   regionalVariant: z.string().optional(),
   languageConfirmed: z.boolean(),
@@ -69,7 +73,7 @@ export const workshopSnapshotSchema = z.object({
   approvedDrafts: z.record(z.string(), z.string()),
   approvedNotes: z.record(z.string(), z.string()),
   teaser: z.object({
-    status: z.enum(["idle", "writing", "ready", "unavailable", "skipped"]),
+    status: z.enum(["idle", "reading", "writing", "ready", "unavailable", "skipped"]),
     page: z.object({ page: z.number(), text: z.string() }).nullable()
   })
 });
@@ -84,7 +88,7 @@ export function parseWorkshopSnapshot(raw: string | null): WorkshopSnapshot | nu
     if (Date.now() - parsed.savedAt > SNAPSHOT_MAX_AGE_MS) return null;
     // A snapshot mid-generation is restored at rest: the request it was
     // waiting on died with the page.
-    if (parsed.teaser.status === "writing") {
+    if (parsed.teaser.status === "reading" || parsed.teaser.status === "writing") {
       return { ...parsed, teaser: { status: "idle", page: null } };
     }
     return parsed;
@@ -115,9 +119,13 @@ export function normalizeRestoredStep(snapshot: WorkshopSnapshot): number {
   const hasApprovedPages = ["1", "2", "3"].every(
     (key) => Boolean(snapshot.approvedDrafts[key]?.trim())
   );
-  let step = Math.min(snapshot.step, 11);
+  const hasRemainingPages = snapshot.spreads.length > 3 && snapshot.spreads
+    .slice(3)
+    .every((spread) => Boolean(spread.text.trim()));
+  let step = Math.min(snapshot.step, 12);
   while (true) {
     if (step >= 9 && !hasApprovedPages) { step = 8; continue; }
+    if (step >= 11 && !hasRemainingPages) { step = 10; continue; }
     if (step === 8 && !hasPatternOptions) { step = 7; continue; }
     if (step === 7 && !hasPage1Options) {
       step = snapshot.bookForm === "refrain_verse" ? 6 : 5;

@@ -2,6 +2,7 @@ import {
   resolveLanguageSelection,
   type TargetLanguage
 } from "./language-config.ts";
+import { publishedTranslationBenchmarkPrompt } from "./published-translation-benchmarks.ts";
 
 export type LanguageSelection = {
   targetLanguage?: TargetLanguage;
@@ -34,7 +35,9 @@ LANGUAGE-PACK DRAFTING GUIDANCE
 ${resolved.config.draftingGuidance}
 
 LANGUAGE-PACK EDITORIAL GUIDANCE
-${resolved.config.editorialGuidance}`;
+${resolved.config.editorialGuidance}
+
+${publishedTranslationBenchmarkPrompt(targetLanguage)}`;
 }
 
 export function targetLanguageName(selection: LanguageSelection = {}) {
