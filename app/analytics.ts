@@ -7,6 +7,7 @@ export type FunnelEventName =
   | "all_photos_uploaded"
   | "first_page_generation_started"
   | "first_page_translation_displayed"
+  | "first_page_translation_rerolled"
   | "email_gate_displayed"
   | "generate_lead"
   | "remaining_translation_started"

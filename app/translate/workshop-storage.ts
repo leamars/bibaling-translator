@@ -73,7 +73,7 @@ export const workshopSnapshotSchema = z.object({
   approvedDrafts: z.record(z.string(), z.string()),
   approvedNotes: z.record(z.string(), z.string()),
   teaser: z.object({
-    status: z.enum(["idle", "writing", "ready", "unavailable", "skipped"]),
+    status: z.enum(["idle", "reading", "writing", "ready", "unavailable", "skipped"]),
     page: z.object({ page: z.number(), text: z.string() }).nullable()
   })
 });
@@ -88,7 +88,7 @@ export function parseWorkshopSnapshot(raw: string | null): WorkshopSnapshot | nu
     if (Date.now() - parsed.savedAt > SNAPSHOT_MAX_AGE_MS) return null;
     // A snapshot mid-generation is restored at rest: the request it was
     // waiting on died with the page.
-    if (parsed.teaser.status === "writing") {
+    if (parsed.teaser.status === "reading" || parsed.teaser.status === "writing") {
       return { ...parsed, teaser: { status: "idle", page: null } };
     }
     return parsed;

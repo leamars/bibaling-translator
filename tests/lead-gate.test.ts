@@ -129,6 +129,8 @@ test("the workshop precedes the gate; Page 4 is revealed before Page 5 is interr
   assert.match(arrangeScreen, /drag to rearrange/);
   assert.match(arrangeScreen, /moveBookPage/);
   assert.match(arrangeScreen, /Approved voice sample/);
+  assert.match(arrangeScreen, /Translate the full book/);
+  assert.doesNotMatch(arrangeScreen, /Translate Page 4/);
   assert.doesNotMatch(arrangeScreen, /email-gate/);
   assert.match(startRestOfBook, /spread\.sampleNumber/);
   assert.match(startRestOfBook, /approvedDrafts\[spread\.sampleNumber\]/);
@@ -161,7 +163,7 @@ test("the workshop precedes the gate; Page 4 is revealed before Page 5 is interr
   assert.match(captureEmail, /spread\.voiceSample && spread\.approvedText/);
   assert.match(captureEmail, /setLeadReceipt\(result\.receipt\)/);
   assert.match(captureEmail, /postJson<\{ jobToken: string; status: "processing" \}>\("\/api\/delivery"/);
-  assert.match(captureEmail, /pages: spreads\.map/);
+  assert.match(captureEmail, /pages: deliverySpreads\.map/);
   assert.match(captureEmail, /visualContext: spread\.visualContext/);
   assert.match(captureEmail, /approvedPages: approvedVoice/);
   assert.match(captureEmail, /previewPages: teaser\.page \? \[\{ page: teaser\.page\.page, text: teaser\.page\.text \}\] : \[\]/);
