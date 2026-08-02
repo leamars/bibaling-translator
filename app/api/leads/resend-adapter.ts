@@ -51,6 +51,19 @@ async function resendRequest(path: string, init: RequestInit, signal?: AbortSign
   });
 }
 
+async function resendFailure(response: Response, action: string) {
+  const body = await response.text();
+  const detail = (() => {
+    try {
+      const parsed = JSON.parse(body) as { message?: unknown; name?: unknown };
+      return [parsed.name, parsed.message].filter((value): value is string => typeof value === "string").join(": ");
+    } catch {
+      return "";
+    }
+  })();
+  return new Error(`Resend ${action} failed (${response.status})${detail ? `: ${detail}` : "."}`);
+}
+
 async function ensureMemberships(input: LeadCapture, signal?: AbortSignal) {
   const leadsSegmentId = process.env.RESEND_LEADS_SEGMENT_ID?.trim();
   if (!leadsSegmentId) throw new Error("Resend leads segment is not configured.");
@@ -61,7 +74,7 @@ async function ensureMemberships(input: LeadCapture, signal?: AbortSignal) {
     signal
   );
   if (!segment.ok && segment.status !== 409) {
-    throw new Error(`Resend segment assignment failed (${segment.status}).`);
+    throw await resendFailure(segment, "segment assignment");
   }
   if (!input.marketingConsent) return;
   const topicId = process.env.RESEND_MARKETING_TOPIC_ID?.trim();
@@ -70,7 +83,7 @@ async function ensureMemberships(input: LeadCapture, signal?: AbortSignal) {
     method: "PATCH",
     body: JSON.stringify({ topics: [{ id: topicId, subscription: "opt_in" }] })
   }, signal);
-  if (!topic.ok) throw new Error(`Resend marketing topic update failed (${topic.status}).`);
+  if (!topic.ok) throw await resendFailure(topic, "marketing topic update");
 }
 
 export const resendLeadCaptureAdapter: LeadCaptureAdapter = {
@@ -86,7 +99,7 @@ export const resendLeadCaptureAdapter: LeadCaptureAdapter = {
       return { contactId: data.id || "existing-contact", created: false };
     }
     if (update.status !== 404) {
-      throw new Error(`Resend contact update failed (${update.status}).`);
+      throw await resendFailure(update, "contact update");
     }
     const create = await resendRequest("", {
       method: "POST",
@@ -97,12 +110,12 @@ export const resendLeadCaptureAdapter: LeadCaptureAdapter = {
         method: "PATCH",
         body: JSON.stringify({ properties: payload.properties })
       }, signal);
-      if (!retry.ok) throw new Error(`Resend duplicate contact update failed (${retry.status}).`);
+      if (!retry.ok) throw await resendFailure(retry, "duplicate contact update");
       const data = await retry.json() as { id?: string };
       await ensureMemberships(input, signal);
       return { contactId: data.id || "existing-contact", created: false };
     }
-    if (!create.ok) throw new Error(`Resend contact creation failed (${create.status}).`);
+    if (!create.ok) throw await resendFailure(create, "contact creation");
     const data = await create.json() as { id?: string };
     if (!data.id) throw new Error("Resend did not confirm the contact.");
     return { contactId: data.id, created: true };

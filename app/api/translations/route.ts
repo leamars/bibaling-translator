@@ -86,7 +86,8 @@ const bodySchema = z.discriminatedUnion("mode", [
     ...languageFields
   }),
   // Teaser: one page written in the locked voice while the parent watches.
-  // Its text is returned for seeding delivery but never displayed pre-email.
+  // Its text is returned both for the visible Page 4 preview and for seeding
+  // durable delivery, so the completed preview call is never wasted.
   z.object({
     mode: z.literal("preview"),
     spread: z.object({

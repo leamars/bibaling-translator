@@ -92,7 +92,7 @@ test("existing Resend contacts update properties and memberships through the doc
   }
 });
 
-test("the workshop precedes the gate; the teaser precedes capture; capture starts durable delivery", async () => {
+test("the workshop precedes the gate; Page 4 is revealed before Page 5 is interrupted; capture starts durable delivery", async () => {
   const page = await readFile(new URL("../app/translate/Translator.tsx", import.meta.url), "utf8");
   const route = await readFile(new URL("../app/api/delivery/route.ts", import.meta.url), "utf8");
   const translations = await readFile(new URL("../app/api/translations/route.ts", import.meta.url), "utf8");
@@ -122,16 +122,19 @@ test("the workshop precedes the gate; the teaser precedes capture; capture start
   assert.doesNotMatch(patternScreen, /email-gate|leadReceipt/);
   assert.doesNotMatch(page.slice(0, page.indexOf("async function startTeaser")), /mode: "pattern",\s*\n\s*leadReceipt/);
 
-  // The teaser writes Page 4 for real, never renders its text, and the gate
-  // opens whether or not the teaser succeeded.
+  // The teaser writes and reveals Page 4, then visibly begins Page 5 before
+  // the gate takes its place. A preview failure still opens the gate.
   assert.match(startTeaser, /mode: "preview"/);
   assert.match(startTeaser, /spread: \{ spread: 4/);
   assert.match(startTeaser, /status: "unavailable"/);
-  assert.ok(startTeaser.indexOf('trackFunnelEventOnce("email_gate_displayed"') > 0);
-  assert.match(startTeaser, /finally \{[\s\S]*email_gate_displayed/);
-  assert.match(teaserScreen, /teaser\.status !== "writing" && !emailCaptured/);
+  assert.match(page, /setTimeout\(\(\) => setEmailGateVisible\(true\), 1_800\)/);
+  assert.match(startTeaser, /setEmailGateVisible\(true\)/);
+  assert.match(teaserScreen, /teaser\.page\.text/);
+  assert.match(teaserScreen, /Page 5/);
+  assert.match(teaserScreen, /nextPageLoadingMessages/);
+  assert.match(teaserScreen, /emailGateVisible && !emailCaptured/);
+  assert.match(teaserScreen, /Keep Page 5 going\./);
   assert.match(teaserScreen, /Email me the finished translation/);
-  assert.doesNotMatch(teaserScreen, /teaser\.page\.text|previewText/);
 
   // Capture requires the approved workshop pages and starts durable delivery
   // with the approved voice and the teaser seed.
@@ -209,4 +212,15 @@ test("mock lead capture bypasses Resend deterministically", async () => {
   assert.match(route, /mock: true/);
   assert.ok(route.indexOf("isMockRequest(request)") < route.indexOf("resendLeadCaptureAdapter.capture"));
   assert.match(route, /capturedAt: new Date\(\)\.toISOString\(\)/);
+});
+
+test("a Resend Contacts failure does not block transactional delivery", async () => {
+  const route = await readFile(new URL("../app/api/leads/route.ts", import.meta.url), "utf8");
+  assert.match(route, /lead_contact_sync_failed/);
+  assert.match(route, /contactSaved = false/);
+  assert.ok(route.indexOf("resendLeadCaptureAdapter.capture") < route.indexOf("receipt: createLeadReceipt"));
+  assert.doesNotMatch(
+    route.slice(route.indexOf('console.error("lead_contact_sync_failed"'), route.indexOf("return NextResponse.json({")),
+    /throw/
+  );
 });
