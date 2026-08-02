@@ -172,11 +172,13 @@ export default function Translator() {
   const [directionProgress, setDirectionProgress] = useState<DirectionProgress>({ active: 0, completedThrough: -1, rejectedCount: 0 });
   const [mockMode, setMockMode] = useState(false);
   const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null);
-  // The Page 4 teaser: real generation whose text is never shown pre-email.
+  // Page 4 is the last complete preview. Page 5 begins loading before the
+  // email gate interrupts it, so the workshop still feels page-by-page.
   const [teaser, setTeaser] = useState<{
     status: "idle" | "writing" | "ready" | "unavailable" | "skipped";
     page: { page: number; text: string } | null;
   }>({ status: "idle", page: null });
+  const [emailGateVisible, setEmailGateVisible] = useState(false);
   const [emailCaptured, setEmailCaptured] = useState(false);
   const [leadReceipt, setLeadReceipt] = useState("");
   const [email, setEmail] = useState("");
@@ -212,6 +214,22 @@ export default function Translator() {
     window.addEventListener("bibaling:analytics-consent", syncConsent);
     return () => window.removeEventListener("bibaling:analytics-consent", syncConsent);
   }, []);
+
+  useEffect(() => {
+    if (step !== 10 || teaser.status !== "ready") return;
+    const timeout = window.setTimeout(() => setEmailGateVisible(true), 1_800);
+    return () => window.clearTimeout(timeout);
+  }, [step, teaser.status]);
+
+  useEffect(() => {
+    if (!emailGateVisible || !bookForm) return;
+    trackFunnelEventOnce("email_gate_displayed", {
+      bookForm,
+      languagePair: language.languagePair,
+      targetLanguage,
+      regionalVariant
+    });
+  }, [bookForm, emailGateVisible, language.languagePair, regionalVariant, targetLanguage]);
 
   // Restore a saved workshop after a refresh or accidental tab close.
   // Runs once on mount, only into a pristine session, and never in mock mode.
@@ -428,6 +446,7 @@ export default function Translator() {
     setDirectionProgress({ active: 0, completedThrough: -1, rejectedCount: 0 });
     setExpandedImage(null);
     setTeaser({ status: "idle", page: null });
+    setEmailGateVisible(false);
     setEmailCaptured(false);
     setLeadReceipt("");
     setEmail("");
@@ -888,16 +907,16 @@ export default function Translator() {
     setStep(9);
   }
 
-  // The teaser: Page 4 is genuinely written in the locked voice while the
-  // parent watches, but its text is never displayed — it seeds the delivery.
-  // The email gate appears the moment the teaser settles, success or not:
-  // a failed teaser must never block the funnel.
+  // Page 4 is genuinely written and revealed in the locked voice. Once it is
+  // complete, Page 5 visibly starts before the email gate takes its place.
+  // A failed Page 4 preview must never block the funnel.
   async function startTeaser() {
     if (!bookForm || (bookForm === "refrain_verse" && !lockedDirection)) return;
     setStep(10);
+    setEmailGateVisible(false);
     if (spreads.length <= 3) {
       setTeaser({ status: "skipped", page: null });
-      trackFunnelEventOnce("email_gate_displayed", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
+      setEmailGateVisible(true);
       return;
     }
     teaserAbort.current?.abort();
@@ -927,9 +946,9 @@ export default function Translator() {
       // Silent fallback: the gate still opens; delivery regenerates Page 4.
       console.warn("teaser_preview_failed", error instanceof Error ? error.message : error);
       setTeaser({ status: "unavailable", page: null });
+      setEmailGateVisible(true);
     } finally {
       if (teaserAbort.current === controller) teaserAbort.current = null;
-      trackFunnelEventOnce("email_gate_displayed", { bookForm, languagePair: language.languagePair, targetLanguage, regionalVariant });
     }
   }
 
@@ -1426,11 +1445,13 @@ export default function Translator() {
 
         {step === 10 && bookForm && (bookForm !== "refrain_verse" || lockedDirection) && (
           <>
-            <h1>Now let’s write the rest of your book.</h1>
+            <h1>Now let’s keep going, one page at a time.</h1>
             <p className="lead">
               {teaser.status === "writing"
-                ? "Your approved voice is carrying into the pages you haven’t seen yet."
-                : "We’ll translate every remaining page, check the whole book, and email it to you."}
+                ? "Your approved voice is carrying into the next page."
+                : teaser.status === "ready"
+                  ? "Page 4 is ready. Here comes the next one."
+                  : "We’ll translate every remaining page, check the whole book, and email it to you."}
             </p>
             <VoiceBrief bookForm={bookForm} direction={lockedDirection} priority={priority} freedom={freedom} targetLanguage={targetLanguage} />
             {spreads.length > 3 && (
@@ -1441,43 +1462,60 @@ export default function Translator() {
                 <label>{teaser.status === "ready" ? "Page 4 · written in your voice" : "Page 4"}</label>
                 {teaser.status === "writing"
                   ? <ProgressLog messages={languageLoadingMessages(teaserLoadingMessages, language.config.name)} />
-                  : <p>{teaser.status === "ready"
-                      ? `Page 4 is ready. It follows your refrain, rhythm, and every note you gave us — you’ll read it in your finished book.`
-                      : `We’ll write Page 4 with the rest of your book.`}</p>}
+                  : teaser.status === "ready" && teaser.page
+                    ? <p className="approved-translation">{teaser.page.text}</p>
+                    : <p>We’ll write Page 4 with the rest of your book.</p>}
               </article>
             )}
-            {teaser.status !== "writing" && !emailCaptured && (
-              <form className="email-gate" onSubmit={captureEmail}>
-                <h2>{teaser.status === "ready" ? "Page 4 is ready — let’s finish your whole book." : "Let’s finish your whole book."}</h2>
-                <p>Enter the email address where you’d like us to send the completed translation.</p>
-                <label>
-                  <span>Email</span>
-                  <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" />
-                </label>
-                <label className="consent-choice">
-                  <input type="checkbox" checked={marketingConsent} onChange={(event) => setMarketingConsent(event.target.checked)} />
-                  <span>Send me occasional Bibaling news and product updates.</span>
-                </label>
-                <label className="consent-choice">
-                  <input
-                    type="checkbox"
-                    checked={analyticsConsent}
-                    onChange={(event) => {
-                      setAnalyticsConsentChoice(event.target.checked);
-                      setAnalyticsConsent(event.target.checked);
-                    }}
-                  />
-                  <span>Allow anonymous usage analytics to help improve Bibaling.</span>
-                </label>
-                {emailRequest.error && <p className="email-gate-error">{emailRequest.error}</p>}
-                <button
-                  className="primary"
-                  type="submit"
-                  disabled={emailRequest.loading || !validEmail(email)}
-                >
-                  {emailRequest.loading ? "Starting your book…" : "Email me the finished translation"}
+            {teaser.status === "ready" && spreads.length > 4 && !emailGateVisible && (
+              <article className="approved-card voice-reference next-page-card" aria-busy="true">
+                <button className="zoomable-image-button" type="button" aria-label="Open Page 5 photo at full size" onClick={() => setExpandedImage({ src: spreads[4].preview, alt: "Page 5" })}>
+                  <img src={spreads[4].preview} alt="" />
                 </button>
-              </form>
+                <label>Page 5</label>
+                <ProgressLog messages={languageLoadingMessages(nextPageLoadingMessages, language.config.name)} />
+              </article>
+            )}
+            {teaser.status !== "writing" && emailGateVisible && !emailCaptured && (
+              <div className={spreads.length > 4 ? "page-gate-row" : undefined}>
+                {spreads.length > 4 && (
+                  <button className="zoomable-image-button gate-page-image" type="button" aria-label="Open Page 5 photo at full size" onClick={() => setExpandedImage({ src: spreads[4].preview, alt: "Page 5" })}>
+                    <img src={spreads[4].preview} alt="" />
+                    <span>Page 5</span>
+                  </button>
+                )}
+                <form className="email-gate" onSubmit={captureEmail}>
+                  <h2>{spreads.length > 4 ? "Keep Page 5 going." : "Let’s finish your whole book."}</h2>
+                  <p>Enter your email and we’ll continue with the next page, finish the book, and send you the completed translation.</p>
+                  <label>
+                    <span>Email</span>
+                    <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" />
+                  </label>
+                  <label className="consent-choice">
+                    <input type="checkbox" checked={marketingConsent} onChange={(event) => setMarketingConsent(event.target.checked)} />
+                    <span>Send me occasional Bibaling news and product updates.</span>
+                  </label>
+                  <label className="consent-choice">
+                    <input
+                      type="checkbox"
+                      checked={analyticsConsent}
+                      onChange={(event) => {
+                        setAnalyticsConsentChoice(event.target.checked);
+                        setAnalyticsConsent(event.target.checked);
+                      }}
+                    />
+                    <span>Allow anonymous usage analytics to help improve Bibaling.</span>
+                  </label>
+                  {emailRequest.error && <p className="email-gate-error">{emailRequest.error}</p>}
+                  <button
+                    className="primary"
+                    type="submit"
+                    disabled={emailRequest.loading || !validEmail(email)}
+                  >
+                    {emailRequest.loading ? "Starting your book…" : "Email me the finished translation"}
+                  </button>
+                </form>
+              </div>
             )}
             <nav>
               <button className="secondary" disabled={emailRequest.loading} onClick={() => setStep(9)}>Back</button>
@@ -1604,6 +1642,12 @@ const teaserLoadingMessages = [
   "Following your notes from the first three pages…",
   "Reading Page 4 aloud to check the flow…",
   ...translationLoadingMessages
+];
+
+const nextPageLoadingMessages = [
+  "Starting Page 5 in your book’s voice…",
+  "Carrying your rhythm into the next page…",
+  "Following the choices you approved…"
 ];
 
 const fullBookLoadingMessages = [

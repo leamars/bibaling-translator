@@ -31,7 +31,7 @@ export default function LandingPage() {
           {[
             ["01", "Photograph the whole book.", "Add every page in reading order. We read the words, and you correct anything we missed."],
             ["02", "Choose the voice that feels right.", "Compare options in your family’s language, edit the strongest one, and tell us what felt off."],
-            ["03", "Finish the whole book.", "After you approve Page 1 and provide an email, we translate, review, and send the complete book."]
+            ["03", "See it carry into the book.", "Approve the first three pages, see Page 4 completed, then provide an email as Page 5 begins so we can finish and send the complete book."]
           ].map(([number, title, text]) => (
             <article className="feature-card" key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p></article>
           ))}
@@ -63,7 +63,7 @@ export default function LandingPage() {
       <section className="home-section privacy-callout">
         <p className="eyebrow">Your family’s reading project</p>
         <h2>Made for bilingual families, not publishers.</h2>
-        <p>Book photos are used to read the source pages, but only corrected text—not photos—is placed in the durable translation job. After Page 1 is visible, your email is sent separately to Resend so we can send the finished book. Marketing and GA4 analytics are optional, and analytics never receives your email or book content.</p>
+        <p>Book photos are used to read the source pages, but only corrected text—not photos—is placed in the durable translation job. After the first four translated pages are visible, your email is sent separately to Resend so we can finish and send the book. Marketing and GA4 analytics are optional, and analytics never receives your email or book content.</p>
       </section>
 
       <section className="home-section faq">
@@ -71,7 +71,7 @@ export default function LandingPage() {
         <h2>Before you photograph the first page</h2>
         <details><summary>Which languages work today?</summary><p>Slovenian is the reviewed reference language. Spanish, German, Italian, Croatian, and Serbian are prioritized for evaluation, with more European languages available experimentally.</p></details>
         <details><summary>Can I correct the translation?</summary><p>Yes. You correct the extracted English, then choose and edit the Page 1 voice in your selected language before the rest of the book is translated.</p></details>
-        <details><summary>When do you ask for email?</summary><p>Only after you upload the whole book, shape its voice, and see the completed Page 1 translation options. We use the address to send the finished translation.</p></details>
+        <details><summary>When do you ask for email?</summary><p>Only after you upload the whole book, shape its voice across the first three pages, and see the completed Page 4 translation. Page 5 begins next; we use the address to finish the remaining pages and send the complete translation.</p></details>
         <details><summary>Is the output guaranteed to be perfect?</summary><p>No. Machine-assisted translations can contain errors. A parent should review every page before using it.</p></details>
       </section>
 
